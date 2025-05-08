@@ -1,0 +1,55 @@
+# CodeIgniter 4 specific
+.env
+.env.*
+!.env.example
+writable/
+public/index.php
+public/.htaccess
+public/favicon.ico
+public/robots.txt
+public/uploads/
+
+# Composer
+/vendor/
+composer.lock
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node modules (if using any frontend frameworks)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build files
+/public/build/
+/public/dist/
+/public/assets/css/
+/public/assets/js/
+
+# Cache files
+*.cache
+.cache/ 
