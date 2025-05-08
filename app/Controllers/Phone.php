@@ -1,0 +1,221 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\ModelPhone;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Config\Database;
+use App\Models\ModelBarang;
+use App\Models\ModelAuth;
+
+class Phone extends BaseController
+
+{
+
+    protected $PhoneModel;
+    protected $BarangModel;
+    protected $AuthModel;
+
+    public function __construct()
+    {
+        $this->PhoneModel = new ModelPhone();
+        $this->BarangModel = new ModelBarang();
+        $this->AuthModel = new ModelAuth();
+    }
+
+    public function index()
+    {
+        $akun =   $this->AuthModel->getById(session('ID_AKUN'));
+        $data =  array(
+            'akun' => $akun,
+            'phone' => $this->PhoneModel->getPhone(),
+            'body'  => 'datamaster/phone'
+        );
+        return view('template', $data);
+    }
+
+    public function insert_phone()
+    {
+        $nama_barang =  $this->request->getPost('nama_barang');
+        $imei       = $this->request->getPost('imei');
+        $jenis_hp   = $this->request->getPost('jenis_hp');
+        $harga      = str_replace(',', '', $this->request->getPost('harga'));
+
+        $internal   = $this->request->getPost('internal');
+        $warna      = $this->request->getPost('warna');
+        $datauser = $this->AuthModel->getById(session('ID_AKUN'));
+        $namaakun = $datauser->NAMA_AKUN;
+
+
+
+        $lastBarang = $this->BarangModel->getLastBarangByKategori(1);
+
+
+        if ($lastBarang) {
+
+            $lastNumber = (int) substr($lastBarang->kode_barang, strlen('HP'));
+            $newNumber = $lastNumber + 1;
+        } else {
+
+            $newNumber = 1;
+        }
+
+
+        $formattedNumber = str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+
+
+        $kode_barang = 'HP' . $formattedNumber;
+
+
+
+
+        $data = [
+            'kode_barang' => $kode_barang,
+            'nama_barang' => $nama_barang,
+            'imei'       => $imei,
+            'jenis_hp'   => $jenis_hp,
+            'harga'      => $harga,
+
+            'internal'   => $internal,
+            'warna'      => $warna,
+            'status'     => '0',
+            'input'      => $namaakun,
+            'idkategori' => '1',
+            'deleted'    => '0'
+        ];
+
+        $result = $this->PhoneModel->insert($data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');
+            return redirect()->to(base_url('/phone'));
+        }
+    }
+
+    public function update_phone()
+    {
+        $id_phone = $this->request->getPost('id');
+        $nama_barang = $this->request->getPost('nama_barang');
+        $imei = $this->request->getPost('imei');
+        $jenis_hp = $this->request->getPost('jenis_hp');
+        $harga      = str_replace(',', '', $this->request->getPost('harga'));
+
+        $internal = $this->request->getPost('internal');
+        $warna = $this->request->getPost('warna');
+
+
+        $data = [
+            'nama_barang' => $nama_barang,
+            'imei'       => $imei,
+            'jenis_hp'   => $jenis_hp,
+            'harga'      => $harga,
+
+            'internal'   => $internal,
+            'warna'      => $warna,
+            'input'      => 'Faisal',
+            'idkategori' => '1',
+            'deleted'    => '0'
+        ];
+
+        $this->PhoneModel->update($id_phone, $data);
+
+        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+        return redirect()->to(base_url('/phone'));
+    }
+
+    public function delete_phone()
+    {
+
+        $id_phone = $this->request->getPost('id');
+        $data = array(
+            'deleted' => '1'
+        );
+        $result = $this->PhoneModel->update($id_phone, $data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Data Berhasil Di Hapus');
+            return redirect()->to(base_url('/phone'));
+        }
+    }
+
+    public function export_phone()
+    {
+
+        $phone = $this->PhoneModel->getPhone();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->setCellValue('A1', 'kode Barang');
+        $sheet->setCellValue('B1', 'Nama Barang');
+        $sheet->setCellValue('C1', 'Imei');
+        $sheet->setCellValue('D1', 'Jenis Handphone');
+        $sheet->setCellValue('E1', 'Harga');
+        $sheet->setCellValue('F1', 'Internal');
+        $sheet->setCellValue('G1', 'Warna');
+
+        // Data
+        $row = 2;
+        foreach ($phone as $handphone) {
+            $sheet->setCellValue('A' . $row, $handphone->kode_barang);
+            $sheet->setCellValue('B' . $row, $handphone->nama_barang);
+            $sheet->setCellValue('C' . $row, $handphone->imei);
+            $sheet->setCellValue('D' . $row, $handphone->jenis_hp);
+            $sheet->setCellValue('E' . $row, $handphone->harga);
+            $sheet->setCellValue('F' . $row, $handphone->internal);
+            $sheet->setCellValue('G' . $row, $handphone->warna);
+            $row++;
+        }
+
+        // Output Excel
+        $filename = 'data_Handphone_' . date('d/m/Y') . '.xlsx';
+
+        // Set header
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function import_phone()
+    {
+
+        $file = $this->request->getFile('file');
+
+        // Load spreadsheet
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        // Koneksi DB
+        $db = Database::connect();
+
+        // Skip header (baris pertama)
+        for ($i = 1; $i < count($rows); $i++) {
+            $imei = addslashes($rows[$i][0]);
+            $jenis_hp = addslashes($rows[$i][1]);
+            $harga = addslashes($rows[$i][2]);
+            $internal = addslashes($rows[$i][3]);
+            $warna = addslashes($rows[$i][4]);
+            // lokasi status
+            $input = addslashes($rows[$i][5]);
+            $idunit = addslashes($rows[$i][6]);
+            $idsuplier = addslashes($rows[$i][7]);
+            $idcustomer = addslashes($rows[$i][8]);
+
+
+
+            $sql = "INSERT INTO phone (imei, jenis_hp, harga, internal, warna, status, input, idunit, idsuplier, idcustomer, deleted) 
+                    VALUES ('$imei', '$jenis_hp', $harga, '$internal', '$warna', '0', '$input', '$idunit', '$idsuplier', '$idcustomer', '0')";
+
+            $db->query($sql);
+        }
+
+        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+        return redirect()->to(base_url('/phone'));
+    }
+}
