@@ -40,35 +40,64 @@ class Retur_Suplier extends BaseController
 
     public function insert()
     {
-        $no_retur_suplier = $this->request->getPost('no_batch');
+        $datauser = $this->AuthModel->getById(session('ID_AKUN'));
+        $useridunit = $datauser->ID_UNIT;
+
+
         $tanggal = date('Y-m-d');
-        $jumlah = $this->request->getPost('jumlah');
-        $jumlahval = $this->request->getPost('jumlahval');
-        $satuan = $this->request->getPost('satuan');
-        $barang_idbarang = $this->request->getPost('barang_idbarang');
-        $detail_pembelian_iddetail_pembelian = $this->request->getPost('iddetail_pembelian');
         $input_by = session('ID_AKUN');
-        // dd($detail_pembelian_iddetail_pembelian);
 
+        //noretur
+        $lastRetur = $this->ReturSuplierModel
+            ->where('unit_idunit', $useridunit)
+            ->like('tanggal', $tanggal)
+            ->orderBy('no_retur_suplier', 'DESC')
+            ->first();
 
-        if ($jumlah > $jumlahval) {
-            session()->setFlashdata('gagal', 'Jumlah Retur Tidak Boleh Lebih dari Jumlah yang Dibeli');
-            return redirect()->to(base_url('/retur_suplier'));
+        if ($lastRetur) {
+            $lastKode = substr($lastRetur['no_retur_suplier'], -3);
+            $newKode = str_pad((int)$lastKode + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            $newKode = '001';
         }
-        $data = array(
-            'no_retur_suplier' => $no_retur_suplier,
-            'tanggal' => $tanggal,
-            'jumlah' => $jumlah,
-            'satuan' => $satuan,
-            'barang_idbarang' => $barang_idbarang,
-            'detail_pembelian_iddetail_pembelian' => $detail_pembelian_iddetail_pembelian,
-            'input_by' => $input_by
-        );
-        $result = $this->ReturSuplierModel->insert_ReturSuplier($data);
+
+        $ymd = date('Ymd');
+        $no_retur_suplier = 'RTS' . $useridunit . $ymd . $newKode;
+        //noretur
+
+        $items = $this->request->getPost('items');
+
+        foreach ($items as $item) {
+            if (isset($item['selected']) && $item['selected'] == '1') {
+                $jumlah_retur = (int) $item['jumlah_retur'];
+                $jumlah = (int) $item['jumlah'];
+                $satuan = $item['satuan'];
+                $barang_idbarang = $item['barang_idbarang'];
+                $iddetail_pembelian = (int) $item['iddetail_pembelian'];
+                $unit_idunit = (int) $item['unit_idunit'];
+
+
+                if ($jumlah_retur > $jumlah) {
+                    session()->setFlashdata('gagal', 'Jumlah Retur Tidak Boleh Lebih dari Jumlah yang Dibeli');
+                    return redirect()->to(base_url('/retur_suplier'));
+                }
+
+                $data = array(
+                    'no_retur_suplier' => $no_retur_suplier,
+                    'tanggal' => $tanggal,
+                    'jumlah' => $jumlah_retur,
+                    'satuan' => $satuan,
+                    'barang_idbarang' => $barang_idbarang,
+                    'detail_pembelian_iddetail_pembelian' => $iddetail_pembelian,
+                    'input_by' => $input_by,
+                    'unit_idunit' => $unit_idunit,
+                );
+                $result = $this->ReturSuplierModel->insert_ReturSuplier($data);
+            }
+        }
         if ($result) {
             session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
-            return redirect()->to(base_url('/retur_suplierr'));
+            return redirect()->to(base_url('/retur_suplier'));
         }
     }
-    
 }

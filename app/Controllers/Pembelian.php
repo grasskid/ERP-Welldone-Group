@@ -81,11 +81,13 @@ class Pembelian extends BaseController
         $total_ppn = $this->cleanRupiah($this->request->getPost('total-ppn'));
         $total_bayar = $this->cleanRupiah($this->request->getPost('bayar'));
 
+        // dd($id_suplier_text);
+
         //invoice otomatis
         $ymd = date('Ymd');
         $tgl_hari_ini = date('Y-m-d');
         $jumlahHariIni = $this->PembelianModel
-            ->where('tanggal', $tgl_hari_ini)
+            ->where('tanggal_masuk', $tgl_hari_ini)
             ->where('unit_idunit', $useridunit)
             ->countAllResults();
         $urutan = str_pad($jumlahHariIni + 1, 4, '0', STR_PAD_LEFT);
@@ -106,8 +108,10 @@ class Pembelian extends BaseController
             $foto_nota_name = $nota_file->getRandomName();
             $nota_file->move(ROOTPATH . 'public/foto_nota', $foto_nota_name);
         }
+        $input_by = session('ID_AKUN');
 
         $data = array(
+            'suplier_id_suplier' => $id_suplier_text,
             'no_nota_supplier' => $no_nota,
             'foto_nota' =>  $foto_nota_name,
             'tanggal_masuk' => $tanggal_masuk,
@@ -119,10 +123,21 @@ class Pembelian extends BaseController
             'total_bayar' => $total_bayar,
             'bayar' => $total_bayar,
             'unit_idunit' => $useridunit,
-            'suplier_id_suplier' => $id_suplier_text,
             'pelanggan_id_pelanggan' => 1,
-            'input_by' => session('ID_AKUN')
+            'input_by' => $input_by
         );
+
+        foreach ($produkData as $produk) {
+            $produkid = $produk['id'];
+            $namaproduk = $produk['nama'];
+            $datastokawal = $this->StokAwalModel->getByIdBarang($produkid);
+
+            if (!$datastokawal || $datastokawal->satuan_terkecil == null) {
+                session()->setFlashdata('gagal', 'Barang dengan ID ' . $namaproduk . ' belum memiliki data satuan di stok awal.');
+                return redirect()->back();
+            }
+        }
+
 
         $result = $this->PembelianModel->insert_Pembelian($data);
         $idPembelian = $this->PembelianModel->insertID();
@@ -151,14 +166,17 @@ class Pembelian extends BaseController
                 'hrg_beli' => $hrg_beli,
                 'diskon' => $nilaidiskon,
                 'ppn' => $nilaiPPN,
-
                 'total_harga' => $produktotalharga,
                 'satuan_beli' => $satuan_beli,
                 'barang_idbarang' => $produk['id'],
-                'pembelian_idpembelian' => $idPembelian
+                'unit_idunit' => $useridunit,
+                'pembelian_idpembelian' => $idPembelian,
+
             );
+
             $result2 = $this->DetailPembelianModel->insert_detail($data2);
         }
+
 
 
         if ($result & $result2) {

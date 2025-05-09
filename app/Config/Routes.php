@@ -79,13 +79,19 @@ $routes->post('insert/stokawal', 'StokAwal::insert', ['filter' => 'auth']);
 $routes->get('riwayat_pembelian', 'Riwayat_pembelian::index', ['filter' => 'auth']);
 
 //riwayat penjualan
-
 $routes->get('riwayat_penjualan', 'Riwayat_Penjualan::index', ['filter' => 'auth']);
 $routes->get('riwayat_penjualan/detail/(:segment)', 'Riwayat_Penjualan::detail/$1', ['filter' => 'auth']);
+
+//riwayat retur pembelian
+$routes->get('riwayat_retur_pembelian', 'Riwayat_ReturPembelian::index', ['filter' => 'auth']);
+
+//riwayat retur pembelian
+$routes->get('riwayat_retur_penjualan', 'Riwayat_ReturPenjualan::index', ['filter' => 'auth']);
 
 //retur
 $routes->get('retur_suplier', 'Retur_Suplier::index', ['filter' => 'auth']);
 $routes->post('insert_retur_suplier', 'Retur_Suplier::insert', ['filter' => 'auth']);
+
 //retur customer
 $routes->get('retur_customer', 'Retur_Customer::index', ['filter' => 'auth']);
 $routes->post('insert_retur_customer', 'Retur_Customer::insert', ['filter' => 'auth']);

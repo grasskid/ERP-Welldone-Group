@@ -39,29 +39,55 @@ class Retur_Customer extends BaseController
 
     public function insert()
     {
-        $no_retur_pelanggan = $this->request->getPost('kode_invoice');
         $tanggal = date('Y-m-d');
-        $jumlah = $this->request->getPost('jumlah');
-        $jumlahval = $this->request->getPost('jumlahval');
-        $satuan = $this->request->getPost('satuan');
-        $barang_idbarang = $this->request->getPost('barang_idbarang');
-        $iddetail_penjualan = $this->request->getPost('iddetail_penjualan');
+        $datauser = $this->AuthModel->getById(session('ID_AKUN'));
+        $useridunit = $datauser->ID_UNIT;
 
-        if ($jumlah > $jumlahval) {
-            session()->setFlashdata('gagal', 'Jumlah Retur Tidak Boleh Lebih dari Jumlah yang Dibeli');
-            return redirect()->to(base_url('/retur_customer'));
+        //noretur
+        $lastRetur = $this->ReturCustomerModel
+            ->where('unit_idunit', $useridunit)
+            ->like('tanggal', $tanggal)
+            ->orderBy('no_retur_pelanggan', 'DESC')
+            ->first();
+
+        if ($lastRetur) {
+            $lastKode = substr($lastRetur['no_retur_pelanggan'], -3);
+            $newKode = str_pad((int)$lastKode + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            $newKode = '001';
         }
+        $ymd = date('Ymd');
+        $no_retur_pelanggan = 'RTC' . $useridunit . $ymd . $newKode;
+        //noretur
+        $items = $this->request->getPost('items');
+        foreach ($items as $item) {
+            if (isset($item['selected']) && $item['selected'] == '1') {
+                $jumlah_retur = (int) $item['jumlah_retur'];
+                $jumlah = (int) $item['jumlah'];
+                $satuan = $item['satuan'];
+                $barang_idbarang = $item['barang_idbarang'];
+                $iddetail_penjualan = (int) $item['iddetail_penjualan'];
+                $unit_idunit = (int) $item['unit_idunit'];
 
-        $data = array(
-            'no_retur_pelanggan' => $no_retur_pelanggan,
-            'tanggal' => $tanggal,
-            'jumlah' => $jumlah,
-            'satuan' => $satuan,
-            'barang_idbarang' => $barang_idbarang,
-            'detail_penjualan_iddetail_penjualan' => $iddetail_penjualan,
-            'input_by' => session('ID_AKUN')
-        );
-        $result = $this->ReturCustomerModel->insert_ReturCustomer($data);
+
+                if ($jumlah_retur > $jumlah) {
+                    session()->setFlashdata('gagal', 'Jumlah Retur Tidak Boleh Lebih dari Jumlah yang Dibeli');
+                    return redirect()->to(base_url('/retur_suplier'));
+                }
+
+                $data = array(
+                    'no_retur_pelanggan' => $no_retur_pelanggan,
+                    'tanggal' => $tanggal,
+                    'jumlah' => $jumlah,
+                    'satuan' => $satuan,
+                    'barang_idbarang' => $barang_idbarang,
+                    'detail_penjualan_iddetail_penjualan' => $iddetail_penjualan,
+                    'unit_idunit' => $unit_idunit,
+                    'input_by' => session('ID_AKUN')
+                );
+                $result = $this->ReturCustomerModel->insert_ReturCustomer($data);
+            }
+        }
         if ($result) {
             session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
             return redirect()->to(base_url('/retur_customer'));

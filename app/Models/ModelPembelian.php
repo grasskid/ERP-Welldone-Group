@@ -9,7 +9,7 @@ class ModelPembelian extends Model
     protected $table = 'pembelian';
     protected $primaryKey = 'idpembelian';
     protected $returnType = 'object';
-    protected $allowedFields = ['idpembelian', 'no_nota_supplier', 'foto_nota', 'tanggal_masuk', 'sisa', 'status', 'total_transaksi', 'total_diskon', 'total_ppn', 'total_bayar', 'bayar', 'unit_idunit', 'suplier_id_suplier', 'pelanggan_id_pelanggan'];
+    protected $allowedFields = ['idpembelian', 'no_nota_supplier', 'foto_nota', 'tanggal_masuk', 'sisa', 'status', 'total_transaksi', 'total_diskon', 'total_ppn', 'total_bayar', 'bayar', 'unit_idunit', 'suplier_id_suplier', 'pelanggan_id_pelanggan', 'input_by'];
 
 
     public function getPembelian()

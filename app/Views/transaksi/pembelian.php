@@ -30,7 +30,7 @@
                 </div> -->
                 <div class="col-md-6">
                     <label for="nama_suplier" class="form-label">Nama Suplier</label>
-                    <select class="form-select" id="suplier" name="suplier" onchange="tampilkanIdSuplier()">
+                    <select class="form-select" id="suplier" name="suplier" required onchange="tampilkanIdSuplier()">
                         <option value="" disabled selected>Pilih Unit</option>
                         <?php foreach ($suplier as $b): ?>
                             <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
@@ -247,7 +247,7 @@
                             <input type="number" name="produk[${id}][jumlah]" class="form-control jumlah-input" data-id="${id}" value="1" min="1">
                         </td>
                         <td>
-                            <input type="number" name="produk[${id}][diskon]" class="form-control diskon-input" data-id="${id}" value="0" min="0" max="100">
+                            <input type="number" name="produk[${id}][diskon]" class="form-control diskon-input" data-id="${id}" value="0" min="0">
                         </td>
                         <td class="text-center">
                             <input type="checkbox" name="produk[${id}][ppn]" class="form-check-input ppn-checkbox" data-id="${id}">

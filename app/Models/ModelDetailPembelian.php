@@ -21,7 +21,8 @@ class ModelDetailPembelian extends Model
         'total_harga',
         'satuan_beli',
         'barang_idbarang',
-        'pembelian_idpembelian'
+        'pembelian_idpembelian',
+        'unit_idunit'
     ];
 
     public function getDetail()

@@ -107,13 +107,28 @@ class Penjualan extends BaseController
             $keterangan = 'Belum Lunas';
         }
 
-        $datap = array(
-            'nama' => $this->request->getPost('nama'),
-            'alamat' => $this->request->getPost('alamat'),
-            'nik' => $this->request->getPost('nik'),
-            'nomor' => $this->request->getPost('nomor')
-        );
-        $resultp = $this->PelangganModel->insert_Pelanggan($datap);
+        $nama = $this->request->getPost('nama');
+        $alamat = $this->request->getPost('alamat');
+        $nik = $this->request->getPost('nik');
+        $nomor = $this->request->getPost('nomor');
+
+        $resultp = true;
+        if (!empty($nama) || !empty($alamat) || !empty($nik) || !empty($nomor)) {
+            $datapelanggan = $this->PelangganModel->getByNomor($nomor);
+
+            if (empty($datapelanggan)) {
+                $datap = array(
+                    'nama' => $nama,
+                    'alamat' => $alamat,
+                    'nik' => $nik,
+                    'no_hp' => $nomor,
+                    'deleted' => 0
+                );
+                $resultp = $this->PelangganModel->insert_Pelanggan($datap);
+            }
+        }
+
+
 
 
         $data1 = array(
@@ -128,10 +143,19 @@ class Penjualan extends BaseController
             'created_on' => $created_on,
             'input_by' => session('ID_AKUN'),
             'sales_by' => session('ID_AKUN'),
-            'unit_idunit' => $useridunit,
+            'unit_idunit' => $unit_idunit,
         );
 
+        foreach ($produkData as $produk) {
+            $produkid = $produk['id'];
+            $namaproduk = $produk['nama'];
+            $datastokawal = $this->StokAwalModel->getByIdBarang($produkid);
 
+            if (!$datastokawal || $datastokawal->satuan_terkecil == null) {
+                session()->setFlashdata('gagal', 'Barang dengan ID ' . $namaproduk . ' belum memiliki data satuan di stok awal.');
+                return redirect()->back();
+            }
+        }
 
 
         $result = $this->PenjualanModel->insert_Penjualan($data1);
@@ -140,7 +164,7 @@ class Penjualan extends BaseController
 
             $produkjumlah = $produk['jumlah'];
             $produkid = $produk['id'];
-            $datastokawal = $this->StokAwalModel->getByIdBarang($produk['id']);
+            $datastokawal = $this->StokAwalModel->getByIdBarang($produkid);
 
 
             $produkharga = $this->sanitizeCurrency($produk['harga']);
@@ -149,15 +173,12 @@ class Penjualan extends BaseController
             $subtotalAwal = $produkharga * $produkjumlah;
             $sub_total = $subtotalAwal - $nilaidiskon;
 
-            $harga_penjualan =  $produkharga;
-
+            $harga_penjualan = $produkharga;
             $diskon_penjualan = $nilaidiskon;
             $hpp_penjualan = '';
 
             $penjualan_idpenjualan = $idPenjualan;
             $satuan_jual = $datastokawal->satuan_terkecil;
-
-            // dd($datastokawal);
 
             $data2 = array(
                 'jumlah' => $produkjumlah,
@@ -168,9 +189,12 @@ class Penjualan extends BaseController
                 'hpp_penjualan' => $hpp_penjualan,
                 'satuan_jual' => $satuan_jual,
                 'diskon_penjualan' => $diskon_penjualan,
+                'unit_idunit' => $unit_idunit,
             );
-            $result2  = $this->DetailPenjualanModel->insert_detail($data2);
+
+            $result2 = $this->DetailPenjualanModel->insert_detail($data2);
         }
+
         if ($result & $result2 & $resultp) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
 
@@ -188,8 +212,6 @@ class Penjualan extends BaseController
                 'total' => $total_penjualan,
                 'bayar' => $bayar,
                 'kembalian' => $kembalian_cetak,
-
-
 
             );
 

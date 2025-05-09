@@ -18,7 +18,8 @@ class ModelDetailPenjualan extends Model
         'penjualan_idpenjualan',
         'hpp_penjualan',
         'satuan_jual',
-        'diskon_penjualan'
+        'diskon_penjualan',
+        'unit_idunit'
     ];
 
     public function getDetail()

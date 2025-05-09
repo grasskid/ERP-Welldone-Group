@@ -25,4 +25,9 @@ class ModelPelanggan extends Model
     {
         return $this->where(['id_pelanggan' => $id_pelanggan])->first();
     }
+
+    public function getByNomor($nomor)
+    {
+        return $this->where(['no_hp' => $nomor])->first();
+    }
 }

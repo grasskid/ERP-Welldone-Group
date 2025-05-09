@@ -179,7 +179,7 @@
                                     <!-- Input cari -->
                                     <div class="mb-3">
                                         <label for="search-nohp" class="form-label">Nomor HP</label>
-                                        <input type="text" class="form-control" id="search-nohp">
+                                        <input type="text" name="nomor" class="form-control" id="search-nohp">
                                     </div>
                                     <button type="button" id="cari-pelanggan-btn" class="btn btn-info">Cari</button>
 
@@ -190,15 +190,15 @@
                                     <div id="pelanggan-form-extra" style="display:none; margin-top: 1rem;">
                                         <div class="mb-2">
                                             <label for="nama">Nama</label>
-                                            <input type="text" id="nama" class="form-control">
+                                            <input type="text" name="nama" id="nama" class="form-control">
                                         </div>
                                         <div class="mb-2">
                                             <label for="alamat">Alamat</label>
-                                            <textarea id="alamat" class="form-control"></textarea>
+                                            <textarea id="alamat" name="alamat" class="form-control"></textarea>
                                         </div>
                                         <div class="mb-2">
                                             <label for="nik">NIK</label>
-                                            <input type="text" id="nik" class="form-control">
+                                            <input type="text" name="nik" id="nik" class="form-control">
                                         </div>
                                         <button type="submit" class="btn btn-primary mt-2">Simpan Pelanggan</button>
                                     </div>

@@ -31,14 +31,14 @@
                     data-simplebar>
                     <div class="card-body">
                         <a href="#" class="">
-                            <img src="<?php echo base_url('template/') ?>assets/images/logos/logo-light.svg"
-                                class="dark-logo" alt="Logo-light" />
+                            <!-- <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png"
+                                class="dark-logo" alt="Logo-light" /> -->
                         </a>
                         <div class="row align-items-center justify-content-around pt-6 pb-5">
                             <div class="col-lg-6 col-xl-5 d-none d-lg-block">
                                 <div class="text-center text-lg-start">
                                     <img src="<?php echo base_url('template/') ?>assets/images/login_art.png" alt=""
-                                        class=" w-50" /> <!-- w-50 = 50% width -->
+                                        class="w-100" /> <!-- w-50 = 50% width -->
                                 </div>
 
                             </div>
@@ -48,14 +48,14 @@
 
                                 <form action="<?= base_url('/proses_login') ?>" method="post">
                                     <?php if (session()->getFlashdata('pesan_error')) { ?>
-                                    <div class="text-danger mt-2">
-                                        <?= session()->getFlashdata('pesan_error') ?>
-                                    </div>
+                                        <div class="text-danger mt-2">
+                                            <?= session()->getFlashdata('pesan_error') ?>
+                                        </div>
                                     <?php } ?>
                                     <?php if (session()->getFlashdata('pesan_username')) { ?>
-                                    <div class="text-danger mt-2">
-                                        <?= session()->getFlashdata('pesan_username') ?>
-                                    </div>
+                                        <div class="text-danger mt-2">
+                                            <?= session()->getFlashdata('pesan_username') ?>
+                                        </div>
                                     <?php } ?>
                                     <div class="mb-7">
                                         <label for="InputUsername" class="form-label text-dark fw-bold">Username</label>
@@ -63,9 +63,9 @@
                                             aria-describedby="emailHelp" />
                                     </div>
                                     <?php if (session()->getFlashdata('pesan_password')) { ?>
-                                    <div class="text-danger mt-2">
-                                        <?= session()->getFlashdata('pesan_password') ?>
-                                    </div>
+                                        <div class="text-danger mt-2">
+                                            <?= session()->getFlashdata('pesan_password') ?>
+                                        </div>
                                     <?php } ?>
                                     <div class="mb-9">
                                         <label for="exampleInputPassword1"
