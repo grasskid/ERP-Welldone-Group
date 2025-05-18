@@ -224,11 +224,12 @@ class Core extends Model
         $no_kat = 0;
         foreach ($kategori as $kat) {
             $res_kategori = array(
-                'id' => $kat->idmenu,
-                'nama' => $kat->nama_menu,
-                'icon' => $kat->icon,
-                'url' => $kat->url,
-                'role' => $kat->roles,
+                'id'    => $kat->idmenu,
+                'nama'  => $kat->nama_menu,
+                'icon'  => $kat->icon,
+                'url'   => $kat->url,
+                'role'  => $kat->roles,
+                'utama' => $kat->utama,
                 'menu' => array()
             );
             $menu = db_connect()->table("menu")
@@ -246,6 +247,7 @@ class Core extends Model
                     'icon' => $mymenu->icon,
                     'url' => $mymenu->url,
                     'role' => $mymenu->roles,
+                    'utama' => $mymenu->utama,
                     'sub' => array(),
                 );
                 array_push($response[$no_kat]['menu'], $res_menu);

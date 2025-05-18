@@ -42,9 +42,11 @@ class Retur_Suplier extends BaseController
     {
         $datauser = $this->AuthModel->getById(session('ID_AKUN'));
         $useridunit = $datauser->ID_UNIT;
-
+        date_default_timezone_set('Asia/Jakarta');
 
         $tanggal = date('Y-m-d');
+        $waktu = date('H:i:s');
+        $datetime = $tanggal . ' ' . $waktu;
         $input_by = session('ID_AKUN');
 
         //noretur
@@ -55,7 +57,7 @@ class Retur_Suplier extends BaseController
             ->first();
 
         if ($lastRetur) {
-            $lastKode = substr($lastRetur['no_retur_suplier'], -3);
+            $lastKode = substr($lastRetur->no_retur_suplier, -3);
             $newKode = str_pad((int)$lastKode + 1, 3, '0', STR_PAD_LEFT);
         } else {
             $newKode = '001';
@@ -84,7 +86,7 @@ class Retur_Suplier extends BaseController
 
                 $data = array(
                     'no_retur_suplier' => $no_retur_suplier,
-                    'tanggal' => $tanggal,
+                    'tanggal' => $datetime,
                     'jumlah' => $jumlah_retur,
                     'satuan' => $satuan,
                     'barang_idbarang' => $barang_idbarang,

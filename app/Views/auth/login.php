@@ -9,12 +9,12 @@
 
     <!-- Favicon icon-->
     <link rel="shortcut icon" type="image/png"
-        href="<?php echo base_url('template/') ?>assets/images/logos/favicon.png" />
+        href="<?php echo base_url('template/') ?>assets/images/logo_urban.png" />
 
     <!-- Core Css -->
     <link rel="stylesheet" href="<?php echo base_url('template/') ?>assets/css/styles.css" />
 
-    <title>Spike Bootstrap Admin</title>
+    <title>WellDone Group</title>
 </head>
 
 <body>

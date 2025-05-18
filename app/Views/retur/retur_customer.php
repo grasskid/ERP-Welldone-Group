@@ -22,6 +22,34 @@ foreach ($detail_penjualan as $row) {
 <div class="card w-100 position-relative overflow-hidden">
     <div class="card-body px-4 pt-4 pb-2 mb-1"></div>
 
+
+    <!-- Filter Dropdown dan Tanggal -->
+    <div class="mb-3 px-4">
+        <label class="me-2">Nama Unit:</label>
+        <select id="unitFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterData()">
+            <option value="">Semua Unit</option>
+            <?php
+            $unitList = [];
+            foreach ($grouped_penjualan as $items) {
+                $unitName = $items[0]->NAMA_UNIT;
+                if (!in_array($unitName, $unitList)) {
+                    $unitList[] = $unitName;
+                    echo '<option value="' . esc($unitName) . '">' . esc($unitName) . '</option>';
+                }
+            }
+            ?>
+        </select>
+
+        <label class="ms-3 me-2">Tanggal Awal:</label>
+        <input type="date" id="startDate" class="form-control d-inline" style="width: auto; display: inline-block;" onchange="filterData()">
+
+        <label class="ms-3 me-2">Tanggal Akhir:</label>
+        <input type="date" id="endDate" class="form-control d-inline" style="width: auto; display: inline-block;" onchange="filterData()">
+
+        <button onclick="resetFilter()" class="btn btn-sm btn-secondary ms-3">Reset</button>
+    </div>
+
+
     <div class="row px-4 mb-3">
         <div class="table-responsive mb-4 px-4">
             <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
@@ -30,6 +58,7 @@ foreach ($detail_penjualan as $row) {
                         <th>Invoice</th>
                         <th>Tanggal</th>
                         <th>Nama Barang</th>
+                        <th>Nama Unit</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -41,6 +70,7 @@ foreach ($detail_penjualan as $row) {
                                 <td><?= esc($kode_invoice) ?></td>
                                 <td><?= esc(date('d-m-Y', strtotime($first->tanggal))) ?></td>
                                 <td><?= esc($first->nama_barang) ?>, ...</td>
+                                <td><?= esc($first->NAMA_UNIT) ?></td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#modalDetail<?= esc($kode_invoice) ?>"
@@ -133,4 +163,46 @@ foreach ($detail_penjualan as $row) {
         $('#zero_config').DataTable();
         $('.detail-table').DataTable();
     });
+</script>
+
+<!-- JavaScript untuk filter -->
+<script>
+    function filterData() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const selectedUnit = document.getElementById('unitFilter').value.toLowerCase();
+
+        const rows = document.querySelectorAll('#zero_config tbody tr');
+        rows.forEach(row => {
+            const dateCell = row.children[1];
+            const unitCell = row.children[3];
+            if (!dateCell || !unitCell) return;
+
+            // Ambil dan parsing tanggal
+            const dateText = dateCell.textContent.trim();
+            const parts = dateText.split('-');
+            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // ubah ke Y-m-d
+
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
+
+            // Ambil dan cocokan nama unit
+            const unitName = unitCell.textContent.trim().toLowerCase();
+            const unitMatch = selectedUnit === "" || unitName === selectedUnit;
+
+            let dateMatch = true;
+            if (startDate && rowDate < startDate) dateMatch = false;
+            if (endDate && rowDate > endDate) dateMatch = false;
+
+            // Tampilkan baris jika dua-duanya match
+            row.style.display = (unitMatch && dateMatch) ? '' : 'none';
+        });
+    }
+
+    function resetFilter() {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        document.getElementById('unitFilter').value = '';
+        filterData();
+    }
 </script>

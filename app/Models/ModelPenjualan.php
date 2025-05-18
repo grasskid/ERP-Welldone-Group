@@ -43,4 +43,10 @@ class ModelPenjualan extends Model
     {
         return $this->where(['idpenjulan' => $idpenjulan])->first();
     }
+
+
+    public function getByKodeInvoice($kode_invoice)
+    {
+        return $this->where(['kode_invoice' => $kode_invoice])->first();
+    }
 }

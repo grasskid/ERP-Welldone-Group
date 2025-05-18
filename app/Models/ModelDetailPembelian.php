@@ -67,10 +67,11 @@ class ModelDetailPembelian extends Model
             ->select('
                 detail_pembelian.*,
                 detail_pembelian.tanggal,
-                barang.nama_barang
-            ')
+                barang.nama_barang,
+                unit.NAMA_UNIT')
             ->join('pembelian', 'pembelian.idpembelian = detail_pembelian.pembelian_idpembelian')
             ->join('barang', 'barang.idbarang = detail_pembelian.barang_idbarang')
+            ->join('unit', 'unit.idunit = detail_pembelian.unit_idunit')
             ->orderBy('detail_pembelian.tanggal', 'DESC')
             ->get()
             ->getResult();
@@ -85,5 +86,34 @@ class ModelDetailPembelian extends Model
     public function getById($id)
     {
         return $this->where(['iddetail_pembelian' => $id])->first();
+    }
+
+
+    public function exportfilter($tanggalAwal = null, $tanggalAkhir = null, $namaUnit = null)
+    {
+
+        $builder = $this->db->table('detail_pembelian')
+            ->select('
+            detail_pembelian.*,
+            detail_pembelian.tanggal,
+            barang.nama_barang,
+            unit.NAMA_UNIT')
+            ->join('pembelian', 'pembelian.idpembelian = detail_pembelian.pembelian_idpembelian')
+            ->join('barang', 'barang.idbarang = detail_pembelian.barang_idbarang')
+            ->join('unit', 'unit.idunit = detail_pembelian.unit_idunit');
+
+
+        if (!empty($tanggalAwal) && !empty($tanggalAkhir)) {
+            $builder->where('detail_pembelian.tanggal >=', $tanggalAwal)
+                ->where('detail_pembelian.tanggal <=',  $tanggalAkhir . ' 23:59:59');
+        }
+
+        if (!empty($namaUnit)) {
+            $builder->where('unit.NAMA_UNIT', $namaUnit);
+        }
+
+        return $builder->orderBy('detail_pembelian.tanggal', 'DESC')
+            ->get()
+            ->getResult();
     }
 }

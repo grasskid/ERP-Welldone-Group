@@ -3,7 +3,7 @@
     <!-- Start Vertical Layout Sidebar -->
     <!-- ---------------------------------- -->
     <div class="brand-logo d-flex justify-content-center align-items-center py-3">
-        <h2 style="text-align: center; margin-top: 2px;">Welldone Group</h2>
+        <h2 style="text-align: center; margin-top: 2px;"><?= session()->get('NAMA_UNIT'); ?></h2>
         <a href="<?php echo base_url('template/') ?>dark/index.html" class="text-nowrap logo-img">
             <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png" class="dark-logo w-100 h-auto"
                 alt="Logo-Dark" />
@@ -33,9 +33,14 @@
                 <?php foreach ($menu_utama as $mymenu) :
                     $menu_aktif = false; ?>
                 <?php if (in_array($mymenu['id'], $role)) : ?>
-                <?php if (sizeof($mymenu['menu']) <= 0) :
-                            if (base_url() . $mymenu['url'] == service('uri')) $menu_aktif = true;
-                        ?>
+                <?php if (sizeof($mymenu['menu']) <= 0) : ?>
+                <?php if (base_url() . $mymenu['url'] == service('uri')) $menu_aktif = true; ?>
+                <?php if ($mymenu['utama'] == 0) : ?>
+                <li class="nav-small-cap">
+                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
+                </li>
+                <?php else: ?>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link primary-hover-bg" href="/approval" aria-expanded="false">
                         <span class="aside-icon p-2 bg-primary-subtle rounded-1">
@@ -45,6 +50,7 @@
                         <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
                     </a>
                 </li>
+                <?php endif; ?>
                 <?php else :
                             $uri = service('uri');
                             foreach ($mymenu['menu'] as $menu) :
@@ -58,6 +64,12 @@
                                 endforeach;
                             endforeach;
                         ?>
+                <?php if ($mymenu['utama'] == 0) : ?>
+                <li class="nav-small-cap">
+                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
+                </li>
+                <?php endif; ?>
                 <li class="sidebar-item">
                     <a class="sidebar-link has-arrow success-hover-bg" href="#" aria-expanded="false">
                         <span class="aside-icon p-2 bg-success-subtle rounded-1">
@@ -72,7 +84,7 @@
                         <li class="sidebar-item">
                             <a href="<?= base_url() . $menu['url'] ?>" class="sidebar-link">
                                 <span
-                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : '<i class="fa fa-arrow-right"></i>'; ?></span>
+                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
                                 <span class="hide-menu"> <?= $menu['nama'] ?></span>
                             </a>
                         </li>
@@ -80,7 +92,7 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
                                 <span
-                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : '<i class="fa fa-arrow-right"></i>'; ?></span>
+                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
                                 <span class="hide-menu"> <?= $menu['nama'] ?> </span>
                             </a>
                             <ul aria-expanded="false" class="collapse two-level">
@@ -89,7 +101,7 @@
                                 <li class="sidebar-item">
                                     <a href="<?= base_url() . $sub_menu['url'] ?>" class="sidebar-link">
                                         <span
-                                            class="sidebar-icon"><?= $icon = ($sub_menu['icon'] != null) ? $sub_menu['icon'] : '<i class="fa fa-caret-right"></i>'; ?></span>
+                                            class="sidebar-icon"><?= $icon = ($sub_menu['icon'] != null) ? $sub_menu['icon'] : ''; ?></span>
                                         <span class="hide-menu"><?= $sub_menu['nama'] ?></span>
                                     </a>
                                 </li>
@@ -206,11 +218,35 @@
                     <span class="hide-menu">Stok</span>
                 </li>
                 <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/kartu_stok" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Stok Produk</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/mutasi_stok" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Mutasi Stok</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link primary-hover-bg" href="/stok_awal" aria-expanded="false">
                         <span class="aside-icon p-2 bg-primary-subtle rounded-1">
                             <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Stok Awal</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/stok_opname" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Stok Opname</span>
                     </a>
                 </li>
 
@@ -260,6 +296,25 @@
                             <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
                         </span>
                         <span class="hide-menu ps-1">Riwayat Retur Penjualan</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_mutasi" aria-expanded="false">
+                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Riwayat Mutasi Stok</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_stok_opname"
+                        aria-expanded="false">
+                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+                        </span>
+                        <span class="hide-menu ps-1">Riwayat Stok Opname</span>
                     </a>
                 </li>
 

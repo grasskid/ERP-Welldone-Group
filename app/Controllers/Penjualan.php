@@ -19,6 +19,7 @@ use App\Models\ModelPelanggan;
 use DateTime;
 use Mpdf\Mpdf;
 use App\Models\ModelAuth;
+use App\Models\ModelHppBarang;
 
 
 
@@ -35,6 +36,7 @@ class Penjualan extends BaseController
     protected $DetailPenjualanModel;
     protected $PelangganModel;
     protected $AuthModel;
+    protected $HppBarangModel;
 
     public function __construct()
     {
@@ -46,6 +48,7 @@ class Penjualan extends BaseController
         $this->DetailPenjualanModel = new ModelDetailPenjualan();
         $this->PelangganModel = new ModelPelanggan();
         $this->AuthModel = new ModelAuth();
+        $this->HppBarangModel = new ModelHppBarang();
     }
 
     public function index()
@@ -111,20 +114,30 @@ class Penjualan extends BaseController
         $alamat = $this->request->getPost('alamat');
         $nik = $this->request->getPost('nik');
         $nomor = $this->request->getPost('nomor');
+        $id_pelanggan = $this->request->getPost('id_pelanggan');
 
         $resultp = true;
-        if (!empty($nama) || !empty($alamat) || !empty($nik) || !empty($nomor)) {
-            $datapelanggan = $this->PelangganModel->getByNomor($nomor);
+        if (empty($id_pelanggan)) {
+            // Pastikan ada data yang diinput sebelum insert
+            if (!empty($nama) || !empty($alamat) || !empty($nik) || !empty($nomor)) {
 
-            if (empty($datapelanggan)) {
-                $datap = array(
-                    'nama' => $nama,
-                    'alamat' => $alamat,
-                    'nik' => $nik,
-                    'no_hp' => $nomor,
-                    'deleted' => 0
-                );
-                $resultp = $this->PelangganModel->insert_Pelanggan($datap);
+                $datapelanggan = $this->PelangganModel->getByNomor($nomor);
+
+                if (empty($datapelanggan)) {
+
+                    $datap = array(
+                        'nama' => $nama,
+                        'alamat' => $alamat,
+                        'nik' => $nik,
+                        'no_hp' => $nomor,
+                        'deleted' => 0
+                    );
+                    $resultp = $this->PelangganModel->insert_Pelanggan($datap);
+                    $id_pelanggan = $this->PelangganModel->insertID();
+                } else {
+
+                    $id_pelanggan = $datapelanggan->id_pelanggan;
+                }
             }
         }
 
@@ -175,7 +188,10 @@ class Penjualan extends BaseController
 
             $harga_penjualan = $produkharga;
             $diskon_penjualan = $nilaidiskon;
-            $hpp_penjualan = '';
+
+            $datahpp = $this->HppBarangModel->getById($produkid);
+            $hpp_penjualan  = $datahpp->hpp ?? 0;
+
 
             $penjualan_idpenjualan = $idPenjualan;
             $satuan_jual = $datastokawal->satuan_terkecil;
@@ -195,11 +211,11 @@ class Penjualan extends BaseController
             $result2 = $this->DetailPenjualanModel->insert_detail($data2);
         }
 
-        if ($result & $result2 & $resultp) {
+        if ($result & $result2) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
 
             $sub_total_cetak = $this->sanitizeCurrency($total_penjualan) + $this->sanitizeCurrency($nilaidiskon);
-            $kembalian_cetak = $this->sanitizeCurrency($total_penjualan) - $this->sanitizeCurrency($bayar);
+            $kembalian_cetak = max(0, $this->sanitizeCurrency($bayar) - $this->sanitizeCurrency($total_penjualan));
 
             $data3 = array(
 

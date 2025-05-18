@@ -19,11 +19,11 @@
     <div class="card-body px-4 pt-4 pb-2 d-flex justify-content-between align-items-start mb-1">
         <div class="d-flex gap-2">
         </div>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-kategori-modal"
+        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-kategori-modal"
             style="display: inline-flex; align-items: center;">
             <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
                 style="margin-right: 8px;"></iconify-icon>Input
-        </button>
+        </button> -->
     </div>
 
     <div class="table-responsive mb-4 px-4">
@@ -36,36 +36,36 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nama Kategori</h6>
                     </th>
-                    <th>
+                    <!-- <th>
                         <h6 class="fs-4 fw-semibold mb-0">Action</h6>
-                    </th>
+                    </th> -->
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($kategori)): ?>
-                    <?php foreach ($kategori as $row): ?>
-                        <tr>
-                            <td><?= esc($row->idkategori) ?></td>
-                            <td><?= esc($row->nama_kategori) ?></td>
-                            <td>
-                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-kategori-modal" data-id="<?= esc($row->id) ?>"
-                                    data-id_kategori="<?= esc($row->idkategori) ?>"
-                                    data-nama_kategori="<?= esc($row->nama_kategori) ?>">
-                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                </button>
-                                <!-- <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                    data-bs-target="#delete-kategori-modal" data-id="<?= esc($row->id) ?>">
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                                    </iconify-icon>
-                                </button> -->
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                <?php foreach ($kategori as $row): ?>
+                <tr>
+                    <td><?= esc($row->idkategori) ?></td>
+                    <td><?= esc($row->nama_kategori) ?></td>
+                    <!-- <td>
+                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                            data-bs-target="#edit-kategori-modal" data-id="<?= esc($row->id) ?>"
+                            data-id_kategori="<?= esc($row->idkategori) ?>"
+                            data-nama_kategori="<?= esc($row->nama_kategori) ?>">
+                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                        </button>
+                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                            data-bs-target="#delete-kategori-modal" data-id="<?= esc($row->id) ?>">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                            </iconify-icon>
+                        </button>
+                    </td> -->
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="3" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="3" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -159,23 +159,23 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('#zero_config').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const button = e.target.closest('.edit-button');
-                const id = button.getAttribute('data-id');
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#zero_config').addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const button = e.target.closest('.edit-button');
+            const id = button.getAttribute('data-id');
 
-                const nama_kategori = button.getAttribute('data-nama_kategori');
-                document.getElementById('edit_id').value = id;
+            const nama_kategori = button.getAttribute('data-nama_kategori');
+            document.getElementById('edit_id').value = id;
 
-                document.getElementById('edit_nama_kategori').value = nama_kategori;
-            }
+            document.getElementById('edit_nama_kategori').value = nama_kategori;
+        }
 
-            if (e.target.closest('.delete-button')) {
-                const button = e.target.closest('.delete-button');
-                const id = button.getAttribute('data-id');
-                document.getElementById('delete_id').value = id;
-            }
-        });
+        if (e.target.closest('.delete-button')) {
+            const button = e.target.closest('.delete-button');
+            const id = button.getAttribute('data-id');
+            document.getElementById('delete_id').value = id;
+        }
     });
+});
 </script>

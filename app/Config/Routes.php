@@ -75,19 +75,49 @@ $routes->get('penjualan/search_by_hp', 'Penjualan::search_by_hp', ['filter' => '
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
 $routes->post('insert/stokawal', 'StokAwal::insert', ['filter' => 'auth']);
 
+//stokopname
+$routes->get('stok_opname', 'StokOpname::index', ['filter' => 'auth']);
+$routes->post('insert/stokopname', 'StokOpname::simpan', ['filter' => 'auth']);
+$routes->post('insert/stokopnamefix', 'StokOpname::simpanFix', ['filter' => 'auth']);
+$routes->get('stokopname/loadtable', 'StokOpname::loadTable');
+
+
+//kartu stok
+$routes->get('kartu_stok', 'Kartu_Stok::index', ['filter' => 'auth']);
+$routes->get('export/kartu_stock', 'Kartu_Stok::export', ['filter' => 'auth']);
+
+//mutasi stok
+$routes->get('mutasi_stok', 'MutasiStok::index', ['filter' => 'auth']);
+$routes->post('insert_mutasi', 'MutasiStok::insert', ['filter' => 'auth']);
+
 //riwayat pembelian
 $routes->get('riwayat_pembelian', 'Riwayat_pembelian::index', ['filter' => 'auth']);
+$routes->post('riwayat_pembelian/export', 'Riwayat_pembelian::export', ['filter' => 'auth']);
 
 //riwayat penjualan
 $routes->get('riwayat_penjualan', 'Riwayat_Penjualan::index', ['filter' => 'auth']);
 $routes->get('riwayat_penjualan/detail/(:segment)', 'Riwayat_Penjualan::detail/$1', ['filter' => 'auth']);
+$routes->post('riwayat_penjualan/export', 'Riwayat_Penjualan::export', ['filter' => 'auth']);
+$routes->get('riwayat_penjualan/struk/(:segment)', 'Riwayat_Penjualan::cetak_struk/$1', ['filter' => 'auth']);
 
-//riwayat retur pembelian
+//riwayat retur pembelian 
 $routes->get('riwayat_retur_pembelian', 'Riwayat_ReturPembelian::index', ['filter' => 'auth']);
+$routes->post('riwayat_retur_pembelian/export', 'Riwayat_ReturPembelian::export', ['filter' => 'auth']);
 
-//riwayat retur pembelian
+//riwayat retur penjualan
 $routes->get('riwayat_retur_penjualan', 'Riwayat_ReturPenjualan::index', ['filter' => 'auth']);
+$routes->post('riwayat_retur_penjualan/export', 'Riwayat_ReturPenjualan::export', ['filter' => 'auth']);
 
+
+
+//riwayat stok opname
+$routes->get('riwayat_stok_opname', 'Riwayat_StokOpname::index', ['filter' => 'auth']);
+$routes->post('riwayat_stok_opname/export', 'Riwayat_StokOpname::export', ['filter' => 'auth']);
+
+
+//riwayat mutasi
+$routes->get('riwayat_mutasi', 'Riwayat_MutasiStok::index', ['filter' => 'auth']);
+$routes->post('riwayat_mutasi/export', 'Riwayat_MutasiStok::export', ['filter' => 'auth']);
 //retur
 $routes->get('retur_suplier', 'Retur_Suplier::index', ['filter' => 'auth']);
 $routes->post('insert_retur_suplier', 'Retur_Suplier::insert', ['filter' => 'auth']);

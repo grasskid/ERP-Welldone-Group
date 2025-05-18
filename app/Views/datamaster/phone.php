@@ -45,15 +45,15 @@
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
+                    <th>PPn</th>
                     <th>Kode Barang</th>
                     <th>IMEI</th>
                     <th>Nama Barang </th>
                     <th>Harga</th>
+                    <th>Harga Beli</th>
                     <th>Jenis HP</th>
-
                     <th>Internal</th>
                     <th>Warna</th>
-                    <th>Status</th>
                     <th>Input</th>
                     <th>Action</th>
                 </tr>
@@ -62,25 +62,20 @@
                 <?php if (!empty($phone)): ?>
                     <?php foreach ($phone as $row): ?>
                         <tr>
+                            <td><?php if ($row->status_ppn == 0) {
+                                    echo '<span class="mb-1 badge rounded-pill  bg-warning-subtle text-warning">Non PPn</span>';
+                                } else {
+                                    echo '<span class="mb-1 badge rounded-pill  bg-info-subtle text-info">PPn</span>';
+                                } ?></td>
                             <td><?= esc($row->kode_barang) ?></td>
                             <td><?= esc($row->imei) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
                             <td><?= 'Rp ' . number_format($row->harga, 0, ',', '.') ?></td>
+                            <td><?= 'Rp ' . number_format($row->harga_beli, 0, ',', '.') ?></td>
                             <td><?= esc($row->jenis_hp) ?></td>
 
                             <td><?= esc($row->internal) ?> Gb</td>
                             <td><?= esc($row->warna) ?></td>
-                            <td>
-                                <?php
-                                if ($row->status == 0) {
-                                    echo 'Menunggu';
-                                } elseif ($row->status == 1) {
-                                    echo 'Disetujui';
-                                } else {
-                                    echo 'Unknown Status';
-                                }
-                                ?>
-                            </td>
                             <td><?= esc($row->input) ?></td>
 
                             <td>
@@ -90,7 +85,10 @@
                                     data-id="<?= esc($row->idbarang) ?>"
                                     data-imei="<?= esc($row->imei) ?>" data-jenis_hp="<?= esc($row->jenis_hp) ?>"
                                     data-harga="<?= esc($row->harga) ?>"
-                                    data-internal="<?= esc($row->internal) ?>" data-warna="<?= esc($row->warna) ?>">
+                                    data-harga_beli="<?= esc($row->harga_beli) ?>"
+                                    data-internal="<?= esc($row->internal) ?>"
+                                    data-warna="<?= esc($row->warna) ?>"
+                                    data-status_ppn="<?= esc($row->status_ppn) ?>">
                                     <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
                                 </button>
                                 <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
@@ -136,6 +134,14 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="harga_beli" class="form-label">Harga Beli</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" class="form-control currency" id="harga_beli" name="harga_beli" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label>IMEI</label>
                         <input type="text" class="form-control" name="imei" required>
                     </div>
@@ -159,6 +165,21 @@
                     <div class="mb-3">
                         <label>Warna</label>
                         <input type="text" class="form-control" name="warna" required>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">Status PPn :</label>
+                        <div class="col-sm-9">
+                            <div class="form-check d-flex align-items-center gap-2 mb-8">
+                                <input class="form-check-input" type="radio" name="status_ppn" id="RadioPpn" value="1">
+                                <label class="form-check-label" for="RadioPpn"> PPn
+                                </label>
+                            </div>
+                            <div class="form-check d-flex align-items-center gap-2">
+                                <input class="form-check-input" type="radio" name="status_ppn" id="RadioNonPpn" value="0" checked>
+                                <label class="form-check-label" for="RadioNonPpn"> Non PPn</label>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -227,6 +248,14 @@
                             <input type="text" class="form-control currency" id="edit-harga" name="harga" required>
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="harga_beli" class="form-label">Harga Beli</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" class="form-control currency" id="edit-harga_beli" name="harga_beli" required>
+                        </div>
+                    </div>
                     <!-- <div class="mb-3">
                         <label for="hpp" class="form-label">HPP</label>
                         <div class="input-group">
@@ -244,28 +273,20 @@
                     </div>
 
                     <!-- Radio Buttons -->
-                    <!-- <div class="col-sm-4">
-                        <div class="custom-control py-2 custom-radio">
-                            <input type="radio" id="editRadioPelanggan" name="customRadio" class="form-check-input"
-                                onclick="showEditForm('pelanggan')" />
-                            <label class="form-check-label" for="editRadioPelanggan">Pelanggan</label>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">Status PPn :</label>
+                        <div class="col-sm-9">
+                            <div class="form-check d-flex align-items-center gap-2 mb-8">
+                                <input class="form-check-input" type="radio" name="status_ppn" id="editRadioPpn" value="1">
+                                <label class="form-check-label" for="editRadioPpn"> PPn
+                                </label>
+                            </div>
+                            <div class="form-check d-flex align-items-center gap-2">
+                                <input class="form-check-input" type="radio" name="status_ppn" id="editRadioNonPpn" value="0">
+                                <label class="form-check-label" for="editRadioNonPpn"> Non PPn</label>
+                            </div>
                         </div>
-                        <div class="custom-control py-2 custom-radio">
-                            <input type="radio" id="editRadioSuplier" name="customRadio" class="form-check-input"
-                                onclick="showEditForm('suplier')" />
-                            <label class="form-check-label" for="editRadioSuplier">Suplier</label>
-                        </div>
-                    </div> -->
-
-                    <!-- Conditional Input Fields -->
-                    <!-- <div id="editPelangganForm" class="mt-3" style="display: none;">
-                        <input type="text" class="form-control" id="edit-pelanggan" name="pelanggan"
-                            placeholder="Masukkan nama Pelanggan">
                     </div>
-                    <div id="editSuplierForm" class="mt-3" style="display: none;">
-                        <input type="text" class="form-control" id="edit-suplier" name="suplier"
-                            placeholder="Masukkan nama Suplier">
-                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"
@@ -352,13 +373,20 @@
         document.querySelector('#zero_config').addEventListener('click', function(e) {
             if (e.target.closest('.edit-button')) {
                 const button = e.target.closest('.edit-button');
-
+                // Populate status_ppn
+                var status_ppn = button.getAttribute('data-status_ppn');
+                if (button.getAttribute('data-status_ppn') === '0') {
+                    document.getElementById('editRadioNonPpn').checked = true;
+                } else {
+                    document.getElementById('editRadioPpn').checked = true;
+                }
                 // Populate base fields
                 document.getElementById('edit-id').value = button.getAttribute('data-id');
                 document.getElementById('edit-nama_barang').value = button.getAttribute('data-nama_barang');
                 document.getElementById('edit-imei').value = button.getAttribute('data-imei');
                 document.getElementById('edit-jenis_hp').value = button.getAttribute('data-jenis_hp');
                 document.getElementById('edit-harga').value = button.getAttribute('data-harga');
+                document.getElementById('edit-harga_beli').value = button.getAttribute('data-harga_beli');
                 // document.getElementById('edit-hpp').value = button.getAttribute('data-hpp');
                 document.getElementById('edit-internal').value = button.getAttribute('data-internal');
                 document.getElementById('edit-warna').value = button.getAttribute('data-warna');

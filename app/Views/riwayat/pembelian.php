@@ -45,6 +45,44 @@ foreach ($detail_pembelian as $row) {
             </div>
         </form> -->
 
+        <!-- for export -->
+        <form action="<?php echo base_url('riwayat_pembelian/export') ?>" method="post" enctype="multipart/form-data">
+            <button type="submit" class="btn btn-danger" style="display: inline-flex; align-items: center;">
+                <iconify-icon icon="solar:export-broken" width="24" height="24" style="margin-right: 8px;"></iconify-icon>
+                Export
+            </button>
+
+            <br>
+            <br>
+
+            <!-- Filter Tanggal -->
+            <div class="mb-3 px-4">
+                <label class="me-2">Nama Unit:</label>
+                <select id="unitFilter" class="form-select d-inline" style="width: auto; display: inline-block;" name="unit" onchange="filterData()">
+                    <option value="">Semua Unit</option>
+                    <?php
+                    $unitList = [];
+                    foreach ($grouped_pembelian as $items) {
+                        $unitName = $items[0]->NAMA_UNIT;
+                        if (!in_array($unitName, $unitList)) {
+                            $unitList[] = $unitName;
+                            echo '<option value="' . esc($unitName) . '">' . esc($unitName) . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+
+                <label class="ms-3 me-2">Tanggal Awal:</label>
+                <input type="date" id="startDate" class="form-control d-inline" name="tanggal_awal" style="width: auto; display: inline-block;" onchange="filterData()">
+
+                <label class="ms-3 me-2">Tanggal Akhir:</label>
+                <input type="date" id="endDate" class="form-control d-inline" name="tanggal_akhir" style="width: auto; display: inline-block;" onchange="filterData()">
+
+                <button onclick="resetFilter()" type="button" class="btn btn-sm btn-secondary ms-3">Reset</button>
+            </div>
+
+        </form>
+
 
         <div class="table-responsive mb-4 px-4">
             <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
@@ -58,7 +96,11 @@ foreach ($detail_pembelian as $row) {
                             <h6 class="fs-4 fw-semibold mb-0">Tanggal</h6>
                         </th>
                         <th>
-                            <h6 class="fs-4 fw-semibold mb-0">Jumlah</h6>
+                            <h6 class="fs-4 fw-semibold mb-0">Nama Barang</h6>
+                        </th>
+
+                        <th>
+                            <h6 class="fs-4 fw-semibold mb-0">Nama Unit</h6>
                         </th>
 
 
@@ -79,7 +121,8 @@ foreach ($detail_pembelian as $row) {
                                 <td><?= esc($row->no_batch) ?></td>
 
                                 <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
-                                <td><?= esc($row->jumlah) ?></td>
+                                <td><?= esc($row->nama_barang) ?></td>
+                                <td><?= esc($row->NAMA_UNIT) ?></td>
 
                                 <td><?= esc(number_format($row->total_harga, 0, ',', '.')) ?></td>
                                 <td>
@@ -185,4 +228,47 @@ foreach ($detail_pembelian as $row) {
                 table.draw();
             });
         });
+    </script>
+
+
+    <!-- JavaScript untuk filter -->
+    <script>
+        function filterData() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            const selectedUnit = document.getElementById('unitFilter').value.toLowerCase();
+
+            const rows = document.querySelectorAll('#zero_config tbody tr');
+            rows.forEach(row => {
+                const dateCell = row.children[1];
+                const unitCell = row.children[3];
+                if (!dateCell || !unitCell) return;
+
+                // Ambil dan parsing tanggal
+                const dateText = dateCell.textContent.trim();
+                const parts = dateText.split('-');
+                const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // ubah ke Y-m-d
+
+                const startDate = start ? new Date(start) : null;
+                const endDate = end ? new Date(end) : null;
+
+                // Ambil dan cocokan nama unit
+                const unitName = unitCell.textContent.trim().toLowerCase();
+                const unitMatch = selectedUnit === "" || unitName === selectedUnit;
+
+                let dateMatch = true;
+                if (startDate && rowDate < startDate) dateMatch = false;
+                if (endDate && rowDate > endDate) dateMatch = false;
+
+                // Tampilkan baris jika dua-duanya match
+                row.style.display = (unitMatch && dateMatch) ? '' : 'none';
+            });
+        }
+
+        function resetFilter() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('unitFilter').value = '';
+            filterData();
+        }
     </script>

@@ -22,6 +22,33 @@
         </button>
     </div>
 
+    <br>
+    <div class="mb-3 px-4">
+        <label class="me-2">Filter Kategori:</label>
+        <select id="kategoriFilter" class="form-select d-inline" style="width: auto;" onchange="filterKategori()">
+            <option value="">Semua Kategori</option>
+            <?php
+            $kategoriList = [];
+            foreach ($stok as $row) {
+                if (!in_array($row->nama_kategori, $kategoriList)) {
+                    $kategoriList[] = $row->nama_kategori;
+                    echo '<option value="' . esc($row->nama_kategori) . '">' . esc($row->nama_kategori) . '</option>';
+                }
+            }
+            ?>
+        </select>
+
+        <label class="me-2 ms-4">Filter PPN:</label>
+        <select id="ppnFilter" class="form-select d-inline" style="width: auto;" onchange="filterKategori()">
+            <option value="">Semua</option>
+            <option value="PPN">PPN</option>
+            <option value="Non PPN">Non PPN</option>
+        </select>
+
+        <button onclick="resetKategoriFilter()" class="btn btn-sm btn-secondary ms-2">Reset</button>
+    </div>
+
+
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
@@ -36,7 +63,13 @@
                         <h6 class="fs-4 fw-semibold mb-0">Nama Barang</h6>
                     </th>
                     <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Nama kategori</h6>
+                    </th>
+                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Harga Beli</h6>
+                    </th>
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Status PPN</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Satuan Terkecil</h6>
@@ -52,32 +85,35 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="produkTableBody">
                 <?php if (!empty($stok)): ?>
-                <?php foreach ($stok as $row): ?>
-                <tr>
-                    <td><?= esc($row->tanggal) ?></td>
-                    <td><?= esc($row->jumlah) ?></td>
-                    <td><?= esc($row->nama_barang) ?></td>
-                    <td>Rp <?= number_format($row->harga_beli, 0, ',', '.') ?></td>
-                    <td><?= esc($row->satuan_terkecil) ?></td>
-                    <td><?= esc($row->NAMA_UNIT) ?></td>
-                    <td>
-                        <?php if (!empty($row->nama_suplier)): ?>
-                        <?= esc($row->nama_suplier) ?>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if (!empty($row->nama_pelanggan)): ?>
-                        <?= esc($row->nama_pelanggan) ?>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($stok as $row): ?>
+                        <tr>
+                            <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
+
+                            <td><?= esc($row->jumlah) ?></td>
+                            <td><?= esc($row->nama_barang) ?></td>
+                            <td><?= esc($row->nama_kategori) ?></td>
+                            <td>Rp <?= number_format($row->harga_beli, 0, ',', '.') ?></td>
+                            <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
+                            <td><?= esc($row->satuan_terkecil) ?></td>
+                            <td><?= esc($row->NAMA_UNIT) ?></td>
+                            <td>
+                                <?php if (!empty($row->nama_suplier)): ?>
+                                    <?= esc($row->nama_suplier) ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if (!empty($row->nama_pelanggan)): ?>
+                                    <?= esc($row->nama_pelanggan) ?>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="8" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="8" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
 
@@ -102,7 +138,7 @@
                             <select name="global_unit" id="global_unit" class="form-select" required>
                                 <option value="">-- Pilih Unit --</option>
                                 <?php foreach ($unit as $u): ?>
-                                <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
+                                    <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -115,7 +151,7 @@
 
                                     <th style="text-align: center;">Nama Barang</th>
                                     <th>Jumlah</th>
-                                    <th>Harga Beli</th>
+                                    <!-- <th>Harga Beli</th> -->
                                     <th>Satuan Terkecil</th>
                                     <th>Sumber</th>
                                     <th>Suplier</th>
@@ -126,75 +162,77 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($barang as $index => $b): ?>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" name="selected_products[]" value="<?= $b->kode_barang ?>"
-                                            id="product_<?= $index ?>" onchange="toggleProductFields(<?= $index ?>)">
-                                    </td>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="selected_products[]" value="<?= $b->kode_barang ?>"
+                                                id="product_<?= $index ?>" onchange="toggleProductFields(<?= $index ?>)">
+                                        </td>
 
-                                    <td style="min-width: 140px; text-align: center;">
-                                        <p style="font-weight: bold;"><?= esc($b->kode_barang) ?></p>
-                                        <p style="font-style: italic;"><?= esc($b->nama_barang) ?></p>
-                                    </td>
-                                    <td>
-                                        <input type="number" name="jumlah[<?= $b->kode_barang ?>]" class="form-control"
-                                            id="jumlah_<?= $index ?>" disabled style="min-width: 120px;">
-                                    </td>
-                                    <td>
-                                        <input type="number" name="harga_beli[<?= $b->kode_barang ?>]"
-                                            class="form-control" id="harga_beli_<?= $index ?>" disabled
-                                            style="min-width: 120px;">
-                                    </td>
-                                    <td>
-                                        <select name="satuan_terkecil[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="satuan_terkecil_<?= $index ?>" disabled style="min-width: 190px;">
-                                            <option value="">-- Pilih Satuan --</option>
-                                            <option value="pcs">pcs</option>
-                                            <option value="pack">pack</option>
-                                        </select>
-                                    </td>
+                                        <td style="min-width: 140px; text-align: center;">
+                                            <p style="font-weight: bold;"><?= esc($b->kode_barang) ?></p>
+                                            <p style="font-style: italic;"><?= esc($b->nama_barang) ?></p>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="jumlah[<?= $b->kode_barang ?>]" class="form-control"
+                                                id="jumlah_<?= $index ?>" disabled style="min-width: 120px;">
+                                        </td>
 
-                                    <td>
-                                        <?php $isImeiEmpty = empty($b->imei); $tipeRelasiDisabled = $isImeiEmpty ? 'disabled' : ''; ?>
-                                        <select name="tipe_relasi[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="tipe_relasi_<?= $index ?>" onchange="toggleRelasiFields(<?= $index ?>)"
-                                            <?= $tipeRelasiDisabled ?> style="min-width: 190px;">
-                                            <option value="">-- Pilih Tipe --</option>
-                                            <option value="suplier" <?= $isImeiEmpty ? 'selected' : '' ?>>Suplier
-                                            </option>
-                                            <option value="pelanggan" <?= $isImeiEmpty ? 'disabled' : '' ?>>Pelanggan
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select name="id_suplier_text[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="id_suplier_text_<?= $index ?>" disabled style="min-width: 190px;">
-                                            <option value="">-- Pilih Suplier --</option>
-                                            <?php foreach ($suplier as $s): ?>
-                                            <option value="<?= $s->id_suplier ?>"><?= $s->nama_suplier ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select name="id_pelanggan_text[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="id_pelanggan_text_<?= $index ?>" disabled style="min-width: 190px;">
-                                            <option value="">-- Pilih Pelanggan --</option>
-                                            <?php foreach ($pelanggan as $p): ?>
-                                            <option value="<?= $p->id_pelanggan ?>"><?= $p->nama ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select name="id_unit_text[<?= $b->kode_barang ?>]"
-                                            id="id_unit_text_<?= $index ?>" hidden>
-                                            <?php foreach ($unit as $u): ?>
-                                            <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
+                                        <!-- <td>
+                                            <input  type="number" name="harga_beli[<?= $b->kode_barang ?>]"
+                                                class="form-control currency" id="harga_beli_<?= $index ?>" disabled
+                                                style="min-width: 120px;">
+                                        </td> -->
+                                        <td>
+                                            <select name="satuan_terkecil[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="satuan_terkecil_<?= $index ?>" disabled style="min-width: 190px;">
+                                                <option value="">-- Pilih Satuan --</option>
+                                                <option value="pcs">pcs</option>
+                                                <option value="pack">pack</option>
+                                            </select>
+                                        </td>
 
-                                    </td>
-                                    <td hidden><?= esc($b->kode_barang) ?></td>
-                                </tr>
+                                        <td>
+                                            <?php $isImeiEmpty = empty($b->imei);
+                                            $tipeRelasiDisabled = $isImeiEmpty ? 'disabled' : ''; ?>
+                                            <select name="tipe_relasi[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="tipe_relasi_<?= $index ?>" onchange="toggleRelasiFields(<?= $index ?>)"
+                                                <?= $tipeRelasiDisabled ?> style="min-width: 190px;">
+                                                <option value="">-- Pilih Tipe --</option>
+                                                <option value="suplier" <?= $isImeiEmpty ? 'selected' : '' ?>>Suplier
+                                                </option>
+                                                <option value="pelanggan" <?= $isImeiEmpty ? 'disabled' : '' ?>>Pelanggan
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="id_suplier_text[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="id_suplier_text_<?= $index ?>" disabled style="min-width: 190px;">
+                                                <option value="">-- Pilih Suplier --</option>
+                                                <?php foreach ($suplier as $s): ?>
+                                                    <option value="<?= $s->id_suplier ?>"><?= $s->nama_suplier ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="id_pelanggan_text[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="id_pelanggan_text_<?= $index ?>" disabled style="min-width: 190px;">
+                                                <option value="">-- Pilih Pelanggan --</option>
+                                                <?php foreach ($pelanggan as $p): ?>
+                                                    <option value="<?= $p->id_pelanggan ?>"><?= $p->nama ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="id_unit_text[<?= $b->kode_barang ?>]"
+                                                id="id_unit_text_<?= $index ?>" hidden>
+                                                <?php foreach ($unit as $u): ?>
+                                                    <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+
+                                        </td>
+                                        <td hidden><?= esc($b->kode_barang) ?></td>
+                                    </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -211,48 +249,158 @@
 </div>
 
 <script>
-function toggleProductFields(index) {
-    const isChecked = document.getElementById('product_' + index).checked;
-    document.getElementById('jumlah_' + index).disabled = !isChecked;
-    document.getElementById('harga_beli_' + index).disabled = !isChecked;
-    document.getElementById('satuan_terkecil_' + index).disabled = !isChecked;
-    document.getElementById('tipe_relasi_' + index).disabled = !isChecked;
-    document.getElementById('id_suplier_text_' + index).disabled = !isChecked;
-    document.getElementById('id_pelanggan_text_' + index).disabled = !isChecked;
-}
+    let table;
 
-function toggleRelasiFields(index) {
-    const tipeRelasi = document.getElementById('tipe_relasi_' + index).value;
-    if (tipeRelasi === 'suplier') {
-        document.getElementById('id_suplier_text_' + index).disabled = false;
-        document.getElementById('id_pelanggan_text_' + index).disabled = true;
-        document.getElementById('id_pelanggan_text_' + index).value = '';
-    } else if (tipeRelasi === 'pelanggan') {
-        document.getElementById('id_suplier_text_' + index).disabled = true;
-        document.getElementById('id_pelanggan_text_' + index).disabled = false;
-        document.getElementById('id_suplier_text_' + index).value = '';
-    } else {
-        document.getElementById('id_suplier_text_' + index).disabled = true;
-        document.getElementById('id_pelanggan_text_' + index).disabled = true;
-        document.getElementById('id_suplier_text_' + index).value = '';
-        document.getElementById('id_pelanggan_text_' + index).value = '';
+    $(document).ready(function() {
+        table = $('#zero_config').DataTable();
+
+        // Tambahkan custom filter ke DataTables
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
+            const ppnFilter = $('#ppnFilter').val().toLowerCase();
+
+            const kategori = data[3].toLowerCase(); // kolom Kategori (index ke-3)
+            const ppn = data[5].toLowerCase(); // kolom PPN (index ke-5)
+
+            const matchKategori = !kategoriFilter || kategori === kategoriFilter;
+            const matchPPN = !ppnFilter || ppn === ppnFilter;
+
+            return matchKategori && matchPPN;
+        });
+    });
+
+    function filterKategori() {
+        table.draw(); // trigger ulang filter
     }
-}
+
+    function resetKategoriFilter() {
+        $('#kategoriFilter').val('');
+        $('#ppnFilter').val('');
+        table.draw();
+    }
 </script>
 
-<script>
-$(document).ready(function() {
-    var table = $('#table_barang').DataTable();
 
 
-});
-</script>
 
 <script>
-document.getElementById('global_unit').addEventListener('change', function() {
-    const unitId = this.value;
-    <?php foreach ($barang as $index => $b): ?>
-    document.getElementById('id_unit_text_<?= $index ?>').value = unitId;
-    <?php endforeach; ?>
-});
+    const suplierList = <?= json_encode($suplier) ?>;
+    const pelangganList = <?= json_encode($pelanggan) ?>;
+    const allBarang = <?= json_encode($barang) ?>;
+    const stok = <?= json_encode($stok) ?>;
+
+    // Toggle enable/disable fields when checkbox is clicked
+    function toggleProductFields(index) {
+        const isChecked = document.getElementById('product_' + index).checked;
+        document.getElementById('jumlah_' + index).disabled = !isChecked;
+        document.getElementById('harga_beli_' + index).disabled = !isChecked;
+        document.getElementById('satuan_terkecil_' + index).disabled = !isChecked;
+        document.getElementById('tipe_relasi_' + index).disabled = !isChecked;
+        document.getElementById('id_suplier_text_' + index).disabled = !isChecked;
+        document.getElementById('id_pelanggan_text_' + index).disabled = !isChecked;
+    }
+
+    // Toggle supplier/pelanggan fields based on selected relation type
+    function toggleRelasiFields(index) {
+        const tipeRelasi = document.getElementById('tipe_relasi_' + index).value;
+        const suplierSelect = document.getElementById('id_suplier_text_' + index);
+        const pelangganSelect = document.getElementById('id_pelanggan_text_' + index);
+
+        if (tipeRelasi === 'suplier') {
+            suplierSelect.disabled = false;
+            pelangganSelect.disabled = true;
+            pelangganSelect.value = '';
+        } else if (tipeRelasi === 'pelanggan') {
+            pelangganSelect.disabled = false;
+            suplierSelect.disabled = true;
+            suplierSelect.value = '';
+        } else {
+            suplierSelect.disabled = true;
+            pelangganSelect.disabled = true;
+            suplierSelect.value = '';
+            pelangganSelect.value = '';
+        }
+    }
+
+    // Global unit change handler to assign selected unit to all barang
+    document.getElementById('global_unit').addEventListener('change', function() {
+        const unitId = this.value;
+        <?php foreach ($barang as $index => $b): ?>
+            document.getElementById('id_unit_text_<?= $index ?>').value = unitId;
+        <?php endforeach; ?>
+    });
+
+    // Global unit change handler to filter barang
+    document.getElementById('global_unit').addEventListener('change', function() {
+        const selectedUnitId = this.value;
+        filterBarangByUnit(selectedUnitId);
+    });
+
+    function filterBarangByUnit(unitId) {
+        const filteredBarang = allBarang.filter(barang => {
+            const inStok = stok.some(s => s.unit_idunit == unitId && s.barang_idbarang == barang.idbarang);
+            return !inStok;
+        });
+        updateBarangTable(filteredBarang);
+    }
+
+    // Dynamically render filtered barang rows
+    function updateBarangTable(filteredBarang) {
+        const tableBody = document.querySelector('#table_barang tbody');
+        tableBody.innerHTML = '';
+
+        filteredBarang.forEach((barang, index) => {
+            const suplierOptions = suplierList.map(s =>
+                `<option value="${s.id_suplier}">${s.nama_suplier}</option>`
+            ).join('');
+            const pelangganOptions = pelangganList.map(p =>
+                `<option value="${p.id_pelanggan}">${p.nama}</option>`
+            ).join('');
+
+            tableBody.innerHTML += `
+                <tr>
+                    <td>
+                        <input type="checkbox" name="selected_products[]" value="${barang.kode_barang}" id="product_${index}" onchange="toggleProductFields(${index})">
+                    </td>
+                    <td style="min-width: 140px; text-align: center;">
+                        <p style="font-weight: bold;">${barang.kode_barang}</p>
+                        <p style="font-style: italic;">${barang.nama_barang}</p>
+                    </td>
+                    <td><input type="number" name="jumlah[${barang.kode_barang}]" class="form-control" id="jumlah_${index}" disabled style="min-width: 120px;"></td>
+                    <td><input type="number" name="harga_beli[${barang.kode_barang}]" class="form-control" id="harga_beli_${index}" disabled style="min-width: 120px;"></td>
+                    <td>
+                        <select name="satuan_terkecil[${barang.kode_barang}]" class="form-select" id="satuan_terkecil_${index}" disabled style="min-width: 190px;">
+                            <option value="">-- Pilih Satuan --</option>
+                            <option value="pcs">pcs</option>
+                            <option value="pack">pack</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="tipe_relasi[${barang.kode_barang}]" class="form-select" id="tipe_relasi_${index}" onchange="toggleRelasiFields(${index})" disabled>
+                            <option value="">-- Pilih Tipe --</option>
+                            <option value="suplier">Suplier</option>
+                            <option value="pelanggan">Pelanggan</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="id_suplier_text[${barang.kode_barang}]" class="form-select" id="id_suplier_text_${index}" disabled style="min-width: 190px;">
+                            <option value="">-- Pilih Suplier --</option>
+                            ${suplierOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="id_pelanggan_text[${barang.kode_barang}]" class="form-select" id="id_pelanggan_text_${index}" disabled style="min-width: 190px;">
+                            <option value="">-- Pilih Pelanggan --</option>
+                            ${pelangganOptions}
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Optional: Initialize DataTable
+    $(document).ready(function() {
+        $('#table_barang').DataTable();
+    });
 </script>

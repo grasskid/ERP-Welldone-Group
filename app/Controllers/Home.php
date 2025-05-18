@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Core;
+
 class Home extends BaseController
 {
     public function index()

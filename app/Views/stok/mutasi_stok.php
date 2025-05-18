@@ -4,13 +4,13 @@
 <!-- Page Header -->
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
-        <h4 class="fw-semibold mb-0">Pembelian</h4>
+        <h4 class="fw-semibold mb-0">Mutasi Stok</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
-                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Transaksi</a>
+                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Stok</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Pembelian</li>
+                <li class="breadcrumb-item active" aria-current="page">Mutasi Stok</li>
             </ol>
         </nav>
     </div>
@@ -21,62 +21,44 @@
     <div class="px-4 py-3 border-bottom"></div>
 
     <div class="card-body px-4 pt-4 pb-2">
-        <form action="<?= base_url('insert_pembelian') ?>" method="post" enctype="multipart/form-data">
+        <form action="<?= base_url('insert_mutasi') ?>" method="post" enctype="multipart/form-data">
             <div class="row g-3">
-                <!-- <div class="col-md-6">
-                    <label for="no_nota" class="form-label">No Nota Supplier</label>
-                    <input type="text" class="form-control" id="no_nota" name="no_nota" placeholder="xxxxxxxxx"
-                        required>
-                </div> -->
 
                 <div class="col-md-6">
-                    <label for="nama_sumber" class="form-label">Sumber</label>
-                    <select id="tipe_pihak" class="form-select">
-                        <option value="">Pilih Tipe</option>
-                        <option value="suplier">Suplier</option>
-                        <option value="pelanggan">Pelanggan</option>
-                    </select>
-
-
-                </div>
-
-                <div class="col-md-6">
-                    <label for="nama_suplier" class="form-label">Nama Suplier</label>
-                    <select disabled class="form-select" id="suplier" name="suplier" required
-                        onchange="tampilkanIdSuplier()">
-                        <option value="" disabled selected>Pilih Unit</option>
-                        <?php foreach ($suplier as $b): ?>
-                            <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
+                    <label for="nama_unit1" class="form-label">Unit Pengirim</label>
+                    <select class="form-select" id="unit1" name="unit1" required
+                        onchange="tampilkanIdUnit1()">
+                        <option value="" selected>Pilih Unit</option>
+                        <?php foreach ($unit as $b): ?>
+                            <option value="<?= $b->idunit; ?>"><?= $b->NAMA_UNIT; ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <input name="id_suplier_text" type="hidden" id="id_suplier_text"
+                    <input hidden name="id_unit1_text" type="hidden" id="id_unit1_text"
                         class="text-muted d-block mt-2"></input>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Upload Gambar Nota : Max 10Mb</label>
-                    <div class="border border-2 border-dashed rounded p-3 text-center position-relative">
-                        <i class="bi bi-cloud-arrow-up fs-1 text-secondary"></i>
-                        <p class="mb-0 text-muted">Drag and drop a file here or click</p>
-                        <input type="file" name="nota_file" id="notaFileInput"
-                            class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/*"
-                            required>
-                    </div>
-
-                    <!-- Preview Image -->
-                    <div class="mt-2 text-center">
-                        <img id="previewNota" src="#" alt="Preview Gambar Nota"
-                            style="max-width: 100%; max-height: 250px; display: none;" />
-                    </div>
+                    <label for="nama_unit2" class="form-label">Unit Pengirim</label>
+                    <select class="form-select" id="unit2" name="unit2" required
+                        onchange="tampilkanIdUnit2()">
+                        <option value="" selected>Pilih Unit</option>
+                        <?php foreach ($unit as $b): ?>
+                            <option value="<?= $b->idunit; ?>"><?= $b->NAMA_UNIT; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <input name="id_unit2_text" type="hidden" id="id_unit2_text"
+                        class="text-muted d-block mt-2"></input>
                 </div>
+
+
                 <div class="col-md-3">
-                    <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
-                    <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk"
+                    <label for="tanggal_kirim" class="form-label">Tanggal Kirim</label>
+                    <input type="date" class="form-control" id="tanggal_kirim" name="tanggal_kirim"
                         value="<?= date('Y-m-d') ?>" required>
                 </div>
                 <div class="col-md-3">
-                    <label for="jatuh_tempo" class="form-label">Jatuh Tempo</label>
-                    <input type="date" class="form-control" id="jatuh_tempo" name="jatuh_tempo"
+                    <label for="tanggal_terima" class="form-label">Tanggal Terima</label>
+                    <input type="date" class="form-control" id="tanggal_terima" name="tanggal_terima"
                         value="<?= date('Y-m-d') ?>" required>
                 </div>
             </div>
@@ -157,13 +139,9 @@
                             <th>Kode Barang</th>
                             <th>Nama Barang</th>
                             <th>Kategori</th>
-                            <th>Harga</th>
-                            <th>Harga Beli</th>
-                            <th>Jumlah</th>
-                            <th>Diskon (Rp)</th>
-                            <th>
-                                <input type="checkbox" id="select-all-ppn"> PPN 11%
-                            </th>
+                            <!-- <th>Harga</th> -->
+                            <th>Jumlah Kirim</th>
+                            <th>Jumlah Terima</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -171,93 +149,13 @@
                         <!-- Rows will be dynamically added -->
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td colspan="2"><strong>Total Diskon (Rp.)</strong></td>
-                            <td colspan="7">
-                                <input type="number" id="total-diskon" name="total-diskon" class="form-control">
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><strong>Total PPN</strong></td>
-                            <td colspan="7">
-                                <input type="text" id="total-ppn" name="total-ppn" class="form-control" readonly>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><strong>Total Keseluruhan</strong></td>
-                            <td colspan="7">
-                                <input type="text" id="total-harga" name="total-harga" class="form-control" readonly>
-                            </td>
-                        </tr>
                     </tfoot>
                 </table>
 
-                <!-- Bayar and Hutang Form -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="bayar" class="form-label">Bayar</label>
-                        <input type="text" class="form-control" id="bayar" name="bayar" value="Rp 0">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="hutang" class="form-label">Hutang</label>
-                        <input type="text" class="form-control" id="hutang" name="hutang" readonly>
-                    </div>
-                </div>
-
                 <button style="height: fit-content;" class="btn btn-success mt-3" type="submit">Simpan</button>
 
-                <!-- Pelanggan Button -->
-                <div id="pelanggan-section" class="mt-3" style="display: none;">
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                        data-bs-target="#pelangganModal"
-                        style="display: inline-flex; align-items: center; margin-bottom: 4px;">
-                        <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;">
-                        </iconify-icon>
-                        Input Data Pelanggan
-                    </button>
-                </div>
 
-                <div class="modal fade" id="pelanggan-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form id="pelanggan-form">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Input Data Pelanggan</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Input cari -->
-                                    <div class="mb-3">
-                                        <label for="search-nohp" class="form-label">Nomor HP</label>
-                                        <input type="text" name="nomor" class="form-control" id="search-nohp">
-                                    </div>
-                                    <button type="button" id="cari-pelanggan-btn" class="btn btn-info">Cari</button>
-
-                                    <!-- Hidden input to store id_pelanggan -->
-                                    <input type="hidden" id="id_pelanggan" name="id_pelanggan">
-
-                                    <!-- Extra form fields -->
-                                    <div id="pelanggan-form-extra" style="display:none; margin-top: 1rem;">
-                                        <div class="mb-2">
-                                            <label for="nama">Nama</label>
-                                            <input type="text" name="nama" id="nama" class="form-control">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="alamat">Alamat</label>
-                                            <textarea id="alamat" name="alamat" class="form-control"></textarea>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="nik">NIK</label>
-                                            <input type="text" name="nik" id="nik" class="form-control">
-                                        </div>
-                                        <button type="submit" class="btn btn-primary mt-2">Simpan Pelanggan</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
 
 
             </div>
@@ -315,21 +213,10 @@
                             <input type="hidden" name="produk[${id}][kategori]" value="${kategori}">
                         </td>
                         <td>
-                            Rp ${parseInt(harga).toLocaleString('id-ID')}
-                            <input type="hidden" name="produk[${id}][harga]" value="${harga}">
-                        </td>
-                         <td>
-                            <input class="form-control" name="produk[${id}][harga_beli]" value="Rp ${parseInt(harga_beli).toLocaleString('id-ID')}" readonly>
-                        </td>
-
-                        <td>
-                            <input type="number" name="produk[${id}][jumlah]" class="form-control jumlah-input" data-id="${id}" value="1" min="1">
+                            <input type="number" name="produk[${id}][jumlah_kirim]" class="form-control jumlah-input" data-id="${id}"  min="1">
                         </td>
                         <td>
-                            <input type="number" name="produk[${id}][diskon]" class="form-control diskon-input" data-id="${id}" value="0" min="0">
-                        </td>
-                        <td class="text-center">
-                            <input type="checkbox" name="produk[${id}][ppn]" class="form-check-input ppn-checkbox" data-id="${id}">
+                            <input type="number" name="produk[${id}][jumlah_terima]" class="form-control jumlah-input" data-id="${id}"  min="1">
                         </td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger" onclick="hapusProduk('${id}')">
@@ -448,14 +335,7 @@
 
                 });
             </script>
-            <script>
-                function tampilkanIdSuplier() {
-                    const select = document.getElementById('suplier');
-                    const idSuplierInput = document.getElementById('id_suplier_text');
-                    const selectedValue = select.value;
-                    idSuplierInput.value = selectedValue;
-                }
-            </script>
+
 
             <script>
                 document.getElementById('notaFileInput').addEventListener('change', function(event) {
@@ -478,129 +358,20 @@
                 });
             </script>
 
-
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const pelangganModal = new bootstrap.Modal(document.getElementById('pelanggan-modal'));
-                    const pelangganFormExtra = document.getElementById('pelanggan-form-extra');
-                    const pelangganForm = document.getElementById('pelanggan-form');
-                    const cariBtn = document.getElementById('cari-pelanggan-btn');
-                    const noHpInput = document.getElementById('search-nohp');
-                    const tipe_pihak = document.getElementById('tipe_pihak');
-                    const tipe_sumber = tipe_pihak.value;
+                function tampilkanIdUnit1() {
+                    const select = document.getElementById('unit1');
+                    const idUnit1Input = document.getElementById('id_unit1_text');
+                    const selectedValue = select.value;
+                    idUnit1Input.value = selectedValue;
+                }
 
-                    // Auto-show "Input Data Pelanggan" button if category = handphone
-                    function checkForHandphone() {
-                        const rows = document.querySelectorAll('#selected-produk-table tr');
-                        let show = false;
-
-                        rows.forEach(row => {
-                            const kategoriInput = row.querySelector('input[name$="[kategori]"]');
-                            if (kategoriInput && kategoriInput.value.toLowerCase() === 'handphone' &&
-                                tipe_pihak.value === 'pelanggan') {
-                                show = true;
-                            }
-                        });
-
-                        document.getElementById('pelanggan-button')?.remove();
-
-                        if (show) {
-                            const btn = document.createElement('button');
-                            btn.type = 'button';
-                            btn.id = 'pelanggan-button';
-                            btn.className = 'btn btn-warning mt-2';
-                            btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
-                            btn.innerHTML = `
-                <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
-                Input Data Pelanggan
-            `;
-                            btn.onclick = () => pelangganModal.show();
-                            document.querySelector('.table-responsive.mt-3.mb-4').appendChild(btn);
-                        }
-                    }
-
-                    // Check after confirming products
-                    document.getElementById('confirm-produk-btn').addEventListener('click', () => {
-                        setTimeout(checkForHandphone, 500); // delay to wait for DOM changes
-                    });
-
-                    tipe_pihak.addEventListener('change', () => {
-                        checkForHandphone();
-
-                        const suplierSelect = document.getElementById('suplier');
-
-                        if (tipe_pihak.value === 'pelanggan') {
-                            suplierSelect.disabled = true;
-                            suplierSelect.value = ''; // reset nilai jika sebelumnya memilih suplier
-                            document.getElementById('id_suplier_text').value =
-                                ''; // reset juga input hidden
-                        } else if (tipe_pihak.value === 'suplier') {
-                            suplierSelect.disabled = false;
-                        }
-                    });
-
-
-                    // 🔍 Search pelanggan by phone number
-                    cariBtn.addEventListener('click', function() {
-                        const no_hp = noHpInput.value.trim();
-                        if (!no_hp) return alert('Isi nomor HP terlebih dahulu.');
-
-                        fetch(`<?= base_url('penjualan/search_by_hp') ?>?no_hp=${encodeURIComponent(no_hp)}`, {
-                                method: 'GET'
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.found) {
-                                    document.getElementById('id_pelanggan').value = data.pelanggan
-                                        .id_pelanggan;
-                                    pelangganModal.hide();
-                                    alert('Pelanggan ditemukan dan dipilih.');
-                                } else {
-                                    pelangganFormExtra.style.display = 'block';
-                                    alert('Nomor tidak ditemukan, silakan lengkapi data pelanggan.');
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert('Terjadi kesalahan saat mencari pelanggan.');
-                            });
-                    });
-
-                    // 💾 Submit pelanggan form
-                    pelangganForm.addEventListener('submit', function(e) {
-                        e.preventDefault();
-
-                        const payload = {
-                            no_hp: document.getElementById('search-nohp').value.trim(),
-                            nama: document.getElementById('nama').value.trim(),
-                            alamat: document.getElementById('alamat').value.trim(),
-                            nik: document.getElementById('nik').value.trim()
-                        };
-
-                        fetch(`<?= base_url('pelanggan/insert') ?>`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(payload)
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    document.getElementById('id_pelanggan').value = data.id_pelanggan ||
-                                        '';
-                                    pelangganModal.hide();
-                                    alert('Pelanggan berhasil disimpan.');
-                                } else {
-                                    alert('Gagal menyimpan pelanggan.');
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert('Terjadi kesalahan saat menyimpan pelanggan.');
-                            });
-                    });
-                });
+                function tampilkanIdUnit2() {
+                    const select = document.getElementById('unit2');
+                    const idUnit2Input = document.getElementById('id_unit2_text');
+                    const selectedValue = select.value;
+                    idUnit2Input.value = selectedValue;
+                }
             </script>
 
             <script>

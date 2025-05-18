@@ -39,14 +39,19 @@ class ModelStokAwal extends Model
             ->select('
                 stok_awal.*,
                 barang.nama_barang,
+                barang.status_ppn,
+                kategori.nama_kategori,
                 unit.NAMA_UNIT,
                 suplier.nama_suplier,
                 pelanggan.nama as nama_pelanggan
             ')
             ->join('barang', 'barang.idbarang = stok_awal.barang_idbarang', 'left')
+            ->join('kategori', 'kategori.id = barang.idkategori', 'left')
             ->join('unit', 'unit.idunit = stok_awal.unit_idunit', 'left')
             ->join('suplier', 'suplier.id_suplier = stok_awal.suplier_id_suplier', 'left')
             ->join('pelanggan', 'pelanggan.id_pelanggan = stok_awal.pelanggan_id_pelanggan', 'left')
+            ->where('barang.deleted', '0')
+            ->where('kategori.delete', '0')
             ->get()
             ->getResult();
     }

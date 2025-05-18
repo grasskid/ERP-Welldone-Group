@@ -37,6 +37,8 @@ class ModelDetailPenjualan extends Model
         return $this->where(['iddetail_penjualan' => $id])->first();
     }
 
+
+
     public function getDetailPenjualan()
     {
         return $this->db->table('detail_penjualan')
@@ -44,10 +46,59 @@ class ModelDetailPenjualan extends Model
                 detail_penjualan.*,
                 penjualan.kode_invoice,
                 penjualan.tanggal,
-                barang.nama_barang
-            ')
+                barang.nama_barang,
+                unit.NAMA_UNIT')
             ->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan')
             ->join('barang', 'barang.idbarang = detail_penjualan.barang_idbarang')
+            ->join('unit', 'unit.idunit = detail_penjualan.unit_idunit')
+            ->orderBy('penjualan.tanggal', 'DESC')
+            ->get()
+            ->getResult();
+    }
+
+
+    public function exportfilter($tanggalAwal = null, $tanggalAkhir = null, $namaUnit = null)
+    {
+        $builder = $this->db->table('detail_penjualan')
+            ->select('
+            detail_penjualan.*,
+            penjualan.kode_invoice,
+            penjualan.tanggal,
+            barang.nama_barang,
+            unit.NAMA_UNIT')
+            ->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan')
+            ->join('barang', 'barang.idbarang = detail_penjualan.barang_idbarang')
+            ->join('unit', 'unit.idunit = detail_penjualan.unit_idunit');
+
+
+        if (!empty($tanggalAwal) && !empty($tanggalAkhir)) {
+            $builder->where('penjualan.tanggal >=', $tanggalAwal)
+                ->where('penjualan.tanggal <=', $tanggalAkhir . ' 23:59:59');
+        }
+
+
+        if (!empty($namaUnit)) {
+            $builder->where('unit.NAMA_UNIT', $namaUnit);
+        }
+
+        return $builder->orderBy('penjualan.tanggal', 'DESC')
+            ->get()
+            ->getResult();
+    }
+
+    public function getDetailPenjualanByInvoice($kode_invoice)
+    {
+        return $this->db->table('detail_penjualan')
+            ->select('
+            detail_penjualan.*,
+            penjualan.kode_invoice,
+            penjualan.tanggal,
+            barang.nama_barang,
+            unit.NAMA_UNIT')
+            ->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan')
+            ->join('barang', 'barang.idbarang = detail_penjualan.barang_idbarang')
+            ->join('unit', 'unit.idunit = detail_penjualan.unit_idunit')
+            ->where('penjualan.kode_invoice', $kode_invoice)
             ->orderBy('penjualan.tanggal', 'DESC')
             ->get()
             ->getResult();

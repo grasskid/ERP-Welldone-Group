@@ -26,7 +26,7 @@
                 <div class="col-md-6">
                     <label for="tanggal_masuk" class="form-label">Tanggal</label>
                     <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk"
-                        value="<?= date('d-m-Y') ?>" required>
+                        value="<?= date('Y-m-d') ?>" required>
                 </div>
 
                 <!-- <div class="col-md-6">
@@ -124,9 +124,9 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="2"><strong>Total Diskon</strong></td>
+                            <td colspan="2"><strong>Total Diskon (Rp.)</strong></td>
                             <td colspan="7">
-                                <input type="text" id="total-diskon" name="total-diskon" class="form-control" readonly>
+                                <input type="number" id="total-diskon" name="total-diskon" class="form-control">
                             </td>
                         </tr>
                         <tr>
@@ -324,19 +324,19 @@
                     let total = 0;
                     let totalDiskon = 0;
                     let totalPPN = 0;
-                    let hasHandphone = false;
+                    let minDiskonOtomatis = 0;
+
 
                     document.querySelectorAll('#selected-produk-table tr').forEach(row => {
                         const hargaInput = row.querySelector('input[name$="[harga]"]');
                         const jumlahInput = row.querySelector('.jumlah-input');
                         const diskonInput = row.querySelector('.diskon-input');
                         const ppnCheckbox = row.querySelector('.ppn-checkbox');
-                        const kategoriInput = row.querySelector('input[name$="[kategori]"]');
 
                         if (hargaInput && jumlahInput && diskonInput) {
                             const harga = parseInt(hargaInput.value) || 0;
                             const jumlah = parseInt(jumlahInput.value) || 0;
-                            const diskon = parseFloat(diskonInput.value) || 0; // sekarang nominal langsung
+                            const diskon = parseFloat(diskonInput.value) || 0;
                             const isPpn = ppnCheckbox?.checked;
 
                             let subtotal = harga * jumlah;
@@ -347,18 +347,31 @@
                             totalPPN += ppnAmount;
                             total += setelahDiskon + ppnAmount;
                         }
-
-                        if (kategoriInput && kategoriInput.value.toLowerCase() === 'handphone') {
-                            hasHandphone = true;
-                        }
                     });
 
-                    document.getElementById('total-diskon').value = 'Rp ' + totalDiskon.toLocaleString('id-ID');
+                    minDiskonOtomatis = totalDiskon;
+
+                    const totalDiskonInput = document.getElementById('total-diskon');
+                    totalDiskonInput.min = totalDiskon;
+
+                    // Gunakan nilai input manual jika ada, bukan dari kalkulasi otomatis
+                    let manualDiskon = parseFloat(totalDiskonInput.value);
+                    if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
+                        manualDiskon = totalDiskon;
+                        totalDiskonInput.value = totalDiskon; // autofill otomatis
+                    }
+
+                    const totalHargaFinal = (total - (manualDiskon - totalDiskon)); // tambahan diskon mengurangi total
                     document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
-                    document.getElementById('total-harga').value = 'Rp ' + total.toLocaleString('id-ID');
+                    document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
 
                     updateHutang();
                 }
+
+
+                document.getElementById('total-diskon').addEventListener('input', () => {
+                    updateTotals(true); // beri flag manual input
+                });
 
 
                 function updateHutang() {

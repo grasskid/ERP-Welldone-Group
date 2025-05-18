@@ -19,6 +19,19 @@
     </div>
 
 
+    <div class="mb-3 px-4">
+        <label class="me-2">Filter Status:</label>
+        <select id="statusFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterStatus()">
+            <option value="">Semua</option>
+            <option value="menunggu">Menunggu</option>
+            <option value="disetujui">Disetujui</option>
+        </select>
+
+        <button onclick="resetStatusFilter()" class="btn btn-sm btn-secondary ms-2">Reset</button>
+    </div>
+
+
+
 
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
@@ -27,7 +40,6 @@
                     <th>IMEI</th>
                     <th>Jenis HP</th>
                     <th>Harga</th>
-
                     <th>Internal</th>
                     <th>Warna</th>
                     <th>Status</th>
@@ -84,3 +96,25 @@
         </table>
     </div>
 </div>
+
+<script>
+    function filterStatus() {
+        const selectedStatus = document.getElementById('statusFilter').value.toLowerCase();
+        const rows = document.querySelectorAll('#zero_config tbody tr');
+
+        rows.forEach(row => {
+            const statusCell = row.children[5]; // kolom ke-6 adalah Status
+            if (!statusCell) return;
+
+            const statusText = statusCell.textContent.trim().toLowerCase();
+            const show = selectedStatus === '' || statusText === selectedStatus;
+
+            row.style.display = show ? '' : 'none';
+        });
+    }
+
+    function resetStatusFilter() {
+        document.getElementById('statusFilter').value = '';
+        filterStatus();
+    }
+</script>

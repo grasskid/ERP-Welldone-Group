@@ -40,6 +40,8 @@ class Retur_Customer extends BaseController
     public function insert()
     {
         $tanggal = date('Y-m-d');
+        $waktu = date('H:i:s');
+        $datetime = $tanggal . ' ' . $waktu;
         $datauser = $this->AuthModel->getById(session('ID_AKUN'));
         $useridunit = $datauser->ID_UNIT;
 
@@ -51,7 +53,8 @@ class Retur_Customer extends BaseController
             ->first();
 
         if ($lastRetur) {
-            $lastKode = substr($lastRetur['no_retur_pelanggan'], -3);
+            $lastKode = substr($lastRetur->no_retur_pelanggan, -3);
+
             $newKode = str_pad((int)$lastKode + 1, 3, '0', STR_PAD_LEFT);
         } else {
             $newKode = '001';
@@ -77,7 +80,7 @@ class Retur_Customer extends BaseController
 
                 $data = array(
                     'no_retur_pelanggan' => $no_retur_pelanggan,
-                    'tanggal' => $tanggal,
+                    'tanggal' => $datetime,
                     'jumlah' => $jumlah,
                     'satuan' => $satuan,
                     'barang_idbarang' => $barang_idbarang,

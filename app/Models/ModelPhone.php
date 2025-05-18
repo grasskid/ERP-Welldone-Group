@@ -9,17 +9,28 @@ class ModelPhone extends Model
     protected $table = 'barang';
     protected $primaryKey = 'idbarang';
     protected $returnType = 'object';
-    protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'input', 'idkategori', 'imei', 'jenis_hp', 'hpp', 'internal', 'warna', 'status', 'deleted'];
+    protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'imei', 'jenis_hp', 'hpp', 'internal', 'warna', 'status_ppn', 'status', 'deleted'];
 
+    public function getPhoneActive()
+    {
+        return $this->where('idkategori', 1)
+            ->where('status', '1')
+            ->where('deleted', '0')
+            ->findAll();
+    }
+    public function getPhoneWaiting()
+    {
+        return $this->where('idkategori', 1)
+            ->where('status', '0')
+            ->where('deleted', '0')
+            ->findAll();
+    }
     public function getPhone()
     {
         return $this->where('idkategori', 1)
             ->where('deleted', '0')
             ->findAll();
     }
-
-
-
 
     public function insert_Phone($data)
     {

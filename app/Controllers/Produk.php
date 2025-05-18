@@ -43,18 +43,14 @@ class Produk extends BaseController
 
         $nama_barang = $this->request->getPost('nama_barang');
         $harga      = str_replace(',', '', $this->request->getPost('harga'));
+        $harga_beli      = str_replace(',', '', $this->request->getPost('harga_beli'));
         $input = $this->request->getPost('input_by');
-        $lokasi = $this->request->getPost('lokasi');
 
         $kategori = $this->request->getPost('kategori');
         $data_kategori = $this->KategoriModel->getByName($kategori);
 
-        var_dump($data_kategori);
-
         $idkategori = $data_kategori->id;
         $kode_kategori = $data_kategori->idkategori;
-
-
 
         $lastBarang = $this->BarangModel->getLastBarangByKategori($idkategori);
 
@@ -68,16 +64,18 @@ class Produk extends BaseController
         $formattedNumber = str_pad($newNumber, 2, '0', STR_PAD_LEFT);
 
         $kode_barang = $kode_kategori . $formattedNumber;
+        $status_ppn = $this->request->getPost('status_ppn');
 
 
         $data = array(
             'kode_barang' => $kode_barang,
             'nama_barang' => $nama_barang,
             'harga' => $harga,
-            'lokasi' => $lokasi,
+            'harga_beli' => $harga_beli,
             'input' => $input,
             'idkategori' => $idkategori,
             'status' => "1",
+            'status_ppn' => $status_ppn,
             'deleted' => '0'
 
         );
@@ -92,9 +90,9 @@ class Produk extends BaseController
     public function update_produk()
     {
         $idbarang = $this->request->getPost('id_barang');
-        $lokasi = $this->request->getPost('lokasi');
         $nama_barang = $this->request->getPost('nama_barang');
         $harga      = str_replace(',', '', $this->request->getPost('harga'));
+        $harga_beli      = str_replace(',', '', $this->request->getPost('harga_beli'));
         $input = $this->request->getPost('input_by');
         $kategori = $this->request->getPost('kategori');
 
@@ -105,7 +103,6 @@ class Produk extends BaseController
         $data_kategori = $this->KategoriModel->getByName($kategori);
         $idkategori_baru = $data_kategori->id;
         $kode_kategori_baru = $data_kategori->idkategori;
-
 
         $idkategori = $barangLama->idkategori;
         $kode_barang = $barangLama->kode_barang;
@@ -129,14 +126,16 @@ class Produk extends BaseController
             $idkategori = $idkategori_baru;
         }
 
+        $status_ppn = (int)$this->request->getPost('status_ppn');
 
         $data = array(
             'nama_barang' => $nama_barang,
             'harga' => $harga,
+            'harga_beli' => $harga_beli,
             'input' => $input,
-            'lokasi' => $lokasi,
             'idkategori' => $idkategori,
             'kode_barang' => $kode_barang,
+            'status_ppn' => $status_ppn,
             'deleted' => '0'
         );
 
@@ -162,8 +161,10 @@ class Produk extends BaseController
         $sheet->setCellValue('A1', 'Kode Barang');
         $sheet->setCellValue('B1', 'Nama Barang');
         $sheet->setCellValue('C1', 'Harga');
-        $sheet->setCellValue('D1', 'Kategori');
-        $sheet->setCellValue('E1', 'Input');
+        $sheet->setCellValue('D1', 'Harga Beli');
+        $sheet->setCellValue('E1', 'Kategori');
+        $sheet->setCellValue('F1', 'Status PPN');
+        $sheet->setCellValue('G1', 'Input');
 
         // Data
         $row = 2;
@@ -171,8 +172,10 @@ class Produk extends BaseController
             $sheet->setCellValue('A' . $row, $product->kode_barang);
             $sheet->setCellValue('B' . $row, $product->nama_barang);
             $sheet->setCellValue('C' . $row, $product->harga);
-            $sheet->setCellValue('D' . $row, $product->nama_kategori);
-            $sheet->setCellValue('E' . $row, $product->input);
+            $sheet->setCellValue('D' . $row, $product->harga_beli);
+            $sheet->setCellValue('E' . $row, $product->nama_kategori);
+            $sheet->setCellValue('F' . $row, $product->status_ppn);
+            $sheet->setCellValue('G' . $row, $product->input);
             $row++;
         }
 
@@ -193,61 +196,43 @@ class Produk extends BaseController
     public function import_produk()
     {
         $file = $this->request->getFile('file');
-
-        // Load spreadsheet
         $spreadsheet = IOFactory::load($file->getPathname());
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
-
-        // Koneksi DB
         $db = Database::connect();
 
-        // Siapkan penampung last number per kategori
         $lastNumbers = [];
 
-        // Skip header (baris pertama)
         for ($i = 1; $i < count($rows); $i++) {
             $nama_barang = addslashes($rows[$i][0]);
-            $harga = (int) $rows[$i][1];
-            $lokasi = addslashes($rows[$i][2]);
-            $input = addslashes($rows[$i][3]);
-            $idkategori = addslashes($rows[$i][4]);
+            $harga = str_replace(',', '', $rows[$i][1]);
+            $harga_beli = str_replace(',', '', $rows[$i][2]);
+            $idkategori = addslashes($rows[$i][3]);
+            // Konversi status PPN
+            $status_ppn_raw = strtoupper(trim(addslashes($rows[$i][4])));
+            $status_ppn = ($status_ppn_raw === 'PPN') ? 1 : 0;
 
-            // Ambil kode_kategori berdasarkan idkategori
-            $kategori = $db->table('kategori')->where('id', $idkategori)->get()->getRow();
-            if (!$kategori) {
-                continue; // Jika kategori tidak ditemukan, skip baris ini
-            }
-            $kode_kategori = $kategori->idkategori;
+            $input = addslashes($rows[$i][5]);
 
-            // Cek last number kategori ini
+            $dataKategori = $this->KategoriModel->getById($idkategori);
+            if (!$dataKategori) continue;
+
+            $kode_kategori = $dataKategori->idkategori;
+
             if (!isset($lastNumbers[$idkategori])) {
-                // Pertama kali, ambil kode_barang terakhir dari DB
-                $lastBarang = $db->table('barang')
-                    ->where('idkategori', $idkategori)
-                    ->orderBy('kode_barang', 'DESC')
-                    ->get()
-                    ->getRow();
-
-                if ($lastBarang) {
-                    $lastNumber = (int) substr($lastBarang->kode_barang, strlen($kode_kategori));
-                } else {
-                    $lastNumber = 0;
-                }
-
+                $lastBarang = $this->BarangModel->getLastBarangByKategori($idkategori);
+                $lastNumber = ($lastBarang) ? (int) substr($lastBarang->kode_barang, strlen($kode_kategori)) : 0;
                 $lastNumbers[$idkategori] = $lastNumber;
             }
 
-            // Tambahkan 1 untuk kode baru
             $lastNumbers[$idkategori]++;
             $formattedNumber = str_pad($lastNumbers[$idkategori], 2, '0', STR_PAD_LEFT);
-
-            // Buat kode_barang
             $kode_barang = $kode_kategori . $formattedNumber;
 
-            // Masukkan ke database
-            $sql = "INSERT INTO barang (kode_barang, nama_barang, harga ,input, idkategori, deleted) 
-                    VALUES ('$kode_barang', '$nama_barang', '$harga' ,'$input', '$idkategori', '0')";
+            $sql = "INSERT INTO barang 
+            (kode_barang, nama_barang, harga, harga_beli, input, idkategori, status, status_ppn, deleted) 
+            VALUES 
+            ('$kode_barang', '$nama_barang', '$harga', '$harga_beli', '$input', '$idkategori', '1', '$status_ppn', '0')";
 
             $db->query($sql);
         }
@@ -255,7 +240,6 @@ class Produk extends BaseController
         session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
         return redirect()->to(base_url('/produk'));
     }
-
 
     public function delete_produk()
     {

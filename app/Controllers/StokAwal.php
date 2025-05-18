@@ -37,18 +37,20 @@ class StokAwal extends BaseController
 
     public function index()
     {
-        $akun =   $this->AuthModel->getById(session('ID_AKUN'));
+        $akun = $this->AuthModel->getById(session('ID_AKUN'));
+
 
         $allBarang = $this->BarangModel->getAllBarang();
         $stok = $this->StokAwalModel->getAllStok();
 
 
-        $barangSudahAda = array_column($stok, 'barang_idbarang');
+        $barangSudahAda = [];
+        foreach ($stok as $stockItem) {
+            $barangSudahAda[$stockItem->unit_idunit][] = $stockItem->barang_idbarang;
+        }
 
 
-        $barangTersedia = array_filter($allBarang, function ($barang) use ($barangSudahAda) {
-            return !in_array($barang->idbarang, $barangSudahAda);
-        });
+        $barangTersedia = $allBarang;
 
         $data = array(
             'akun' => $akun,
@@ -61,8 +63,8 @@ class StokAwal extends BaseController
         );
 
         return view('template', $data);
-        // return $this->response->setJSON($data);
     }
+
 
     public function insert()
     {
@@ -72,13 +74,22 @@ class StokAwal extends BaseController
         if ($selectedProducts) {
             foreach ($selectedProducts as $kodeBarang) {
                 $jumlah = $this->request->getPost("jumlah")[$kodeBarang] ?? 0;
-                $hargaBeli = $this->request->getPost("harga_beli")[$kodeBarang] ?? 0;
+
+                //hidden sementara 
+                // $hargaBeli = $this->request->getPost("harga_beli")[$kodeBarang] ?? 0;
+                //hidden sementara
+
+
+
                 $satuanTerkecil = $this->request->getPost("satuan_terkecil")[$kodeBarang] ?? '';
                 $tipeRelasi = $this->request->getPost("tipe_relasi")[$kodeBarang] ?? '';
                 $idSuplier = $this->request->getPost("id_suplier_text")[$kodeBarang] ?? 0;
                 $idPelanggan = $this->request->getPost("id_pelanggan_text")[$kodeBarang] ?? 0;
                 $databarang = $this->BarangModel->getBykode($kodeBarang);
                 $idbarang = $databarang->idbarang;
+
+                //sementara
+                $hargaBeli = $databarang->harga_beli;
 
                 $data = [
                     'tanggal' => date('Y-m-d'),
@@ -90,6 +101,7 @@ class StokAwal extends BaseController
                     'suplier_id_suplier' => ($tipeRelasi === 'suplier') ? $idSuplier : 0,
                     'pelanggan_id_pelanggan' => ($tipeRelasi === 'pelanggan') ? $idPelanggan : 0
                 ];
+
 
                 $this->StokAwalModel->insert_Stok($data);
             }
