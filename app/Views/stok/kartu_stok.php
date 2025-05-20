@@ -96,9 +96,6 @@
                         <h6 class="fs-4 fw-semibold mb-0">Nama Unit</h6>
                     </th>
                     <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Stok Dasar</h6>
-                    </th>
-                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nama Kategori</h6>
                     </th>
                     <th>
@@ -106,6 +103,9 @@
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Tanggal Stok Dasar</h6>
+                    </th>
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Stok Dasar</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Total Pembelian</h6>
@@ -120,6 +120,12 @@
                         <h6 class="fs-4 fw-semibold mb-0">Total Retur Suplier</h6>
                     </th>
                     <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Total Mutasi Masuk</h6>
+                    </th>
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Total Mutasi Keluar</h6>
+                    </th>
+                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Stok Akhir</h6>
                     </th>
                 </tr>
@@ -131,15 +137,17 @@
                             <td><?= esc($row->kode_barang) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
                             <td><?= esc($row->nama_unit) ?></td>
-                            <td><?= esc($row->stok_dasar) ?></td>
                             <td><?= esc($row->nama_kategori) ?></td>
                             <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->tanggal_stok_dasar))) ?></td>
+                            <td><?= esc($row->stok_dasar) ?></td>
                             <td><?= esc($row->total_pembelian) ?></td>
                             <td><?= esc($row->total_penjualan) ?></td>
                             <td><?= esc($row->total_retur_pelanggan) ?></td>
                             <td><?= esc($row->total_retur_supplier) ?></td>
-                            <td><?= esc($row->stok_akhir) ?></td>
+                            <td><?= esc($row->total_mutasi_masuk) ?></td>
+                            <td><?= esc($row->total_mutasi_keluar) ?></td>
+                            <td><b><?= esc($row->stok_akhir) ?></b></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

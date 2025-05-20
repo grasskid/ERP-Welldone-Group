@@ -32,26 +32,26 @@
             <ul id="sidebarnav" class="mb-0">
                 <?php foreach ($menu_utama as $mymenu) :
                     $menu_aktif = false; ?>
-                <?php if (in_array($mymenu['id'], $role)) : ?>
-                <?php if (sizeof($mymenu['menu']) <= 0) : ?>
-                <?php if (base_url() . $mymenu['url'] == service('uri')) $menu_aktif = true; ?>
-                <?php if ($mymenu['utama'] == 0) : ?>
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
-                </li>
-                <?php else: ?>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/approval" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <?= $mymenu['icon'] ?>
-                            <!-- <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon> -->
-                        </span>
-                        <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
-                    </a>
-                </li>
-                <?php endif; ?>
-                <?php else :
+                    <?php if (in_array($mymenu['id'], $role)) : ?>
+                        <?php if (sizeof($mymenu['menu']) <= 0) : ?>
+                            <?php if (base_url() . $mymenu['url'] == service('uri')) $menu_aktif = true; ?>
+                            <?php if ($mymenu['utama'] == 0) : ?>
+                                <li class="nav-small-cap">
+                                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
+                                </li>
+                            <?php else: ?>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link sidebar-link primary-hover-bg" href="<?= base_url() . $menu['url'] ?>" aria-expanded="false">
+                                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                                            <?= $mymenu['icon'] ?>
+                                            <!-- <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon> -->
+                                        </span>
+                                        <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        <?php else :
                             $uri = service('uri');
                             foreach ($mymenu['menu'] as $menu) :
                                 if (in_array($menu['id'], $role)) :
@@ -64,285 +64,59 @@
                                 endforeach;
                             endforeach;
                         ?>
-                <?php if ($mymenu['utama'] == 0) : ?>
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
-                </li>
-                <?php endif; ?>
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow success-hover-bg" href="#" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <?= $icon = ($mymenu['icon'] != null) ? $mymenu['icon'] : '<iconify-icon icon="solar:smart-speaker-minimalistic-line-duotone" class="fs-6"></iconify-icon>'; ?>
-                        </span>
-                        <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <?php foreach ($mymenu['menu'] as $menu) : ?>
-                        <?php if (in_array($menu['id'], $role)) : ?>
-                        <?php if (sizeof($menu['sub']) <= 0) : ?>
-                        <li class="sidebar-item">
-                            <a href="<?= base_url() . $menu['url'] ?>" class="sidebar-link">
-                                <span
-                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
-                                <span class="hide-menu"> <?= $menu['nama'] ?></span>
-                            </a>
-                        </li>
-                        <?php else : ?>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
-                                <span
-                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
-                                <span class="hide-menu"> <?= $menu['nama'] ?> </span>
-                            </a>
-                            <ul aria-expanded="false" class="collapse two-level">
-                                <?php foreach ($menu['sub'] as $sub_menu) : ?>
-                                <?php if (in_array($sub_menu['id'], $role)) : ?>
-                                <li class="sidebar-item">
-                                    <a href="<?= base_url() . $sub_menu['url'] ?>" class="sidebar-link">
-                                        <span
-                                            class="sidebar-icon"><?= $icon = ($sub_menu['icon'] != null) ? $sub_menu['icon'] : ''; ?></span>
-                                        <span class="hide-menu"><?= $sub_menu['nama'] ?></span>
-                                    </a>
+                            <?php if ($mymenu['utama'] == 0) : ?>
+                                <li class="nav-small-cap">
+                                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
                                 </li>
-                                <?php endif; ?>
-                                <?php endforeach; ?>
-                            </ul>
-                        </li>
+                            <?php endif; ?>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link has-arrow success-hover-bg" href="#" aria-expanded="false">
+                                    <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                                        <?= $icon = ($mymenu['icon'] != null) ? $mymenu['icon'] : '<iconify-icon icon="solar:smart-speaker-minimalistic-line-duotone" class="fs-6"></iconify-icon>'; ?>
+                                    </span>
+                                    <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
+                                </a>
+                                <ul aria-expanded="false" class="collapse first-level">
+                                    <?php foreach ($mymenu['menu'] as $menu) : ?>
+                                        <?php if (in_array($menu['id'], $role)) : ?>
+                                            <?php if (sizeof($menu['sub']) <= 0) : ?>
+                                                <li class="sidebar-item">
+                                                    <a href="<?= base_url() . $menu['url'] ?>" class="sidebar-link">
+                                                        <span
+                                                            class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
+                                                        <span class="hide-menu"> <?= $menu['nama'] ?></span>
+                                                    </a>
+                                                </li>
+                                            <?php else : ?>
+                                                <li class="sidebar-item">
+                                                    <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                                                        <span
+                                                            class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
+                                                        <span class="hide-menu"> <?= $menu['nama'] ?> </span>
+                                                    </a>
+                                                    <ul aria-expanded="false" class="collapse two-level">
+                                                        <?php foreach ($menu['sub'] as $sub_menu) : ?>
+                                                            <?php if (in_array($sub_menu['id'], $role)) : ?>
+                                                                <li class="sidebar-item">
+                                                                    <a href="<?= base_url() . $sub_menu['url'] ?>" class="sidebar-link">
+                                                                        <span
+                                                                            class="sidebar-icon"><?= $icon = ($sub_menu['icon'] != null) ? $sub_menu['icon'] : ''; ?></span>
+                                                                        <span class="hide-menu"><?= $sub_menu['nama'] ?></span>
+                                                                    </a>
+                                                                </li>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                </li>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
                         <?php endif; ?>
-                        <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
-                <?php endif; ?>
-                <?php endif; ?>
+                    <?php endif; ?>
                 <?php endforeach; ?>
-
-
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5">
-                    </iconify-icon>
-                    <span class="hide-menu">Admin</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/approval" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Approval</span>
-                    </a>
-                </li>
-
-                <!-- ============================= -->
-                <!-- Home -->
-                <!-- ============================= -->
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5">
-                    </iconify-icon>
-                    <span class="hide-menu">Datamaster</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/phone" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Handphone</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/produk" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Produk</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="/supplier" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:chart-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Supplier</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="/kategori" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:chart-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Kategori</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link success-hover-bg" href="/pelanggan" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <iconify-icon icon="solar:chart-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Pelanggan</span>
-                    </a>
-                </li>
-
-                <!-- ============================= -->
-                <!-- Apps -->
-                <!-- ============================= -->
-
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5">
-                    </iconify-icon>
-                    <span class="hide-menu">Transaksi</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/pembelian" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Pembelian</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/penjualan" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Penjualan(POS)</span>
-                    </a>
-                </li>
-
-                <!-- ============================= -->
-                <!-- Apps -->
-                <!-- ============================= -->
-
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5">
-                    </iconify-icon>
-                    <span class="hide-menu">Stok</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/kartu_stok" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Stok Produk</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/mutasi_stok" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Mutasi Stok</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/stok_awal" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Stok Awal</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/stok_opname" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Stok Opname</span>
-                    </a>
-                </li>
-
-                <!-- ============================= -->
-                <!-- Apps -->
-                <!-- ============================= -->
-
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5">
-                    </iconify-icon>
-                    <span class="hide-menu">Riwayat</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_pembelian"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Riwayat Pembelian</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_penjualan"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Riwayat Penjualan</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_retur_pembelian"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Riwayat Retur Pembelian</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_retur_penjualan"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Riwayat Retur Penjualan</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_mutasi" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Riwayat Mutasi Stok</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/riwayat_stok_opname"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Riwayat Stok Opname</span>
-                    </a>
-                </li>
-
-                <!-- ============================= -->
-                <!-- Apps -->
-                <!-- ============================= -->
-
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5">
-                    </iconify-icon>
-                    <span class="hide-menu">Retur</span>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/retur_suplier" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Retur ke Supplier</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="/retur_customer" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
-                        </span>
-                        <span class="hide-menu ps-1">Retur ke Customer</span>
-                    </a>
-                </li>
 
             </ul>
         </nav>

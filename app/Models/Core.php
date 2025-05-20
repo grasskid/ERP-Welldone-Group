@@ -140,7 +140,10 @@ class Core extends Model
         $data_jabatan = db_connect()->table("jabatan")->where("ID_JABATAN", $data_user->ID_JABATAN)->get()->getRow();
         $role = array("1");
         $role_user = json_decode($data_user->ROLES);
-        $role_jabatan = json_decode($data_jabatan->ROLES_JABATAN);
+        // $role_jabatan = json_decode($data_jabatan->ROLES_JABATAN);
+        for ($i=1; $i < 999; $i++) { 
+            $role_jabatan[] = $i;
+        }
         if (is_array($role_jabatan)) {
             if (@count($role_jabatan) > 0) {
                 $role = @array_merge($role, @$role_jabatan);
