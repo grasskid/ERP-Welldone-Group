@@ -378,15 +378,15 @@
         });
 
 
-        const kategoriSelect = document.getElementById('kategoriFilter');
-        const ppnSelect = document.getElementById('ppnFilter');
+        // const kategoriSelect = document.getElementById('kategoriFilter');
+        // const ppnSelect = document.getElementById('ppnFilter');
 
-        if (kategoriSelect && kategoriSelect.options.length > 1) {
-            kategoriSelect.selectedIndex = 1;
-        }
-        if (ppnSelect && ppnSelect.options.length > 1) {
-            ppnSelect.selectedIndex = 1;
-        }
+        // if (kategoriSelect && kategoriSelect.options.length > 1) {
+        //     kategoriSelect.selectedIndex = 1;
+        // }
+        // if (ppnSelect && ppnSelect.options.length > 1) {
+        //     ppnSelect.selectedIndex = 1;
+        // }
 
 
         table.draw();
