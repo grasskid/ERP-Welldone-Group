@@ -42,7 +42,7 @@
                                 </li>
                             <?php else: ?>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link sidebar-link primary-hover-bg" href="<?= base_url() . $menu['url'] ?>" aria-expanded="false">
+                                    <a class="sidebar-link sidebar-link primary-hover-bg" href="<?= base_url() . $mymenu['url'] ?>" aria-expanded="false">
                                         <span class="aside-icon p-2 bg-primary-subtle rounded-1">
                                             <?= $mymenu['icon'] ?>
                                             <!-- <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon> -->
