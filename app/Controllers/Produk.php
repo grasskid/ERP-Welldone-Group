@@ -135,7 +135,6 @@ class Produk extends BaseController
             'nama_barang' => $nama_barang,
             'harga' => $harga,
             'harga_beli' => $harga_beli,
-            'input' => $input,
             'idkategori' => $idkategori,
             'kode_barang' => $kode_barang,
             'status_ppn' => $status_ppn,
@@ -220,45 +219,63 @@ class Produk extends BaseController
         $rows = $sheet->toArray();
         $db = Database::connect();
 
+        // Simpan lastNumber per kategori (by primary id) agar tidak query berkali‐kali
         $lastNumbers = [];
 
         for ($i = 1; $i < count($rows); $i++) {
-            $nama_barang = addslashes($rows[$i][0]);
-            $harga = str_replace(',', '', $rows[$i][1]);
-            $harga_beli = str_replace(',', '', $rows[$i][2]);
-            $idkategori = addslashes($rows[$i][3]);
-            // Konversi status PPN
+            $nama_barang    = addslashes($rows[$i][0]);
+            $harga          = str_replace(',', '', $rows[$i][1]);
+            $harga_beli     = str_replace(',', '', $rows[$i][2]);
+            $idkategori_raw = addslashes($rows[$i][3]);
             $status_ppn_raw = strtoupper(trim(addslashes($rows[$i][4])));
-            $status_ppn = ($status_ppn_raw === 'PPN') ? 1 : 0;
+            $status_ppn     = ($status_ppn_raw === 'PPN') ? 1 : 0;
+            $input          = addslashes($rows[$i][5]);
 
-            $input = addslashes($rows[$i][5]);
-
-            $dataKategori = $this->KategoriModel->getById($idkategori);
+            // Ambil data kategori berdasar kode kategori dari file
+            $dataKategori = $this->KategoriModel->getById($idkategori_raw);
             if (!$dataKategori) continue;
 
-            $kode_kategori = $dataKategori->idkategori;
+            // PRIMARY ID kategori dan kode prefix
+            $idnyakategori  = $dataKategori->id;
+            $kode_kategori  = $dataKategori->idkategori;
 
-            if (!isset($lastNumbers[$idkategori])) {
-                $lastBarang = $this->BarangModel->getLastBarangByKategori($idkategori);
-                $lastNumber = ($lastBarang) ? (int) substr($lastBarang->kode_barang, strlen($kode_kategori)) : 0;
-                $lastNumbers[$idkategori] = $lastNumber;
+            // Inisialisasi lastNumbers sekali saja per kategori
+            if (! isset($lastNumbers[$idnyakategori])) {
+                $lastBarang = $this->BarangModel->getLastBarangByKategori($idnyakategori);
+                if ($lastBarang) {
+                    // ambil angka dari akhir kode_barang
+                    $lastNumbers[$idnyakategori] = (int) substr($lastBarang->kode_barang, strlen($kode_kategori));
+                } else {
+                    $lastNumbers[$idnyakategori] = 0;
+                }
             }
 
-            $lastNumbers[$idkategori]++;
-            $formattedNumber = str_pad($lastNumbers[$idkategori], 2, '0', STR_PAD_LEFT);
-            $kode_barang = $kode_kategori . $formattedNumber;
+            // Increment nomor
+            $lastNumbers[$idnyakategori]++;
+            $formattedNumber = str_pad($lastNumbers[$idnyakategori], 2, '0', STR_PAD_LEFT);
+            $kode_barang     = $kode_kategori . $formattedNumber;
 
+            // Insert
             $sql = "INSERT INTO barang 
             (kode_barang, nama_barang, harga, harga_beli, input, idkategori, status, status_ppn, deleted) 
             VALUES 
-            ('$kode_barang', '$nama_barang', '$harga', '$harga_beli', '$input', '$idkategori', '1', '$status_ppn', '0')";
-
-            $db->query($sql);
+            (?, ?, ?, ?, ?, ?, 1, ?, 0)";
+            $db->query($sql, [
+                $kode_barang,
+                $nama_barang,
+                $harga,
+                $harga_beli,
+                $input,
+                $idnyakategori,
+                $status_ppn
+            ]);
         }
 
-        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+        session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
         return redirect()->to(base_url('/produk'));
     }
+
+
 
     public function delete_produk()
     {

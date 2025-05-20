@@ -159,7 +159,7 @@ class Phone extends BaseController
     {
 
 
-        $phone = $this->PhoneModel->getPhone();
+        $phone = $this->PhoneModel->getPhoneActive();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

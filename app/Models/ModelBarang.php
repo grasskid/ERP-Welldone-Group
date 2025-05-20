@@ -60,4 +60,27 @@ class ModelBarang extends Model
             ->get()
             ->getFirstRow();
     }
+
+
+    public function getMaxNumberByKategori($idkategori)
+    {
+        // Ambil kode kategori berdasarkan idkategori
+        $kategori = $this->db->table('kategori')->select('idkategori')->where('id', $idkategori)->get()->getRow();
+
+        if (!$kategori) {
+            return 0;
+        }
+
+        $kode_kategori = $kategori->idkategori;
+        $kode_length = strlen($kode_kategori);
+
+        // Cari angka terbesar di belakang kode_barang
+        $builder = $this->db->table('barang');
+        $builder->select("MAX(CAST(SUBSTRING(kode_barang, $kode_length + 1) AS UNSIGNED)) AS max_number");
+        $builder->where('idkategori', $idkategori);
+        $query = $builder->get();
+        $row = $query->getRow();
+
+        return ($row && $row->max_number !== null) ? $row->max_number : 0;
+    }
 }
