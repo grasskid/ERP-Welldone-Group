@@ -79,8 +79,6 @@ class StokAwal extends BaseController
                 // $hargaBeli = $this->request->getPost("harga_beli")[$kodeBarang] ?? 0;
                 //hidden sementara
 
-
-
                 $satuanTerkecil = $this->request->getPost("satuan_terkecil")[$kodeBarang] ?? '';
                 $tipeRelasi = $this->request->getPost("tipe_relasi")[$kodeBarang] ?? '';
                 $idSuplier = $this->request->getPost("id_suplier_text")[$kodeBarang] ?? 0;

@@ -360,26 +360,40 @@
 <script>
     let table;
 
-    $(document).ready(function() {
+    window.onload = function() {
         table = $('#zero_config').DataTable();
 
-        // Tambahkan custom filter ke DataTables
+
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
             const ppnFilter = $('#ppnFilter').val().toLowerCase();
 
-            const kategori = data[4].toLowerCase(); // kolom Kategori (index ke-3)
-            const ppn = data[5].toLowerCase(); // kolom PPN (index ke-5)
+            const kategori = data[4].toLowerCase();
+            const ppn = data[5].toLowerCase();
 
             const matchKategori = !kategoriFilter || kategori === kategoriFilter;
             const matchPPN = !ppnFilter || ppn === ppnFilter;
 
             return matchKategori && matchPPN;
         });
-    });
+
+
+        const kategoriSelect = document.getElementById('kategoriFilter');
+        const ppnSelect = document.getElementById('ppnFilter');
+
+        if (kategoriSelect && kategoriSelect.options.length > 1) {
+            kategoriSelect.selectedIndex = 1;
+        }
+        if (ppnSelect && ppnSelect.options.length > 1) {
+            ppnSelect.selectedIndex = 1;
+        }
+
+
+        table.draw();
+    };
 
     function filterKategori() {
-        table.draw(); // trigger ulang filter
+        table.draw();
     }
 
     function resetKategoriFilter() {

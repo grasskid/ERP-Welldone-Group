@@ -98,7 +98,7 @@ class MutasiStok extends BaseController
         // nomutasi
         $lastMutasi = $this->MutasiStokModel
             ->where('kirim_idunit', $kirim_idunit)
-            ->like('tanggal_kirim', $tanggal_kirim_ymd)
+            ->like('DATE(tanggal_kirim)', $tanggal_kirim_ymd)
             ->orderBy('no_nota_mutasi', 'DESC')
             ->first();
 

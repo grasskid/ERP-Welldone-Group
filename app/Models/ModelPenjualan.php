@@ -19,6 +19,8 @@ class ModelPenjualan extends Model
         'harus_dibayar',
         'waktu_penjualan',
         'bayar',
+        'id_pelanggan',
+        'total_ppn',
         'created_on',
         'input_by',
         'sales_by',

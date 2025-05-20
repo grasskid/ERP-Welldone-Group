@@ -8,8 +8,12 @@ use App\Models\ModelDetailPenjualan;
 use App\Models\ModelPenjualan;
 use Config\Database;
 use App\Models\ModelAuth;
+use App\Models\ModelPelanggan;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 
 
@@ -22,6 +26,7 @@ class Riwayat_Penjualan extends BaseController
     protected $DetailPenjualanModel;
     protected $PenjualanModel;
     protected $AuthModel;
+    protected $PelangganModel;
 
     public function __construct()
     {
@@ -30,6 +35,7 @@ class Riwayat_Penjualan extends BaseController
         $this->DetailPenjualanModel = new ModelDetailPenjualan();
         $this->PenjualanModel = new ModelPenjualan();
         $this->AuthModel = new ModelAuth();
+        $this->PelangganModel = new ModelPelanggan();
     }
 
     public function index()
@@ -52,23 +58,33 @@ class Riwayat_Penjualan extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         $unit = $this->request->getPost('unit');
-        $tanggal_awal = $this->request->getPost('tanggal_awal');;
+        $tanggal_awal = $this->request->getPost('tanggal_awal');
         $tanggal_akhir = $this->request->getPost('tanggal_akhir');
 
         $datapenjualan = $this->DetailPenjualanModel->exportfilter($tanggal_awal, $tanggal_akhir, $unit);
 
-
         // Header
-        $sheet->setCellValue('A1', 'Kode Invoice');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Nama Barang');
-        $sheet->setCellValue('D1', 'Jumlah');
-        $sheet->setCellValue('E1', 'Unit');
-        $sheet->setCellValue('F1', 'Diskon');
-        $sheet->setCellValue('G1', 'Harga Penjualan');
-        $sheet->setCellValue('H1', 'Sub Total');
+        $headers = [
+            'A1' => 'Kode Invoice',
+            'B1' => 'Tanggal',
+            'C1' => 'Nama Barang',
+            'D1' => 'Jumlah',
+            'E1' => 'Unit',
+            'F1' => 'Diskon',
+            'G1' => 'Harga Penjualan',
+            'H1' => 'Sub Total',
+        ];
 
-        // Data 
+        foreach ($headers as $cell => $label) {
+            $sheet->setCellValue($cell, $label);
+        }
+
+        // Styling Header
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+
+        // Data Rows
         $row = 2;
         foreach ($datapenjualan as $item) {
             $sheet->setCellValue('A' . $row, $item->kode_invoice);
@@ -82,10 +98,26 @@ class Riwayat_Penjualan extends BaseController
             $row++;
         }
 
+        // Auto Width
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Border untuk semua data
+        $sheet->getStyle('A1:H' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Freeze header baris
+        $sheet->freezePane('A2');
+
+        // Format angka (jika perlu ribuan dipisah koma)
+        $sheet->getStyle('D2:D' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('F2:F' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('G2:G' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('H2:H' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+
         // Output Excel
         $filename = 'Riwayat_Penjualan_' . date('Ymd_His') . '.xlsx';
 
-        // Set header
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -99,6 +131,7 @@ class Riwayat_Penjualan extends BaseController
     public function cetak_struk($kode_invoice)
     {
         $datapenjualan = $this->DetailPenjualanModel->getDetailPenjualanByInvoice($kode_invoice);
+
         $produkData = [];
         foreach ($datapenjualan as $item) {
             $produkData[] = [
@@ -113,11 +146,21 @@ class Riwayat_Penjualan extends BaseController
         $userdata = $this->AuthModel->getById($datapenjualan2->input_by);
         $namauser = $userdata->NAMA_AKUN;
         $no_invoice = $kode_invoice;
-        $sub_total_cetak = $datapenjualan2->total_penjualan + $datapenjualan2->diskon;
+        $total_ppn = $datapenjualan2->total_ppn;
+        $sub_total_cetak = $datapenjualan2->total_penjualan + $datapenjualan2->diskon - $total_ppn;
         $nilaidiskon = $datapenjualan2->diskon;
         $total_penjualan = $datapenjualan2->total_penjualan;
         $bayar = $datapenjualan2->bayar;
         $kembalian_cetak = max(0, $bayar - $total_penjualan);
+
+        $idPelanggan = $datapenjualan2->id_pelanggan;
+        $dataCustomer = $this->PelangganModel->getById($idPelanggan);
+
+        if ($dataCustomer !== null) {
+            $namaCustomer = $dataCustomer->nama;
+        } else {
+            $namaCustomer = 'Pelanggan Umum';
+        }
 
 
 
@@ -129,6 +172,8 @@ class Riwayat_Penjualan extends BaseController
             'no_invoice' => $no_invoice,
             'sub_total' => $sub_total_cetak,
             'diskon' => $nilaidiskon,
+            'total_ppn' => $total_ppn,
+            'customer' => $namaCustomer,
             'total' => $total_penjualan,
             'bayar' => $bayar,
             'kembalian' => $kembalian_cetak,

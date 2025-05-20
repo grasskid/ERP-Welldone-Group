@@ -10,6 +10,9 @@ use App\Models\ModelReturSuplier;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class Riwayat_ReturPembelian extends BaseController
 
@@ -55,33 +58,57 @@ class Riwayat_ReturPembelian extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         $unit = $this->request->getPost('unit');
-        $tanggal_awal = $this->request->getPost('tanggal_awal');;
+        $tanggal_awal = $this->request->getPost('tanggal_awal');
         $tanggal_akhir = $this->request->getPost('tanggal_akhir');
 
         $datapembelian = $this->ReturSuplierModel->exportfilter($tanggal_awal, $tanggal_akhir, $unit);
 
         // Header
-        $sheet->setCellValue('A1', 'No. Retur Suplier');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Nama Barang');
-        $sheet->setCellValue('D1', 'Jumlah');
-        $sheet->setCellValue('E1', 'Unit');
+        $headers = [
+            'A1' => 'No. Retur Suplier',
+            'B1' => 'Tanggal',
+            'C1' => 'Nama Barang',
+            'D1' => 'Jumlah',
+            'E1' => 'Unit',
+        ];
 
-        // Data 
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
+
+        // Styling Header
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:E1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+
+        // Data
         $row = 2;
         foreach ($datapembelian as $item) {
             $sheet->setCellValue('A' . $row, $item->no_retur_suplier);
             $sheet->setCellValue('B' . $row, $item->tanggal);
             $sheet->setCellValue('C' . $row, $item->nama_barang);
             $sheet->setCellValue('D' . $row, $item->jumlah);
-            $sheet->setCellValue('E' . $row, $item->NAMA_UNIT);;
+            $sheet->setCellValue('E' . $row, $item->NAMA_UNIT);
             $row++;
         }
+
+        // Auto width
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Border semua data
+        $sheet->getStyle('A1:E' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Format angka untuk kolom jumlah
+        $sheet->getStyle('D2:D' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+
+        // Freeze header
+        $sheet->freezePane('A2');
 
         // Output Excel
         $filename = 'Riwayat_Retur_Pembelian_' . date('Ymd_His') . '.xlsx';
 
-        // Set header
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');

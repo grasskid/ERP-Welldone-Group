@@ -7,6 +7,10 @@ use App\Models\ModelPelanggan;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Config\Database;
 use App\Models\ModelAuth;
 
@@ -103,24 +107,41 @@ class Pelanggan extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         // Header
-        $sheet->setCellValue('A1', 'NIK');
-        $sheet->setCellValue('B1', 'Nama');
-        $sheet->setCellValue('C1', 'Alamat');
-        $sheet->setCellValue('D1', 'Nomor Handphone');
+        $headers = ['NIK', 'Nama', 'Alamat', 'Nomor Handphone'];
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . '1', $header);
+            $col++;
+        }
 
+        // Styling Header
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:D1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:D1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
 
         // Data
         $row = 2;
         foreach ($pelanggan as $customer) {
-            $sheet->setCellValue('A' . $row, $customer->nik);
+            $sheet->setCellValueExplicit('A' . $row, $customer->nik, DataType::TYPE_STRING);
             $sheet->setCellValue('B' . $row, $customer->nama);
             $sheet->setCellValue('C' . $row, $customer->alamat);
-            $sheet->setCellValue('D' . $row, $customer->no_hp);
+            $sheet->setCellValue('D' . $row, $customer->no_hp); // agar tidak diubah jadi angka ilmiah
             $row++;
         }
 
-        // Output Excel
-        $filename = 'data_pelanggan_' . date('d/m/Y/His') . '.xlsx';
+        // Auto width untuk semua kolom
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Border
+        $sheet->getStyle('A1:D' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Freeze header
+        $sheet->freezePane('A2');
+
+        // Format filename agar aman (YYYYMMDD_HHMMSS)
+        $filename = 'data_pelanggan_' . date('Ymd_His') . '.xlsx';
 
         // Set header
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

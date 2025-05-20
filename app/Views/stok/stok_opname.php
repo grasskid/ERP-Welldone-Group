@@ -84,12 +84,25 @@
     }
 
 
+
+
+
+    window.onload = function() {
+        const filterUnitSelect = document.getElementById('filterUnit');
+        if (filterUnitSelect && filterUnitSelect.options.length > 1) {
+            filterUnitSelect.selectedIndex = 1;
+        }
+
+        filterByUnit();
+    };
+
     function filterByUnit() {
-        const selectedUnit = document.getElementById('filterUnit').value;
+        const selectedUnit = document.getElementById('filterUnit').value || '';
         if (tableElement) {
             tableElement.column(2).search(selectedUnit).draw();
         }
     }
+
 
     window.addEventListener('DOMContentLoaded', () => loadTable('tabledaraft'));
 </script>

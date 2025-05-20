@@ -17,6 +17,9 @@ use App\Models\ModelMutasiStok;
 use App\Models\ModelUnit;
 use App\Models\ModelHppBarang;
 use App\Models\ModelDetailMutasi;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class Riwayat_MutasiStok extends BaseController
 
@@ -74,39 +77,73 @@ class Riwayat_MutasiStok extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $unit = $this->request->getPost('unit');
-        $tanggal_awal = $this->request->getPost('tanggal_awal');;
+        // Ambil filter dari input
+        $unit          = $this->request->getPost('unit');
+        $tanggal_awal  = $this->request->getPost('tanggal_awal');
         $tanggal_akhir = $this->request->getPost('tanggal_akhir');
 
+        // Ambil data dari model
         $datamutasi = $this->DetailMutasiModel->exportfilter($tanggal_awal, $tanggal_akhir, $unit);
 
-        // Header
-        $sheet->setCellValue('A1', 'No. Mutasi');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Unit Asal');
-        $sheet->setCellValue('D1', 'Unit Tujuan');
-        $sheet->setCellValue('E1', 'Barang');
+        // Header kolom
+        $headers = [
+            'A1' => 'No. Mutasi',
+            'B1' => 'Tanggal',
+            'C1' => 'Unit Asal',
+            'D1' => 'Unit Tujuan',
+            'E1' => 'Nama Barang',
+        ];
 
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
 
-        // Data 
+        // Styling header
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:E1')->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE2EFDA'); // Warna hijau muda
+
+        // Tulis data ke baris berikutnya
         $row = 2;
         foreach ($datamutasi as $item) {
             $sheet->setCellValue('A' . $row, $item->no_nota_mutasi);
             $sheet->setCellValue('B' . $row, $item->mutasi_tanggal_kirim);
             $sheet->setCellValue('C' . $row, $item->nama_unit_kirim);
             $sheet->setCellValue('D' . $row, $item->nama_unit_terima);
-            $sheet->setCellValue('E' . $row, $item->nama_barang);;
+            $sheet->setCellValue('E' . $row, $item->nama_barang);
             $row++;
         }
 
-        // Output Excel
+        // Border seluruh tabel
+        $sheet->getStyle('A1:E' . ($row - 1))
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
+
+        // Auto-width untuk semua kolom
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Format tanggal kolom B
+        $sheet->getStyle('B2:B' . ($row - 1))
+            ->getNumberFormat()
+            ->setFormatCode('yyyy-mm-dd');
+
+        // Freeze header
+        $sheet->freezePane('A2');
+
+        // Nama file
         $filename = 'Riwayat_Mutasi_' . date('Ymd_His') . '.xlsx';
 
-        // Set header
+        // Header untuk response browser
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
         header('Cache-Control: max-age=0');
 
+        // Output file
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;

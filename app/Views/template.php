@@ -385,129 +385,46 @@
                                                     aria-labelledby="drop3">
                                                     <!--  Messages -->
                                                     <div class="d-flex align-items-center py-3 px-7">
-                                                        <h3 class="mb-0 fs-5">Messages</h3>
-                                                        <span class="badge bg-info ms-3">5 new</span>
+                                                        <h3 class="mb-0 fs-5">Stok Minimum</h3>
+                                                        <span class="badge bg-info ms-3"><?= count($stokMinimum) ?> new</span>
                                                     </div>
 
                                                     <div class="message-body" data-simplebar>
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-2.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-100 d-inline-block v-middle ps-3">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-between">
-                                                                    <h5 class="mb-0 fs-3 fw-normal">
-                                                                        Roman Joined the Team!
-                                                                    </h5>
-                                                                    <span
-                                                                        class="fs-2 text-nowrap d-block text-muted">9:08
-                                                                        AM</span>
-                                                                </div>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Congratulate
-                                                                    him</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-3.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-100 d-inline-block v-middle ps-3">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-between">
-                                                                    <h5 class="mb-0 fs-3 fw-normal">
-                                                                        New message received
-                                                                    </h5>
-                                                                    <span
-                                                                        class="fs-2 text-nowrap d-block text-muted">9:08
-                                                                        AM</span>
-                                                                </div>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Salma
-                                                                    sent you new
-                                                                    message</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-4.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-100 d-inline-block v-middle ps-3">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-between">
-                                                                    <h5 class="mb-0 fs-3 fw-normal">
-                                                                        New Payment received
-                                                                    </h5>
-                                                                    <span
-                                                                        class="fs-2 text-nowrap d-block text-muted">9:08
-                                                                        AM</span>
-                                                                </div>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Check
-                                                                    your
-                                                                    earnings</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-5.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-100 d-inline-block v-middle ps-3">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-between">
-                                                                    <h5 class="mb-0 fs-3 fw-normal">
-                                                                        New message received
-                                                                    </h5>
-                                                                    <span
-                                                                        class="fs-2 text-nowrap d-block text-muted">9:08
-                                                                        AM</span>
-                                                                </div>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Salma
-                                                                    sent you new
-                                                                    message</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-6.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-100 d-inline-block v-middle ps-3">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-between">
-                                                                    <h5 class="mb-0 fs-3 fw-normal">
-                                                                        Roman Joined the Team!
-                                                                    </h5>
-                                                                    <span
-                                                                        class="fs-2 text-nowrap d-block text-muted">9:08
-                                                                        AM</span>
-                                                                </div>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Congratulate
-                                                                    him</span>
-                                                            </div>
-                                                        </a>
+                                                        <?php if (!empty($stokMinimum)) : ?>
+                                                            <?php foreach ($stokMinimum as $item) : ?>
+                                                                <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                                    <span class="flex-shrink-0">
+                                                                        <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
+                                                                            alt="user" width="45" class="rounded-circle" />
+                                                                    </span>
+                                                                    <div class="w-100 d-inline-block v-middle ps-3">
+                                                                        <div class="d-flex align-items-center justify-content-between">
+                                                                            <h5 class="mb-0 fs-3 fw-normal">
+                                                                                <?= esc($item->nama_barang) ?>
+                                                                            </h5>
+                                                                        </div>
+                                                                        <span class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
+                                                                            Unit: <?= esc($item->nama_unit) ?>
+                                                                        </span>
+                                                                        <span class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
+                                                                            Sisa <?= esc($item->stok_akhir) ?> (Min: <?= esc($item->stok_minimum) ?>)
+                                                                        </span>
+                                                                    </div>
+                                                                </a>
+                                                            <?php endforeach; ?>
+                                                        <?php else : ?>
+                                                            <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok minimum</div>
+                                                        <?php endif; ?>
                                                     </div>
 
+
+
                                                     <div class="py-6 px-7 mb-1">
-                                                        <button class="btn btn-primary w-100">
-                                                            See All Messages
-                                                        </button>
+                                                        <a href="<?php echo base_url('stok_minimum') ?>">
+                                                            <button class="btn btn-primary w-100">
+                                                                See All Messages
+                                                            </button>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </li>
@@ -1832,7 +1749,7 @@
 
     <script src="<?php echo base_url('template/') ?>assets/js/vendor.min.js"></script>
     <!-- Import Js Files -->
-    <script src="<?php echo base_url('template/') ?>assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="<?php echo base_url('template/') ?>assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
     <script src="<?php echo base_url('template/') ?>assets/libs/simplebar/dist/simplebar.min.js"></script>
     <script src="<?php echo base_url('template/') ?>assets/js/theme/app.dark.init.js"></script>
     <script src="<?php echo base_url('template/') ?>assets/js/theme/theme.js"></script>

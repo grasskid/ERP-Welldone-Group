@@ -101,15 +101,28 @@ class Pembelian extends BaseController
 
         // dd($id_suplier_text);
 
-        //invoice otomatis
+        //invoice otomatis 
         $ymd = date('Ymd');
         $tgl_hari_ini = date('Y-m-d');
-        $jumlahHariIni = $this->PembelianModel
-            ->where('tanggal_masuk', $tgl_hari_ini)
+
+        // Ambil nota pembelian terakhir hari ini berdasarkan unit
+        $lastNota = $this->PembelianModel
+            ->select('no_nota')
+            ->where('DATE(tanggal_masuk)', $tgl_hari_ini)
             ->where('unit_idunit', $useridunit)
-            ->countAllResults();
-        $urutan = str_pad($jumlahHariIni + 1, 4, '0', STR_PAD_LEFT);
-        $no_nota = 'PCR' . $useridunit . $ymd . $urutan;;
+            ->orderBy('no_nota', 'DESC')
+            ->first();
+
+        if ($lastNota) {
+            // Ambil 4 digit terakhir (urutan)
+            $lastNumber = (int) substr($lastNota->no_nota, -4);
+            $urutan = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $urutan = '0001';
+        }
+
+        $no_nota = 'PCR' . $useridunit . $ymd . $urutan;
+
         //end invoice otomatis
 
 

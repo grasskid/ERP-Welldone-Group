@@ -84,14 +84,26 @@ class Penjualan extends BaseController
         //
 
         //invoice otomatis
+
         $ymd = date('Ymd');
         $tgl_hari_ini = date('Y-m-d');
-        $jumlahHariIni = $this->PenjualanModel
-            ->where('tanggal', $tgl_hari_ini)
+
+        // Ambil invoice terakhir hari ini 
+        $lastInvoice = $this->PenjualanModel
+            ->select('kode_invoice')
+            ->where('DATE(tanggal)', $tgl_hari_ini)
             ->where('unit_idunit', $useridunit)
-            ->countAllResults();
-        $urutan = str_pad($jumlahHariIni + 1, 4, '0', STR_PAD_LEFT);
-        $no_invoice = 'SLL' . $useridunit . $ymd . $urutan;;
+            ->orderBy('kode_invoice', 'DESC')
+            ->first();
+        if ($lastInvoice) {
+            // Ambil 4 digit terakhir (urutan)
+            $lastNumber = (int) substr($lastInvoice->kode_invoice, -4);
+            $urutan = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $urutan = '0001';
+        }
+
+        $no_invoice = 'SLL' . $useridunit . $ymd . $urutan;
         //end invoice otomatis
 
         $total_penjualan = $this->sanitizeCurrency($this->request->getPost('total-harga'));
@@ -100,6 +112,7 @@ class Penjualan extends BaseController
         $waktu_penjualan = date('Y-m-d H:i:s');
         $bayar = $this->sanitizeCurrency($this->request->getPost('bayar'));
         $created_on = $waktu_penjualan;
+        $total_ppn = $this->sanitizeCurrency($this->request->getPost('total-ppn'));
 
         $unit_idunit = 1;
         $hutang = $this->sanitizeCurrency($this->request->getPost('hutang'));
@@ -157,6 +170,8 @@ class Penjualan extends BaseController
             'input_by' => session('ID_AKUN'),
             'sales_by' => session('ID_AKUN'),
             'unit_idunit' => $unit_idunit,
+            'id_pelanggan' => $id_pelanggan,
+            'total_ppn' => $total_ppn,
         );
 
         foreach ($produkData as $produk) {
@@ -214,14 +229,21 @@ class Penjualan extends BaseController
         if ($result & $result2) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
 
-            $sub_total_cetak = $this->sanitizeCurrency($total_penjualan) + $this->sanitizeCurrency($nilaidiskon);
+            $sub_total_cetak = $this->sanitizeCurrency($total_penjualan) + $this->sanitizeCurrency($nilaidiskon) - $total_ppn;
             $kembalian_cetak = max(0, $this->sanitizeCurrency($bayar) - $this->sanitizeCurrency($total_penjualan));
-
+            $dataCustomer = $this->PelangganModel->getById($id_pelanggan);
+            if ($dataCustomer !== null) {
+                $namaCustomer = $dataCustomer->nama;
+            } else {
+                $namaCustomer = 'Pelanggan Umum';
+            }
             $data3 = array(
 
                 'produk' => $produkData,
-                'tanggal' => $tanggal,
+                'tanggal' => $tanggal_waktu,
                 'kasir'  => $namauser,
+                'customer' => $namaCustomer,
+                'total_ppn' => $total_ppn,
                 'no_invoice' => $no_invoice,
                 'sub_total' => $sub_total_cetak,
                 'diskon' => $nilaidiskon,

@@ -10,6 +10,9 @@ use App\Models\ModelReturCustomer;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class Riwayat_ReturPenjualan extends BaseController
 
@@ -50,38 +53,66 @@ class Riwayat_ReturPenjualan extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        // Ambil filter dari request
         $unit = $this->request->getPost('unit');
-        $tanggal_awal = $this->request->getPost('tanggal_awal');;
+        $tanggal_awal = $this->request->getPost('tanggal_awal');
         $tanggal_akhir = $this->request->getPost('tanggal_akhir');
 
-        $datapembelian = $this->ReturCustomerModel->exportfilter($tanggal_awal, $tanggal_akhir, $unit);
+        // Ambil data dari model
+        $dataretur = $this->ReturCustomerModel->exportfilter($tanggal_awal, $tanggal_akhir, $unit);
 
-        // Header
-        $sheet->setCellValue('A1', 'No. Retur Pelanggan');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Nama Barang');
-        $sheet->setCellValue('D1', 'Jumlah');
-        $sheet->setCellValue('E1', 'Unit');
+        // Set header kolom
+        $headers = [
+            'A1' => 'No. Retur Pelanggan',
+            'B1' => 'Tanggal',
+            'C1' => 'Nama Barang',
+            'D1' => 'Jumlah',
+            'E1' => 'Unit',
+        ];
 
-        // Data 
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
+
+        // Styling header
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:E1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+
+        // Tulis data ke baris berikutnya
         $row = 2;
-        foreach ($datapembelian as $item) {
+        foreach ($dataretur as $item) {
             $sheet->setCellValue('A' . $row, $item->no_retur_pelanggan);
             $sheet->setCellValue('B' . $row, $item->tanggal);
             $sheet->setCellValue('C' . $row, $item->nama_barang);
             $sheet->setCellValue('D' . $row, $item->jumlah);
-            $sheet->setCellValue('E' . $row, $item->NAMA_UNIT);;
+            $sheet->setCellValue('E' . $row, $item->NAMA_UNIT);
             $row++;
         }
 
-        // Output Excel
+        // Auto width untuk kolom
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Border semua tabel
+        $sheet->getStyle('A1:E' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Format angka untuk kolom jumlah
+        $sheet->getStyle('D2:D' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+
+        // Freeze header
+        $sheet->freezePane('A2');
+
+        // Nama file
         $filename = 'Riwayat_Retur_Penjualan_' . date('Ymd_His') . '.xlsx';
 
-        // Set header
+        // Set header untuk download
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
         header('Cache-Control: max-age=0');
 
+        // Output ke browser
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;

@@ -48,7 +48,7 @@ class Retur_Customer extends BaseController
         //noretur
         $lastRetur = $this->ReturCustomerModel
             ->where('unit_idunit', $useridunit)
-            ->like('tanggal', $tanggal)
+            ->like('DATE(tanggal)', $tanggal)
             ->orderBy('no_retur_pelanggan', 'DESC')
             ->first();
 

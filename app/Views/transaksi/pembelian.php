@@ -46,7 +46,7 @@
                         onchange="tampilkanIdSuplier()">
                         <option value="" disabled selected>Pilih Unit</option>
                         <?php foreach ($suplier as $b): ?>
-                            <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
+                        <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
                         <?php endforeach; ?>
                     </select>
                     <input name="id_suplier_text" type="hidden" id="id_suplier_text"
@@ -122,20 +122,20 @@
                                     </thead>
                                     <tbody>
                                         <?php foreach ($produk as $p): ?>
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" class="produk-checkbox"
-                                                        data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
-                                                        data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
-                                                        data-harga_beli="<?= $p->harga_beli ?>"
-                                                        data-kategori="<?= $p->nama_kategori ?>"
-                                                        data-input="<?= $p->input ?>">
-                                                </td>
-                                                <td><?= $p->kode_barang ?></td>
-                                                <td><?= $p->nama_barang ?></td>
-                                                <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
-                                                <td><?= $p->nama_kategori ?></td>
-                                            </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="produk-checkbox"
+                                                    data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
+                                                    data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
+                                                    data-harga_beli="<?= $p->harga_beli ?>"
+                                                    data-kategori="<?= $p->nama_kategori ?>"
+                                                    data-input="<?= $p->input ?>">
+                                            </td>
+                                            <td><?= $p->kode_barang ?></td>
+                                            <td><?= $p->nama_barang ?></td>
+                                            <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
+                                            <td><?= $p->nama_kategori ?></td>
+                                        </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -263,44 +263,43 @@
             </div>
 
             <script>
-                function formatToRupiah(angka) {
-                    const cleaned = angka.replace(/[^\d]/g, '');
-                    const number = parseInt(cleaned) || 0;
-                    return 'Rp ' + number.toLocaleString('id-ID');
-                }
+            function formatToRupiah(angka) {
+                const cleaned = angka.replace(/[^\d]/g, '');
+                const number = parseInt(cleaned) || 0;
+                return 'Rp ' + number.toLocaleString('id-ID');
+            }
 
-                function unformatRupiah(rupiah) {
-                    return parseInt(rupiah.replace(/[^\d]/g, '')) || 0;
-                }
+            function unformatRupiah(rupiah) {
+                return parseInt(rupiah.replace(/[^\d]/g, '')) || 0;
+            }
 
-                document.addEventListener('DOMContentLoaded', function() {
-                    const selectedTable = document.getElementById('selected-produk-table');
-                    const confirmBtn = document.getElementById('confirm-produk-btn');
-                    const selectAll = document.getElementById('select-all-produk');
-                    const modalEl = document.getElementById('pilih-produk-modal');
-                    const modalInstance = new bootstrap.Modal(modalEl);
-                    const bayarInput = document.getElementById('bayar');
+            document.addEventListener('DOMContentLoaded', function() {
+                const selectedTable = document.getElementById('selected-produk-table');
+                const confirmBtn = document.getElementById('confirm-produk-btn');
+                const selectAll = document.getElementById('select-all-produk');
+                const modalEl = document.getElementById('pilih-produk-modal');
+                const modalInstance = new bootstrap.Modal(modalEl);
+                const bayarInput = document.getElementById('bayar');
 
+                selectAll.addEventListener('change', function() {
+                    document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
+                        .checked);
+                });
 
-                    selectAll.addEventListener('change', function() {
-                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
-                            .checked);
-                    });
+                confirmBtn.addEventListener('click', function() {
+                    document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
+                        const id = cb.getAttribute('data-id');
+                        const kode = cb.getAttribute('data-kode');
+                        const nama = cb.getAttribute('data-nama');
+                        const harga = cb.getAttribute('data-harga');
+                        const harga_beli = cb.getAttribute('data-harga_beli');
+                        const kategori = cb.getAttribute('data-kategori');
+                        const input = cb.getAttribute('data-input');
 
-                    confirmBtn.addEventListener('click', function() {
-                        document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
-                            const id = cb.getAttribute('data-id');
-                            const kode = cb.getAttribute('data-kode');
-                            const nama = cb.getAttribute('data-nama');
-                            const harga = cb.getAttribute('data-harga');
-                            const harga_beli = cb.getAttribute('data-harga_beli');
-                            const kategori = cb.getAttribute('data-kategori');
-                            const input = cb.getAttribute('data-input');
-
-                            if (!document.getElementById('produk-row-' + id)) {
-                                const row = document.createElement('tr');
-                                row.id = 'produk-row-' + id;
-                                row.innerHTML = `
+                        if (!document.getElementById('produk-row-' + id)) {
+                            const row = document.createElement('tr');
+                            row.id = 'produk-row-' + id;
+                            row.innerHTML = `
                         <td>
                             ${kode}
                             <input type="hidden" name="produk[${id}][id]" value="${id}">
@@ -318,10 +317,10 @@
                             Rp ${parseInt(harga).toLocaleString('id-ID')}
                             <input type="hidden" name="produk[${id}][harga]" value="${harga}">
                         </td>
-                         <td>
-                            <input class="form-control" name="produk[${id}][harga_beli]" value="Rp ${parseInt(harga_beli).toLocaleString('id-ID')}" readonly>
+                        <td>
+                            <input class="form-control harga-beli-input" data-id="${id}" value="Rp ${parseInt(harga_beli).toLocaleString('id-ID')}">
+                            <input type="hidden" name="produk[${id}][harga_beli]" id="harga-beli-hidden-${id}" value="${parseInt(harga_beli)}">
                         </td>
-
                         <td>
                             <input type="number" name="produk[${id}][jumlah]" class="form-control jumlah-input" data-id="${id}" value="1" min="1">
                         </td>
@@ -337,280 +336,286 @@
                             </button>
                         </td>
                     `;
-                                selectedTable.appendChild(row);
 
-                                row.querySelector('.jumlah-input').addEventListener('input',
-                                    updateTotals);
-                                row.querySelector('.diskon-input').addEventListener('input',
-                                    updateTotals);
-                                row.querySelector('.ppn-checkbox').addEventListener('change',
-                                    updateTotals);
-                            }
-                        });
+                            selectedTable.appendChild(row);
 
-                        modalInstance.hide();
-                        setTimeout(() => {
-                            document.body.classList.remove('modal-open');
-                            document.body.style.removeProperty('padding-right');
-                            document.body.style.removeProperty('overflow');
-                            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                        }, 500);
+                            // Event Listeners
+                            row.querySelector('.jumlah-input').addEventListener('input',
+                                updateTotals);
+                            row.querySelector('.diskon-input').addEventListener('input',
+                                updateTotals);
+                            row.querySelector('.ppn-checkbox').addEventListener('change',
+                                updateTotals);
 
-                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
-                        selectAll.checked = false;
-
-                        updateTotals();
-                    });
-
-                    bayarInput.addEventListener('input', function() {
-                        const numeric = this.value.replace(/[^\d]/g, '');
-                        this.value = formatToRupiah(numeric);
-                        updateHutang();
-                    });
-                });
-
-                function hapusProduk(id) {
-                    const row = document.getElementById('produk-row-' + id);
-                    if (row) row.remove();
-                    updateTotals();
-                }
-
-                function updateTotals() {
-                    let total = 0;
-                    let totalDiskon = 0;
-                    let totalPPN = 0;
-                    let minDiskonOtomatis = 0;
-
-
-                    document.querySelectorAll('#selected-produk-table tr').forEach(row => {
-                        const hargaInput = row.querySelector('input[name$="[harga]"]');
-                        const jumlahInput = row.querySelector('.jumlah-input');
-                        const diskonInput = row.querySelector('.diskon-input');
-                        const ppnCheckbox = row.querySelector('.ppn-checkbox');
-
-                        if (hargaInput && jumlahInput && diskonInput) {
-                            const harga = parseInt(hargaInput.value) || 0;
-                            const jumlah = parseInt(jumlahInput.value) || 0;
-                            const diskon = parseFloat(diskonInput.value) || 0;
-                            const isPpn = ppnCheckbox?.checked;
-
-                            let subtotal = harga * jumlah;
-                            let setelahDiskon = subtotal - diskon;
-                            let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
-
-                            totalDiskon += diskon;
-                            totalPPN += ppnAmount;
-                            total += setelahDiskon + ppnAmount;
+                            const hargaBeliInput = row.querySelector('.harga-beli-input');
+                            hargaBeliInput.addEventListener('input', function() {
+                                const id = this.getAttribute('data-id');
+                                const numeric = this.value.replace(/[^\d]/g, '');
+                                this.value = formatToRupiah(numeric);
+                                document.getElementById(`harga-beli-hidden-${id}`)
+                                    .value = numeric;
+                                updateTotals();
+                            });
                         }
                     });
 
-                    minDiskonOtomatis = totalDiskon;
+                    modalInstance.hide();
+                    setTimeout(() => {
+                        document.body.classList.remove('modal-open');
+                        document.body.style.removeProperty('padding-right');
+                        document.body.style.removeProperty('overflow');
+                        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                    }, 500);
 
-                    const totalDiskonInput = document.getElementById('total-diskon');
-                    totalDiskonInput.min = totalDiskon;
+                    document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
+                    selectAll.checked = false;
 
-                    // Gunakan nilai input manual jika ada, bukan dari kalkulasi otomatis
-                    let manualDiskon = parseFloat(totalDiskonInput.value);
-                    if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
-                        manualDiskon = totalDiskon;
-                        totalDiskonInput.value = totalDiskon; // autofill otomatis
-                    }
+                    updateTotals();
+                });
 
-                    const totalHargaFinal = (total - (manualDiskon - totalDiskon)); // tambahan diskon mengurangi total
-                    document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
-                    document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
-
+                bayarInput.addEventListener('input', function() {
+                    const numeric = this.value.replace(/[^\d]/g, '');
+                    this.value = formatToRupiah(numeric);
                     updateHutang();
-                }
-
-
-                document.getElementById('total-diskon').addEventListener('input', () => {
-                    updateTotals(true); // beri flag manual input
                 });
+            });
 
+            function hapusProduk(id) {
+                const row = document.getElementById('produk-row-' + id);
+                if (row) row.remove();
+                updateTotals();
+            }
 
+            function updateTotals() {
+                let total = 0;
+                let totalDiskon = 0;
+                let totalPPN = 0;
 
-                function updateHutang() {
-                    const totalStr = document.getElementById('total-harga').value.replace(/[^\d]/g, '') || "0";
-                    const bayarStr = document.getElementById('bayar').value || "Rp 0";
-                    const bayar = unformatRupiah(bayarStr);
-                    const total = parseInt(totalStr);
-                    const hutang = Math.max(total - bayar, 0);
+                document.querySelectorAll('#selected-produk-table tr').forEach(row => {
+                    const hargaBeliHiddenInput = row.querySelector('input[id^="harga-beli-hidden-"]');
+                    const jumlahInput = row.querySelector('.jumlah-input');
+                    const diskonInput = row.querySelector('.diskon-input');
+                    const ppnCheckbox = row.querySelector('.ppn-checkbox');
 
-                    document.getElementById('hutang').value = 'Rp ' + hutang.toLocaleString('id-ID');
-                }
-            </script>
+                    if (hargaBeliHiddenInput && jumlahInput && diskonInput) {
+                        const hargaBeli = parseInt(hargaBeliHiddenInput.value) || 0;
+                        const jumlah = parseInt(jumlahInput.value) || 0;
+                        const diskon = parseFloat(diskonInput.value) || 0;
+                        const isPpn = ppnCheckbox?.checked;
 
-            <script>
-                $(document).ready(function() {
-                    var table = $('#produk-modal-table').DataTable();
+                        let subtotal = hargaBeli * jumlah;
+                        let setelahDiskon = subtotal - diskon;
+                        let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
 
-
-                });
-            </script>
-            <script>
-                function tampilkanIdSuplier() {
-                    const select = document.getElementById('suplier');
-                    const idSuplierInput = document.getElementById('id_suplier_text');
-                    const selectedValue = select.value;
-                    idSuplierInput.value = selectedValue;
-                }
-            </script>
-
-            <script>
-                document.getElementById('notaFileInput').addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    const preview = document.getElementById('previewNota');
-
-                    if (file && file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-
-                        reader.onload = function(e) {
-                            preview.src = e.target.result;
-                            preview.style.display = 'block';
-                        };
-
-                        reader.readAsDataURL(file);
-                    } else {
-                        preview.src = '#';
-                        preview.style.display = 'none';
+                        totalDiskon += diskon;
+                        totalPPN += ppnAmount;
+                        total += setelahDiskon + ppnAmount;
                     }
                 });
+
+                const totalDiskonInput = document.getElementById('total-diskon');
+                totalDiskonInput.min = totalDiskon;
+
+                let manualDiskon = parseFloat(totalDiskonInput.value);
+                if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
+                    manualDiskon = totalDiskon;
+                    totalDiskonInput.value = totalDiskon;
+                }
+
+                const totalHargaFinal = total - (manualDiskon - totalDiskon);
+                document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
+                document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
+
+                updateHutang();
+            }
+
+            document.getElementById('total-diskon').addEventListener('input', () => {
+                updateTotals(true);
+            });
+
+            function updateHutang() {
+                const totalStr = document.getElementById('total-harga').value.replace(/[^\d]/g, '') || "0";
+                const bayarStr = document.getElementById('bayar').value || "Rp 0";
+                const bayar = unformatRupiah(bayarStr);
+                const total = parseInt(totalStr);
+                const hutang = Math.max(total - bayar, 0);
+
+                document.getElementById('hutang').value = 'Rp ' + hutang.toLocaleString('id-ID');
+            }
+            </script>
+
+
+
+            <script>
+            $(document).ready(function() {
+                var table = $('#produk-modal-table').DataTable();
+
+
+            });
+            </script>
+            <script>
+            function tampilkanIdSuplier() {
+                const select = document.getElementById('suplier');
+                const idSuplierInput = document.getElementById('id_suplier_text');
+                const selectedValue = select.value;
+                idSuplierInput.value = selectedValue;
+            }
+            </script>
+
+            <script>
+            document.getElementById('notaFileInput').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                const preview = document.getElementById('previewNota');
+
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.src = '#';
+                    preview.style.display = 'none';
+                }
+            });
             </script>
 
 
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const pelangganModal = new bootstrap.Modal(document.getElementById('pelanggan-modal'));
-                    const pelangganFormExtra = document.getElementById('pelanggan-form-extra');
-                    const pelangganForm = document.getElementById('pelanggan-form');
-                    const cariBtn = document.getElementById('cari-pelanggan-btn');
-                    const noHpInput = document.getElementById('search-nohp');
-                    const tipe_pihak = document.getElementById('tipe_pihak');
-                    const tipe_sumber = tipe_pihak.value;
+            document.addEventListener('DOMContentLoaded', function() {
+                const pelangganModal = new bootstrap.Modal(document.getElementById('pelanggan-modal'));
+                const pelangganFormExtra = document.getElementById('pelanggan-form-extra');
+                const pelangganForm = document.getElementById('pelanggan-form');
+                const cariBtn = document.getElementById('cari-pelanggan-btn');
+                const noHpInput = document.getElementById('search-nohp');
+                const tipe_pihak = document.getElementById('tipe_pihak');
+                const tipe_sumber = tipe_pihak.value;
 
-                    // Auto-show "Input Data Pelanggan" button if category = handphone
-                    function checkForHandphone() {
-                        const rows = document.querySelectorAll('#selected-produk-table tr');
-                        let show = false;
+                // Auto-show "Input Data Pelanggan" button if category = handphone
+                function checkForHandphone() {
+                    const rows = document.querySelectorAll('#selected-produk-table tr');
+                    let show = false;
 
-                        rows.forEach(row => {
-                            const kategoriInput = row.querySelector('input[name$="[kategori]"]');
-                            if (kategoriInput && kategoriInput.value.toLowerCase() === 'handphone' &&
-                                tipe_pihak.value === 'pelanggan') {
-                                show = true;
-                            }
-                        });
+                    rows.forEach(row => {
+                        const kategoriInput = row.querySelector('input[name$="[kategori]"]');
+                        if (kategoriInput && kategoriInput.value.toLowerCase() === 'handphone' &&
+                            tipe_pihak.value === 'pelanggan') {
+                            show = true;
+                        }
+                    });
 
-                        document.getElementById('pelanggan-button')?.remove();
+                    document.getElementById('pelanggan-button')?.remove();
 
-                        if (show) {
-                            const btn = document.createElement('button');
-                            btn.type = 'button';
-                            btn.id = 'pelanggan-button';
-                            btn.className = 'btn btn-warning mt-2';
-                            btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
-                            btn.innerHTML = `
+                    if (show) {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.id = 'pelanggan-button';
+                        btn.className = 'btn btn-warning mt-2';
+                        btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
+                        btn.innerHTML = `
                 <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
                 Input Data Pelanggan
             `;
-                            btn.onclick = () => pelangganModal.show();
-                            document.querySelector('.table-responsive.mt-3.mb-4').appendChild(btn);
-                        }
+                        btn.onclick = () => pelangganModal.show();
+                        document.querySelector('.table-responsive.mt-3.mb-4').appendChild(btn);
                     }
+                }
 
-                    // Check after confirming products
-                    document.getElementById('confirm-produk-btn').addEventListener('click', () => {
-                        setTimeout(checkForHandphone, 500); // delay to wait for DOM changes
-                    });
-
-                    tipe_pihak.addEventListener('change', () => {
-                        checkForHandphone();
-
-                        const suplierSelect = document.getElementById('suplier');
-
-                        if (tipe_pihak.value === 'pelanggan') {
-                            suplierSelect.disabled = true;
-                            suplierSelect.value = ''; // reset nilai jika sebelumnya memilih suplier
-                            document.getElementById('id_suplier_text').value =
-                                ''; // reset juga input hidden
-                        } else if (tipe_pihak.value === 'suplier') {
-                            suplierSelect.disabled = false;
-                        }
-                    });
-
-
-                    // 🔍 Search pelanggan by phone number
-                    cariBtn.addEventListener('click', function() {
-                        const no_hp = noHpInput.value.trim();
-                        if (!no_hp) return alert('Isi nomor HP terlebih dahulu.');
-
-                        fetch(`<?= base_url('penjualan/search_by_hp') ?>?no_hp=${encodeURIComponent(no_hp)}`, {
-                                method: 'GET'
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.found) {
-                                    document.getElementById('id_pelanggan').value = data.pelanggan
-                                        .id_pelanggan;
-                                    pelangganModal.hide();
-                                    alert('Pelanggan ditemukan dan dipilih.');
-                                } else {
-                                    pelangganFormExtra.style.display = 'block';
-                                    alert('Nomor tidak ditemukan, silakan lengkapi data pelanggan.');
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert('Terjadi kesalahan saat mencari pelanggan.');
-                            });
-                    });
-
-                    // 💾 Submit pelanggan form
-                    pelangganForm.addEventListener('submit', function(e) {
-                        e.preventDefault();
-
-                        const payload = {
-                            no_hp: document.getElementById('search-nohp').value.trim(),
-                            nama: document.getElementById('nama').value.trim(),
-                            alamat: document.getElementById('alamat').value.trim(),
-                            nik: document.getElementById('nik').value.trim()
-                        };
-
-                        fetch(`<?= base_url('pelanggan/insert') ?>`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(payload)
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    document.getElementById('id_pelanggan').value = data.id_pelanggan ||
-                                        '';
-                                    pelangganModal.hide();
-                                    alert('Pelanggan berhasil disimpan.');
-                                } else {
-                                    alert('Gagal menyimpan pelanggan.');
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert('Terjadi kesalahan saat menyimpan pelanggan.');
-                            });
-                    });
+                // Check after confirming products
+                document.getElementById('confirm-produk-btn').addEventListener('click', () => {
+                    setTimeout(checkForHandphone, 500); // delay to wait for DOM changes
                 });
+
+                tipe_pihak.addEventListener('change', () => {
+                    checkForHandphone();
+
+                    const suplierSelect = document.getElementById('suplier');
+
+                    if (tipe_pihak.value === 'pelanggan') {
+                        suplierSelect.disabled = true;
+                        suplierSelect.value = ''; // reset nilai jika sebelumnya memilih suplier
+                        document.getElementById('id_suplier_text').value =
+                            ''; // reset juga input hidden
+                    } else if (tipe_pihak.value === 'suplier') {
+                        suplierSelect.disabled = false;
+                    }
+                });
+
+
+                // 🔍 Search pelanggan by phone number
+                cariBtn.addEventListener('click', function() {
+                    const no_hp = noHpInput.value.trim();
+                    if (!no_hp) return alert('Isi nomor HP terlebih dahulu.');
+
+                    fetch(`<?= base_url('penjualan/search_by_hp') ?>?no_hp=${encodeURIComponent(no_hp)}`, {
+                            method: 'GET'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.found) {
+                                document.getElementById('id_pelanggan').value = data.pelanggan
+                                    .id_pelanggan;
+                                pelangganModal.hide();
+                                alert('Pelanggan ditemukan dan dipilih.');
+                            } else {
+                                pelangganFormExtra.style.display = 'block';
+                                alert('Nomor tidak ditemukan, silakan lengkapi data pelanggan.');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Terjadi kesalahan saat mencari pelanggan.');
+                        });
+                });
+
+                // 💾 Submit pelanggan form
+                pelangganForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const payload = {
+                        no_hp: document.getElementById('search-nohp').value.trim(),
+                        nama: document.getElementById('nama').value.trim(),
+                        alamat: document.getElementById('alamat').value.trim(),
+                        nik: document.getElementById('nik').value.trim()
+                    };
+
+                    fetch(`<?= base_url('pelanggan/insert') ?>`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('id_pelanggan').value = data.id_pelanggan ||
+                                    '';
+                                pelangganModal.hide();
+                                alert('Pelanggan berhasil disimpan.');
+                            } else {
+                                alert('Gagal menyimpan pelanggan.');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Terjadi kesalahan saat menyimpan pelanggan.');
+                        });
+                });
+            });
             </script>
 
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const selectAllPPN = document.getElementById('select-all-ppn');
+            document.addEventListener('DOMContentLoaded', function() {
+                const selectAllPPN = document.getElementById('select-all-ppn');
 
-                    selectAllPPN.addEventListener('change', function() {
-                        const checkboxes = document.querySelectorAll('.ppn-checkbox');
-                        checkboxes.forEach(cb => cb.checked = selectAllPPN.checked);
-                        updateTotals();
-                    });
+                selectAllPPN.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.ppn-checkbox');
+                    checkboxes.forEach(cb => cb.checked = selectAllPPN.checked);
+                    updateTotals();
                 });
+            });
             </script>

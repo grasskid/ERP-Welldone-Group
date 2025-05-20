@@ -8,6 +8,9 @@ use Config\Database;
 use App\Models\ModelAuth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class Riwayat_pembelian extends BaseController
 
@@ -47,24 +50,44 @@ class Riwayat_pembelian extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         $unit = $this->request->getPost('unit');
-        $tanggal_awal = $this->request->getPost('tanggal_awal');;
+        $tanggal_awal = $this->request->getPost('tanggal_awal');
         $tanggal_akhir = $this->request->getPost('tanggal_akhir');
 
         $datapembelian = $this->DetailPembelianModel->exportfilter($tanggal_awal, $tanggal_akhir, $unit);
 
-        // Header
-        $sheet->setCellValue('A1', 'No. Nota Suplier');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Nama Barang');
-        $sheet->setCellValue('D1', 'Jumlah');
-        $sheet->setCellValue('E1', 'Unit');
-        $sheet->setCellValue('F1', 'Diskon');
-        $sheet->setCellValue('G1', 'PPN');
-        $sheet->setCellValue('H1', 'Total Harga');
+        // Header Titles
+        $headers = [
+            'A1' => 'No. Nota Suplier',
+            'B1' => 'Tanggal',
+            'C1' => 'Nama Barang',
+            'D1' => 'Jumlah',
+            'E1' => 'Unit',
+            'F1' => 'Diskon',
+            'G1' => 'PPN',
+            'H1' => 'Total Harga',
+        ];
 
-        // Data 
+        foreach ($headers as $cell => $value) {
+            $sheet->setCellValue($cell, $value);
+        }
+
+        // Styling Header
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+
+        // Data Rows
         $row = 2;
         foreach ($datapembelian as $item) {
+            // $ppn = '';
+            // if ($item->ppn == 0) {
+            //     $ppn == 'NON PPN';
+            // } elseif ($item->ppn == 1) {
+            //     $ppn = 'PPN';
+            // } else {
+            //     $ppn = 'Belum Diatur';
+            // }
+
             $sheet->setCellValue('A' . $row, $item->no_batch);
             $sheet->setCellValue('B' . $row, $item->tanggal);
             $sheet->setCellValue('C' . $row, $item->nama_barang);
@@ -76,7 +99,23 @@ class Riwayat_pembelian extends BaseController
             $row++;
         }
 
-        // Output Excel
+        // Auto Width
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Border
+        $sheet->getStyle('A1:H' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Freeze header row
+        $sheet->freezePane('A2');
+
+        // Format angka (optional)
+        $sheet->getStyle('F2:F' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('G2:G' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('H2:H' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0');
+
+        // Filename
         $filename = 'Riwayat_Pembelian_' . date('Ymd_His') . '.xlsx';
 
         // Set header

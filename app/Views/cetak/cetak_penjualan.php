@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Invoice Receipt</title>
+    <title>Struk Penjualan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -111,6 +111,10 @@
                 <td>Kasir:</td>
                 <td><?= @$kasir ?></td>
             </tr>
+            <tr>
+                <td>Customer:</td>
+                <td><?= @$customer ?></td>
+            </tr>
         </table>
 
         <table class="items-table">
@@ -143,6 +147,12 @@
                 <td><strong>Diskon</strong></td>
                 <td class="text-end"><?= number_format(@$diskon, 0, ',', '.') ?></td>
             </tr>
+
+            <tr>
+                <td><strong>Total PPN</strong></td>
+                <td class="text-end"><?= number_format(@$total_ppn, 0, ',', '.') ?></td>
+            </tr>
+
             <tr>
                 <td><strong>Total</strong></td>
                 <td class="text-end"><strong><?= number_format(@$total, 0, ',', '.') ?></strong></td>

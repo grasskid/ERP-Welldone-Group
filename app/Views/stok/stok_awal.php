@@ -254,23 +254,34 @@
     $(document).ready(function() {
         table = $('#zero_config').DataTable();
 
-        // Tambahkan custom filter ke DataTables
+
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
             const ppnFilter = $('#ppnFilter').val().toLowerCase();
 
-            const kategori = data[3].toLowerCase(); // kolom Kategori (index ke-3)
-            const ppn = data[5].toLowerCase(); // kolom PPN (index ke-5)
+            const kategori = data[3].toLowerCase();
+            const ppn = data[5].toLowerCase();
 
             const matchKategori = !kategoriFilter || kategori === kategoriFilter;
             const matchPPN = !ppnFilter || ppn === ppnFilter;
 
             return matchKategori && matchPPN;
         });
+
+
+        if ($('#ppnFilter option').length > 1) {
+            $('#ppnFilter')[0].selectedIndex = 1;
+        }
+        if ($('#kategoriFilter option').length > 1) {
+            $('#kategoriFilter')[0].selectedIndex = 1;
+        }
+
+
+        table.draw();
     });
 
     function filterKategori() {
-        table.draw(); // trigger ulang filter
+        table.draw();
     }
 
     function resetKategoriFilter() {

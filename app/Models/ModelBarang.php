@@ -23,12 +23,16 @@ class ModelBarang extends Model
 
     public function getAllBarang()
     {
-        return $this->select('barang.*, kategori.nama_kategori')
+        $id_unit = session('ID_UNIT');
+
+        return $this->select('barang.*, kategori.nama_kategori, stok_barang.stok_akhir')
             ->join('kategori', 'kategori.id = barang.idkategori')
+            ->join('stok_barang', 'stok_barang.idbarang = barang.idbarang AND stok_barang.id_unit = ' . (int)$id_unit, 'left')
             ->where('barang.deleted', 0)
             ->where('kategori.delete', 0)
             ->findAll();
     }
+
 
 
 

@@ -74,6 +74,10 @@
                                             <th>
                                                 <h6 class="fs-4 fw-semibold mb-0">Kategori</h6>
                                             </th>
+
+                                            <th>
+                                                <h6 class="fs-4 fw-semibold mb-0">Stok</h6>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -84,12 +88,18 @@
                                                         data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
                                                         data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
                                                         data-kategori="<?= $p->nama_kategori ?>"
-                                                        data-input="<?= $p->input ?>">
+                                                        data-input="<?= $p->input ?>"
+                                                        <?= (is_null($p->stok_akhir) || $p->stok_akhir <= 0) ? 'disabled' : '' ?>>
+
                                                 </td>
                                                 <td><?= $p->kode_barang ?></td>
                                                 <td><?= $p->nama_barang ?></td>
                                                 <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
                                                 <td><?= $p->nama_kategori ?></td>
+                                                <td>
+                                                    <?= is_null($p->stok_akhir) ? '<span class="text-red-500">belum mengatur stok awal</span>' : $p->stok_akhir ?>
+                                                </td>
+
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -126,9 +136,13 @@
                         <tr>
                             <td colspan="2"><strong>Total Diskon (Rp.)</strong></td>
                             <td colspan="7">
-                                <input type="number" id="total-diskon" name="total-diskon" class="form-control">
+                                <input type="text" id="total-diskon" value="Rp 0" name="total-diskon" class="form-control">
+                                <small id="total-diskon-alert" class="text-danger d-none">
+                                    Total diskon tidak boleh lebih kecil dari jumlah diskon per barang.
+                                </small>
                             </td>
                         </tr>
+
                         <tr>
                             <td colspan="2"><strong>Total PPN</strong></td>
                             <td colspan="7">
@@ -231,6 +245,9 @@
                     const modalInstance = new bootstrap.Modal(modalEl);
                     const bayarInput = document.getElementById('bayar');
 
+
+
+
                     selectAll.addEventListener('change', function() {
                         document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
                             .checked);
@@ -269,7 +286,7 @@
                         <input type="number" name="produk[${id}][jumlah]" class="form-control jumlah-input" data-id="${id}" value="1" min="1">
                     </td>
                     <td>
-                        <input type="number" name="produk[${id}][diskon]" class="form-control diskon-input" data-id="${id}" value="0" min="0">
+                        <input type="text" name="produk[${id}][diskon]" class="form-control diskon-input" data-id="${id}" value="0" min="0">
                     </td>
                     <td class="text-center">
                         <input type="checkbox" name="produk[${id}][ppn]" class="form-check-input ppn-checkbox" data-id="${id}">
@@ -284,8 +301,11 @@
 
                                 row.querySelector('.jumlah-input').addEventListener('input',
                                     updateTotals);
-                                row.querySelector('.diskon-input').addEventListener('input',
-                                    updateTotals);
+                                row.querySelector('.diskon-input').addEventListener('input', function() {
+                                    this.value = formatToRupiah(this.value);
+                                    updateTotals();
+                                });
+
                                 row.querySelector('.ppn-checkbox').addEventListener('change',
                                     updateTotals);
                             }
@@ -305,11 +325,22 @@
                         updateTotals();
                     });
 
+
+
+                    totalDiskonInput.addEventListener('input', function() {
+                        const numeric = this.value.replace(/[^\d]/g, '');
+                        this.value = formatToRupiah(numeric);
+                        updateTotals();
+                    });
+
+
+
                     bayarInput.addEventListener('input', function() {
                         const numeric = this.value.replace(/[^\d]/g, '');
                         this.value = formatToRupiah(numeric);
                         updateHutang();
                     });
+
 
                     updateTotals(); // Initial check on load
                 });
@@ -336,7 +367,7 @@
                         if (hargaInput && jumlahInput && diskonInput) {
                             const harga = parseInt(hargaInput.value) || 0;
                             const jumlah = parseInt(jumlahInput.value) || 0;
-                            const diskon = parseFloat(diskonInput.value) || 0;
+                            const diskon = parseFloat(diskonInput.value.replace(/[^\d]/g, '')) || 0;
                             const isPpn = ppnCheckbox?.checked;
 
                             let subtotal = harga * jumlah;
@@ -355,10 +386,11 @@
                     totalDiskonInput.min = totalDiskon;
 
                     // Gunakan nilai input manual jika ada, bukan dari kalkulasi otomatis
-                    let manualDiskon = parseFloat(totalDiskonInput.value);
+                    let manualDiskon = parseFloat(totalDiskonInput.value.replace(/[^\d]/g, '')) || 0;
+
                     if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
                         manualDiskon = totalDiskon;
-                        totalDiskonInput.value = totalDiskon; // autofill otomatis
+                        totalDiskonInput.value = 'Rp ' + totalDiskon.toLocaleString('id-ID');
                     }
 
                     const totalHargaFinal = (total - (manualDiskon - totalDiskon)); // tambahan diskon mengurangi total
@@ -369,8 +401,10 @@
                 }
 
 
-                document.getElementById('total-diskon').addEventListener('input', () => {
-                    updateTotals(true); // beri flag manual input
+                document.getElementById('total-diskon').addEventListener('input', function() {
+                    const cleaned = this.value.replace(/[^\d]/g, '');
+                    this.value = formatToRupiah(cleaned);
+                    updateTotals();
                 });
 
 
@@ -385,6 +419,9 @@
                 }
             </script>
 
+
+
+
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const pelangganModal = new bootstrap.Modal(document.getElementById('pelanggan-modal'));
@@ -392,6 +429,7 @@
                     const pelangganForm = document.getElementById('pelanggan-form');
                     const cariBtn = document.getElementById('cari-pelanggan-btn');
                     const noHpInput = document.getElementById('search-nohp');
+
 
                     // Auto-show "Input Data Pelanggan" button if category = handphone
                     function checkForHandphone() {

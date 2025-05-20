@@ -10,6 +10,10 @@ use Config\Database;
 use App\Models\ModelBarang;
 use App\Models\ModelAuth;
 
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 class Phone extends BaseController
 
 {
@@ -157,32 +161,26 @@ class Phone extends BaseController
 
         $phone = $this->PhoneModel->getPhone();
 
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         // Header
-        $sheet->setCellValue('A1', 'kode Barang');
-        $sheet->setCellValue('B1', 'Nama Barang');
-        $sheet->setCellValue('C1', 'Imei');
-        $sheet->setCellValue('D1', 'Jenis Handphone');
-        $sheet->setCellValue('E1', 'Harga');
-        $sheet->setCellValue('F1', 'Harga Beli');
-        $sheet->setCellValue('G1', 'Internal');
-        $sheet->setCellValue('H1', 'Warna');
-        $sheet->setCellValue('I1', 'Status PPN');
+        $headers = ['Kode Barang', 'Nama Barang', 'IMEI', 'Jenis Handphone', 'Harga', 'Harga Beli', 'Internal', 'Warna', 'Status PPN'];
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . '1', $header);
+            $col++;
+        }
+
+        // Styling header
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
 
         // Data
         $row = 2;
         foreach ($phone as $handphone) {
-
-            if ($handphone->status_ppn == 1) {
-                $ppn = 'PPN';
-            } elseif ($handphone->status_ppn == 0) {
-                $ppn = 'NON PPN';
-            } else {
-                $ppn = 'PPN Belum Di Set';
-            }
+            $ppn = $handphone->status_ppn == 1 ? 'PPN' : ($handphone->status_ppn == 0 ? 'NON PPN' : 'PPN Belum Di Set');
 
             $sheet->setCellValue('A' . $row, $handphone->kode_barang);
             $sheet->setCellValue('B' . $row, $handphone->nama_barang);
@@ -196,10 +194,20 @@ class Phone extends BaseController
             $row++;
         }
 
-        // Output Excel
-        $filename = 'data_Handphone_' . date('d/m/Y') . '.xlsx';
+        // Auto width semua kolom
+        foreach (range('A', 'I') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
-        // Set header
+        // Border semua sel
+        $sheet->getStyle('A1:I' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Freeze header
+        $sheet->freezePane('A2');
+
+        // Output Excel
+        $filename = 'data_Handphone_' . date('Ymd') . '.xlsx';
+
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');

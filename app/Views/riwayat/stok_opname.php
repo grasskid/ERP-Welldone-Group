@@ -111,6 +111,38 @@
     let table;
 
     document.addEventListener('DOMContentLoaded', function() {
+
+        window.onload = function() {
+            const endDateInput = document.getElementById('endDate');
+            const startDateInput = document.getElementById('startDate');
+
+            const today = new Date();
+            const fifteenDaysAgo = new Date();
+            fifteenDaysAgo.setDate(today.getDate() - 15);
+
+
+            const toDateInputValue = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            startDateInput.value = toDateInputValue(fifteenDaysAgo);
+            endDateInput.value = toDateInputValue(today);
+
+            const unitSelect = document.getElementById('unitFilter');
+            if (unitSelect.options.length > 1) {
+                unitSelect.selectedIndex = 1;
+            }
+
+            filterData();
+        };
+
+
+
+
+
         // Inisialisasi DataTable
         table = $('#zero_config').DataTable();
 

@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\ModelStokBarang;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,6 +28,11 @@ abstract class BaseController extends Controller
      * @var CLIRequest|IncomingRequest
      */
     protected $request;
+    protected $ModelStokBarang;
+    protected $stokMinimum;
+
+
+
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -50,6 +56,22 @@ abstract class BaseController extends Controller
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
+
+
+
+        //notifikasi stok minimum
+        $this->ModelStokBarang = new \App\Models\ModelStokBarang();
+
+
+        $this->stokMinimum = $this->ModelStokBarang->getStokMinimum();
+
+        \Config\Services::renderer()->setVar('stokMinimum', $this->stokMinimum);
+
+        // end notifikasi stok minimum
+
+
+
+
 
         // Preload any models, libraries, etc, here.
 

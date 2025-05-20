@@ -52,7 +52,7 @@ class Retur_Suplier extends BaseController
         //noretur
         $lastRetur = $this->ReturSuplierModel
             ->where('unit_idunit', $useridunit)
-            ->like('tanggal', $tanggal)
+            ->like('DATE(tanggal)', $tanggal)
             ->orderBy('no_retur_suplier', 'DESC')
             ->first();
 

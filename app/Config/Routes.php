@@ -84,7 +84,7 @@ $routes->get('stokopname/loadtable', 'StokOpname::loadTable');
 
 //kartu stok
 $routes->get('kartu_stok', 'Kartu_Stok::index', ['filter' => 'auth']);
-$routes->get('export/kartu_stock', 'Kartu_Stok::export', ['filter' => 'auth']);
+$routes->post('export/kartu_stock', 'Kartu_Stok::export', ['filter' => 'auth']);
 
 //mutasi stok
 $routes->get('mutasi_stok', 'MutasiStok::index', ['filter' => 'auth']);
@@ -125,3 +125,11 @@ $routes->post('insert_retur_suplier', 'Retur_Suplier::insert', ['filter' => 'aut
 //retur customer
 $routes->get('retur_customer', 'Retur_Customer::index', ['filter' => 'auth']);
 $routes->post('insert_retur_customer', 'Retur_Customer::insert', ['filter' => 'auth']);
+
+
+//promosi whatsapp 
+$routes->get('promosi_whatsapp', 'PromosiWhatsapp::index', ['filter' => 'auth']);
+
+//stok minimum
+$routes->get('stok_minimum', 'StokMinimum::index', ['filter' => 'auth']);
+$routes->post('update_stokminimum', 'StokMinimum::update', ['filter' => 'auth']);

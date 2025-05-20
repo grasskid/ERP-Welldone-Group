@@ -9,6 +9,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Config\Database;
 use App\Models\ModelAuth;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Produk extends BaseController
 
@@ -158,30 +161,46 @@ class Produk extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         // Header
-        $sheet->setCellValue('A1', 'Kode Barang');
-        $sheet->setCellValue('B1', 'Nama Barang');
-        $sheet->setCellValue('C1', 'Harga');
-        $sheet->setCellValue('D1', 'Harga Beli');
-        $sheet->setCellValue('E1', 'Kategori');
-        $sheet->setCellValue('F1', 'Status PPN');
-        $sheet->setCellValue('G1', 'Input');
+        $headers = ['Kode Barang', 'Nama Barang', 'Harga', 'Harga Beli', 'Kategori', 'Status PPN', 'Input'];
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . '1', $header);
+            $col++;
+        }
+
+        // Styling Header
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:G1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
 
         // Data
         $row = 2;
         foreach ($produk as $product) {
+            $ppn = ($product->status_ppn === '1') ? 'PPN' : (($product->status_ppn === '0') ? 'NON PPN' : 'Belum Diset');
+
             $sheet->setCellValue('A' . $row, $product->kode_barang);
             $sheet->setCellValue('B' . $row, $product->nama_barang);
             $sheet->setCellValue('C' . $row, $product->harga);
             $sheet->setCellValue('D' . $row, $product->harga_beli);
             $sheet->setCellValue('E' . $row, $product->nama_kategori);
-            $sheet->setCellValue('F' . $row, $product->status_ppn);
+            $sheet->setCellValue('F' . $row, $ppn);
             $sheet->setCellValue('G' . $row, $product->input);
             $row++;
         }
 
-        // Output Excel
-        $filename = 'data_produk_' . date('d/m/Y') . '.xlsx';
+        // Auto width
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
+        // Border
+        $sheet->getStyle('A1:G' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Freeze header
+        $sheet->freezePane('A2');
+
+        // File name (safe format)
+        $filename = 'data_produk_' . date('Ymd') . '.xlsx';
 
         // Set header
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
