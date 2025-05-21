@@ -290,10 +290,6 @@ function resetKategoriFilter() {
     table.draw();
 }
 </script>
-
-
-
-
 <script>
 const suplierList = <?= json_encode($suplier) ?>;
 const pelangganList = <?= json_encode($pelanggan) ?>;
@@ -301,21 +297,31 @@ const allBarang = <?= json_encode($barang) ?>;
 const stok = <?= json_encode($stok) ?>;
 
 // Toggle enable/disable fields when checkbox is clicked
-function toggleProductFields(index) {
-    const isChecked = document.getElementById('product_' + index).checked;
-    document.getElementById('jumlah_' + index).disabled = !isChecked;
-    document.getElementById('harga_beli_' + index).disabled = !isChecked;
-    document.getElementById('satuan_terkecil_' + index).disabled = !isChecked;
-    document.getElementById('tipe_relasi_' + index).disabled = !isChecked;
-    document.getElementById('id_suplier_text_' + index).disabled = !isChecked;
-    document.getElementById('id_pelanggan_text_' + index).disabled = !isChecked;
+function toggleProductFields(kodeBarang) {
+    const isChecked = document.getElementById('product_' + kodeBarang)?.checked;
+
+    const fields = [
+        'jumlah_',
+        'harga_beli_',
+        'satuan_terkecil_',
+        'tipe_relasi_',
+        'id_suplier_text_',
+        'id_pelanggan_text_'
+    ];
+
+    fields.forEach(id => {
+        const el = document.getElementById(id + kodeBarang);
+        if (el) el.disabled = !isChecked;
+    });
 }
 
 // Toggle supplier/pelanggan fields based on selected relation type
-function toggleRelasiFields(index) {
-    const tipeRelasi = document.getElementById('tipe_relasi_' + index).value;
-    const suplierSelect = document.getElementById('id_suplier_text_' + index);
-    const pelangganSelect = document.getElementById('id_pelanggan_text_' + index);
+function toggleRelasiFields(kodeBarang) {
+    const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang)?.value;
+    const suplierSelect = document.getElementById('id_suplier_text_' + kodeBarang);
+    const pelangganSelect = document.getElementById('id_pelanggan_text_' + kodeBarang);
+
+    if (!suplierSelect || !pelangganSelect) return;
 
     if (tipeRelasi === 'suplier') {
         suplierSelect.disabled = false;
@@ -333,80 +339,99 @@ function toggleRelasiFields(index) {
     }
 }
 
-// Global unit change handler to assign selected unit to all barang
-document.getElementById('global_unit').addEventListener('change', function() {
-    const unitId = this.value;
-    <?php foreach ($barang as $index => $b): ?>
-    document.getElementById('id_unit_text_<?= $index ?>').value = unitId;
-    <?php endforeach; ?>
-});
-
-// Global unit change handler to filter barang
+// Global unit change handler
 document.getElementById('global_unit').addEventListener('change', function() {
     const selectedUnitId = this.value;
+
+    // Update hidden unit fields (if used)
+    allBarang.forEach(barang => {
+        const el = document.getElementById('id_unit_text_' + barang.kode_barang);
+        if (el) el.value = selectedUnitId;
+    });
+
+    // Filter and update barang table
     filterBarangByUnit(selectedUnitId);
 });
 
 function filterBarangByUnit(unitId) {
     const filteredBarang = allBarang.filter(barang => {
-        const inStok = stok.some(s => s.unit_idunit == unitId && s.barang_idbarang == barang.idbarang);
-        return !inStok;
+        return !stok.some(s => s.unit_idunit == unitId && s.barang_idbarang == barang.idbarang);
     });
     updateBarangTable(filteredBarang);
 }
 
-// Dynamically render filtered barang rows
 function updateBarangTable(filteredBarang) {
     const tableBody = document.querySelector('#table_barang tbody');
     tableBody.innerHTML = '';
 
-    filteredBarang.forEach((barang, index) => {
+    filteredBarang.forEach((barang) => {
+        const kodeBarang = barang.kode_barang;
+
         const suplierOptions = suplierList.map(s =>
             `<option value="${s.id_suplier}">${s.nama_suplier}</option>`
         ).join('');
+
         const pelangganOptions = pelangganList.map(p =>
             `<option value="${p.id_pelanggan}">${p.nama}</option>`
         ).join('');
 
         tableBody.innerHTML += `
-                <tr>
-                    <td>
-                        <input type="checkbox" name="selected_products[]" value="${barang.kode_barang}" id="product_${index}" onchange="toggleProductFields(${index})">
-                    </td>
-                    <td style="min-width: 140px; text-align: center;">
-                        <p style="font-weight: bold;">${barang.kode_barang}</p>
-                        <p style="font-style: italic;">${barang.nama_barang}</p>
-                    </td>
-                    <td><input type="number" name="jumlah[${barang.kode_barang}]" class="form-control" id="jumlah_${index}" disabled style="min-width: 120px;"></td>
-                    
-                    <td>
-                        <select name="satuan_terkecil[${barang.kode_barang}]" class="form-select" id="satuan_terkecil_${index}" disabled style="min-width: 190px;">
-                            <option value="">-- Pilih Satuan --</option>
-                            <option value="pcs">pcs</option>
-                            <option value="pack">pack</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="tipe_relasi[${barang.kode_barang}]" class="form-select" id="tipe_relasi_${index}" onchange="toggleRelasiFields(${index})" disabled>
-                            <option value="">-- Pilih Tipe --</option>
-                            <option value="suplier">Suplier</option>
-                            <option value="pelanggan">Pelanggan</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="id_suplier_text[${barang.kode_barang}]" class="form-select" id="id_suplier_text_${index}" disabled style="min-width: 190px;">
-                            <option value="">-- Pilih Suplier --</option>
-                            ${suplierOptions}
-                        </select>
-                    </td>
-                    <td>
-                        <select name="id_pelanggan_text[${barang.kode_barang}]" class="form-select" id="id_pelanggan_text_${index}" disabled style="min-width: 190px;">
-                            <option value="">-- Pilih Pelanggan --</option>
-                            ${pelangganOptions}
-                        </select>
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>
+                    <input type="checkbox" name="selected_products[]" value="${kodeBarang}" id="product_${kodeBarang}">
+                </td>
+                <td style="min-width: 140px; text-align: center;">
+                    <p style="font-weight: bold;">${kodeBarang}</p>
+                    <p style="font-style: italic;">${barang.nama_barang}</p>
+                </td>
+                <td><input type="number" name="jumlah[${kodeBarang}]" class="form-control" id="jumlah_${kodeBarang}" disabled style="min-width: 120px;"></td>
+                <td>
+                    <select name="satuan_terkecil[${kodeBarang}]" class="form-select" id="satuan_terkecil_${kodeBarang}" disabled style="min-width: 190px;">
+                        <option value="">-- Pilih Satuan --</option>
+                        <option value="pcs">pcs</option>
+                        <option value="pack">pack</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="tipe_relasi[${kodeBarang}]" class="form-select" id="tipe_relasi_${kodeBarang}" disabled>
+                        <option value="">-- Pilih Tipe --</option>
+                        <option value="suplier">Suplier</option>
+                        <option value="pelanggan">Pelanggan</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="id_suplier_text[${kodeBarang}]" class="form-select" id="id_suplier_text_${kodeBarang}" disabled style="min-width: 190px;">
+                        <option value="">-- Pilih Suplier --</option>
+                        ${suplierOptions}
+                    </select>
+                </td>
+                <td>
+                    <select name="id_pelanggan_text[${kodeBarang}]" class="form-select" id="id_pelanggan_text_${kodeBarang}" disabled style="min-width: 190px;">
+                        <option value="">-- Pilih Pelanggan --</option>
+                        ${pelangganOptions}
+                    </select>
+                </td>
+            </tr>
+        `;
+    });
+
+    // Rebind event listeners after rendering
+    filteredBarang.forEach((barang) => {
+        const kodeBarang = barang.kode_barang;
+        const checkbox = document.getElementById('product_' + kodeBarang);
+        const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang);
+
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                toggleProductFields(kodeBarang);
+            });
+        }
+
+        if (tipeRelasi) {
+            tipeRelasi.addEventListener('change', function() {
+                toggleRelasiFields(kodeBarang);
+            });
+        }
     });
 }
 

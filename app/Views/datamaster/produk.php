@@ -49,7 +49,8 @@
 
     <div class="mb-3 px-4">
         <label class="me-2">Filter Kategori:</label>
-        <select id="kategoriFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterKategori()">
+        <select id="kategoriFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterKategori()">
             <option value="">Semua Kategori</option>
             <?php
             $kategoriList = [];
@@ -63,7 +64,8 @@
         </select>
 
         <label class="me-2 ms-4">Filter PPN:</label>
-        <select id="ppnFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterKategori()">
+        <select id="ppnFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterKategori()">
             <option value="">Semua</option>
             <option value="PPN">PPN</option>
             <option value="Non PPN">Non PPN</option>
@@ -96,7 +98,9 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Kategori</h6>
                     </th>
-
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Stok Minim</h6>
+                    </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Status PPN</h6>
                     </th>
@@ -111,41 +115,41 @@
             </thead>
             <tbody id="produkTableBody">
                 <?php if (!empty($produk)): ?>
-                    <?php foreach ($produk as $row): ?>
-                        <tr>
-                            <td><?= esc($row->kode_barang) ?></td>
-                            <td><?= esc($row->nama_barang) ?></td>
-                            <td><?= 'Rp ' . number_format($row->harga, 0, ',', '.') ?></td>
-                            <td><?= 'Rp ' . number_format($row->harga_beli, 0, ',', '.') ?></td>
-                            <td><?= esc($row->nama_kategori) ?></td>
-                            <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
+                <?php foreach ($produk as $row): ?>
+                <tr>
+                    <td><?= esc($row->kode_barang) ?></td>
+                    <td><?= esc($row->nama_barang) ?></td>
+                    <td><?= 'Rp ' . number_format($row->harga, 0, ',', '.') ?></td>
+                    <td><?= 'Rp ' . number_format($row->harga_beli, 0, ',', '.') ?></td>
+                    <td><?= esc($row->nama_kategori) ?></td>
+                    <td><?= esc($row->stok_minimum) ?></td>
+                    <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
 
 
 
-                            <td><?= esc($row->input) ?></td>
-                            <td><button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-produk-modal" data-id_barang="<?= esc($row->idbarang) ?>"
-                                    data-kode_barang="<?= esc($row->kode_barang) ?>"
-                                    data-nama_barang="<?= esc($row->nama_barang) ?>" data-harga="<?= esc($row->harga) ?>"
-                                    data-harga_beli="<?= esc($row->harga_beli) ?>"
-                                    data-kategori="<?= esc($row->nama_kategori) ?>"
-                                    data-ppn="<?= esc($row->status_ppn) ?>"
-                                    data-input_by="<?= esc($row->input) ?>">
-                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                </button>
-                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                    data-bs-target="#delete-produk-modal" data-id_barang="<?= esc($row->idbarang) ?>">
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                                    </iconify-icon>
-                                </button>
-                            </td>
+                    <td><?= esc($row->input) ?></td>
+                    <td><button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                            data-bs-target="#edit-produk-modal" data-id_barang="<?= esc($row->idbarang) ?>"
+                            data-kode_barang="<?= esc($row->kode_barang) ?>"
+                            data-nama_barang="<?= esc($row->nama_barang) ?>" data-harga="<?= esc($row->harga) ?>"
+                            data-harga_beli="<?= esc($row->harga_beli) ?>"
+                            data-kategori="<?= esc($row->nama_kategori) ?>" data-ppn="<?= esc($row->status_ppn) ?>"
+                            data-input_by="<?= esc($row->input) ?>">
+                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                        </button>
+                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                            data-bs-target="#delete-produk-modal" data-id_barang="<?= esc($row->idbarang) ?>">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                            </iconify-icon>
+                        </button>
+                    </td>
 
-                        </tr>
-                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="6" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="6" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -209,7 +213,7 @@
                         <select class="form-control" id="id_kategori" name="kategori" required>
                             <option value="">-- Pilih Kategori --</option>
                             <?php foreach ($kategori as $k) : ?>
-                                <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
+                            <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -229,6 +233,11 @@
                             <input type="text" class="form-control currency" id="edit-harga-beli" name="harga_beli"
                                 required>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="stok_minimum" class="form-label">Stok Minim</label>
+                        <input type="text" class="form-control" id="stok_minimum" name="stok_minimum" required>
                     </div>
 
                     <div class="mb-3">
@@ -276,7 +285,7 @@
                         <select class="form-control" id="id_kategori" name="kategori" required>
                             <option value="">-- Pilih Kategori --</option>
                             <?php foreach ($kategori as $k) : ?>
-                                <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
+                            <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -295,6 +304,11 @@
                             <span class="input-group-text">Rp</span>
                             <input type="text" class="form-control currency" id="harga_beli" name="harga_beli" required>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="stok_minimum" class="form-label">Stok Minim</label>
+                        <input type="text" class="form-control" id="stok_minimum" name="stok_minimum" required>
                     </div>
 
                     <div class="mb-3">
@@ -358,97 +372,93 @@
 
 
 <script>
-    let table;
+let table;
 
-    window.onload = function() {
-        table = $('#zero_config').DataTable();
-
-
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
-            const ppnFilter = $('#ppnFilter').val().toLowerCase();
-
-            const kategori = data[4].toLowerCase();
-            const ppn = data[5].toLowerCase();
-
-            const matchKategori = !kategoriFilter || kategori === kategoriFilter;
-            const matchPPN = !ppnFilter || ppn === ppnFilter;
-
-            return matchKategori && matchPPN;
-        });
+window.onload = function() {
+    table = $('#zero_config').DataTable();
 
 
-        // const kategoriSelect = document.getElementById('kategoriFilter');
-        // const ppnSelect = document.getElementById('ppnFilter');
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
+        const ppnFilter = $('#ppnFilter').val().toLowerCase();
 
-        // if (kategoriSelect && kategoriSelect.options.length > 1) {
-        //     kategoriSelect.selectedIndex = 1;
-        // }
-        // if (ppnSelect && ppnSelect.options.length > 1) {
-        //     ppnSelect.selectedIndex = 1;
-        // }
+        const kategori = data[4].toLowerCase();
+        const ppn = data[5].toLowerCase();
+
+        const matchKategori = !kategoriFilter || kategori === kategoriFilter;
+        const matchPPN = !ppnFilter || ppn === ppnFilter;
+
+        return matchKategori && matchPPN;
+    });
 
 
-        table.draw();
-    };
+    // const kategoriSelect = document.getElementById('kategoriFilter');
+    // const ppnSelect = document.getElementById('ppnFilter');
 
-    function filterKategori() {
-        table.draw();
-    }
+    // if (kategoriSelect && kategoriSelect.options.length > 1) {
+    //     kategoriSelect.selectedIndex = 1;
+    // }
+    // if (ppnSelect && ppnSelect.options.length > 1) {
+    //     ppnSelect.selectedIndex = 1;
+    // }
 
-    function resetKategoriFilter() {
-        $('#kategoriFilter').val('');
-        $('#ppnFilter').val('');
-        table.draw();
-    }
+
+    table.draw();
+};
+
+function filterKategori() {
+    table.draw();
+}
+
+function resetKategoriFilter() {
+    $('#kategoriFilter').val('');
+    $('#ppnFilter').val('');
+    table.draw();
+}
 </script>
 
-
-
-
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('#zero_config').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const button = e.target.closest('.edit-button');
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#zero_config').addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const button = e.target.closest('.edit-button');
 
-                const id_barang = button.getAttribute('data-id_barang');
-                const kode_barang = button.getAttribute('data-kode_barang');
-                const nama_barang = button.getAttribute('data-nama_barang');
-                const harga = button.getAttribute('data-harga');
-                const harga_beli = button.getAttribute('data-harga_beli');
-                const kategori = button.getAttribute('data-kategori');
-                // const lokasi = button.getAttribute('data-lokasi');
-                const ppn = button.getAttribute('data-ppn');
+            const id_barang = button.getAttribute('data-id_barang');
+            const kode_barang = button.getAttribute('data-kode_barang');
+            const nama_barang = button.getAttribute('data-nama_barang');
+            const harga = button.getAttribute('data-harga');
+            const harga_beli = button.getAttribute('data-harga_beli');
+            const kategori = button.getAttribute('data-kategori');
+            const stok_minimum = button.getAttribute('data-stok_minimum');
+            const ppn = button.getAttribute('data-ppn');
 
-                const input_by = button.getAttribute('data-input_by');
+            const input_by = button.getAttribute('data-input_by');
 
-                document.getElementById('id_barang').value = id_barang;
-                document.getElementById('kode_barang').value = kode_barang;
-                document.getElementById('nama_barang').value = nama_barang;
-                document.getElementById('edit-harga').value = parseInt(harga.replace(/[^\d]/g, ''));
-                document.getElementById('edit-harga-beli').value = parseInt(harga_beli.replace(/[^\d]/g,
-                    ''));
-                document.getElementById('id_kategori').value = kategori;
-                // document.getElementById('lokasi').value = lokasi;
-                document.getElementById('edit-ppn-status').value = ppn;
-                document.getElementById('input_by').value = input_by;
-            }
+            document.getElementById('id_barang').value = id_barang;
+            document.getElementById('kode_barang').value = kode_barang;
+            document.getElementById('nama_barang').value = nama_barang;
+            document.getElementById('edit-harga').value = parseInt(harga.replace(/[^\d]/g, ''));
+            document.getElementById('edit-harga-beli').value = parseInt(harga_beli.replace(/[^\d]/g,
+                ''));
+            document.getElementById('id_kategori').value = kategori;
+            document.getElementById('stok_minimum').value = stok_minimum;
+            document.getElementById('edit-ppn-status').value = ppn;
+            document.getElementById('input_by').value = input_by;
+        }
 
-            if (e.target.closest('.delete-button')) {
-                const button = e.target.closest('.delete-button');
-                const id_barang = button.getAttribute('data-id_barang');
-                document.getElementById('id_barang_delete').value = id_barang;
-            }
-        });
+        if (e.target.closest('.delete-button')) {
+            const button = e.target.closest('.delete-button');
+            const id_barang = button.getAttribute('data-id_barang');
+            document.getElementById('id_barang_delete').value = id_barang;
+        }
+    });
 
-        // Currency formatting using Cleave.js
-        document.querySelectorAll('.currency').forEach(function(el) {
-            new Cleave(el, {
-                numeral: true,
-                numeralThousandsGroupStyle: 'thousand'
-            });
+    // Currency formatting using Cleave.js
+    document.querySelectorAll('.currency').forEach(function(el) {
+        new Cleave(el, {
+            numeral: true,
+            numeralThousandsGroupStyle: 'thousand'
         });
     });
+});
 </script>
