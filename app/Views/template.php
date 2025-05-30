@@ -27,7 +27,6 @@
 
     <!-- DataTables CSS -->
 
-
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
@@ -1765,6 +1764,7 @@
     </script>
     <script src="<?php echo base_url('template/') ?>assets/js/dashboards/dashboard.js"></script>
 
+
     <!-- js alert -->
     <?php if (session()->getFlashdata('sukses')) : ?>
         <script>
@@ -1782,13 +1782,11 @@
         </script>
     <?php endif; ?>
     <!-- js alert Ends -->
-
-    <!-- js alert -->
     <?php if (session()->getFlashdata('gagal')) : ?>
         <script>
             $(document).ready(function() {
                 toastr.warning(
-                    "<?= session()->getFlashdata('gagal'); ?>",
+                    <?= json_encode(session()->getFlashdata('gagal')) ?>,
                     "Gagal!", {
                         showMethod: "slideDown",
                         hideMethod: "slideUp",
@@ -1798,19 +1796,20 @@
                 );
             });
         </script>
-    <?php endif; ?>
-    <!-- js alert Ends -->
+    <?php endif ?>
+
+
+
 
 </body>
 
 
 <script src="<?php echo base_url('template/assets/libs/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/js/datatable/datatable-basic.init.js') ?>"></script>
-<link rel="stylesheet"
-    href="<?php echo base_url('template/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') ?>" />
+<link rel="stylesheet" href="<?php echo base_url('template/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') ?>" />
 <script src="<?php echo base_url('template/assets/js/plugins/toastr-init.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.full.min.js') ?>"></script>
-<script src="<?php echo ('template/assets/libs/select2/dist/js/select2.min.js') ?>"></script>
+<script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/js/forms/select2.init.js') ?>"></script>
 
 </html>

@@ -39,6 +39,12 @@ class ModelAuth extends Model
         return $db->get()->getRowArray();
     }
 
+    public function getJabatan()
+    {
+        $db = db_connect()->table("jabatan");
+        return $db->get()->getResultObject();
+    }
+
     public function get_nama_jabatan($id)
     {
         $db = db_connect()->table("jabatan")->where("ID_JABATAN", $id);
@@ -60,9 +66,20 @@ class ModelAuth extends Model
         return $this->db->table('menu')->where(array("url !=" => null))->get()->getResultObject();
     }
 
-    function getAkun($idgedung)
+    function getRolesJabatan($roles) {
+        return $this->db->table('menu')->whereIn('idmenu', $roles)->get()->getResultObject();
+    }
+
+    function getAkun($idunit = null)
     {
-        return $this->db->table('akun')->where(array("ID_GEDUNG" => $idgedung))->get()->getResultObject();
+        $query = $this->db->table('akun');
+        if ($idunit !== null && $idunit !== '') {
+            $query->where(array("ID_UNIT" => $idunit));
+        }
+        $query->where(array("STATUS_PEGAWAI" => 1));
+        $query->join('unit', 'unit.idunit=akun.ID_UNIT');
+        $query->join('jabatan', 'jabatan.ID_JABATAN=akun.ID_JABATAN');
+        return $query->get()->getResultObject();
     }
 
     function updatePass($id, $data)

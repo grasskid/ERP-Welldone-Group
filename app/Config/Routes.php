@@ -14,6 +14,19 @@ $routes->get('/Logout', 'Auth::proses_logout');
 
 //Datamaster
 //produk
+$routes->group('pegawai', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Pegawai::index');
+    $routes->post('search', 'Pegawai::search');
+    $routes->post('insert', 'Pegawai::insert');
+    $routes->post('update', 'Pegawai::update');
+    $routes->post('delete', 'Pegawai::delete');
+    $routes->get('jabatan', 'Pegawai::jabatan');
+    $routes->post('insert_jabatan', 'Pegawai::insert_jabatan');
+    $routes->post('update_jabatan', 'Pegawai::update_jabatan');
+    $routes->post('delete_jabatan', 'Pegawai::delete_jabatan');
+});
+
+//produk
 $routes->group('produk', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'Produk::index');
     $routes->get('export/produk', 'Produk::export_produk');
@@ -42,6 +55,9 @@ $routes->post('update_phone', 'Phone::update_phone', ['filter' => 'auth']);
 $routes->post('delete_phone', 'Phone::delete_phone', ['filter' => 'auth']);
 $routes->get('export/phone', 'Phone::export_phone', ['filter' => 'auth']);
 $routes->post('import/phone', 'Phone::import_phone', ['filter' => 'auth']);
+$routes->get('import_phone', 'Phone::menuimport_phone', ['filter' => 'auth']);
+
+
 
 //pelanggan
 $routes->get('/pelanggan', 'Pelanggan::index', ['filter' => 'auth']);
@@ -50,6 +66,13 @@ $routes->post('update_pelanggan', 'Pelanggan::update_pelanggan', ['filter' => 'a
 $routes->post('delete_pelanggan', 'Pelanggan::delete_pelanggan', ['filter' => 'auth']);
 $routes->get('export/pelanggan', 'Pelanggan::export_pelanggan', ['filter' => 'auth']);
 $routes->post('import/pelanggan', 'Pelanggan::import_pelanggan', ['filter' => 'auth']);
+$routes->post('simpan/pelanggan', 'Pelanggan::simpanPelanggan', ['filter' => 'auth']);
+
+//kerusakan
+$routes->get('kerusakan', 'Kerusakan::index', ['filter' => 'auth']);
+$routes->post('insert_kerusakan', 'Kerusakan::insert_kerusakan', ['filter' => 'auth']);
+$routes->post('update_kerusakan', 'Kerusakan::update_kerusakan', ['filter' => 'auth']);
+$routes->post('delete_kerusakan', 'Kerusakan::delete_kerusakan', ['filter' => 'auth']);
 
 //Admin
 
@@ -64,12 +87,14 @@ $routes->get('approve/phone/(:num)', 'Approval::approve/$1', ['filter' => 'auth'
 $routes->get('/pembelian', 'Pembelian::index', ['filter' => 'auth']);
 $routes->post('insert_pembelian', 'Pembelian::insert', ['filter' => 'auth']);
 
-
-
 //penjualan
 $routes->get('/penjualan', 'Penjualan::index', ['filter' => 'auth']);
 $routes->post('insert_penjualan', 'Penjualan::insert_penjualan', ['filter' => 'auth']);
 $routes->get('penjualan/search_by_hp', 'Penjualan::search_by_hp', ['filter' => 'auth']);
+
+//service
+$routes->get('service', 'Service::index', ['filter' => 'auth']);
+$routes->get('service_kerusakan', 'Service::kerusakan_table', ['filter' => 'auth']);
 
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
