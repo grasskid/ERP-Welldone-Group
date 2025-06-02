@@ -12,9 +12,11 @@ class ModelStokBarang extends Model
         'idbarang',
         'kode_barang',
         'nama_barang',
+        'idkategori',
         'id_unit',
         'nama_unit',
         'stok_dasar',
+        'harga',
         'sumber_stok_dasar',
         'tanggal_stok_dasar',
         'total_pembelian',
@@ -32,6 +34,11 @@ class ModelStokBarang extends Model
         return $this->findAll();
     }
 
+    public function getByIdBarang($id)
+    {
+        return $this->where(['idbarang' => $id])->first();
+    }
+
     public function getStokMinimum()
     {
         $idUnit = session('ID_UNIT');
@@ -46,5 +53,10 @@ class ModelStokBarang extends Model
             ->where('idbarang', $idBarang)
             ->set(['stok_minimum' => $stokMinimum])
             ->update();
+    }
+
+    public function getSparepart()
+    {
+        return $this->where('idkategori', 3)->findAll();
     }
 }

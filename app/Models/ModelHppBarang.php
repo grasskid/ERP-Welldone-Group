@@ -9,7 +9,7 @@ class ModelHppBarang extends Model
     protected $table = 'hpp_barang';
     protected $primaryKey = 'idbarang';
     protected $returnType = 'object';
-    protected $allowedFields = ['id_barang', 'kode_barang', 'idkategori', 'harga_beli', 'hpp'];
+    protected $allowedFields = ['idbarang', 'kode_barang', 'idkategori', 'harga_beli', 'hpp'];
 
     public function getHppBarang()
     {

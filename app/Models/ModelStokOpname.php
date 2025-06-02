@@ -77,4 +77,13 @@ class ModelStokOpname extends Model
 
         return $builder->orderBy('stok_opname.tanggal', 'DESC')->findAll();
     }
+
+    public function existsForToday($barang_idbarang, $unit_idunit)
+    {
+        return $this->where([
+            'tanggal' => date('Y-m-d'),
+            'barang_idbarang' => $barang_idbarang,
+            'unit_idunit' => $unit_idunit
+        ])->countAllResults() > 0;
+    }
 }

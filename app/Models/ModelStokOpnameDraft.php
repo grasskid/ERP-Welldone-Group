@@ -34,8 +34,8 @@ class ModelStokOpnameDraft extends Model
     }
 
     public function getStokOpnameDraft()
-{
-    return $this->select('
+    {
+        return $this->select('
             stok_opname_draft.*, 
             barang.kode_barang, 
             barang.nama_barang, 
@@ -43,11 +43,18 @@ class ModelStokOpnameDraft extends Model
             barang.warna, 
             unit.NAMA_UNIT
         ')
-        ->join('barang', 'barang.idbarang = stok_opname_draft.barang_idbarang')
-        ->join('unit', 'unit.idunit = stok_opname_draft.unit_idunit')
-        ->orderBy('stok_opname_draft.tanggal', 'DESC')
-        ->findAll();
-}
+            ->join('barang', 'barang.idbarang = stok_opname_draft.barang_idbarang')
+            ->join('unit', 'unit.idunit = stok_opname_draft.unit_idunit')
+            ->orderBy('stok_opname_draft.tanggal', 'DESC')
+            ->findAll();
+    }
 
-
+    public function existsForToday($barang_idbarang, $unit_idunit)
+    {
+        return $this->where([
+            'tanggal' => date('Y-m-d'),
+            'barang_idbarang' => $barang_idbarang,
+            'unit_idunit' => $unit_idunit
+        ])->countAllResults() > 0;
+    }
 }

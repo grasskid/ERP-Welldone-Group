@@ -9,7 +9,7 @@ class ModelBarang extends Model
     protected $table = 'barang';
     protected $primaryKey = 'idbarang';
     protected $returnType = 'object';
-    protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'imei', 'jenis_hp', 'hpp', 'internal', 'warna', 'status', 'deleted', 'status_ppn', 'stok_minimum'];
+    protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'imei', 'jenis_hp', 'hpp', 'internal', 'warna', 'status', 'deleted', 'status_ppn'];
 
     public function getBarang()
     {
@@ -61,26 +61,13 @@ class ModelBarang extends Model
             ->getFirstRow();
     }
 
-
-    public function getMaxNumberByKategori($idkategori)
+    public function getBarangSparepart()
     {
-        // Ambil kode kategori berdasarkan idkategori
-        $kategori = $this->db->table('kategori')->select('idkategori')->where('id', $idkategori)->get()->getRow();
-
-        if (!$kategori) {
-            return 0;
-        }
-
-        $kode_kategori = $kategori->idkategori;
-        $kode_length = strlen($kode_kategori);
-
-        // Cari angka terbesar di belakang kode_barang
-        $builder = $this->db->table('barang');
-        $builder->select("MAX(CAST(SUBSTRING(kode_barang, $kode_length + 1) AS UNSIGNED)) AS max_number");
-        $builder->where('idkategori', $idkategori);
-        $query = $builder->get();
-        $row = $query->getRow();
-
-        return ($row && $row->max_number !== null) ? $row->max_number : 0;
+    return $this->select('barang.*, kategori.nama_kategori')
+        ->join('kategori', 'kategori.id = barang.idkategori')
+        ->where('barang.idkategori', 3)
+        ->findAll();
     }
+
+
 }

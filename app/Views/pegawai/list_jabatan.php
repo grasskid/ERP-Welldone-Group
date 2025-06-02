@@ -86,40 +86,6 @@
 </div>
 
 
-<!-- Modal Input Jabatan -->
-<div class="modal fade" id="input-jabatan-modal" tabindex="-1" aria-labelledby="inputJabatanModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header d-flex align-items-center">
-                <h4 class="modal-title" id="inputJabatanModalLabel">Input Data Jabatan</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="<?= base_url('pegawai/insert_jabatan') ?>" method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nama_jabatan" class="form-label">Nama Jabatan</label>
-                        <input type="text" class="form-control" id="nama_jabatan" name="nama_jabatan" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nama_kategori" class="form-label">Roles Akses Menu</label>
-                        <select class="select2 form-control" multiple="multiple" name="roles[]" id="roles-select">
-                            <?php foreach ($roles as $r) : ?>
-                                <option value="<?= $r->idmenu; ?>"><?= $r->nama_menu; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger"
-                        data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- Modal Edit Kategori -->
 <div class="modal fade" id="edit-jabatan-modal" tabindex="-1" aria-labelledby="editKategoriModalLabel"
     aria-hidden="true">
@@ -139,6 +105,45 @@
                     <div class="mb-3">
                         <label for="nama_kategori" class="form-label">Roles Akses Menu</label>
                         <select class="select2 form-control" multiple="multiple" name="roles[]" id="roles-update">
+                            <?php foreach ($roles as $r) : ?>
+                                <option value="<?= $r->idmenu; ?>"><?= $r->nama_menu; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- /.modal -->
+
+<!-- Modal Input Jabatan -->
+<div class="modal fade" id="input-jabatan-modal" tabindex="-1" aria-labelledby="inputJabatanModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center">
+                <h4 class="modal-title" id="inputJabatanModalLabel">Input Data Jabatan</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('pegawai/insert_jabatan') ?>" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nama_jabatan" class="form-label">Nama Jabatan</label>
+                        <input type="text" class="form-control" id="nama_jabatan" name="nama_jabatan" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nama_kategori" class="form-label">Roles Akses Menu</label>
+                        <select class="select2 form-control" multiple="multiple" name="roles[]" id="roles-select">
                             <?php foreach ($roles as $r) : ?>
                                 <option value="<?= $r->idmenu; ?>"><?= $r->nama_menu; ?></option>
                             <?php endforeach; ?>

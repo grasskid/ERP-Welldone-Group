@@ -19,6 +19,8 @@
     <div class="px-4 py-3 border-bottom">
     </div>
 
+
+
     <div class="px-4 py-3 border-bottom d-flex justify-content-between">
         <div class="d-flex gap-2">
             <a href="<?= base_url('export/phone') ?>" class="btn btn-danger"
@@ -27,6 +29,12 @@
                 </iconify-icon>
                 Export
             </a>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#samedata-modal"
+                style="display: inline-flex; align-items: center;">
+                <iconify-icon icon="solar:import-broken" width="24" height="24" style="margin-right: 8px;">
+                </iconify-icon>
+                Import
+            </button>
             <a href="<?php echo base_url('format_excell/format_phone.xlsx') ?>"><button type="button"
                     class="btn btn-success" style="display: inline-flex; align-items: center;">
                     <iconify-icon icon="solar:download-broken" width="24" height="24" style="margin-right: 8px;">
@@ -41,6 +49,51 @@
             Input
         </button>
     </div>
+
+    <br>
+    <div class="mb-3 px-4">
+        <label class="me-2">Filter Nama Barang:</label>
+        <select id="namaBarangFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterBarang()">
+            <option value="">Semua Barang</option>
+            <?php
+            $namaBarangList = [];
+            foreach ($phone as $row) {
+                if (!in_array($row->nama_barang, $namaBarangList)) {
+                    $namaBarangList[] = $row->nama_barang;
+                    echo '<option value="' . esc($row->nama_barang) . '">' . esc($row->nama_barang) . '</option>';
+                }
+            }
+            ?>
+        </select>
+
+        <label class="me-2 ms-4">Filter Warna:</label>
+        <select id="warnaFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterBarang()">
+            <option value="">Semua Warna</option>
+            <?php
+            $warnaList = [];
+            foreach ($phone as $row) {
+                if (!in_array($row->warna, $warnaList)) {
+                    $warnaList[] = $row->warna;
+                    echo '<option value="' . esc($row->warna) . '">' . esc($row->warna) . '</option>';
+                }
+            }
+            ?>
+        </select>
+
+        <label class="me-2 ms-4">Filter Kondisi:</label>
+        <select id="kondisiFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterBarang()">
+            <option value="">Semua Kondisi</option>
+            <option value="baru">Baru</option>
+            <option value="bekas">Bekas</option>
+        </select>
+
+
+        <button onclick="resetBarangFilter()" class="btn btn-sm btn-secondary ms-2">Reset</button>
+    </div>
+
+
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
@@ -54,6 +107,7 @@
                     <th>Jenis HP</th>
                     <th>Internal</th>
                     <th>Warna</th>
+                    <th>kondisi</th>
                     <th>Input</th>
                     <th>Action</th>
                 </tr>
@@ -76,6 +130,11 @@
 
                             <td><?= esc($row->internal) ?> Gb</td>
                             <td><?= esc($row->warna) ?></td>
+                            <?php if (esc($row->status_barang == 0)) : ?>
+                                <td>Baru</td>
+                            <?php else : ?>
+                                <td>Bekas</td>
+                            <?php endif ?>
                             <td><?= esc($row->input) ?></td>
 
                             <td>
@@ -88,7 +147,8 @@
                                     data-harga_beli="<?= esc($row->harga_beli) ?>"
                                     data-internal="<?= esc($row->internal) ?>"
                                     data-warna="<?= esc($row->warna) ?>"
-                                    data-status_ppn="<?= esc($row->status_ppn) ?>">
+                                    data-status_ppn="<?= esc($row->status_ppn) ?>"
+                                    data-status_barang="<?= esc($row->status_barang) ?>">
                                     <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
                                 </button>
                                 <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
@@ -151,13 +211,7 @@
                         <input type="text" class="form-control" name="jenis_hp" required>
                     </div>
 
-                    <!-- <div class="mb-3">
-                        <label for="hpp" class="form-label">HPP</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control currency" id="hpp" name="hpp" required>
-                        </div>
-                    </div> -->
+
                     <div class="mb-3">
                         <label>Internal</label>
                         <input type="text" class="form-control" name="internal" required>
@@ -165,6 +219,15 @@
                     <div class="mb-3">
                         <label>Warna</label>
                         <input type="text" class="form-control" name="warna" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kondisi</label>
+                        <select class="form-control" name="kondisi" required>
+                            <option value="">-- Pilih Kondisi --</option>
+                            <option value="0">Baru</option>
+                            <option value="1">Bekas</option>
+                        </select>
                     </div>
 
                     <div class="row">
@@ -182,31 +245,6 @@
                         </div>
                     </div>
 
-
-                    <!-- Radio Buttons -->
-                    <!-- <div class="col-sm-4">
-                        <div class="custom-control py-2 custom-radio">
-                            <input type="radio" id="customRadio1" name="customRadio" class="form-check-input"
-                                onclick="showForm('pelanggan')" />
-                            <label class="form-check-label" for="customRadio1">Pelanggan</label>
-                        </div>
-                        <div class="custom-control py-2 custom-radio">
-                            <input type="radio" id="customRadio2" name="customRadio" class="form-check-input"
-                                onclick="showForm('suplier')" />
-                            <label class="form-check-label" for="customRadio2">Suplier</label>
-                        </div>
-                    </div> -->
-
-                    <!-- Hidden forms for Pelanggan and Suplier -->
-                    <!-- <div id="pelangganForm" class="mt-3" style="display: none;">
-                        <input type="text" class="form-control" name="idcustomer" placeholder="Masukkan nama Pelanggan">
-                    </div>
-                    <div id="suplierForm" class="mt-3" style="display: none;">
-                        <input type="text" class="form-control" name="idsuplier" placeholder="Masukkan nama Suplier">
-                    </div> -->
-
-                    <!-- Hidden fields to indicate which selection (Pelanggan/Suplier) was made -->
-                    <!-- <input type="hidden" id="selectedType" name="selectedType"> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"
@@ -256,13 +294,6 @@
                             <input type="text" class="form-control currency" id="edit-harga_beli" name="harga_beli" required>
                         </div>
                     </div>
-                    <!-- <div class="mb-3">
-                        <label for="hpp" class="form-label">HPP</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control currency" id="edit-hpp" name="hpp" required>
-                        </div>
-                    </div> -->
                     <div class="mb-3">
                         <label>Internal</label>
                         <input type="text" class="form-control" name="internal" id="edit-internal" required>
@@ -271,6 +302,16 @@
                         <label>Warna</label>
                         <input type="text" class="form-control" name="warna" id="edit-warna" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="edit-kondisi">Kondisi</label>
+                        <select class="form-control" name="kondisi" id="edit-kondisi" required>
+                            <option value="">-- Pilih Kondisi --</option>
+                            <option value="0">Baru</option>
+                            <option value="1">Bekas</option>
+                        </select>
+                    </div>
+
 
                     <!-- Radio Buttons -->
                     <div class="row">
@@ -287,6 +328,10 @@
                             </div>
                         </div>
                     </div>
+
+
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"
@@ -371,6 +416,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#zero_config').addEventListener('click', function(e) {
+
             if (e.target.closest('.edit-button')) {
                 const button = e.target.closest('.edit-button');
                 // Populate status_ppn
@@ -390,6 +436,7 @@
                 // document.getElementById('edit-hpp').value = button.getAttribute('data-hpp');
                 document.getElementById('edit-internal').value = button.getAttribute('data-internal');
                 document.getElementById('edit-warna').value = button.getAttribute('data-warna');
+                document.getElementById('edit-kondisi').value = button.getAttribute('data-status_barang');
                 document.getElementById('edit-unit').value = button.getAttribute('data-unit');
 
                 // Check Pelanggan vs Suplier
@@ -444,4 +491,42 @@
             numeralThousandsGroupStyle: 'thousand'
         });
     });
+</script>
+
+<script>
+    let table;
+
+    window.onload = function() {
+        table = $('#zero_config').DataTable();
+
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const namaBarangFilter = $('#namaBarangFilter').val().toLowerCase();
+            const warnaFilter = $('#warnaFilter').val().toLowerCase();
+            const kondisiFilter = $('#kondisiFilter').val().toLowerCase();
+
+
+            const namaBarang = data[3].toLowerCase();
+            const warna = data[8].toLowerCase();
+            const kondisi = data[9].toLowerCase();
+
+            const matchNamaBarang = !namaBarangFilter || namaBarang.trim() === namaBarangFilter;
+            const matchWarna = !warnaFilter || warna.trim() === warnaFilter;
+            const matchKondisi = !kondisiFilter || kondisi.trim() === kondisiFilter;
+
+            return matchNamaBarang && matchWarna && matchKondisi;
+        });
+
+
+        table.draw();
+    };
+
+    function filterBarang() {
+        table.draw();
+    }
+
+    function resetBarangFilter() {
+        $('#namaBarangFilter').val('');
+        $('#warnaFilter').val('');
+        table.draw();
+    }
 </script>

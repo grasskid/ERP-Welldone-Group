@@ -1,5 +1,3 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
-
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
         <h4 class="fw-semibold mb-0">Stok Opname</h4>
@@ -8,37 +6,65 @@
                 <li class="breadcrumb-item">
                     <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Stok</a>
                 </li>
-                <li class="breadcrumb-item" aria-current="page">Stok Opname</li>
+                <li class="breadcrumb-item active" aria-current="page">Stok Opname</li>
             </ol>
         </nav>
     </div>
 </div>
 
 <div class="card w-100 position-relative overflow-hidden">
-    <div class="px-4 py-3 border-bottom">
-        <div class="d-flex gap-2 mb-3 px-4">
-            <button class="btn btn-primary" onclick="loadTable('tabledaraft')">Draft</button>
-            <button class="btn btn-success" onclick="loadTable('tablefix')">Fixed</button>
+    <div class="card-body">
+        <div class="mb-2">
+            <h5 class="mb-0">Stok Opname Tabs</h5>
         </div>
+        <p class="mb-3 card-subtitle">
+            Gunakan tab untuk melihat data Stok Opname.
+        </p>
 
-    </div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link d-flex active" data-bs-toggle="tab" href="#draft" role="tab">
+                    <i class="bi bi-pencil-square fs-5"></i>
+                    <span class="d-none d-md-block ms-2">Draft</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex" data-bs-toggle="tab" href="#final" role="tab">
+                    <i class="bi bi-clipboard-check fs-5"></i>
+                    <span class="d-none d-md-block ms-2">Fixed</span>
+                </a>
+            </li>
+        </ul>
 
-    <div style="width: 300px; padding-left: 30px; margin-bottom: 10px;">
-        <label for="filterUnit" class="form-label fw-bold">Filter Nama Unit:</label>
-        <select id="filterUnit" class="form-select" onchange="filterByUnit()">
-            <option value="">Semua Unit</option>
-            <!-- Option lainnya akan diisi lewat JavaScript -->
-        </select>
-    </div>
-
-    <div class="table-responsive mb-4 px-4">
-        <div id="table-container" class="px-4">
-            <!-- Table will be loaded here -->
+        <!-- Tab panes -->
+        <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="draft" role="tabpanel">
+                <?php echo view('stok/table/stok_opnamedraft_table') ?>
+            </div>
+            <div class="tab-pane fade" id="final" role="tabpanel">
+                <?php echo view('stok/table/stok_opname_table') ?>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script>
     let tableElement;
 
     function loadTable(table) {
@@ -105,4 +131,4 @@
 
 
     window.addEventListener('DOMContentLoaded', () => loadTable('tabledaraft'));
-</script>
+</script>  -->

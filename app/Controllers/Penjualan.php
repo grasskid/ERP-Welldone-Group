@@ -60,7 +60,7 @@ class Penjualan extends BaseController
             'kategori' => $this->KategoriModel->getKategori(),
             'suplier' => $this->SuplierModel->getSuplier(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
-            'body'  => 'transaksi/penjualan'
+            'body'  => 'transaksi/penjualan',
         );
         return view('template', $data);
     }
@@ -111,7 +111,7 @@ class Penjualan extends BaseController
         $harus_dibayar = $total_penjualan;
         $waktu_penjualan = date('Y-m-d H:i:s');
         $bayar = $this->sanitizeCurrency($this->request->getPost('bayar'));
-        $created_on = $waktu_penjualan;
+        $created_on = $tanggal_waktu;
         $total_ppn = $this->sanitizeCurrency($this->request->getPost('total-ppn'));
 
         $unit_idunit = 1;
@@ -123,38 +123,8 @@ class Penjualan extends BaseController
             $keterangan = 'Belum Lunas';
         }
 
-        $nama = $this->request->getPost('nama');
-        $alamat = $this->request->getPost('alamat');
-        $nik = $this->request->getPost('nik');
-        $nomor = $this->request->getPost('nomor');
-        $id_pelanggan = $this->request->getPost('id_pelanggan');
 
-        $resultp = true;
-        if (empty($id_pelanggan)) {
-            // Pastikan ada data yang diinput sebelum insert
-            if (!empty($nama) || !empty($alamat) || !empty($nik) || !empty($nomor)) {
-
-                $datapelanggan = $this->PelangganModel->getByNomor($nomor);
-
-                if (empty($datapelanggan)) {
-
-                    $datap = array(
-                        'nama' => $nama,
-                        'alamat' => $alamat,
-                        'nik' => $nik,
-                        'no_hp' => $nomor,
-                        'deleted' => 0
-                    );
-                    $resultp = $this->PelangganModel->insert_Pelanggan($datap);
-                    $id_pelanggan = $this->PelangganModel->insertID();
-                } else {
-
-                    $id_pelanggan = $datapelanggan->id_pelanggan;
-                }
-            }
-        }
-
-
+        $id_pelanggan = $this->request->getPost('selectedidpelanggan');
 
 
         $data1 = array(

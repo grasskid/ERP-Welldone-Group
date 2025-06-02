@@ -95,6 +95,18 @@ $routes->get('penjualan/search_by_hp', 'Penjualan::search_by_hp', ['filter' => '
 //service
 $routes->get('service', 'Service::index', ['filter' => 'auth']);
 $routes->get('service_kerusakan', 'Service::kerusakan_table', ['filter' => 'auth']);
+$routes->get('service_sparepart', 'Service::sparepart_table', ['filter' => 'auth']);
+$routes->post('insert/pelanggan_service', 'Service::insert_service', ['filter' => 'auth']);
+$routes->post('insert_kelengkapan/service', 'Service::insert_kelengkapan_service', ['filter' => 'auth']);
+$routes->post('update_kelengkapan/service', 'Riwayat_Service::update_kelengkapan_service', ['filter' => 'auth']);
+
+// $routes->post('insert/sparepart_service', 'Service::insert_sparepart', ['filter' => 'auth']);
+//riwayat service
+$routes->get('riwayat_service', 'Riwayat_Service::index', ['filter' => 'auth']);
+$routes->get('detail/riwayat_service/(:num)', 'Riwayat_Service::detail_service/$1', ['filter' => 'auth']);
+
+//expired service
+$routes->get('expired_service', 'Expired_service::index', ['filter' => 'auth']);
 
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
@@ -158,3 +170,10 @@ $routes->get('promosi_whatsapp', 'PromosiWhatsapp::index', ['filter' => 'auth'])
 //stok minimum
 $routes->get('stok_minimum', 'StokMinimum::index', ['filter' => 'auth']);
 $routes->post('update_stokminimum', 'StokMinimum::update', ['filter' => 'auth']);
+
+
+//notifikasi pengambilan service
+$routes->get('notif_service', 'NotifikasiService::index', ['filter' => 'auth']);
+
+//riwayat laba service
+$routes->get('laba_service', 'RiwayatLabaService::index', ['fileter' => 'auth']);

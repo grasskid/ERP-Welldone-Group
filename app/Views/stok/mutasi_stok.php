@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="nama_unit2" class="form-label">Unit Pengirim</label>
+                    <label for="nama_unit2" class="form-label">Unit Penerima</label>
                     <select class="form-select" id="unit2" name="unit2" required
                         onchange="tampilkanIdUnit2()">
                         <option value="" selected>Pilih Unit</option>

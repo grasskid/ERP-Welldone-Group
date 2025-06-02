@@ -46,7 +46,7 @@
                         onchange="tampilkanIdSuplier()">
                         <option value="" disabled selected>Pilih Unit</option>
                         <?php foreach ($suplier as $b): ?>
-                        <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
+                            <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
                         <?php endforeach; ?>
                     </select>
                     <input name="id_suplier_text" type="hidden" id="id_suplier_text"
@@ -122,20 +122,20 @@
                                     </thead>
                                     <tbody>
                                         <?php foreach ($produk as $p): ?>
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" class="produk-checkbox"
-                                                    data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
-                                                    data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
-                                                    data-harga_beli="<?= $p->harga_beli ?>"
-                                                    data-kategori="<?= $p->nama_kategori ?>"
-                                                    data-input="<?= $p->input ?>">
-                                            </td>
-                                            <td><?= $p->kode_barang ?></td>
-                                            <td><?= $p->nama_barang ?></td>
-                                            <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
-                                            <td><?= $p->nama_kategori ?></td>
-                                        </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" class="produk-checkbox"
+                                                        data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
+                                                        data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
+                                                        data-harga_beli="<?= $p->harga_beli ?>"
+                                                        data-kategori="<?= $p->nama_kategori ?>"
+                                                        data-input="<?= $p->input ?>">
+                                                </td>
+                                                <td><?= $p->kode_barang ?></td>
+                                                <td><?= $p->nama_barang ?></td>
+                                                <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
+                                                <td><?= $p->nama_kategori ?></td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -174,8 +174,7 @@
                         <tr>
                             <td colspan="2"><strong>Total Diskon (Rp.)</strong></td>
                             <td colspan="7">
-                                <input type="number" id="total-diskon" name="total-diskon" class="form-control">
-
+                                <input type="text" id="total-diskon" name="total-diskon" class="form-control" readonly>
                             </td>
                         </tr>
                         <tr>
@@ -191,6 +190,7 @@
                             </td>
                         </tr>
                     </tfoot>
+
                 </table>
 
                 <!-- Bayar and Hutang Form -->
@@ -205,8 +205,21 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="kembalian" class="form-label">Kembalian</label>
+                        <input type="text" class="form-control" id="kembalian" name="kembalian" value="Rp 0">
+                    </div>
+                    <div class="col-md-6" id="pelanggan-container" style="display: none;">
+                        <label for="pelanggan" class="form-label">Pelanggan</label>
+                        <input type="text" class="form-control" id="pelanggan" name="pelanggan" readonly>
+                    </div>
+
+                </div>
+
                 <button style="height: fit-content;" class="btn btn-success mt-3" type="submit">Simpan</button>
 
+                <!-- Pelanggan Button -->
                 <!-- Pelanggan Button -->
                 <div id="pelanggan-section" class="mt-3" style="display: none;">
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
@@ -218,88 +231,75 @@
                     </button>
                 </div>
 
-                <div class="modal fade" id="pelanggan-modal" tabindex="-1">
+                <div class="modal fade" id="pelangganModal" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form id="pelanggan-form">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Input Data Pelanggan</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Input cari -->
-                                    <div class="mb-3">
-                                        <label for="search-nohp" class="form-label">Nomor HP</label>
-                                        <input type="text" name="nomor" class="form-control" id="search-nohp">
-                                    </div>
-                                    <button type="button" id="cari-pelanggan-btn" class="btn btn-info">Cari</button>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Cari Data Pelanggan</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <select id="pelanggan-select" name="selectedidpelanggan" class="select2 form-control"
+                                    style="width: 100%;">
+                                    <option disabled selected>Select</option>
+                                    <?php foreach ($pelanggan as $p): ?>
+                                        <option value="<?= htmlspecialchars($p->id_pelanggan) ?>">
+                                            <?= htmlspecialchars($p->nama) ?> : <?= htmlspecialchars($p->no_hp) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
 
-                                    <!-- Hidden input to store id_pelanggan -->
-                                    <input type="hidden" id="id_pelanggan" name="id_pelanggan">
-
-                                    <!-- Extra form fields -->
-                                    <div id="pelanggan-form-extra" style="display:none; margin-top: 1rem;">
-                                        <div class="mb-2">
-                                            <label for="nama">Nama</label>
-                                            <input type="text" name="nama" id="nama" class="form-control">
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="alamat">Alamat</label>
-                                            <textarea id="alamat" name="alamat" class="form-control"></textarea>
-                                        </div>
-                                        <div class="mb-2">
-                                            <label for="nik">NIK</label>
-                                            <input type="text" name="nik" id="nik" class="form-control">
-                                        </div>
-                                        <button type="submit" class="btn btn-primary mt-2">Simpan Pelanggan</button>
-                                    </div>
+                                <!-- Tombol di bawah dropdown -->
+                                <div style="display: flex; justify-content: right; gap: 10px; margin-top: 20px;">
+                                    <button id="btnPilihPelanggan" type="button" class="btn btn-primary">Pilih</button>
+                                    <button id="btnTambahPelanggan" type="button" class="btn btn-success">Tambah</button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
 
 
+
             </div>
 
             <script>
-            function formatToRupiah(angka) {
-                const cleaned = angka.replace(/[^\d]/g, '');
-                const number = parseInt(cleaned) || 0;
-                return 'Rp ' + number.toLocaleString('id-ID');
-            }
+                function formatToRupiah(angka) {
+                    const cleaned = angka.replace(/[^\d]/g, '');
+                    const number = parseInt(cleaned) || 0;
+                    return 'Rp ' + number.toLocaleString('id-ID');
+                }
 
-            function unformatRupiah(rupiah) {
-                return parseInt(rupiah.replace(/[^\d]/g, '')) || 0;
-            }
+                function unformatRupiah(rupiah) {
+                    return parseInt(rupiah.replace(/[^\d]/g, '')) || 0;
+                }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                const selectedTable = document.getElementById('selected-produk-table');
-                const confirmBtn = document.getElementById('confirm-produk-btn');
-                const selectAll = document.getElementById('select-all-produk');
-                const modalEl = document.getElementById('pilih-produk-modal');
-                const modalInstance = new bootstrap.Modal(modalEl);
-                const bayarInput = document.getElementById('bayar');
+                document.addEventListener('DOMContentLoaded', function() {
+                    const selectedTable = document.getElementById('selected-produk-table');
+                    const confirmBtn = document.getElementById('confirm-produk-btn');
+                    const selectAll = document.getElementById('select-all-produk');
+                    const modalEl = document.getElementById('pilih-produk-modal');
+                    const modalInstance = new bootstrap.Modal(modalEl);
+                    const bayarInput = document.getElementById('bayar');
 
-                selectAll.addEventListener('change', function() {
-                    document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
-                        .checked);
-                });
+                    selectAll.addEventListener('change', function() {
+                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
+                            .checked);
+                    });
 
-                confirmBtn.addEventListener('click', function() {
-                    document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
-                        const id = cb.getAttribute('data-id');
-                        const kode = cb.getAttribute('data-kode');
-                        const nama = cb.getAttribute('data-nama');
-                        const harga = cb.getAttribute('data-harga');
-                        const harga_beli = cb.getAttribute('data-harga_beli');
-                        const kategori = cb.getAttribute('data-kategori');
-                        const input = cb.getAttribute('data-input');
+                    confirmBtn.addEventListener('click', function() {
+                        document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
+                            const id = cb.getAttribute('data-id');
+                            const kode = cb.getAttribute('data-kode');
+                            const nama = cb.getAttribute('data-nama');
+                            const harga = cb.getAttribute('data-harga');
+                            const harga_beli = cb.getAttribute('data-harga_beli');
+                            const kategori = cb.getAttribute('data-kategori');
 
-                        if (!document.getElementById('produk-row-' + id)) {
-                            const row = document.createElement('tr');
-                            row.id = 'produk-row-' + id;
-                            row.innerHTML = `
+                            if (!document.getElementById('produk-row-' + id)) {
+                                const row = document.createElement('tr');
+                                row.id = 'produk-row-' + id;
+                                row.innerHTML = `
                         <td>
                             ${kode}
                             <input type="hidden" name="produk[${id}][id]" value="${id}">
@@ -325,7 +325,8 @@
                             <input type="number" name="produk[${id}][jumlah]" class="form-control jumlah-input" data-id="${id}" value="1" min="1">
                         </td>
                         <td>
-                            <input type="number" name="produk[${id}][diskon]" class="form-control diskon-input" data-id="${id}" value="0" min="0">
+                            <input class="form-control diskon-input" data-id="${id}" value="Rp 0">
+                            <input type="hidden" name="produk[${id}][diskon]" id="diskon-hidden-${id}" value="0">
                         </td>
                         <td class="text-center">
                             <input type="checkbox" name="produk[${id}][ppn]" class="form-check-input ppn-checkbox" data-id="${id}">
@@ -337,132 +338,187 @@
                         </td>
                     `;
 
-                            selectedTable.appendChild(row);
+                                selectedTable.appendChild(row);
 
-                            // Event Listeners
-                            row.querySelector('.jumlah-input').addEventListener('input',
-                                updateTotals);
-                            row.querySelector('.diskon-input').addEventListener('input',
-                                updateTotals);
-                            row.querySelector('.ppn-checkbox').addEventListener('change',
-                                updateTotals);
+                                // Event Listeners
+                                row.querySelector('.jumlah-input').addEventListener('input',
+                                    updateTotals);
+                                row.querySelector('.ppn-checkbox').addEventListener('change',
+                                    updateTotals);
 
-                            const hargaBeliInput = row.querySelector('.harga-beli-input');
-                            hargaBeliInput.addEventListener('input', function() {
-                                const id = this.getAttribute('data-id');
-                                const numeric = this.value.replace(/[^\d]/g, '');
-                                this.value = formatToRupiah(numeric);
-                                document.getElementById(`harga-beli-hidden-${id}`)
-                                    .value = numeric;
-                                updateTotals();
-                            });
+                                const hargaBeliInput = row.querySelector('.harga-beli-input');
+                                hargaBeliInput.addEventListener('input', function() {
+                                    const id = this.getAttribute('data-id');
+                                    const numeric = this.value.replace(/[^\d]/g, '');
+                                    this.value = formatToRupiah(numeric);
+                                    document.getElementById(`harga-beli-hidden-${id}`)
+                                        .value = numeric;
+                                    updateTotals();
+                                });
+
+                                // Diskon input listener for Rupiah formatting
+                                const diskonInput = row.querySelector('.diskon-input');
+                                diskonInput.addEventListener('input', function() {
+                                    const id = this.getAttribute('data-id');
+                                    const numeric = this.value.replace(/[^\d]/g, '');
+                                    this.value = formatToRupiah(numeric);
+                                    document.getElementById(`diskon-hidden-${id}`).value =
+                                        numeric;
+                                    updateTotals();
+                                });
+                            }
+                        });
+
+                        modalInstance.hide();
+                        setTimeout(() => {
+                            document.body.classList.remove('modal-open');
+                            document.body.style.removeProperty('padding-right');
+                            document.body.style.removeProperty('overflow');
+                            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                        }, 500);
+
+                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
+                        selectAll.checked = false;
+
+                        updateTotals();
+                    });
+
+                    bayarInput.addEventListener('input', function() {
+                        const numeric = this.value.replace(/[^\d]/g, '');
+                        this.value = formatToRupiah(numeric);
+                        updateHutang();
+                    });
+
+                    // Add Rupiah formatting to total-diskon input
+                    const totalDiskonInput = document.getElementById('total-diskon');
+                    totalDiskonInput.addEventListener('input', function() {
+                        const numeric = this.value.replace(/[^\d]/g, '');
+                        this.value = formatToRupiah(numeric);
+                        updateTotals();
+                    });
+                });
+
+                function hapusProduk(id) {
+                    const row = document.getElementById('produk-row-' + id);
+                    if (row) row.remove();
+                    updateTotals();
+                }
+
+                function updateTotals() {
+                    let total = 0;
+                    let totalDiskon = 0;
+                    let totalPPN = 0;
+
+                    document.querySelectorAll('#selected-produk-table tr').forEach(row => {
+                        const hargaBeliHiddenInput = row.querySelector('input[id^="harga-beli-hidden-"]');
+                        const jumlahInput = row.querySelector('.jumlah-input');
+                        const diskonHiddenInput = row.querySelector('input[id^="diskon-hidden-"]');
+                        const ppnCheckbox = row.querySelector('.ppn-checkbox');
+
+                        if (hargaBeliHiddenInput && jumlahInput && diskonHiddenInput) {
+                            const hargaBeli = parseInt(hargaBeliHiddenInput.value) || 0;
+                            const jumlah = parseInt(jumlahInput.value) || 0;
+                            const diskon = parseInt(diskonHiddenInput.value) || 0;
+                            const isPpn = ppnCheckbox?.checked;
+
+                            let subtotal = hargaBeli * jumlah;
+                            let setelahDiskon = subtotal - diskon;
+                            let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
+
+                            totalDiskon += diskon;
+                            totalPPN += ppnAmount;
+                            total += setelahDiskon + ppnAmount;
                         }
                     });
 
-                    modalInstance.hide();
-                    setTimeout(() => {
-                        document.body.classList.remove('modal-open');
-                        document.body.style.removeProperty('padding-right');
-                        document.body.style.removeProperty('overflow');
-                        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                    }, 500);
+                    const totalDiskonInput = document.getElementById('total-diskon');
+                    totalDiskonInput.min = totalDiskon;
 
-                    document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
-                    selectAll.checked = false;
-
-                    updateTotals();
-                });
-
-                bayarInput.addEventListener('input', function() {
-                    const numeric = this.value.replace(/[^\d]/g, '');
-                    this.value = formatToRupiah(numeric);
-                    updateHutang();
-                });
-            });
-
-            function hapusProduk(id) {
-                const row = document.getElementById('produk-row-' + id);
-                if (row) row.remove();
-                updateTotals();
-            }
-
-            function updateTotals() {
-                let total = 0;
-                let totalDiskon = 0;
-                let totalPPN = 0;
-
-                document.querySelectorAll('#selected-produk-table tr').forEach(row => {
-                    const hargaBeliHiddenInput = row.querySelector('input[id^="harga-beli-hidden-"]');
-                    const jumlahInput = row.querySelector('.jumlah-input');
-                    const diskonInput = row.querySelector('.diskon-input');
-                    const ppnCheckbox = row.querySelector('.ppn-checkbox');
-
-                    if (hargaBeliHiddenInput && jumlahInput && diskonInput) {
-                        const hargaBeli = parseInt(hargaBeliHiddenInput.value) || 0;
-                        const jumlah = parseInt(jumlahInput.value) || 0;
-                        const diskon = parseFloat(diskonInput.value) || 0;
-                        const isPpn = ppnCheckbox?.checked;
-
-                        let subtotal = hargaBeli * jumlah;
-                        let setelahDiskon = subtotal - diskon;
-                        let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
-
-                        totalDiskon += diskon;
-                        totalPPN += ppnAmount;
-                        total += setelahDiskon + ppnAmount;
+                    let manualDiskon = unformatRupiah(totalDiskonInput.value);
+                    if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
+                        manualDiskon = totalDiskon;
                     }
-                });
+                    totalDiskonInput.value = formatToRupiah(manualDiskon.toString());
 
-                const totalDiskonInput = document.getElementById('total-diskon');
-                totalDiskonInput.min = totalDiskon;
+                    const totalHargaFinal = total - (manualDiskon - totalDiskon);
+                    document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
+                    document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
 
-                let manualDiskon = parseFloat(totalDiskonInput.value);
-                if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
-                    manualDiskon = totalDiskon;
-                    totalDiskonInput.value = totalDiskon;
+                    updateHutang();
                 }
 
-                const totalHargaFinal = total - (manualDiskon - totalDiskon);
-                document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
-                document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
+                function updateHutang() {
+                    const totalStr = document.getElementById('total-harga').value.replace(/[^\d]/g, '') || "0";
+                    const bayarStr = document.getElementById('bayar').value || "Rp 0";
 
-                updateHutang();
-            }
+                    const bayar = unformatRupiah(bayarStr);
+                    const total = parseInt(totalStr);
+                    const selisih = bayar - total;
 
-            document.getElementById('total-diskon').addEventListener('input', () => {
-                updateTotals(true);
-            });
+                    const hutang = Math.max(total - bayar, 0);
+                    const kembalian = selisih > 0 ? selisih : 0;
 
-            function updateHutang() {
-                const totalStr = document.getElementById('total-harga').value.replace(/[^\d]/g, '') || "0";
-                const bayarStr = document.getElementById('bayar').value || "Rp 0";
-                const bayar = unformatRupiah(bayarStr);
-                const total = parseInt(totalStr);
-                const hutang = Math.max(total - bayar, 0);
-
-                document.getElementById('hutang').value = 'Rp ' + hutang.toLocaleString('id-ID');
-            }
+                    document.getElementById('hutang').value = 'Rp ' + hutang.toLocaleString('id-ID');
+                    document.getElementById('kembalian').value = 'Rp ' + kembalian.toLocaleString('id-ID');
+                }
             </script>
 
+        </form>
+
+        <div class="modal fade" id="modalTambahPelanggan" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formTambahPelanggan">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Tambah Pelanggan Baru</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nik" class="form-label">NIK</label>
+                                <input type="text" id="nik" name="nik" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama</label>
+                                <input type="text" id="nama" name="nama" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="no_hp" class="form-label">No HP</label>
+                                <input type="text" id="no_hp" name="no_hp" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="alamat" class="form-label">Alamat</label>
+                                <textarea id="alamat" name="alamat" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Simpan Pelanggan</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
 
-            <script>
+
+        <script>
             $(document).ready(function() {
                 var table = $('#produk-modal-table').DataTable();
 
 
             });
-            </script>
-            <script>
+        </script>
+        <script>
             function tampilkanIdSuplier() {
                 const select = document.getElementById('suplier');
                 const idSuplierInput = document.getElementById('id_suplier_text');
                 const selectedValue = select.value;
                 idSuplierInput.value = selectedValue;
             }
-            </script>
+        </script>
 
-            <script>
+        <script>
             document.getElementById('notaFileInput').addEventListener('change', function(event) {
                 const file = event.target.files[0];
                 const preview = document.getElementById('previewNota');
@@ -481,20 +537,22 @@
                     preview.style.display = 'none';
                 }
             });
-            </script>
+        </script>
 
 
-            <script>
+        <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const pelangganModal = new bootstrap.Modal(document.getElementById('pelanggan-modal'));
-                const pelangganFormExtra = document.getElementById('pelanggan-form-extra');
-                const pelangganForm = document.getElementById('pelanggan-form');
-                const cariBtn = document.getElementById('cari-pelanggan-btn');
-                const noHpInput = document.getElementById('search-nohp');
-                const tipe_pihak = document.getElementById('tipe_pihak');
-                const tipe_sumber = tipe_pihak.value;
 
-                // Auto-show "Input Data Pelanggan" button if category = handphone
+                const pelangganModalTrigger = new bootstrap.Modal(document.getElementById('pelangganModal'));
+                const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
+                const tipePihak = document.getElementById('tipe_pihak');
+
+
+                $('.select2').select2({
+                    dropdownParent: $('#pelangganModal')
+                });
+
+                // Cek apakah ada produk kategori handphone dan tipe pihak adalah pelanggan
                 function checkForHandphone() {
                     const rows = document.querySelectorAll('#selected-produk-table tr');
                     let show = false;
@@ -502,11 +560,12 @@
                     rows.forEach(row => {
                         const kategoriInput = row.querySelector('input[name$="[kategori]"]');
                         if (kategoriInput && kategoriInput.value.toLowerCase() === 'handphone' &&
-                            tipe_pihak.value === 'pelanggan') {
+                            tipePihak.value === 'pelanggan') {
                             show = true;
                         }
                     });
 
+                    // Hapus tombol lama jika ada
                     document.getElementById('pelanggan-button')?.remove();
 
                     if (show) {
@@ -516,99 +575,101 @@
                         btn.className = 'btn btn-warning mt-2';
                         btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
                         btn.innerHTML = `
-                <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
-                Input Data Pelanggan
-            `;
-                        btn.onclick = () => pelangganModal.show();
-                        document.querySelector('.table-responsive.mt-3.mb-4').appendChild(btn);
+                    <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
+                    Input Data Pelanggan
+                `;
+                        btn.onclick = () => pelangganModalTrigger.show();
+
+                        const container = document.querySelector('.table-responsive.mt-3.mb-4');
+                        if (container) {
+                            container.appendChild(btn);
+                        }
                     }
                 }
 
-                // Check after confirming products
-                document.getElementById('confirm-produk-btn').addEventListener('click', () => {
-                    setTimeout(checkForHandphone, 500); // delay to wait for DOM changes
-                });
+                // Cek saat klik tombol konfirmasi produk
+                const confirmBtn = document.getElementById('confirm-produk-btn');
+                if (confirmBtn) {
+                    confirmBtn.addEventListener('click', () => {
+                        setTimeout(checkForHandphone, 500); // beri jeda waktu agar DOM update
+                    });
+                }
 
-                tipe_pihak.addEventListener('change', () => {
+                // Juga cek saat tipe pihak berubah
+                tipePihak.addEventListener('change', function() {
                     checkForHandphone();
 
                     const suplierSelect = document.getElementById('suplier');
-
-                    if (tipe_pihak.value === 'pelanggan') {
+                    if (this.value === 'pelanggan') {
                         suplierSelect.disabled = true;
-                        suplierSelect.value = ''; // reset nilai jika sebelumnya memilih suplier
-                        document.getElementById('id_suplier_text').value =
-                            ''; // reset juga input hidden
-                    } else if (tipe_pihak.value === 'suplier') {
+                        suplierSelect.value = '';
+                        document.getElementById('id_suplier_text').value = '';
+                    } else if (this.value === 'suplier') {
                         suplierSelect.disabled = false;
                     }
                 });
 
-
-                // 🔍 Search pelanggan by phone number
-                cariBtn.addEventListener('click', function() {
-                    const no_hp = noHpInput.value.trim();
-                    if (!no_hp) return alert('Isi nomor HP terlebih dahulu.');
-
-                    fetch(`<?= base_url('penjualan/search_by_hp') ?>?no_hp=${encodeURIComponent(no_hp)}`, {
-                            method: 'GET'
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.found) {
-                                document.getElementById('id_pelanggan').value = data.pelanggan
-                                    .id_pelanggan;
-                                pelangganModal.hide();
-                                alert('Pelanggan ditemukan dan dipilih.');
-                            } else {
-                                pelangganFormExtra.style.display = 'block';
-                                alert('Nomor tidak ditemukan, silakan lengkapi data pelanggan.');
-                            }
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('Terjadi kesalahan saat mencari pelanggan.');
-                        });
+                // Tombol "Tambah" di bawah dropdown
+                document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
+                    modalTambah.show();
                 });
 
-                // 💾 Submit pelanggan form
-                pelangganForm.addEventListener('submit', function(e) {
+                // Saat tombol "Pilih" ditekan
+                document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
+                    const select = document.getElementById('pelanggan-select');
+                    const selectedOption = select.options[select.selectedIndex];
+
+                    // Cek apakah belum memilih (masih di "Select")
+                    if (!selectedOption || selectedOption.disabled) {
+                        alert('Silakan pilih pelanggan terlebih dahulu.');
+                        return;
+                    }
+
+                    // Jika sudah memilih pelanggan
+                    document.getElementById('pelanggan-container').style.display = 'block';
+                    document.getElementById('pelanggan').value = selectedOption.text;
+
+                    // Tutup modal
+                    pelangganModalTrigger.hide();
+                });
+
+
+                // Submit form tambah pelanggan
+                $('#formTambahPelanggan').on('submit', function(e) {
                     e.preventDefault();
 
-                    const payload = {
-                        no_hp: document.getElementById('search-nohp').value.trim(),
-                        nama: document.getElementById('nama').value.trim(),
-                        alamat: document.getElementById('alamat').value.trim(),
-                        nik: document.getElementById('nik').value.trim()
-                    };
+                    const formData = $(this).serialize();
 
-                    fetch(`<?= base_url('pelanggan/insert') ?>`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                document.getElementById('id_pelanggan').value = data.id_pelanggan ||
-                                    '';
-                                pelangganModal.hide();
-                                alert('Pelanggan berhasil disimpan.');
+                    $.ajax({
+                        url: '<?= base_url('simpan/pelanggan') ?>',
+                        method: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                modalTambah.hide();
+                                $('#formTambahPelanggan')[0].reset();
+
+                                const newOption = new Option(response.data.nama + ' : ' +
+                                    response.data.no_hp, response.data.id_pelanggan, true,
+                                    true);
+                                $('#pelanggan-select').append(newOption).trigger('change');
+
+                                alert('Pelanggan berhasil ditambahkan');
                             } else {
-                                alert('Gagal menyimpan pelanggan.');
+                                alert('Error: ' + response.message);
                             }
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('Terjadi kesalahan saat menyimpan pelanggan.');
-                        });
+                        },
+                        error: function() {
+                            alert('Terjadi kesalahan saat menyimpan data.');
+                        }
+                    });
                 });
             });
-            </script>
+        </script>
 
-            <script>
+
+        <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const selectAllPPN = document.getElementById('select-all-ppn');
 
@@ -618,4 +679,4 @@
                     updateTotals();
                 });
             });
-            </script>
+        </script>

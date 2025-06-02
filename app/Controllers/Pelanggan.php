@@ -183,4 +183,37 @@ class Pelanggan extends BaseController
         session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
         return redirect()->to(base_url('/pelanggan'));
     }
+
+
+    public function simpanPelanggan()
+    {
+        $data = $this->request->getPost();
+
+        $insertData = [
+            'nik' => $data['nik'],
+            'nama' => $data['nama'],
+            'no_hp' => $data['no_hp'],
+            'alamat' => $data['alamat'],
+        ];
+
+        $insertId = $this->PelangganModel->insert_Pelanggan($insertData);
+
+        if ($insertId) {
+            // Kirim response json
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => [
+                    'id_pelanggan' => $insertId,
+                    'nama' => $data['nama'],
+                    'no_hp' => $data['no_hp'],
+                    'deleted' => 0,
+                ]
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Gagal menyimpan data pelanggan'
+            ]);
+        }
+    }
 }

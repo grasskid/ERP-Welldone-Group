@@ -81,6 +81,7 @@ class Phone extends BaseController
             'harga_beli'      => $harga_beli,
             'internal'   => $internal,
             'warna'      => $warna,
+            'status_barang' => $this->request->getPost('kondisi'),
             'status'     => '0',
             'input'      => $namaakun,
             'idkategori' => '1',
@@ -129,6 +130,7 @@ class Phone extends BaseController
             'harga_beli'      => $harga_beli,
             'internal'   => $internal,
             'warna'      => $warna,
+            'status_barang' => $this->request->getPost('kondisi'),
             'idkategori' => '1',
             'status_ppn' => $status_ppn,
             'deleted'    => '0'
@@ -165,7 +167,7 @@ class Phone extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         // Header
-        $headers = ['Kode Barang', 'Nama Barang', 'IMEI', 'Jenis Handphone', 'Harga', 'Harga Beli', 'Internal', 'Warna', 'Status PPN'];
+        $headers = ['Kode Barang', 'Nama Barang', 'IMEI', 'Jenis Handphone', 'Harga', 'Harga Beli', 'Internal', 'Warna', 'Kondisi', 'Status PPN'];
         $col = 'A';
         foreach ($headers as $header) {
             $sheet->setCellValue($col . '1', $header);
@@ -173,9 +175,9 @@ class Phone extends BaseController
         }
 
         // Styling header
-        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:J1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
 
         // Data
         $row = 2;
@@ -190,7 +192,8 @@ class Phone extends BaseController
             $sheet->setCellValue('F' . $row, $handphone->harga_beli);
             $sheet->setCellValue('G' . $row, $handphone->internal);
             $sheet->setCellValue('H' . $row, $handphone->warna);
-            $sheet->setCellValue('I' . $row, $ppn);
+            $sheet->setCellValue('I' . $row, $handphone->status_barang);
+            $sheet->setCellValue('J' . $row, $ppn);
             $row++;
         }
 
@@ -200,7 +203,7 @@ class Phone extends BaseController
         }
 
         // Border semua sel
-        $sheet->getStyle('A1:I' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('A1:J' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         // Freeze header
         $sheet->freezePane('A2');
@@ -217,41 +220,70 @@ class Phone extends BaseController
         exit;
     }
 
-    // public function import_phone()
-    // {
+    public function import_phone()
+    {
+        $file = $this->request->getFile('file');
 
-    //     $file = $this->request->getFile('file');
+        // Load spreadsheet
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
 
-    //     // Load spreadsheet
-    //     $spreadsheet = IOFactory::load($file->getPathname());
-    //     $sheet = $spreadsheet->getActiveSheet();
-    //     $rows = $sheet->toArray();
+        // Koneksi DB dan model
+        $db = Database::connect();
 
-    //     // Koneksi DB
-    //     $db = Database::connect();
+        // Skip header (baris pertama)
+        for ($i = 1; $i < count($rows); $i++) {
+            $imei = addslashes($rows[$i][0]);
+            $nama_handphone = addslashes($rows[$i][1]);
+            $harga = addslashes($rows[$i][2]);
+            $harga_beli = addslashes($rows[$i][3]);
+            $jenis_handphone = addslashes($rows[$i][4]);
+            $internal = addslashes($rows[$i][5]);
+            $warna = addslashes($rows[$i][6]);
 
-    //     // Skip header (baris pertama)
-    //     for ($i = 1; $i < count($rows); $i++) {
-    //         $imei = addslashes($rows[$i][0]);
-    //         $jenis_hp = addslashes($rows[$i][1]);
-    //         $harga = addslashes($rows[$i][2]);
-    //         $internal = addslashes($rows[$i][3]);
-    //         $warna = addslashes($rows[$i][4]);
-    //         // lokasi status
-    //         $input = addslashes($rows[$i][5]);
-    //         $idunit = addslashes($rows[$i][6]);
-    //         $idsuplier = addslashes($rows[$i][7]);
-    //         $idcustomer = addslashes($rows[$i][8]);
+            // Ambil nilai status_barang dari Excel (Baru/Bekas)
+            $status_barang_text = strtolower(trim($rows[$i][7]));
+            $status_barang = ($status_barang_text === 'bekas') ? 1 : 0; // default ke 0 jika bukan 'bekas'
 
+            // Ambil dan konversi status_ppn
+            $status_ppn_text = strtoupper(trim($rows[$i][8]));
+            $status_ppn = ($status_ppn_text === 'PPN') ? 1 : 0;
 
+            $input = addslashes($rows[$i][9]);
 
-    //         $sql = "INSERT INTO phone (imei, jenis_hp, harga, internal, warna, status, input, idunit, idsuplier, idcustomer, deleted) 
-    //                 VALUES ('$imei', '$jenis_hp', $harga, '$internal', '$warna', '0', '$input', '$idunit', '$idsuplier', '$idcustomer', '0')";
+            // Generate kode_barang otomatis
+            $lastBarang = $this->BarangModel->getLastBarangByKategori(1);
+            if ($lastBarang) {
+                $lastNumber = (int) substr($lastBarang->kode_barang, strlen('HP'));
+                $newNumber = $lastNumber + 1;
+            } else {
+                $newNumber = 1;
+            }
+            $formattedNumber = str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+            $kode_barang = 'HP' . $formattedNumber;
 
-    //         $db->query($sql);
-    //     }
+            // Insert ke DB
+            $sql = "INSERT INTO barang 
+        (kode_barang, imei, nama_barang, harga, harga_beli, idkategori, jenis_hp, internal, warna, status, status_ppn, stok_minimum, deleted, input, status_barang) 
+        VALUES 
+        ('$kode_barang', '$imei', '$nama_handphone', '$harga', '$harga_beli', '1', '$jenis_handphone', '$internal', '$warna', '1', '$status_ppn', '0', '0', '$input', '$status_barang')";
 
-    //     session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-    //     return redirect()->to(base_url('/phone'));
-    // }
+            $db->query($sql);
+        }
+
+        session()->setFlashdata('sukses', 'Data Berhasil Diimpor');
+        return redirect()->to(base_url('/phone'));
+    }
+
+    public function menuimport_phone()
+    {
+        $akun =   $this->AuthModel->getById(session('ID_AKUN'));
+        $data =  array(
+            'akun' => $akun,
+            'phone' => $this->PhoneModel->getPhoneActive(),
+            'body'  => 'datamaster/import_phone'
+        );
+        return view('template', $data);
+    }
 }

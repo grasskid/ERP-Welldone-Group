@@ -17,6 +17,7 @@ use App\Models\ModelAuth;
 use App\Models\ModelPelanggan;
 use App\Models\ModelHppBarang;
 
+
 class Pembelian extends BaseController
 
 {
@@ -51,6 +52,7 @@ class Pembelian extends BaseController
             'produk' => $this->BarangModel->getAllBarang(),
             'kategori' => $this->KategoriModel->getKategori(),
             'suplier' => $this->SuplierModel->getSuplier(),
+            'pelanggan' => $this->PelangganModel->getPelanggan(),
             'body'  => 'transaksi/pembelian'
         );
         return view('template', $data);
@@ -107,10 +109,10 @@ class Pembelian extends BaseController
 
         // Ambil nota pembelian terakhir hari ini berdasarkan unit
         $lastNota = $this->PembelianModel
-            ->select('no_nota')
+            ->select('no_nota_supplier')
             ->where('DATE(tanggal_masuk)', $tgl_hari_ini)
             ->where('unit_idunit', $useridunit)
-            ->orderBy('no_nota', 'DESC')
+            ->orderBy('no_nota_supplier', 'DESC')
             ->first();
 
         if ($lastNota) {
@@ -178,7 +180,7 @@ class Pembelian extends BaseController
             'suplier_id_suplier' => $id_suplier_text,
             'no_nota_supplier' => $no_nota,
             'foto_nota' =>  $foto_nota_name,
-            'tanggal_masuk' => $tanggal_masuk,
+            'tanggal_masuk' => $tanggal_masuk_full,
             'sisa' => $sisa,
             'status' => $status,
             'total_transaksi' => $total_harga,

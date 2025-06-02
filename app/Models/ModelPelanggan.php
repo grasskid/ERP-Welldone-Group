@@ -30,4 +30,13 @@ class ModelPelanggan extends Model
     {
         return $this->where(['no_hp' => $nomor])->first();
     }
+
+    public function getPelangganWithService()
+    {
+        return $this->select('pelanggan.*, service.no_service')
+            ->join('service', 'service.pelanggan_id_pelanggan = pelanggan.id_pelanggan')
+            ->where('pelanggan.deleted', '0')
+            ->where('service.status_service', 4)
+            ->findAll();
+    }
 }

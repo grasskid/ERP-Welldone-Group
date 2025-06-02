@@ -17,6 +17,7 @@ use App\Models\ModelMutasiStok;
 use App\Models\ModelUnit;
 use App\Models\ModelHppBarang;
 use App\Models\ModelDetailMutasi;
+use App\Models\ModelStokBarang;
 
 class MutasiStok extends BaseController
 
@@ -34,6 +35,8 @@ class MutasiStok extends BaseController
     protected $UnitModel;
     protected $HppBarangModel;
     protected $DetailMutasiModel;
+    protected $StokBarangModel;
+
 
     public function __construct()
     {
@@ -49,6 +52,7 @@ class MutasiStok extends BaseController
         $this->UnitModel = new ModelUnit();
         $this->HppBarangModel = new ModelHppBarang();
         $this->DetailMutasiModel = new ModelDetailMutasi();
+        $this->StokBarangModel = new ModelStokBarang();
     }
 
     public function index()
@@ -138,8 +142,6 @@ class MutasiStok extends BaseController
 
         $result = $this->MutasiStokModel->insert_MutasiStok($data);
         $idMutasi = $this->MutasiStokModel->insertID();
-
-
 
         foreach ($produkData as $produk) {
             $datastokawal = $this->StokAwalModel->getByIdBarang($produk['id']);
