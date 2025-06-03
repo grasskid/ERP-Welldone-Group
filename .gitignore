@@ -9,6 +9,7 @@ public/favicon.ico
 public/robots.txt
 public/uploads/
 public/foto_nota/
+public/error_log
 
 # Composer
 /vendor/
