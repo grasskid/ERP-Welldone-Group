@@ -13,6 +13,11 @@ use App\Models\ModelServiceSparepart;
 use App\Models\ModelStokBarang;
 use App\Models\ModelHppBarang;
 use App\Models\ModelStokAwal;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Riwayat_Service extends BaseController
 
@@ -65,8 +70,10 @@ class Riwayat_Service extends BaseController
         $oldkerusakan = $this->ServiceKerusakanModel->getSerModelServiceKerusakanByServiceId($idservice);
         $oldsparepart = $this->ServiceSparepartModel->getSerModelServiceSparepartByServiceId($idservice);
         $lama_garansi = $this->ServiceSparepartModel->getGaransiHariByServiceId($idservice);
+        $teknisi = $this->AuthModel->getdataakun();
         $data =  array(
             'akun' => $akun,
+            'teknisi' => $teknisi,
             'fungsi' => $this->KerusakanModel->getKerusakan(),
             'idservice' => $idservice,
             'old_service_pelanggan' => $this->ServiceModel->getByIdWithPelanggan($idservice),
@@ -216,6 +223,8 @@ class Riwayat_Service extends BaseController
         $garansi = (int) $this->request->getPost('garansi');
         $total_harga_pembayaran = $this->request->getPost('total_harga_pembayaran');
         $status_service = $this->request->getPost('status_service_pembayaran');
+        $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
+        $bayar = $this->request->getPost('bayar_pembayaran');
 
         $datap = array(
             'status_service' => $status_service,
@@ -223,11 +232,145 @@ class Riwayat_Service extends BaseController
             'total_diskon' => $diskon_pembayaran,
             'harus_dibayar' => $total_harga_pembayaran,
             'garansi_hari' => $garansi,
-            'service_by' => 1
+            'bayar' => $bayar,
+            'service_by' => $service_by_pembayaran
+
         );
         $resultend =  $this->ServiceModel->updateService($idservice, $datap);
 
         session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');
         return redirect()->to(base_url('riwayat_service'));
+    }
+
+
+
+    public function cetak_invoice($idservice)
+    {
+        helper('qr');
+
+
+        $sparepart  = $this->ServiceModel->getSparepartWithBarang($idservice);
+        $kerusakan  = $this->ServiceModel->getKerusakanWithFungsi($idservice);
+        $human      = $this->ServiceModel->getServiceWithAkunAndPelanggan($idservice);
+
+
+        $qrData = base_url('status_service/' . $idservice);
+        $uniqueName = 'qr_' . md5($idservice . time()) . '.png';
+        $qrImageUrl = generateQrToFile($qrData, $uniqueName);
+
+
+        $data = [
+            'sparepart'    => $sparepart,
+            'kerusakan'    => $kerusakan,
+            'human'        => $human,
+            'qrImageUrl'   => $qrImageUrl
+        ];
+
+
+        $html = view('cetak/invoice_service', $data);
+
+
+        error_reporting(0);
+        $mpdf = new \Mpdf\Mpdf([
+            'curlUserAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0) Gecko/20100101 Firefox/108.0'
+        ]);
+
+        ob_end_clean();
+        $mpdf->curlAllowUnsafeSslRequests = true;
+
+
+        $this->response->setHeader('Content-Type', 'application/pdf');
+        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
+        $this->response->setHeader('Accept-Ranges', 'bytes');
+
+
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
+        exit;
+    }
+
+
+
+    public function export()
+    {
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+
+        $tanggal_awal  = $this->request->getPost('tanggal_awal');
+        $tanggal_akhir = $this->request->getPost('tanggal_akhir');
+
+        // Ambil data dari model
+        $dataservice = $this->ServiceModel->filterexport($tanggal_awal, $tanggal_akhir);
+
+        // Header kolom
+        $headers = [
+            'A1' => 'No. Service',
+            'B1' => 'Tanggal Masuk',
+            'C1' => 'Nama Pelanggan',
+            'D1' => 'Total Service',
+            'E1' => 'Total DIskon',
+            'F1' => 'Sub Total',
+            'G1' => 'Total Bayar',
+            'H1' => 'Nama Teknisi'
+        ];
+
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
+
+        // Styling header
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:H1')->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE2EFDA'); // Warna hijau muda
+
+        // Tulis data ke baris berikutnya
+        $row = 2;
+        foreach ($dataservice as $item) {
+            $sheet->setCellValue('A' . $row, $item->no_service);
+            $sheet->setCellValue('B' . $row, $item->created_at);
+            $sheet->setCellValue('C' . $row, $item->nama_pelanggan);
+            $sheet->setCellValue('D' . $row, $item->total_service);
+            $sheet->setCellValue('E' . $row, $item->total_diskon);
+            $sheet->setCellValue('F' . $row, $item->harus_dibayar);
+            $sheet->setCellValue('G' . $row, $item->bayar);
+            $sheet->setCellValue('H' . $row, $item->nama_service_by);
+            $row++;
+        }
+
+        // Border seluruh tabel
+        $sheet->getStyle('A1:H' . ($row - 1))
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
+
+        // Auto-width untuk semua kolom
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Format tanggal kolom B
+        $sheet->getStyle('B2:B' . ($row - 1))
+            ->getNumberFormat()
+            ->setFormatCode('yyyy-mm-dd');
+
+        // Freeze header
+        $sheet->freezePane('A2');
+
+        // Nama file
+        $filename = 'Riwayat_Service_' . date('Ymd_His') . '.xlsx';
+
+        // Header untuk response browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+
+        // Output file
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
     }
 }

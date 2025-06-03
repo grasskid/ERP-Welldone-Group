@@ -5,7 +5,7 @@ namespace Config;
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
 use CodeIgniter\HotReloader\HotReloader;
-
+use App\Listeners\SlowQueryListener;
 /*
  * --------------------------------------------------------------------
  * Application Events
@@ -52,4 +52,12 @@ Events::on('pre_system', static function () {
             });
         }
     }
+});
+
+// Daftarkan listener untuk event DBQuery
+$slowQueryListener = new SlowQueryListener();
+
+// Tangkap kedua jenis event DBQuery
+Events::on('DBQuery', function ($event) use ($slowQueryListener) {
+    $slowQueryListener->handle($event);
 });

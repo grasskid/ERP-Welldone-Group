@@ -66,7 +66,8 @@ class ModelAuth extends Model
         return $this->db->table('menu')->where(array("url !=" => null))->get()->getResultObject();
     }
 
-    function getRolesJabatan($roles) {
+    function getRolesJabatan($roles)
+    {
         return $this->db->table('menu')->whereIn('idmenu', $roles)->get()->getResultObject();
     }
 
@@ -85,5 +86,11 @@ class ModelAuth extends Model
     function updatePass($id, $data)
     {
         return $this->db->table($this->table)->where('NOID', $id)->update($data);
+    }
+
+
+    public function getdataakun()
+    {
+        return $this->findAll();
     }
 }

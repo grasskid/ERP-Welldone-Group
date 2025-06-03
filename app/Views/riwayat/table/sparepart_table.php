@@ -80,13 +80,15 @@
 
     <div class="mb-3">
         <label class="form-label">Total Diskon</label>
-        <input type="text" class="form-control" name="diskon" value="0" readonly>
+        <input type="text" class="form-control" name="diskon" value="0" readonly id="diskon_sparepart"
+            onchange="updateTotalHarga()">
     </div>
 
 
     <div class="mb-4">
         <label class="form-label">Harga Akhir</label>
-        <input type="text" class="form-control" name="harga_akhir" readonly>
+        <input type="text" class="form-control" name="harga_akhir" readonly id="harga_akhir_sparepart"
+            onchange="updateTotalHarga()">
     </div>
 
     <div style="display: flex; justify-content: space-between;">
@@ -96,6 +98,7 @@
         </div>
 
     </div>
+
     <script>
         $(document).ready(function() {
             $('#sparepartDataTable').DataTable();
@@ -106,89 +109,168 @@
         document.addEventListener('DOMContentLoaded', () => {
             const tbody = document.getElementById('sparepart-table-body');
 
-            oldSpareparts.forEach((sp, index) => {
-                const id = sp.barang_idbarang;
-                const nama = sp.nama_barang; // pastikan field ini tersedia dari join
-                const harga = parseFloat(sp.harga_penjualan);
-                const jumlah = parseInt(sp.jumlah);
-                const diskon = parseFloat(sp.diskon_penjualan);
-                const total = harga * jumlah - diskon;
+            oldSpareparts.forEach((sp) => {
+                addSparepartRow(sp.barang_idbarang, sp.nama_barang, parseFloat(sp.harga_penjualan),
+                    parseInt(sp.jumlah), parseFloat(sp.diskon_penjualan));
 
-                // tandai checkbox sebagai tercentang
-                const checkbox = document.querySelector(`.sparepart-check[data-id="${id}"]`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
-
-                // buat baris di tabel
-                const row = document.createElement('tr');
-                row.id = `row-${id}`;
-                row.innerHTML = `
-                <td>
-                    ${nama}
-                    <input type="hidden" name="produk[${index}][id]" value="${id}">
-                </td>
-                <td><input type="number" class="form-control harga" name="produk[${index}][harga]" value="${harga}"></td>
-                <td><input type="number" class="form-control qty" name="produk[${index}][jumlah]" value="${jumlah}" min="1"></td>
-                <td><input type="number" class="form-control diskon-item" name="produk[${index}][diskon]" value="${diskon}" min="0"></td>
-                <td><input type="text" class="form-control total" name="produk[${index}][total]" readonly></td>
-                <td><button type="button" class="btn btn-danger btn-sm remove-row">Hapus</button></td>
-            `;
-                tbody.appendChild(row);
+                // Centang checkbox lama
+                const checkbox = document.querySelector(
+                    `.sparepart-check[data-id="${sp.barang_idbarang}"]`);
+                if (checkbox) checkbox.checked = true;
             });
 
             updateTotals();
         });
 
-        document.addEventListener('input', function(e) {
-            if (e.target.classList.contains('qty') || e.target.classList.contains('harga')) {
-                updateTotals();
-            }
+        // Tambah sparepart dari modal
+        document.getElementById('add-selected-sparepart').addEventListener('click', () => {
+            document.querySelectorAll('.sparepart-check:checked').forEach((checkbox) => {
+                const id = checkbox.getAttribute('data-id');
+                const nama = checkbox.getAttribute('data-nama');
+                const harga = parseFloat(checkbox.getAttribute('data-harga'));
+
+                // Cek apakah sparepart sudah ada di tabel
+                if (!document.getElementById(`row-${id}`)) {
+                    addSparepartRow(id, nama, harga, 1, 0);
+                }
+            });
+
+            updateTotals();
         });
 
+        // Tambahkan baris sparepart
+        function addSparepartRow(id, nama, harga, jumlah = 1, diskon = 0) {
+            const tbody = document.getElementById('sparepart-table-body');
+
+            // Tentukan index terakhir yang belum terpakai
+            const rows = tbody.querySelectorAll('tr');
+            const nextIndex = rows.length;
+
+            const row = document.createElement('tr');
+            row.id = `row-${id}`;
+            row.innerHTML = `
+            <td>
+                ${nama}
+                <input type="hidden" name="produk[${nextIndex}][id]" value="${id}">
+            </td>
+            <td><input type="text" class="form-control harga" name="produk[${nextIndex}][harga]" value="Rp ${formatNumber(harga)}"></td>
+            <td><input type="number" class="form-control qty" name="produk[${nextIndex}][jumlah]" value="${jumlah}" min="1"></td>
+            <td><input type="text" class="form-control diskon-item" name="produk[${nextIndex}][diskon]" value="Rp ${formatNumber(diskon)}" min="0"></td>
+            <td><input type="text" class="form-control total" name="produk[${nextIndex}][total]" readonly></td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-row">Hapus</button></td>
+        `;
+            tbody.appendChild(row);
+        }
+
+        // Event: hapus baris
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('remove-row')) {
-                e.target.closest('tr').remove();
+                const tr = e.target.closest('tr');
+                if (tr) tr.remove();
                 updateTotals();
             }
         });
 
+        // Event: hitung ulang saat input berubah
         document.addEventListener('input', function(e) {
             if (
                 e.target.classList.contains('qty') ||
                 e.target.classList.contains('harga') ||
                 e.target.classList.contains('diskon-item')
             ) {
+                if (e.target.classList.contains('harga') || e.target.classList.contains('diskon-item')) {
+                    formatInputRupiah(e.target);
+                }
                 updateTotals();
             }
         });
 
+        // Format number with thousand separators (e.g. 10000 -> 10.000)
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
+        // Format input field with Rupiah currency style on typing
+        function formatInputRupiah(input) {
+            let cursorPos = input.selectionStart;
+            let originalLength = input.value.length;
+
+            // Remove all non-digit characters
+            let numbersOnly = input.value.replace(/[^0-9]/g, '');
+
+            if (numbersOnly === '') {
+                input.value = '';
+                return;
+            }
+
+            let number = parseInt(numbersOnly, 10);
+
+            if (isNaN(number)) {
+                input.value = '';
+                return;
+            }
+
+            // Format number to Rupiah string
+            let formatted = 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            input.value = formatted;
+
+            // Adjust cursor position after formatting
+            let newLength = formatted.length;
+            cursorPos = cursorPos + (newLength - originalLength);
+            input.setSelectionRange(cursorPos, cursorPos);
+        }
+
+        // Parse formatted Rupiah string to number
+        function parseRupiah(rupiahString) {
+            if (!rupiahString) return 0;
+            // Remove Rp and dots
+            let numberString = rupiahString.replace(/[^0-9]/g, '');
+            return parseInt(numberString, 10) || 0;
+        }
+
+        // Update total & diskon
         function updateTotals() {
             let totalHarga = 0;
             let totalDiskon = 0;
 
             document.querySelectorAll('#sparepart-table-body tr').forEach(row => {
-                const harga = parseFloat(row.querySelector('.harga').value) || 0;
-                const qty = parseInt(row.querySelector('.qty').value) || 0;
-                const diskonItem = parseFloat(row.querySelector('.diskon-item').value) || 0;
+                const harga = parseRupiah(row.querySelector('.harga')?.value) || 0;
+                const qty = parseInt(row.querySelector('.qty')?.value) || 0;
+                const diskon = parseRupiah(row.querySelector('.diskon-item')?.value) || 0;
 
                 const subtotal = harga * qty;
-                const total = subtotal - diskonItem;
+                const total = subtotal - diskon;
 
-                row.querySelector('.total').value = total.toLocaleString('id-ID');
+                row.querySelector('.total').value = 'Rp ' + formatNumber(total);
 
                 totalHarga += subtotal;
-                totalDiskon += diskonItem;
+                totalDiskon += diskon;
             });
 
-            document.querySelector('[name="total_harga"]').value = totalHarga.toLocaleString('id-ID');
-            document.querySelector('[name="diskon"]').value = totalDiskon.toLocaleString('id-ID');
-            document.querySelector('[name="harga_akhir"]').value = (totalHarga - totalDiskon).toLocaleString('id-ID');
+            document.querySelector('[name="total_harga"]').value = 'Rp ' + formatNumber(totalHarga);
+            document.getElementById('diskon_sparepart').value = 'Rp ' + formatNumber(totalDiskon);
+            document.getElementById('harga_akhir_sparepart').value = 'Rp ' + formatNumber(totalHarga - totalDiskon);
+
+            updateTotalHarga();
         }
 
+        // Optional: update total ke input pembayaran (jika ada tab selanjutnya)
+        function updateTotalHarga() {
+            const harga = document.getElementById('harga_akhir_sparepart').value;
+            const diskon_akhir = document.getElementById('diskon_sparepart').value;
 
-        document.querySelector('[name="diskon"]').addEventListener('input', updateTotals);
+            // Assuming you have inputs with these IDs elsewhere in your form/page:
+            if (document.getElementById('total_harga_pembayaran')) {
+                document.getElementById('total_harga_pembayaran').value = harga;
+            }
+            if (document.getElementById('diskon_pembayaran')) {
+                document.getElementById('diskon_pembayaran').value = diskon_akhir;
+            }
+        }
+
+        // Jika ada perubahan manual di diskon akhir
+        document.getElementById('diskon_sparepart').addEventListener('input', updateTotals);
     </script>
 </form>
 

@@ -62,9 +62,6 @@
             <div class="tab-pane fade" id="pembayaran" role="tabpanel" aria-labelledby="pembayaran-tab">
                 <?= view('transaksi/table/pembayaran_table') ?>
             </div>
-
-
-
         </div>
     </div>
 </div>

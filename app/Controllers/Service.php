@@ -44,11 +44,13 @@ class Service extends BaseController
     public function index()
     {
         $akun =   $this->AuthModel->getById(session('ID_AKUN'));
+        $teknisi = $this->AuthModel->getdataakun();
         $idservice = session('idservice') ?? null;
         $oldkerusakan = $this->ServiceKerusakanModel->getSerModelServiceKerusakanByServiceId($idservice);
         $oldsparepart = $this->ServiceSparepartModel->getSerModelServiceSparepartByServiceId($idservice);
         $data =  array(
             'akun' => $akun,
+            'teknisi' => $teknisi,
             'fungsi' => $this->KerusakanModel->getKerusakan(),
             'idservice' => $idservice,
             'old_service_pelanggan' => $this->ServiceModel->getByIdWithPelanggan($idservice),
@@ -221,6 +223,8 @@ class Service extends BaseController
         $garansi = (int) $this->request->getPost('garansi');
         $total_harga_pembayaran = $this->request->getPost('total_harga_pembayaran');
         $status_service = $this->request->getPost('status_service_pembayaran');
+        $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
+        $bayar_pembayaran = $this->request->getPost('bayar_pembayaran');
 
         $datap = array(
             'status_service' => $status_service,
@@ -228,7 +232,8 @@ class Service extends BaseController
             'total_diskon' => $diskon_pembayaran,
             'harus_dibayar' => $total_harga_pembayaran,
             'garansi_hari' => $garansi,
-            'service_by' => 1
+            'bayar' => $bayar_pembayaran,
+            'service_by' => $service_by_pembayaran
         );
         $resultend =  $this->ServiceModel->updateService($idservice, $datap);
 

@@ -100,13 +100,20 @@ $routes->post('insert/pelanggan_service', 'Service::insert_service', ['filter' =
 $routes->post('insert_kelengkapan/service', 'Service::insert_kelengkapan_service', ['filter' => 'auth']);
 $routes->post('update_kelengkapan/service', 'Riwayat_Service::update_kelengkapan_service', ['filter' => 'auth']);
 
+//status service
+$routes->get('status_service/(:num)', 'Status_Service::index/$1');
+
 // $routes->post('insert/sparepart_service', 'Service::insert_sparepart', ['filter' => 'auth']);
 //riwayat service
 $routes->get('riwayat_service', 'Riwayat_Service::index', ['filter' => 'auth']);
 $routes->get('detail/riwayat_service/(:num)', 'Riwayat_Service::detail_service/$1', ['filter' => 'auth']);
+$routes->get('cetak/invoice_service/(:num)', 'Riwayat_Service::cetak_invoice/$1', ['filter' => 'auth']);
+$routes->post('riwayat_service/export', 'Riwayat_Service::export', ['filter' => 'auth']);
 
 //expired service
 $routes->get('expired_service', 'Expired_service::index', ['filter' => 'auth']);
+$routes->post('riwayat_expired_service/export', 'Expired_service::export', ['filter' => 'auth']);
+
 
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
@@ -177,3 +184,4 @@ $routes->get('notif_service', 'NotifikasiService::index', ['filter' => 'auth']);
 
 //riwayat laba service
 $routes->get('laba_service', 'RiwayatLabaService::index', ['fileter' => 'auth']);
+$routes->post('laba_service/export', 'RiwayatLabaService::export', ['fileter' => 'auth']);

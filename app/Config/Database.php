@@ -3,7 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Database\Config;
-
+use App\Database\Connection;
 /**
  * Database Configuration
  */
@@ -21,12 +21,15 @@ class Database extends Config
      */
     public string $defaultGroup = 'default';
 
+    public $DBDebug = true;
+
     /**
      * The default database connection.
      *
      * @var array<string, mixed>
      */
     public array $default = [
+        'connectionClass' => Connection::class,
         'DSN'          => '',
         'hostname'     => 'localhost',
         'username'     => '',
@@ -54,6 +57,7 @@ class Database extends Config
      * @var array<string, mixed>
      */
     public array $tests = [
+        'connectionClass' => Connection::class,
         'DSN'         => '',
         'hostname'    => '127.0.0.1',
         'username'    => '',

@@ -13,7 +13,8 @@
 
         <div class="col-md-6">
             <label class="form-label">Nama Pelanggan</label>
-            <input type="text" value="<?php echo @$old_service_pelanggan->nama ?>" class="form-control" name="nama_pelanggan" id="nama_pelanggan">
+            <input type="text" value="<?php echo @$old_service_pelanggan->nama ?>" class="form-control"
+                name="nama_pelanggan" id="nama_pelanggan">
         </div>
         <!-- <div class="col-md-6">
             <label class="form-label">Kode Faktur</label>
@@ -22,7 +23,8 @@
 
         <div class="col-md-6">
             <label class="form-label">No Hp</label>
-            <input type="text" class="form-control" value="<?php echo @$old_service_pelanggan->no_hp ?>" name="no_hp" id="no_hp">
+            <input type="text" class="form-control" value="<?php echo @$old_service_pelanggan->no_hp ?>" name="no_hp"
+                id="no_hp">
         </div>
         <div class="col-md-6">
             <label class="form-label">Imei</label>
@@ -32,24 +34,29 @@
             <label class="form-label">Tipe Passcode</label>
             <select class="form-control" name="tipe_passcode">
                 <option value="">-- Pilih Tipe --</option>
-                <option value="pola" <?php echo (@$old_service_pelanggan->type_passcode == 'pola') ? 'selected' : ''; ?>>Pola</option>
-                <option value="text" <?php echo (@$old_service_pelanggan->type_passcode == 'text') ? 'selected' : ''; ?>>Text</option>
+                <option value="pola"
+                    <?php echo (@$old_service_pelanggan->type_passcode == 'pola') ? 'selected' : ''; ?>>Pola</option>
+                <option value="text"
+                    <?php echo (@$old_service_pelanggan->type_passcode == 'text') ? 'selected' : ''; ?>>Text</option>
             </select>
         </div>
 
 
         <div class="col-md-6">
             <label class="form-label">Passcode</label>
-            <input value="<?php echo @$old_service_pelanggan->passcode ?>" type="text" class="form-control" name="passcode">
+            <input value="<?php echo @$old_service_pelanggan->passcode ?>" type="text" class="form-control"
+                name="passcode">
         </div>
 
         <div class="col-md-6">
             <label class="form-label">Email (icloud)</label>
-            <input type="email" value="<?php echo @$old_service_pelanggan->email_icloud ?>" placeholder="contoh@gmail.com" class="form-control" name="email_icloud">
+            <input type="email" value="<?php echo @$old_service_pelanggan->email_icloud ?>" placeholder="@icloud.com"
+                class="form-control" name="email_icloud">
         </div>
         <div class="col-md-6">
             <label class="form-label">Password (icloud)</label>
-            <input type="password" value="<?php echo @$old_service_pelanggan->password_icloud ?>" placeholder="contoh123" class="form-control" name="password_icloud">
+            <input type="password" value="<?php echo @$old_service_pelanggan->password_icloud ?>" placeholder="********"
+                class="form-control" name="password_icloud">
         </div>
 
         <!-- <div class="col-md-6">
@@ -61,17 +68,20 @@
         </div> -->
         <div class="col-md-6">
             <label class="form-label">Alamat</label>
-            <textarea style="height: 100px;" type="text" class="form-control" name="alamat" id="alamat"><?php echo @$old_service_pelanggan->alamat ?></textarea>
+            <textarea style="height: 100px;" type="text" class="form-control" name="alamat"
+                id="alamat"><?php echo @$old_service_pelanggan->alamat ?></textarea>
 
         </div>
 
         <div class="col-md-6">
             <label class="form-label">Keluhan</label>
-            <textarea style="height: 100px;" class="form-control" name="keluhan"><?php echo @$old_service_pelanggan->keluhan ?></textarea>
+            <textarea style="height: 100px;" class="form-control"
+                name="keluhan"><?php echo @$old_service_pelanggan->keluhan ?></textarea>
         </div>
         <div class="col-md-6">
             <label class="form-label">Keterangan</label>
-            <textarea style="height: 100px;" type="text" class="form-control" name="keterangan"><?php echo @$old_service_pelanggan->keterangan ?></textarea>
+            <textarea style="height: 100px;" type="text" class="form-control"
+                name="keterangan"><?php echo @$old_service_pelanggan->keterangan ?></textarea>
 
         </div>
 
@@ -103,12 +113,11 @@
                         style="width: 100%;">
                         <option disabled selected>Select</option>
                         <?php foreach ($pelanggan as $p): ?>
-                            <option value="<?= htmlspecialchars($p->id_pelanggan) ?>"
-                                data-nama="<?= htmlspecialchars($p->nama) ?>"
-                                data-nohp="<?= htmlspecialchars($p->no_hp) ?>"
-                                data-alamat="<?= htmlspecialchars($p->alamat) ?>">
-                                <?= htmlspecialchars($p->nama) ?> : <?= htmlspecialchars($p->no_hp) ?>
-                            </option>
+                        <option value="<?= htmlspecialchars($p->id_pelanggan) ?>"
+                            data-nama="<?= htmlspecialchars($p->nama) ?>" data-nohp="<?= htmlspecialchars($p->no_hp) ?>"
+                            data-alamat="<?= htmlspecialchars($p->alamat) ?>">
+                            <?= htmlspecialchars($p->nama) ?> : <?= htmlspecialchars($p->no_hp) ?>
+                        </option>
 
                         <?php endforeach; ?>
                     </select>
@@ -164,108 +173,108 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const pelangganModal = new bootstrap.Modal(document.getElementById('pelangganModal'));
-        const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
+document.addEventListener('DOMContentLoaded', function() {
+    const pelangganModal = new bootstrap.Modal(document.getElementById('pelangganModal'));
+    const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
 
-        // Inisialisasi Select2 dengan dropdownParent agar dropdown muncul di atas modal
-        $('.select2').select2({
-            dropdownParent: $('#pelangganModal')
-        });
+    // Inisialisasi Select2 dengan dropdownParent agar dropdown muncul di atas modal
+    $('.select2').select2({
+        dropdownParent: $('#pelangganModal')
+    });
 
-        // Langsung tampilkan tombol pelanggan saat halaman dimuat
-        const existingBtn = document.getElementById('pelanggan-button');
-        if (!existingBtn) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.id = 'pelanggan-button';
-            btn.className = 'btn btn-warning mt-2';
-            btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
-            btn.innerHTML = `
+    // Langsung tampilkan tombol pelanggan saat halaman dimuat
+    const existingBtn = document.getElementById('pelanggan-button');
+    if (!existingBtn) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'pelanggan-button';
+        btn.className = 'btn btn-warning mt-2';
+        btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
+        btn.innerHTML = `
                 <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
                 Input Data Pelanggan
             `;
 
-            btn.onclick = () => pelangganModal.show();
+        btn.onclick = () => pelangganModal.show();
 
-            const container = document.querySelector('.table-responsive.mt-3.mb-4');
-            if (container) {
-                container.appendChild(btn);
-            }
+        const container = document.querySelector('.table-responsive.mt-3.mb-4');
+        if (container) {
+            container.appendChild(btn);
+        }
+    }
+
+    // Tombol "Tambah" di bawah dropdown
+    document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
+        modalTambah.show();
+    });
+
+    // Saat tombol "Pilih" ditekan
+    document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
+        const select = document.getElementById('pelanggan-select');
+        const selectedOption = select.options[select.selectedIndex];
+
+        if (!selectedOption || selectedOption.disabled) {
+            alert('Silakan pilih pelanggan terlebih dahulu.');
+            return;
         }
 
-        // Tombol "Tambah" di bawah dropdown
-        document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
-            modalTambah.show();
-        });
+        const nama = selectedOption.getAttribute('data-nama');
+        const no_hp = selectedOption.getAttribute('data-nohp');
+        const alamat = selectedOption.getAttribute('data-alamat');
 
-        // Saat tombol "Pilih" ditekan
-        document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
-            const select = document.getElementById('pelanggan-select');
-            const selectedOption = select.options[select.selectedIndex];
-
-            if (!selectedOption || selectedOption.disabled) {
-                alert('Silakan pilih pelanggan terlebih dahulu.');
-                return;
-            }
-
-            const nama = selectedOption.getAttribute('data-nama');
-            const no_hp = selectedOption.getAttribute('data-nohp');
-            const alamat = selectedOption.getAttribute('data-alamat');
-
-            // Set nilai ke form input
-            document.getElementById('nama_pelanggan').value = nama;
-            document.getElementById('no_hp').value = no_hp;
-            document.getElementById('alamat').value = alamat;
+        // Set nilai ke form input
+        document.getElementById('nama_pelanggan').value = nama;
+        document.getElementById('no_hp').value = no_hp;
+        document.getElementById('alamat').value = alamat;
 
 
-            pelangganModal.hide();
-        });
+        pelangganModal.hide();
+    });
 
 
-        $('#formTambahPelanggan').on('submit', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
+    $('#formTambahPelanggan').on('submit', function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
 
-            $.ajax({
-                url: '<?php echo base_url('simpan/pelanggan') ?>',
-                method: 'POST',
-                data: formData,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        modalTambah.hide();
-                        $('#formTambahPelanggan')[0].reset();
+        $.ajax({
+            url: '<?php echo base_url('simpan/pelanggan') ?>',
+            method: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    modalTambah.hide();
+                    $('#formTambahPelanggan')[0].reset();
 
-                        const newOption = new Option(
-                            response.data.nama + ' : ' + response.data.no_hp,
-                            response.data.id_pelanggan,
-                            true,
-                            true
-                        );
-                        $('#pelanggan-select').append(newOption).trigger('change');
-                        alert('Pelanggan berhasil ditambahkan');
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                },
-                error: function() {
-                    alert('Terjadi kesalahan saat menyimpan data.');
+                    const newOption = new Option(
+                        response.data.nama + ' : ' + response.data.no_hp,
+                        response.data.id_pelanggan,
+                        true,
+                        true
+                    );
+                    $('#pelanggan-select').append(newOption).trigger('change');
+                    alert('Pelanggan berhasil ditambahkan');
+                } else {
+                    alert('Error: ' + response.message);
                 }
-            });
+            },
+            error: function() {
+                alert('Terjadi kesalahan saat menyimpan data.');
+            }
         });
     });
+});
 </script>
 
 <script>
-    document.getElementById('btn-next-to-kerusakan').addEventListener('click', function() {
-        var idservice = document.querySelector('input[name="idservice"]').value;
+document.getElementById('btn-next-to-kerusakan').addEventListener('click', function() {
+    var idservice = document.querySelector('input[name="idservice"]').value;
 
-        if (!idservice) {
-            alert('Harap isi dan simpan pelanggan terlebih dahulu.');
-        } else {
-            var tabTrigger = new bootstrap.Tab(document.querySelector('#kerusakan-tab'));
-            tabTrigger.show();
-        }
-    });
+    if (!idservice) {
+        alert('Harap isi dan simpan pelanggan terlebih dahulu.');
+    } else {
+        var tabTrigger = new bootstrap.Tab(document.querySelector('#kerusakan-tab'));
+        tabTrigger.show();
+    }
+});
 </script>
