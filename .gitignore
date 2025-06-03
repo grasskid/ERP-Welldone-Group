@@ -8,6 +8,7 @@ public/.htaccess
 public/favicon.ico
 public/robots.txt
 public/uploads/
+public/foto_nota/
 
 # Composer
 /vendor/
