@@ -31,36 +31,13 @@ class Phone extends BaseController
 
     public function index()
     {
-        $logPath = WRITEPATH . 'logs/slow_queries/';
-
-        // Test 1: Cek direktori
-        echo "Directory exists: " . (is_dir($logPath) ? 'YES' : 'NO') . "<br>";
-        echo "Directory writable: " . (is_writable($logPath) ? 'YES' : 'NO') . "<br>";
-
-        // Test 2: Coba tulis langsung
-        $testFile = $logPath . 'direct_test.log';
-        file_put_contents($testFile, "Direct write test\n", FILE_APPEND);
-        echo "Direct write test: " . (file_exists($testFile) ? 'SUCCESS' : 'FAILED') . "<br>";
-
-        // Test 3: Via logger
-        $logger = new \App\Libraries\SlowQueryLogger();
-        $logger->logQuery(1.23, "TEST QUERY", ["param" => 1]);
-
-        // Test 4: Real query
-        $db = \Config\Database::connect();
-        $db->query("SELECT SLEEP(1.5)");
-
-        // Output path
-        echo "Log path: " . $logPath . "<br>";
-        echo "Log file exists: " . (file_exists($logPath . 'log-' . date('Y-m-d') . '.log') ? 'YES' : 'NO');
-
-        // $akun =   $this->AuthModel->getById(session('ID_AKUN'));
-        // $data =  array(
-        //     'akun' => $akun,
-        //     'phone' => $this->PhoneModel->getPhoneActive(),
-        //     'body'  => 'datamaster/phone'
-        // );
-        // return view('template', $data);
+        $akun =   $this->AuthModel->getById(session('ID_AKUN'));
+        $data =  array(
+            'akun' => $akun,
+            'phone' => $this->PhoneModel->getPhoneActive(),
+            'body'  => 'datamaster/phone'
+        );
+        return view('template', $data);
     }
 
     public function insert_phone()

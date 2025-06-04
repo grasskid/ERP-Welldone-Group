@@ -63,7 +63,9 @@ class ModelAuth extends Model
 
     function getRolesAktif()
     {
-        return $this->db->table('menu')->where(array("url !=" => null))->get()->getResultObject();
+        return $this->db->table('menu')
+        // ->where(array("url !=" => null))
+        ->get()->getResultObject();
     }
 
     function getRolesJabatan($roles)
