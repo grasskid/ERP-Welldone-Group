@@ -17,7 +17,7 @@ class ModelJurnal extends Model
         if ($id_unit == null) {
             $id_unit = session('ID_UNIT');
         }
-        $template = $this->where('kode_template', $kode_template)->table('template_jurnal')->get()->getRow();
+        $template = $this->table('template_jurnal')->where('kode_template', $kode_template)->get()->getRow();
         $ar_insert = array();
         foreach ($template as $value) {
             $data = array(
@@ -37,6 +37,6 @@ class ModelJurnal extends Model
             }
             $ar_insert[] = $data;
         }
-        $this->insertBatch($ar_insert);
+        return $this->insertBatch($ar_insert);
     }
 }
