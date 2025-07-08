@@ -13,13 +13,18 @@ class ModelServiceSparepart extends Model
         'idservice_sparepart',
         'jumlah',
         'harga_penjualan',
+        'harga_penjualan_garansi',
         'sub_total',
+        'sub_total_garansi',
         'hpp_penjualan',
         'satuan_jual',
         'diskon_penjualan',
+        'diskon_penjualan_garansi',
         'service_idservice',
         'barang_idbarang',
-        'unit_idunit'
+        'unit_idunit',
+        'jumlah_tambahan_garansi',
+        'hpp_penjualan_garansi'
     ];
 
     public function getSerModelServiceSparepart()
@@ -46,14 +51,28 @@ class ModelServiceSparepart extends Model
             ->getRow();
     }
 
-
-
-
-
-
-
     public function insert_SerModelServiceSparepart($data)
     {
         return $this->insert($data);
+    }
+
+    public function updateByServiceAndBarang($serviceId, $barangId, $data)
+    {
+        return $this->where([
+            'service_idservice' => $serviceId,
+            'barang_idbarang' => $barangId
+        ])->set($data)->update();
+    }
+
+    public function deleteByServiceAndBarang($serviceId, $barangId)
+    {
+        return $this->where([
+            'service_idservice' => $serviceId,
+            'barang_idbarang' => $barangId
+        ])->delete();
+    }
+    public function getByServiceId($idservice)
+    {
+        return $this->where('service_idservice', $idservice)->findAll();
     }
 }

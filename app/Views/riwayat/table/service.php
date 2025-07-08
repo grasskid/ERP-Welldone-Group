@@ -4,7 +4,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
-                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Transaksi</a>
+                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Riwayat</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">Service</li>
             </ol>
@@ -51,8 +51,6 @@
             <div class=" tab-pane fade show active" id="pelanggan" role="tabpanel" aria-labelledby="pelanggan-tab">
                 <?= view('riwayat/table/pelanggan_table') ?>
             </div>
-
-
             <div class="tab-pane fade" id="kerusakan" role="tabpanel" aria-labelledby="kerusakan-tab">
                 <?= view('riwayat/table/kerusakan_table') ?>
             </div>
@@ -69,37 +67,30 @@
 
 
 <script>
-    document.getElementById('submitSemuaForm').addEventListener('click', async function() {
-        let formKerusakan = new FormData(document.getElementById('form-kerusakan'));
-        let formSparepart = new FormData(document.getElementById('form-sparepart'));
-        let formPembayaran = new FormData(document.getElementById('form-pembayaran'));
+    // Cek apakah ada parameter ?tab=xxx di URL
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get("tab");
 
-        let finalFormData = new FormData();
+        if (tabParam) {
+            // Set ke localStorage agar digunakan saat load
+            localStorage.setItem("activeTab", "#" + tabParam);
+        }
 
-        function mergeFormData(source, target) {
-            for (let [key, value] of source.entries()) {
-                target.append(key, value);
+        // Ambil tab terakhir dari localStorage
+        const lastTab = localStorage.getItem("activeTab");
+        if (lastTab) {
+            const triggerTab = document.querySelector(`a[href="${lastTab}"]`);
+            if (triggerTab) {
+                new bootstrap.Tab(triggerTab).show();
             }
         }
 
-        mergeFormData(formKerusakan, finalFormData);
-        mergeFormData(formSparepart, finalFormData);
-        mergeFormData(formPembayaran, finalFormData);
-
-        try {
-            const response = await fetch("<?= base_url('update_kelengkapan/service') ?>", {
-                method: "POST",
-                body: finalFormData
+        // Update localStorage saat tab diklik
+        document.querySelectorAll('.nav-link[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function(e) {
+                localStorage.setItem("activeTab", e.target.getAttribute("href"));
             });
-
-            if (!response.ok) {
-                console.warn("Respon gagal:", response.status);
-            }
-        } catch (error) {
-            console.error("Terjadi kesalahan:", error);
-        } finally {
-            // Redirect akan terjadi baik berhasil maupun gagal
-            window.location.href = "<?= base_url('riwayat_service') ?>";
-        }
+        });
     });
 </script>

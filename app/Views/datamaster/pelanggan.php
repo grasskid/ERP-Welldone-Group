@@ -22,7 +22,8 @@
             <a href="<?= base_url('export/pelanggan') ?>" class="btn btn-danger"
                 style="display: inline-flex; align-items: center;">
                 <iconify-icon icon="solar:export-broken" width="24" height="24" style="margin-right: 8px;">
-                </iconify-icon> Export
+                </iconify-icon>
+                Export
             </a>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#samedata-modal"
                 style="display: inline-flex; align-items: center;">
@@ -30,17 +31,19 @@
                 </iconify-icon>
                 Import
             </button>
-            <a href="<?php echo base_url('format_excell/format_pelanggan.xlsx') ?>"><button type="button"
-                    class="btn btn-success" style="display: inline-flex; align-items: center;">
+            <a href="<?= base_url('format_excell/format_pelanggan.xlsx') ?>">
+                <button type="button" class="btn btn-success" style="display: inline-flex; align-items: center;">
                     <iconify-icon icon="solar:download-broken" width="24" height="24" style="margin-right: 8px;">
                     </iconify-icon>
                     Download Format Excell
-                </button></a>
+                </button>
+            </a>
         </div>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-pelanggan-modal"
             style="display: inline-flex; align-items: center;">
             <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
-                style="margin-right: 8px;"></iconify-icon>Input
+                style="margin-right: 8px;"></iconify-icon>
+            Input
         </button>
     </div>
 
@@ -52,36 +55,39 @@
                     <th>Alamat</th>
                     <th>NIK</th>
                     <th>Nomer HP</th>
+                    <th>Jenis Pelanggan</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($pelanggan)): ?>
-                    <?php foreach ($pelanggan as $row): ?>
-                        <tr>
-                            <td><?= esc($row->nama) ?></td>
-                            <td><?= esc($row->alamat) ?></td>
-                            <td><?= esc($row->nik) ?></td>
-                            <td><?= esc($row->no_hp) ?></td>
-                            <td>
-                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
-                                    data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
-                                    data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>">
-                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                </button>
-                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                    data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                                    </iconify-icon>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                <?php foreach ($pelanggan as $row): ?>
+                <tr>
+                    <td><?= esc($row->nama) ?></td>
+                    <td><?= esc($row->alamat) ?></td>
+                    <td><?= esc($row->nik) ?></td>
+                    <td><?= esc($row->no_hp) ?></td>
+                    <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
+                    <td>
+                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                            data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
+                            data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
+                            data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
+                            data-kategori="<?= esc($row->kategori) ?>">
+                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                        </button>
+                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                            data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                            </iconify-icon>
+                        </button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="5" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="6" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -105,9 +111,16 @@
                     </div>
                     <div class="mb-3"><label>Alamat</label><input type="text" class="form-control" name="alamat"
                             required></div>
-
                     <div class="mb-3"><label>Nomor HP</label><input type="text" class="form-control" name="no_hp"
                             required></div>
+                    <div class="mb-3">
+                        <label>Jenis Pelanggan</label>
+                        <select class="form-control" name="kategori" required>
+                            <option value="">-- Pilih Jenis Pelanggan --</option>
+                            <option value="0">Umum</option>
+                            <option value="1">Toko</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"
@@ -118,46 +131,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- //modal -->
-<div class="modal fade" id="samedata-modal" tabindex="-1" aria-labelledby="exampleModalLabel1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header d-flex align-items-center">
-                <h4 class="modal-title" id="exampleModalLabel1">
-                    Import File Excell
-                </h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="<?php echo base_url('import/pelanggan') ?>" enctype="multipart/form-data" method="post">
-                    <div class="mb-3">
-                        <label for="recipient-name" class="control-label">file:</label>
-                        <input type="File" class="form-control" name="file" id="recipient-name1" />
-                    </div>
-
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn bg-danger-subtle text-danger " data-bs-dismiss="modal">
-                    Close
-                </button>
-                <button type="submit" class="btn btn-success">
-                    Submit
-                </button>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- /.modal -->
-
-
-<!-- Modal Alert Sukses -->
-
-
-<!-- /.modal -->
 
 <!-- Modal Edit Pelanggan -->
 <div class="modal fade" id="edit-pelanggan-modal" tabindex="-1" aria-labelledby="editPelangganModalLabel"
@@ -179,6 +152,14 @@
                             required></div>
                     <div class="mb-3"><label>Nomor HP</label><input type="text" class="form-control" name="no_hp"
                             id="edit-no_hp" required></div>
+                    <div class="mb-3">
+                        <label>Jenis Pelanggan</label>
+                        <select class="form-control" name="kategori" id="edit-kategori" required>
+                            <option value="">-- Pilih Jenis Pelanggan --</option>
+                            <option value="0">Umum</option>
+                            <option value="1">Toko</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"
@@ -214,24 +195,50 @@
     </div>
 </div>
 
-<!-- JavaScript to Handle Edit/Delete -->
+<!-- Modal Import -->
+<div class="modal fade" id="samedata-modal" tabindex="-1" aria-labelledby="exampleModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center">
+                <h4 class="modal-title" id="exampleModalLabel1">Import File Excell</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('import/pelanggan') ?>" enctype="multipart/form-data" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="recipient-name" class="control-label">File:</label>
+                        <input type="file" class="form-control" name="file" id="recipient-name1" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Edit/Delete Modal -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('#zero_config').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const button = e.target.closest('.edit-button');
-                document.getElementById('edit-id_pelanggan').value = button.getAttribute(
-                    'data-id_pelanggan');
-                document.getElementById('edit-nama').value = button.getAttribute('data-nama');
-                document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
-                document.getElementById('edit-nik').value = button.getAttribute('data-nik');
-                document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
-            }
-            if (e.target.closest('.delete-button')) {
-                const button = e.target.closest('.delete-button');
-                document.getElementById('delete-id_pelanggan').value = button.getAttribute(
-                    'data-id_pelanggan');
-            }
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#zero_config').addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const button = e.target.closest('.edit-button');
+            document.getElementById('edit-id_pelanggan').value = button.getAttribute(
+                'data-id_pelanggan');
+            document.getElementById('edit-nama').value = button.getAttribute('data-nama');
+            document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
+            document.getElementById('edit-nik').value = button.getAttribute('data-nik');
+            document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
+            document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
+        }
+        if (e.target.closest('.delete-button')) {
+            const button = e.target.closest('.delete-button');
+            document.getElementById('delete-id_pelanggan').value = button.getAttribute(
+                'data-id_pelanggan');
+        }
     });
+});
 </script>

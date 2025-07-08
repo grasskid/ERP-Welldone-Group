@@ -47,14 +47,15 @@
     </form>
 
     <div class="table-responsive mb-4 px-4">
-        <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
+        <table class="table border text-nowrap mb-0 align-middle" <?= empty($service) ? '' : 'id="zero_config"' ?>>
+
             <thead class="text-dark fs-4">
                 <tr>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">No Service</h6>
                     </th>
                     <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Tanggal Selesai</h6>
+                        <h6 class="fs-4 fw-semibold mb-0">Tanggal Bisa Diambil</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nama Pelanggan</h6>
@@ -72,7 +73,7 @@
                     <?php foreach ($service as $row): ?>
                         <tr>
                             <td><?= esc($row->no_service) ?></td>
-                            <td><?= esc(date('d-m-Y', strtotime($row->tanggal_selesai))) ?></td>
+                            <td><?= esc(date('d-m-Y', strtotime($row->tanggal_bisa_diambil))) ?></td>
                             <td><?= esc($row->nama_pelanggan) ?></td>
                             <td><?= esc($row->no_hp) ?></td>
                             <td><?= esc($row->alamat) ?></td>
@@ -97,7 +98,7 @@
 
         const today = new Date();
         const fifteenDaysAgo = new Date();
-        fifteenDaysAgo.setDate(today.getDate() - 15);
+        fifteenDaysAgo.setDate(today.getDate() - 365);
 
 
         const toDateInputValue = (date) => {

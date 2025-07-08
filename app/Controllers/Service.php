@@ -63,35 +63,37 @@ class Service extends BaseController
         return view('template', $data);
     }
 
-    public function kerusakan_table()
+    public function indexedit($idservice)
     {
         $akun =   $this->AuthModel->getById(session('ID_AKUN'));
+        $teknisi = $this->AuthModel->getdataakun();
+
+        $oldkerusakan = $this->ServiceKerusakanModel->getSerModelServiceKerusakanByServiceId($idservice);
+        $oldsparepart = $this->ServiceSparepartModel->getSerModelServiceSparepartByServiceId($idservice);
         $data =  array(
             'akun' => $akun,
+            'teknisi' => $teknisi,
             'fungsi' => $this->KerusakanModel->getKerusakan(),
-            'body'  => 'transaksi/table/kerusakan_table'
+            'idservice' => $idservice,
+            'old_service_pelanggan' => $this->ServiceModel->getByIdWithPelanggan($idservice),
+            'oldkerusakan' => $oldkerusakan,
+            'oldsparepart' => $oldsparepart,
+            'pelanggan' => $this->PelangganModel->getPelanggan(),
+            'sparepart' => $this->StokBarangModel->getSparepart(),
+            'body'  => 'transaksi/service'
         );
         return view('template', $data);
     }
 
-    public function sparepart_table()
-    {
-        $akun =   $this->AuthModel->getById(session('ID_AKUN'));
-        $data =  array(
-            'akun' => $akun,
-            'fungsi' => $this->KerusakanModel->getKerusakan(),
-            'sparepart' => $this->BarangModel->getBarangSparepart(),
-            'body'  => 'transaksi/table/sparepart_table'
-        );
-        return view('template', $data);
-    }
+
+
 
     public function insert_service()
     {
         $idservice = $this->request->getPost('idservice');
 
         if (session()->has('idservice')) {
-            session()->setFlashdata('gagal', 'Gagal! Selesaikan pembayaran terlebih dahulu untuk input data baru.');
+            session()->setFlashdata('gagal', 'Gagal! Selesaikan inputan terkini terlebih dahulu untuk input data baru.');
             return redirect()->back();
         }
 
@@ -99,6 +101,7 @@ class Service extends BaseController
         $idpelanggan  = $this->request->getPost('selectedidpelanggan');
         $no_hp = $this->request->getPost('no_hp');
         $imei = $this->request->getPost('imei');
+        $dp_bayar = $this->rupiahToInt($this->request->getPost('dp_bayar'));
         $tipe_passcode = $this->request->getPost('tipe_passcode');
         $passcode = $this->request->getPost('passcode');
         $email_icloud = $this->request->getPost('email_icloud');
@@ -106,6 +109,7 @@ class Service extends BaseController
         $alamat = $this->request->getPost('alamat');
         $keluhan = $this->request->getPost('keluhan');
         $keterangan = $this->request->getPost('keterangan');
+        $estimasi_biaya = $this->request->getPost('estimasi_biaya');
 
         $idunit = session('ID_UNIT');
         $idakun = session('ID_AKUN');
@@ -138,6 +142,7 @@ class Service extends BaseController
             'no_service' => $no_service,
             'no_hp' => $no_hp,
             'imei' => $imei,
+            'dp_bayar' => $dp_bayar,
             'alamat' => $alamat,
             'keluhan' => $keluhan,
             'keterangan' => $keterangan,
@@ -145,8 +150,8 @@ class Service extends BaseController
             'passcode' => $passcode,
             'email_icloud' => $email_icloud,
             'password_icloud' => $password_icloud,
-            'status_service' => 1,
             'pelanggan_id_pelanggan' => $idpelanggan,
+            'estimasi_biaya' => $estimasi_biaya,
             'unit_idunit' => $idunit,
             'input_by' => $idakun,
             'created_at' => $created_at,
@@ -156,84 +161,160 @@ class Service extends BaseController
             $idservice = $this->ServiceModel->insertID();
             session()->set('idservice', $idservice);
             session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');
-            return redirect()->to(base_url('/service#kerusakan-tab'));
+            return redirect()->to('/service?tab=kerusakan')->with('success', 'Data kerusakan berhasil diperbarui.');
         }
     }
 
-    public function insert_kelengkapan_service()
+
+    public function insert_kerusakan()
     {
-        //kerusakan
         $fungsiTerpilih = $this->request->getPost('fungsi');
-        $keterangan = $this->request->getPost('keterangan');
-        $idservice = $this->request->getPost('idservice');
+        $keteranganInput = $this->request->getPost('keterangan');
+        $idservice = $this->request->getPost('idservice_k');
+
+        if (empty($fungsiTerpilih)) {
+            return redirect()->to('/service?tab=sparepart')->with('info', 'Tidak ada kerusakan yang dipilih.');
+        }
 
         date_default_timezone_set('Asia/Jakarta');
-        $created_at = date('Y-m-d H:i:s');
+        $now = date('Y-m-d H:i:s');
 
-        if (!empty($fungsiTerpilih)) {
-            foreach ($fungsiTerpilih as $idfungsi) {
-                $catatan = $keterangan[$idfungsi] ?? '';
-                $datak = [
+        // Ambil data kerusakan lama dari database
+        $dataLama = $this->ServiceKerusakanModel->getSerModelServiceKerusakanByServiceId($idservice);
+        $fungsiLama = []; // format: idfungsi => keterangan
+        foreach ($dataLama as $item) {
+            $fungsiLama[$item->fungsi_idfungsi] = $item->keterangan;
+        }
+
+        $fungsiTerpilihMap = array_flip($fungsiTerpilih); // untuk pencarian cepat
+
+        // 1. Tambah atau update yang baru
+        foreach ($fungsiTerpilih as $idfungsi) {
+            $catatan = $keteranganInput[$idfungsi] ?? '';
+
+            if (array_key_exists($idfungsi, $fungsiLama)) {
+                // Cek apakah keterangan berubah
+                if (trim($fungsiLama[$idfungsi]) !== trim($catatan)) {
+                    $this->ServiceKerusakanModel->updateKeterangan($idservice, $idfungsi, $catatan);
+                }
+                unset($fungsiLama[$idfungsi]); // tidak akan dihapus
+            } else {
+                // Tambah baru
+                $this->ServiceKerusakanModel->insert_SerModelServiceKerusakan([
                     'fungsi_idfungsi' => $idfungsi,
                     'keterangan' => $catatan,
                     'service_idservice' => $idservice,
-                    'created_at' => $created_at,
-                ];
-                $this->ServiceKerusakanModel->insert_SerModelServiceKerusakan($datak);
+                    'created_at' => $now,
+                ]);
             }
         }
-        // jika tidak ada yang dipilih: tidak lakukan apa-apa
 
-        //sparepart
+        // 2. Hapus yang sudah tidak dipilih
+        foreach ($fungsiLama as $idfungsi => $keteranganLama) {
+            $this->ServiceKerusakanModel->deleteByServiceAndFungsi($idservice, $idfungsi);
+        }
+
+        return redirect()->to('/service?tab=sparepart')->with('success', 'Data kerusakan berhasil diperbarui.');
+    }
+
+
+    public function insert_sparepart()
+    {
         $produkData = $this->request->getPost('produk');
+        $idservice = $this->request->getPost('idservice_s');
+
+
+        $existingItems = $this->ServiceSparepartModel->getByServiceId($idservice);
+        $existingMap = [];
+
+        foreach ($existingItems as $item) {
+            $existingMap[$item->barang_idbarang] = $item;
+        }
+
+        $submittedIds = [];
+
         if (!empty($produkData)) {
             foreach ($produkData as $produk) {
                 $id     = $produk['id'];
-                $jumlah = $produk['jumlah'];
-                $harga  = $produk['harga'];
-                $diskon_item = $produk['diskon'];
-                $total  = $produk['total'];
+                $jumlah = (int) $produk['jumlah'];
+                $harga  = $this->rupiahToInt($produk['harga']);
+                $diskon_item = $this->rupiahToInt($produk['diskon']);
+                $total  = $this->rupiahToInt($produk['total']);
+                $submittedIds[] = $id;
 
                 $datahppbarang = $this->HppBarangModel->getById($id);
                 $hpp = $datahppbarang->hpp ?? 0;
 
                 $datastokawal = $this->StokAwalModel->getById($id);
-                $satuan_terkecil = $datastokawal ? $datastokawal->satuan_terkecil : 'pcs';
+                $satuan_terkecil = $datastokawal->satuan_terkecil ?? 'pcs';
 
                 $datas = [
                     'jumlah' => $jumlah,
                     'harga_penjualan' => $harga,
-                    'sub_total' => $total * $jumlah,
+                    'harga_penjualan_garansi' => 0,
+                    'sub_total' => $total,
                     'hpp_penjualan' => $hpp,
                     'satuan_jual' => $satuan_terkecil,
                     'diskon_penjualan' => $diskon_item,
                     'service_idservice' => $idservice,
                     'barang_idbarang' => $id,
-                    'unit_idunit' => session('ID_UNIT')
+                    'unit_idunit' => session('ID_UNIT'),
+                    'diskon_penjualan_garansi' => 0,
+                    'jumlah_tambahan_garansi' => 0,
+                    'sub_total_garansi' => 0
                 ];
 
-                $this->ServiceSparepartModel->insert_SerModelServiceSparepart($datas);
+                if (array_key_exists($id, $existingMap)) {
+                    // ID sudah ada → Update
+                    $this->ServiceSparepartModel
+                        ->updateByServiceAndBarang($idservice, $id, $datas);
+                } else {
+                    // ID belum ada → Insert
+                    $this->ServiceSparepartModel
+                        ->insert_SerModelServiceSparepart($datas);
+                }
             }
         }
-        // jika tidak ada yang dipilih: tidak lakukan apa-apa
+
+        // Hapus data sparepart yang tidak lagi ada di form
+        foreach ($existingMap as $barangId => $item) {
+            if (!in_array($barangId, $submittedIds)) {
+                $this->ServiceSparepartModel
+                    ->deleteByServiceAndBarang($idservice, $barangId);
+            }
+        }
+        return redirect()->to('/service?tab=pembayaran')->with('success', 'Data kerusakan berhasil diperbarui.');
+    }
+
+
+
+    public function insert_pembayaran()
+    {
 
         //pembayaran
         $service_by = $this->request->getPost('service_by_pembayaran');
-        $diskon_pembayaran = $this->request->getPost('diskon_pembayaran');
+        $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
         $garansi = (int) $this->request->getPost('garansi');
-        $total_harga_pembayaran = $this->request->getPost('total_harga_pembayaran');
+        $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
-        $bayar_pembayaran = $this->request->getPost('bayar_pembayaran');
+        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
+        $dp_pembayaran = $this->rupiahToInt($this->request->getPost('dp_pembayaran'));
+        $idservice = $this->request->getPost('idservice_p');
 
         $datap = array(
-            'status_service' => $status_service,
+
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
+            'dp_bayar' => $dp_pembayaran,
             'harus_dibayar' => $total_harga_pembayaran,
             'garansi_hari' => $garansi,
             'bayar' => $bayar_pembayaran,
-            'service_by' => $service_by_pembayaran
+            'service_by' => $service_by_pembayaran,
+            'total_service_garansi' => 0,
+            'biaya_tambahan_garansi' => 0,
+            'total_diskon_garansi' => 0,
+            'harga_penjualan_garansi' => 0
         );
         $resultend =  $this->ServiceModel->updateService($idservice, $datap);
 
@@ -242,65 +323,13 @@ class Service extends BaseController
         return redirect()->to(base_url('/service'));
     }
 
-    public function insert_sparepart()
+
+    function rupiahToInt($rupiah)
     {
 
-        $produkData = $this->request->getPost('produk');
-
-        $idservice = $this->request->getPost('idservice');
-        $total_harga_str = $this->request->getPost('total_harga');
-        $diskon_str = $this->request->getPost('diskon');
-        $harga_akhir_str = $this->request->getPost('harga_akhir');
+        $cleaned = str_replace(['Rp', '.', ' '], '', $rupiah);
 
 
-        $total_harga = (int) str_replace('.', '', $total_harga_str);
-        $diskon = (int) str_replace('.', '', $diskon_str);
-        $harga_akhir = (int) str_replace('.', '', $harga_akhir_str);
-
-
-        $garansi = (int) $this->request->getPost('garansi');
-
-        $data1 = array(
-            'total_service' => $harga_akhir,
-            'total_diskon' => $diskon,
-            'harus_dibayar' => $harga_akhir,
-            'garansi_hari' => $garansi,
-        );
-
-
-        $this->ServiceModel->updateService($idservice, $data1);
-
-        foreach ($produkData as $produk) {
-            $id     = $produk['id'];
-            $jumlah = $produk['jumlah'];
-            $harga  = $produk['harga'];
-            $diskon_item = $produk['diskon'];
-            $total  = $produk['total'];
-
-            $datahppbarang = $this->HppBarangModel->getById($id);
-            $hpp = $datahppbarang->hpp ?? 0;
-
-            $datastokawal = $this->StokAwalModel->getById($id);
-            $satuan_terkecil = $datastokawal ? $datastokawal->satuan_terkecil : 'pcs';
-
-
-
-            $data = array(
-                'jumlah' => $jumlah,
-                'harga_penjualan' => $harga,
-                'sub_total' => $total * $jumlah,
-                'hpp_penjualan' => $hpp,
-                'satuan_jual' => $satuan_terkecil,
-                'diskon_penjualan' => $diskon_item,
-                'service_idservice' => $idservice,
-                'barang_idbarang' => $id,
-                'unit_idunit' => session('ID_UNIT')
-            );
-
-            $this->ServiceSparepartModel->insert_SerModelServiceSparepart($data);
-        }
-
-        session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');
-        return redirect()->to(base_url('/service'));
+        return (int) preg_replace('/[^0-9]/', '', $cleaned);
     }
 }

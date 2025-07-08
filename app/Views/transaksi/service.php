@@ -51,8 +51,6 @@
             <div class=" tab-pane fade show active" id="pelanggan" role="tabpanel" aria-labelledby="pelanggan-tab">
                 <?= view('transaksi/table/pelanggan_table') ?>
             </div>
-
-
             <div class="tab-pane fade" id="kerusakan" role="tabpanel" aria-labelledby="kerusakan-tab">
                 <?= view('transaksi/table/kerusakan_table') ?>
             </div>
@@ -62,40 +60,37 @@
             <div class="tab-pane fade" id="pembayaran" role="tabpanel" aria-labelledby="pembayaran-tab">
                 <?= view('transaksi/table/pembayaran_table') ?>
             </div>
+
         </div>
     </div>
 </div>
 
 
 <script>
-    document.getElementById('submitSemuaForm').addEventListener('click', async function(event) {
-        event.preventDefault(); // <<<<<< Cegah submit bawaan browser
+    // Cek apakah ada parameter ?tab=xxx di URL
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get("tab");
 
-        let formKerusakan = new FormData(document.getElementById('form-kerusakan'));
-        let formSparepart = new FormData(document.getElementById('form-sparepart'));
-        let formPembayaran = new FormData(document.getElementById('form-pembayaran'));
+        if (tabParam) {
+            // Set ke localStorage agar digunakan saat load
+            localStorage.setItem("activeTab", "#" + tabParam);
+        }
 
-        let finalFormData = new FormData();
-
-        function mergeFormData(source, target) {
-            for (let [key, value] of source.entries()) {
-                target.append(key, value);
+        // Ambil tab terakhir dari localStorage
+        const lastTab = localStorage.getItem("activeTab");
+        if (lastTab) {
+            const triggerTab = document.querySelector(`a[href="${lastTab}"]`);
+            if (triggerTab) {
+                new bootstrap.Tab(triggerTab).show();
             }
         }
 
-        mergeFormData(formKerusakan, finalFormData);
-        mergeFormData(formSparepart, finalFormData);
-        mergeFormData(formPembayaran, finalFormData);
-
-        try {
-            await fetch("<?= base_url('insert_kelengkapan/service') ?>", {
-                method: "POST",
-                body: finalFormData
+        // Update localStorage saat tab diklik
+        document.querySelectorAll('.nav-link[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function(e) {
+                localStorage.setItem("activeTab", e.target.getAttribute("href"));
             });
-        } catch (error) {
-            console.error("Terjadi kesalahan:", error);
-        } finally {
-            window.location.href = "<?= base_url('riwayat_service') ?>";
-        }
+        });
     });
 </script>

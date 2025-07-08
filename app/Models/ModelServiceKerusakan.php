@@ -26,4 +26,19 @@ class ModelServiceKerusakan extends Model
     {
         return $this->insert($data);
     }
+
+    public function updateKeterangan($idservice, $idfungsi, $keterangan)
+    {
+        return $this->where('service_idservice', $idservice)
+            ->where('fungsi_idfungsi', $idfungsi)
+            ->set('keterangan', $keterangan)
+            ->update();
+    }
+
+    public function deleteByServiceAndFungsi($idservice, $idfungsi)
+    {
+        return $this->where('service_idservice', $idservice)
+            ->where('fungsi_idfungsi', $idfungsi)
+            ->delete();
+    }
 }

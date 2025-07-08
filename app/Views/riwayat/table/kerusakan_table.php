@@ -1,11 +1,12 @@
-<?php
-$kerusakan_terpilih = [];
-foreach ($oldkerusakan as $item) {
-    $kerusakan_terpilih[$item->fungsi_idfungsi] = $item->keterangan;
-}
-?>
+<form action="<?php echo base_url('update_service/saveKerusakan') ?>" enctype="multipart/form-data" method="post">
+    <?php
+    $kerusakan_terpilih = [];
+    foreach ($oldkerusakan as $item) {
+        $kerusakan_terpilih[$item->fungsi_idfungsi] = $item->keterangan;
+    }
+    ?>
 
-<form id="form-kerusakan">
+
     <div class="row">
         <?php
         $chunks = array_chunk($fungsi, ceil(count($fungsi) / 3));
@@ -15,6 +16,8 @@ foreach ($oldkerusakan as $item) {
                     $idfungsi = $row->idfungsi;
                     $sudah_dipilih = array_key_exists($idfungsi, $kerusakan_terpilih);
                     $keterangan = $kerusakan_terpilih[$idfungsi] ?? '';
+                    $checked = $sudah_dipilih ? 'checked' : '';
+                    $display = $sudah_dipilih ? '' : 'display: none;';
                 ?>
                     <div class="form-check mb-3 fs-5">
                         <input class="form-check-input me-2 checkbox-fungsi"
@@ -23,8 +26,7 @@ foreach ($oldkerusakan as $item) {
                             value="<?= esc($idfungsi) ?>"
                             id="fungsi_<?= esc($idfungsi) ?>"
                             data-id="<?= esc($idfungsi) ?>"
-                            <?= $sudah_dipilih ? 'checked' : '' ?>>
-
+                            <?= $checked ?>>
 
                         <label class="form-check-label" for="fungsi_<?= esc($idfungsi) ?>">
                             <?= esc($row->nama_fungsi) ?>
@@ -32,12 +34,11 @@ foreach ($oldkerusakan as $item) {
 
                         <div class="mt-2"
                             id="keterangan_<?= esc($idfungsi) ?>"
-                            style="<?= $sudah_dipilih ? '' : 'display: none;' ?>">
+                            style="<?= $display ?>">
                             <textarea class="form-control"
                                 name="keterangan[<?= esc($idfungsi) ?>]"
                                 rows="2"
                                 placeholder="Tulis keterangan untuk <?= esc($row->nama_fungsi) ?>"><?= esc($keterangan) ?></textarea>
-
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -45,28 +46,18 @@ foreach ($oldkerusakan as $item) {
         <?php endforeach; ?>
     </div>
 
+
     <div style="display: flex; justify-content: space-between;">
         <div>
+            <input hidden type="text" name="idservice_k" value="<?php echo @$idservice ?>">
             <button type="button" class="btn btn-light" id="btn-previous-to-pelanggan">Sebelumnya</button>
-            <button type="button" class="btn btn-success" id="btn-next-to-sparepart">Selanjutnya</button>
+            <button type="submit" class="btn btn-success">Selanjutnya</button>
         </div>
 
     </div>
 </form>
 
 
-
-<script>
-    document.getElementById('btn-next-to-sparepart').addEventListener('click', function() {
-        var tabTrigger = new bootstrap.Tab(document.querySelector('#sparepart-tab'));
-        tabTrigger.show();
-    });
-
-    document.getElementById('btn-previous-to-pelanggan').addEventListener('click', function() {
-        var tabTrigger = new bootstrap.Tab(document.querySelector('#pelanggan-tab'));
-        tabTrigger.show();
-    });
-</script>
 
 <script>
     // Saat dokumen siap
@@ -97,5 +88,12 @@ foreach ($oldkerusakan as $item) {
                 textarea.style.display = this.checked ? 'block' : 'none';
             });
         }
+    });
+</script>
+
+<script>
+    document.getElementById('btn-previous-to-pelanggan').addEventListener('click', function() {
+        var tabTrigger = new bootstrap.Tab(document.querySelector('#pelanggan-tab'));
+        tabTrigger.show();
     });
 </script>

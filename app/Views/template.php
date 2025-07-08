@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="<?php echo base_url('template/assets/libs/select2/dist/css/select2.min.css') ?>">
 
 
+
     <title>WellDone Group</title>
 
     <!-- jvectormap  -->
@@ -29,6 +30,8 @@
 
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 
 

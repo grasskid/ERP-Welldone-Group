@@ -13,6 +13,10 @@ $routes->get('/Logout', 'Auth::proses_logout');
 
 
 //Datamaster
+
+
+
+
 //produk
 $routes->group('pegawai', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'Pegawai::index');
@@ -56,6 +60,7 @@ $routes->post('delete_phone', 'Phone::delete_phone', ['filter' => 'auth']);
 $routes->get('export/phone', 'Phone::export_phone', ['filter' => 'auth']);
 $routes->post('import/phone', 'Phone::import_phone', ['filter' => 'auth']);
 $routes->get('import_phone', 'Phone::menuimport_phone', ['filter' => 'auth']);
+$routes->post('insert-phone-ajax', 'Phone::insertnamahandphone', ['filter' => 'auth']);
 
 
 
@@ -97,8 +102,38 @@ $routes->get('service', 'Service::index', ['filter' => 'auth']);
 $routes->get('service_kerusakan', 'Service::kerusakan_table', ['filter' => 'auth']);
 $routes->get('service_sparepart', 'Service::sparepart_table', ['filter' => 'auth']);
 $routes->post('insert/pelanggan_service', 'Service::insert_service', ['filter' => 'auth']);
-$routes->post('insert_kelengkapan/service', 'Service::insert_kelengkapan_service', ['filter' => 'auth']);
-$routes->post('update_kelengkapan/service', 'Riwayat_Service::update_kelengkapan_service', ['filter' => 'auth']);
+
+$routes->get('proses_service', 'Riwayat_Service::proses_service', ['filter' => 'auth']);
+$routes->post('update_status_proses', 'Riwayat_Service::update_status_proses', ['filter' => 'auth']);
+$routes->post('service/bisa_diambil', 'Riwayat_Service::update_bisa_diambil', ['filter' => 'auth']);
+$routes->get('bisa_diambil', 'Riwayat_Service::service_bisa_diambil', ['filter' => 'auth']);
+$routes->post('service/sudah_diambil', 'Riwayat_Service::update_sudah_diambil', ['filter' => 'auth']);
+$routes->get('sudah_diambil', 'Riwayat_Service::service_sudah_diambil', ['filter' => 'auth']);
+
+//insertservice
+$routes->post('service/saveKerusakan', 'Service::insert_kerusakan', ['filter' => 'auth']);
+$routes->post('service/saveSparepart', 'Service::insert_sparepart', ['filter' => 'auth']);
+$routes->post('insert/service/savePembayaran', 'Service::insert_pembayaran', ['filter' => 'auth']);
+
+//updateservice
+$routes->post('update/pelanggan_service', 'Riwayat_Service::update_service_pelanggan', ['filter' => 'auth']);
+$routes->post('update_service/saveKerusakan', 'Riwayat_Service::insert_kerusakan', ['filter' => 'auth']);
+$routes->post('update_service/saveSparepart', 'Riwayat_Service::insert_sparepart', ['filter' => 'auth']);
+$routes->post('update_insert/service/savePembayaran', 'Riwayat_Service::insert_pembayaran', ['filter' => 'auth']);
+
+//riwayat service garansi
+$routes->get('riwayat_service_garansi', 'Riwayat_Service::index2', ['filter' => 'auth']);
+
+//service_by_garansi
+$routes->get('service_by_garansi/(:num)', 'StatusGaransi::service_by_garansi/$1', ['filter' => 'auth']);
+$routes->post('update/pelanggan_service_garansi', 'StatusGaransi::update_service_pelanggan_garansi', ['filter' => 'auth']);
+$routes->post('update_garansi_service/saveKerusakan', 'StatusGaransi::insert_kerusakan_garansi', ['filter' => 'auth']);
+$routes->post('update_service_garansi/saveSparepart', 'StatusGaransi::insert_sparepart_garansi', ['filter' => 'auth']);
+$routes->post('update_service_garansi/savePembayaran', 'StatusGaransi::insert_pembayaran_garansi', ['filter' => 'auth']);
+
+//garansiservice
+$routes->get('garansi_service', 'StatusGaransi::index', ['filter' => 'auth']);
+$routes->post('claim_garansi', 'StatusGaransi::claim_garansi', ['filter' => 'auth']);
 
 //status service
 $routes->get('status_service/(:num)', 'Status_Service::index/$1');
@@ -109,6 +144,7 @@ $routes->get('riwayat_service', 'Riwayat_Service::index', ['filter' => 'auth']);
 $routes->get('detail/riwayat_service/(:num)', 'Riwayat_Service::detail_service/$1', ['filter' => 'auth']);
 $routes->get('cetak/invoice_service/(:num)', 'Riwayat_Service::cetak_invoice/$1', ['filter' => 'auth']);
 $routes->post('riwayat_service/export', 'Riwayat_Service::export', ['filter' => 'auth']);
+$routes->post('riwayat_service_garansi/export', 'Riwayat_Service::export2', ['filter' => 'auth']);
 
 //expired service
 $routes->get('expired_service', 'Expired_service::index', ['filter' => 'auth']);
@@ -129,6 +165,9 @@ $routes->get('stokopname/loadtable', 'StokOpname::loadTable');
 //kartu stok
 $routes->get('kartu_stok', 'Kartu_Stok::index', ['filter' => 'auth']);
 $routes->post('export/kartu_stock', 'Kartu_Stok::export', ['filter' => 'auth']);
+
+//kartu stok
+$routes->get('produk_terlaris', 'Produk_Terlaris::index', ['filter' => 'auth']);
 
 //mutasi stok
 $routes->get('mutasi_stok', 'MutasiStok::index', ['filter' => 'auth']);
@@ -185,3 +224,59 @@ $routes->get('notif_service', 'NotifikasiService::index', ['filter' => 'auth']);
 //riwayat laba service
 $routes->get('laba_service', 'RiwayatLabaService::index', ['fileter' => 'auth']);
 $routes->post('laba_service/export', 'RiwayatLabaService::export', ['fileter' => 'auth']);
+
+//fee service
+$routes->get('fee_service', 'Fee_Service::index', ['fileter' => 'auth']);
+
+//tugas
+$routes->get('tugas', 'Tugas::index', ['filter' => 'auth']);
+$routes->get('alltugas', 'Tugas::index2', ['filter' => 'auth']);
+$routes->post('add_tugas', 'Tugas::insert', ['filter' => 'auth']);
+$routes->post('update_tugas', 'Tugas::update', ['filter' => 'auth']);
+$routes->post('delete_tugas', 'Tugas::delete', ['filter' => 'auth']);
+$routes->post('clear_all_tugas', 'Tugas::clear_all', ['filter' => 'auth']);
+
+$routes->post('tugas/updateStatus', 'Tugas::updateStatus');
+
+
+//tugas
+$routes->get('riwayat_tugas', 'Riwayat_Tugas::index', ['filter' => 'auth']);
+
+$routes->get('template_tugas', 'TemplateTugas::index');
+$routes->post('insert_tugas_template', 'TemplateTugas::insert');
+$routes->post('update_tugas_template', 'TemplateTugas::update');
+
+//jadwal masuk
+$routes->get('jadwal_masuk', 'JadwalMasuk::index', ['filter' => 'auth']);
+$routes->get('/jadwalmasuk', 'JadwalMasuk::index');
+$routes->post('/insert_jadwal', 'JadwalMasuk::insert_jadwal');
+$routes->post('/update_jadwal', 'JadwalMasuk::update_jadwal');
+$routes->post('/delete_jadwal', 'JadwalMasuk::delete_jadwal');
+
+
+//absensi
+$routes->get('absensi', 'Absensi::index', ['filter' => 'auth']);
+$routes->post('kirim/lokasi_masuk', 'Absensi::kirim_lokasi_masuk', ['filter' => 'auth']);
+$routes->post('kirim/lokasi_pulang', 'Absensi::kirim_lokasi_pulang', ['filter' => 'auth']);
+
+//jenis payroll
+$routes->get('jenis_payroll', 'Jenis_Payroll::index', ['filter' => 'auth']);
+$routes->post('insert_payroll', 'Jenis_Payroll::insert_Payroll', ['filter' => 'auth']);
+
+//riwayat presensi
+$routes->get('riwayat_presensi', 'RiwayatPresensi::index', ['filter' => 'auth']);
+$routes->get('semua_riwayat_presensi', 'RiwayatPresensi::semua_riwayat', ['filter' => 'auth']);
+$routes->post('export/semua_presensi', 'RiwayatPresensi::export_semua_presensi', ['filter' => 'auth']);
+
+//approval presensi
+$routes->get('approval_presensi', 'RiwayatPresensi::approval_presensi', ['filter' => 'auth']);
+$routes->post('presensi/update_status_kehadiran', 'RiwayatPresensi::submit_approval_presensi', ['filter' => 'auth']);
+
+//absen manual
+$routes->post('kirim/lokasi_masuk_manual', 'RiwayatPresensi::submit_absen_manual', ['filter' => 'auth']);
+
+
+//Noakun data master
+$routes->get('datamaster_akun', 'NoAkun::index', ['filter' => 'auth']);
+$routes->post('insert_noakun', 'NoAkun::insert', ['filter' => 'auth']);
+$routes->post('update_noakun', 'NoAkun::update', ['filter' => 'auth']);

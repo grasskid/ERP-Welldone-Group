@@ -193,16 +193,16 @@ class Pembelian extends BaseController
             'input_by' => $input_by
         );
 
-        foreach ($produkData as $produk) {
-            $produkid = $produk['id'];
-            $namaproduk = $produk['nama'];
-            $datastokawal = $this->StokAwalModel->getByIdBarang($produkid);
+        // foreach ($produkData as $produk) {
+        //     $produkid = $produk['id'];
+        //     $namaproduk = $produk['nama'];
+        //     $datastokawal = $this->StokAwalModel->getByIdBarang($produkid);
 
-            if (!$datastokawal || $datastokawal->satuan_terkecil == null) {
-                session()->setFlashdata('gagal', 'Barang dengan ID ' . $namaproduk . ' belum memiliki data satuan di stok awal.');
-                return redirect()->back();
-            }
-        }
+        //     if (!$datastokawal || $datastokawal->satuan_terkecil == null) {
+        //         session()->setFlashdata('gagal', 'Barang dengan ID ' . $namaproduk . ' belum memiliki data satuan di stok awal.');
+        //         return redirect()->back();
+        //     }
+        // }
 
 
         $result = $this->PembelianModel->insert_Pembelian($data);
@@ -222,7 +222,7 @@ class Pembelian extends BaseController
             $nilaiPPN = !is_null($produkppn) ? $subtotalSetelahDiskon * 0.11 : 0;
 
             $produktotalharga = $subtotalSetelahDiskon + $nilaiPPN;
-            $satuan_beli = $datastokawal->satuan_terkecil;
+            $satuan_beli = $datastokawal ? $datastokawal->satuan_terkecil : 'pcs';
 
             $datahpp = $this->HppBarangModel->getById($produk['id']);
             $hitung_hpp  = $datahpp->hpp ?? 0;

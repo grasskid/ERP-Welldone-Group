@@ -22,21 +22,24 @@ class Pegawai extends BaseController
     public function index()
     {
         $data =  array(
-            'body'      => 'pegawai/list',
+            'body'      => 'pegawai/list_pegawai_new',
             'unit'      =>  $this->UnitModel->getUnit(),
             'jabatan'   =>  $this->AuthModel->getJabatan(),
             'roles'     =>  $this->AuthModel->getRolesAktif(),
+            'akun'      =>  $this->AuthModel->getAkunPegawai()
         );
         return view('template', $data);
     }
 
-    function search(){
+    function search()
+    {
         $idunit = $this->request->getPost('unit_id');
         $data = $this->AuthModel->getAkun($idunit);
         return json_encode($data);
     }
 
-    function jabatan(){
+    function jabatan()
+    {
         $data_jabatan = [];
         $jabatan = $this->AuthModel->getJabatan();
         foreach ($jabatan as $value) {
@@ -68,13 +71,13 @@ class Pegawai extends BaseController
 
         $data = array(
             'NAMA_JABATAN' => $nama_jabatan,
-            'ROLES_JABATAN'=> json_encode($roles_jabatan)
+            'ROLES_JABATAN' => json_encode($roles_jabatan)
         );
-        
+
         $result = db_connect()->table('jabatan')->insert($data);
         if ($result) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-        }else{
+        } else {
             session()->setFlashdata('gagal', 'Data Gagal Di Simpan');
         }
         return redirect()->to(base_url('/pegawai/jabatan'));
@@ -95,7 +98,7 @@ class Pegawai extends BaseController
         $result = db_connect()->table('jabatan')->where('ID_JABATAN', $id)->update($data);
         if ($result) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-        }else{
+        } else {
             session()->setFlashdata('gagal', 'Data Gagal Di Simpan');
         }
         return redirect()->to(base_url('/pegawai/jabatan'));
@@ -140,7 +143,7 @@ class Pegawai extends BaseController
             'ID_JABATAN'        => $this->request->getPost('jabatan'),
         );
 
-        $result = db_connect()->table('akun')->where('ID_AKUN', $this->request->getPost('id'))->update($data);
+        $result = db_connect()->table('akun')->where('ID_AKUN', $this->request->getPost('ID_AKUN'))->update($data);
         if ($result) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
         } else {
@@ -155,12 +158,20 @@ class Pegawai extends BaseController
         $data = array(
             'STATUS_PEGAWAI' => '0'
         );
-        $result = db_connect()->table('akun')->where('ID_AKUN', $id)->update($data);
-        
+        $result = $this->AuthModel->update($id, $data);
         if ($result) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Data berhasil dihapus']);
-        } else {
-            return $this->response->setJSON(['success' => false, 'message' => 'Gagal menghapus data']);
+            session()->setFlashdata('sukses', 'Berhasil Hapus Data');
+            return redirect()->to(base_url('pegawai'));
         }
     }
+
+
+    //     $result = db_connect()->table('akun')->where('ID_AKUN', $id)->update($data);
+
+    //     if ($result) {
+    //         return $this->response->setJSON(['success' => true, 'message' => 'Data berhasil dihapus']);
+    //     } else {
+    //         return $this->response->setJSON(['success' => false, 'message' => 'Gagal menghapus data']);
+    //     }
+    // }
 }

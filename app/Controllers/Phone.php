@@ -13,6 +13,7 @@ use App\Models\ModelAuth;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use App\Models\ModelNamaHandphone;
 
 class Phone extends BaseController
 
@@ -21,12 +22,14 @@ class Phone extends BaseController
     protected $PhoneModel;
     protected $BarangModel;
     protected $AuthModel;
+    protected $NamaHandphoneModel;
 
     public function __construct()
     {
         $this->PhoneModel = new ModelPhone();
         $this->BarangModel = new ModelBarang();
         $this->AuthModel = new ModelAuth();
+        $this->NamaHandphoneModel = new ModelNamaHandphone();
     }
 
     public function index()
@@ -35,6 +38,7 @@ class Phone extends BaseController
         $data =  array(
             'akun' => $akun,
             'phone' => $this->PhoneModel->getPhoneActive(),
+            'nama_handphone' => $this->NamaHandphoneModel->getNamaHandphone(),
             'body'  => 'datamaster/phone'
         );
         return view('template', $data);
@@ -285,5 +289,37 @@ class Phone extends BaseController
             'body'  => 'datamaster/import_phone'
         );
         return view('template', $data);
+    }
+
+
+    public function insertnamahandphone()
+    {
+        $nama = $this->request->getPost('nama_handphone');
+
+        if (!$nama) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Nama handphone wajib diisi'
+            ]);
+        }
+
+        $model = new \App\Models\ModelNamaHandphone();
+
+        // Cek apakah sudah ada
+        $cek = $model->where('nama', $nama)->first();
+        if ($cek) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Nama handphone sudah ada'
+            ]);
+        }
+
+        // Simpan
+        $model->insert(['nama' => $nama]);
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'nama' => $nama
+        ]);
     }
 }

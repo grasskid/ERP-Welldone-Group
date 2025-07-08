@@ -24,6 +24,23 @@ class ModelAuth extends Model
         return $db->get();
     }
 
+    public function getAkunPegawai()
+    {
+        return $this->select('akun.*, jabatan.NAMA_JABATAN, unit.NAMA_UNIT')
+            ->join('jabatan', 'jabatan.ID_JABATAN = akun.ID_JABATAN', 'left')
+            ->join('unit', 'unit.idunit = akun.ID_UNIT', 'left')
+            ->where('akun.STATUS_PEGAWAI', 1)
+            ->findAll();
+    }
+
+
+
+    public function getAkunFrontliner($id_jabatan = 37)
+    {
+        return $this->where('ID_JABATAN', $id_jabatan)->findAll();
+    }
+
+
     public function cekUsername($username)
     {
         $db = db_connect()->table($this->table)
@@ -64,8 +81,8 @@ class ModelAuth extends Model
     function getRolesAktif()
     {
         return $this->db->table('menu')
-        // ->where(array("url !=" => null))
-        ->get()->getResultObject();
+            // ->where(array("url !=" => null))
+            ->get()->getResultObject();
     }
 
     function getRolesJabatan($roles)

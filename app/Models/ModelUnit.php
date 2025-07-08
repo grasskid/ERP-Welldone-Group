@@ -9,7 +9,18 @@ class ModelUnit extends Model
     protected $table = 'unit';
     protected $primaryKey = 'idunit';
     protected $returnType = 'object';
-    protected $allowedFields = ['idunit', 'NAMA_UNIT', 'NOID_UNIT', 'JALAN_UNIT', 'KELURAHAN_UNIT', 'KECAMATAN_UNIT', 'KABUPATEN_UNIT', 'PROVINSI_UNIT'];
+    protected $allowedFields = [
+        'idunit',
+        'NAMA_UNIT',
+        'NOID_UNIT',
+        'JALAN_UNIT',
+        'KELURAHAN_UNIT',
+        'KECAMATAN_UNIT',
+        'KABUPATEN_UNIT',
+        'PROVINSI_UNIT',
+        'LATITUDE',
+        'LONGTITUDE'
+    ];
 
     public function getUnit()
     {

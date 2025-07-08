@@ -53,6 +53,19 @@ class ModelKartuStok extends Model
             ->findAll();
     }
 
+    public function getKartuStokTerlaris()
+{
+    return $this->select('stok_barang.*, barang.status_ppn, kategori.nama_kategori')
+        ->join('barang', 'barang.kode_barang = stok_barang.kode_barang', 'left')
+        ->join('kategori', 'kategori.id = barang.idkategori', 'left')
+        ->where('barang.deleted', '0')
+        ->where('kategori.delete', '0')
+        ->orderBy('stok_barang.total_penjualan', 'DESC')
+        ->limit(10)
+        ->findAll();
+}
+
+
 
     public function exportfilter($tanggalAwal = null, $tanggalAkhir = null, $namaUnit = null, $statusPpn = null)
     {

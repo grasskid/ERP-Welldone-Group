@@ -68,6 +68,7 @@ class Produk extends BaseController
 
         $kode_barang = $kode_kategori . $formattedNumber;
         $status_ppn = $this->request->getPost('status_ppn');
+        $warna = $this->request->getPost('warna');
 
 
         $data = array(
@@ -78,6 +79,7 @@ class Produk extends BaseController
             'input' => $input,
             'stok_minimum' => $stok_minimum,
             'idkategori' => $idkategori,
+            'warna' => $warna,
             'status' => "1",
             'status_ppn' => $status_ppn,
             'deleted' => '0'
@@ -132,6 +134,7 @@ class Produk extends BaseController
         }
 
         $status_ppn = (int)$this->request->getPost('status_ppn');
+        $warna = $this->request->getPost('warna');
 
         $data = array(
             'nama_barang' => $nama_barang,
@@ -140,6 +143,7 @@ class Produk extends BaseController
             'idkategori' => $idkategori,
             'kode_barang' => $kode_barang,
             'status_ppn' => $status_ppn,
+            'warna' => $warna,
             'deleted' => '0',
             'input_by' => $input,
             'stok_minimum' => $stok_minimum,
@@ -172,9 +176,9 @@ class Produk extends BaseController
         }
 
         // Styling Header
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:G1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
 
         // Data
         $row = 2;
@@ -183,21 +187,22 @@ class Produk extends BaseController
 
             $sheet->setCellValue('A' . $row, $product->kode_barang);
             $sheet->setCellValue('B' . $row, $product->nama_barang);
-            $sheet->setCellValue('C' . $row, $product->harga);
-            $sheet->setCellValue('D' . $row, $product->harga_beli);
-            $sheet->setCellValue('E' . $row, $product->nama_kategori);
-            $sheet->setCellValue('F' . $row, $ppn);
-            $sheet->setCellValue('G' . $row, $product->input);
+            $sheet->setCellValue('C', $row, $product->warna);
+            $sheet->setCellValue('D' . $row, $product->harga);
+            $sheet->setCellValue('E' . $row, $product->harga_beli);
+            $sheet->setCellValue('F' . $row, $product->nama_kategori);
+            $sheet->setCellValue('G' . $row, $ppn);
+            $sheet->setCellValue('H' . $row, $product->input);
             $row++;
         }
 
         // Auto width
-        foreach (range('A', 'G') as $col) {
+        foreach (range('A', 'H') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
         // Border
-        $sheet->getStyle('A1:G' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('A1:H' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         // Freeze header
         $sheet->freezePane('A2');
@@ -223,52 +228,49 @@ class Produk extends BaseController
         $rows = $sheet->toArray();
         $db = Database::connect();
 
-        // Simpan lastNumber per kategori (by primary id) agar tidak query berkali‐kali
+        // Simpan lastNumber per kategori (by primary id)
         $lastNumbers = [];
 
         for ($i = 1; $i < count($rows); $i++) {
             $nama_barang    = addslashes($rows[$i][0]);
             $harga          = str_replace(',', '', $rows[$i][1]);
             $harga_beli     = str_replace(',', '', $rows[$i][2]);
-            $idkategori_raw = addslashes($rows[$i][3]);
-            $status_ppn_raw = strtoupper(trim(addslashes($rows[$i][4])));
+            $warna          = addslashes($rows[$i][3]);
+            $idkategori_raw = addslashes($rows[$i][4]);
+            $status_ppn_raw = strtoupper(trim(addslashes($rows[$i][5])));
             $status_ppn     = ($status_ppn_raw === 'PPN') ? 1 : 0;
-            $input          = addslashes($rows[$i][5]);
+            $input          = addslashes($rows[$i][6]);
 
             // Ambil data kategori berdasar kode kategori dari file
             $dataKategori = $this->KategoriModel->getById($idkategori_raw);
             if (!$dataKategori) continue;
 
-            // PRIMARY ID kategori dan kode prefix
             $idnyakategori  = $dataKategori->id;
             $kode_kategori  = $dataKategori->idkategori;
 
-            // Inisialisasi lastNumbers sekali saja per kategori
             if (! isset($lastNumbers[$idnyakategori])) {
                 $lastBarang = $this->BarangModel->getLastBarangByKategori($idnyakategori);
-                if ($lastBarang) {
-                    // ambil angka dari akhir kode_barang
-                    $lastNumbers[$idnyakategori] = (int) substr($lastBarang->kode_barang, strlen($kode_kategori));
-                } else {
-                    $lastNumbers[$idnyakategori] = 0;
-                }
+                $lastNumbers[$idnyakategori] = $lastBarang
+                    ? (int) substr($lastBarang->kode_barang, strlen($kode_kategori))
+                    : 0;
             }
 
-            // Increment nomor
             $lastNumbers[$idnyakategori]++;
             $formattedNumber = str_pad($lastNumbers[$idnyakategori], 2, '0', STR_PAD_LEFT);
             $kode_barang     = $kode_kategori . $formattedNumber;
 
-            // Insert
+            // Sesuaikan query untuk menambahkan kolom `warna`
             $sql = "INSERT INTO barang 
-            (kode_barang, nama_barang, harga, harga_beli, input, idkategori, status, status_ppn, deleted) 
-            VALUES 
-            (?, ?, ?, ?, ?, ?, 1, ?, 0)";
+        (kode_barang, nama_barang, harga, harga_beli, warna, input, idkategori, status, status_ppn, deleted) 
+        VALUES 
+        (?, ?, ?, ?, ?, ?, ?, 1, ?, 0)";
+
             $db->query($sql, [
                 $kode_barang,
                 $nama_barang,
                 $harga,
                 $harga_beli,
+                $warna,
                 $input,
                 $idnyakategori,
                 $status_ppn
@@ -278,6 +280,7 @@ class Produk extends BaseController
         session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
         return redirect()->to(base_url('/produk'));
     }
+
 
 
 

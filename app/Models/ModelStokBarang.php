@@ -59,4 +59,34 @@ class ModelStokBarang extends Model
     {
         return $this->where('idkategori', 3)->findAll();
     }
+
+
+    //untuk penjualan
+    public function getAllBarang2()
+    {
+        $id_unit = session('ID_UNIT');
+
+        return $this->select('
+                stok_barang.*,
+                barang.kode_barang,
+                barang.nama_barang,
+                barang.harga,
+                barang.harga_beli,
+                barang.imei,
+                barang.jenis_hp,
+                barang.internal,
+                barang.warna,
+                barang.status AS status_barang,
+                barang.status_ppn,
+                barang.input,
+                kategori.nama_kategori
+            ')
+            ->join('barang', 'barang.idbarang = stok_barang.idbarang')
+            ->join('kategori', 'kategori.id = barang.idkategori')
+            ->where('barang.deleted', 0)
+            ->where('kategori.delete', 0)
+            ->where('stok_barang.id_unit', (int)$id_unit)
+            ->where('stok_barang.stok_akhir >', 0)
+            ->findAll();
+    }
 }

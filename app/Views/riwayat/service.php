@@ -40,10 +40,6 @@
         </div>
     </form>
 
-
-
-
-
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
@@ -64,47 +60,65 @@
                         <h6 class="fs-4 fw-semibold mb-0">Alamat</h6>
                     </th>
                     <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Status</h6>
+                    </th>
+                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Action</h6>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($service)): ?>
-                <?php foreach ($service as $row): ?>
-                <tr>
-                    <td><?= esc($row->no_service) ?></td>
-                    <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
-                    <td><?= esc($row->nama_pelanggan) ?></td>
-                    <td><?= esc($row->no_hp) ?></td>
-                    <td><?= esc($row->alamat) ?></td>
-                    <td>
-                        <?php if ($row->status_service == 4): ?>
-                        <button type="button" class="btn btn-warning edit-button" disabled>
-                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                        </button>
-                        <?php else: ?>
-                        <a href="<?php echo base_url('detail/riwayat_service/' . $row->idservice) ?>">
-                            <button type="button" class="btn btn-warning edit-button">
-                                <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24">
-                                </iconify-icon>
-                            </button>
-                            <?php endif; ?>
-                        </a>
-                        <a href="<?php echo base_url('cetak/invoice_service/' . $row->idservice) ?>">
-                            <button type="button" class="btn btn-sm btn-danger"
-                                style="display: inline-flex; align-items: center;">
-                                <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
-                                </iconify-icon>
-                                Cetak Struk
-                            </button>
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($service as $row): ?>
+                        <tr>
+                            <td><?= esc($row->no_service) ?></td>
+                            <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
+                            <td><?= esc($row->nama_pelanggan) ?></td>
+                            <td><?= esc($row->no_hp) ?></td>
+                            <td><?= esc($row->alamat) ?></td>
+                            <td>
+                                <?php if ($row->status_service == 1) : ?>
+                                    Menunggu Service
+                                <?php elseif ($row->status_service == 2) : ?>
+                                    Dalam Pengerjaan
+                                <?php elseif ($row->status_service == 3) : ?>
+                                    Menunggu Pengambilan
+                                <?php elseif ($row->status_service == 4) : ?>
+                                    Sudah Diambil
+                                <?php elseif ($row->status_service == 9) : ?>
+                                    Dibatalkan
+                                <?php else : ?>
+                                    Data Tidak Valid
+                                <?php endif ?>
+                            </td>
+                            <td>
+                                <!-- <?php if ($row->status_service == 4): ?>
+                                    <button type="button" class="btn btn-warning edit-button" disabled>
+                                        <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                                    </button>
+                                <?php else: ?>
+                                    <a href="<?php echo base_url('detail/riwayat_service/' . $row->idservice) ?>">
+                                        <button type="button" class="btn btn-warning edit-button">
+                                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24">
+                                            </iconify-icon>
+                                        </button>
+                                    <?php endif; ?>
+                                    </a> -->
+                                <a href="<?php echo base_url('cetak/invoice_service/' . $row->idservice) ?>">
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                        style="display: inline-flex; align-items: center;">
+                                        <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
+                                        </iconify-icon>
+                                        Cetak Struk
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="3" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -112,59 +126,59 @@
 </div>
 
 <script>
-window.onload = function() {
-    const endDateInput = document.getElementById('endDate');
-    const startDateInput = document.getElementById('startDate');
+    window.onload = function() {
+        const endDateInput = document.getElementById('endDate');
+        const startDateInput = document.getElementById('startDate');
 
-    const today = new Date();
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(today.getDate() - 15);
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
 
 
-    const toDateInputValue = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const toDateInputValue = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        startDateInput.value = toDateInputValue(fifteenDaysAgo);
+        endDateInput.value = toDateInputValue(today);
+
+
+
+        filterData();
     };
 
-    startDateInput.value = toDateInputValue(fifteenDaysAgo);
-    endDateInput.value = toDateInputValue(today);
+    function filterData() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
 
 
+        const rows = document.querySelectorAll('#zero_config tbody tr');
+        rows.forEach(row => {
+            const dateCell = row.children[1];
+            if (!dateCell) return;
 
-    filterData();
-};
+            const dateText = dateCell.textContent.trim();
+            const parts = dateText.split('-');
+            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
-function filterData() {
-    const start = document.getElementById('startDate').value;
-    const end = document.getElementById('endDate').value;
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
 
+            let dateMatch = true;
+            if (startDate && rowDate < startDate) dateMatch = false;
+            if (endDate && rowDate > endDate) dateMatch = false;
 
-    const rows = document.querySelectorAll('#zero_config tbody tr');
-    rows.forEach(row => {
-        const dateCell = row.children[1];
-        if (!dateCell) return;
+            row.style.display = (dateMatch) ? '' : 'none';
+        });
+    }
 
-        const dateText = dateCell.textContent.trim();
-        const parts = dateText.split('-');
-        const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    function resetFilter() {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
 
-        const startDate = start ? new Date(start) : null;
-        const endDate = end ? new Date(end) : null;
-
-        let dateMatch = true;
-        if (startDate && rowDate < startDate) dateMatch = false;
-        if (endDate && rowDate > endDate) dateMatch = false;
-
-        row.style.display = (dateMatch) ? '' : 'none';
-    });
-}
-
-function resetFilter() {
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-
-    filterData();
-}
+        filterData();
+    }
 </script>

@@ -20,7 +20,7 @@ use DateTime;
 use Mpdf\Mpdf;
 use App\Models\ModelAuth;
 use App\Models\ModelHppBarang;
-
+use App\Models\ModelStokBarang;
 
 
 
@@ -37,6 +37,7 @@ class Penjualan extends BaseController
     protected $PelangganModel;
     protected $AuthModel;
     protected $HppBarangModel;
+    protected $StokBarangModel;
 
     public function __construct()
     {
@@ -49,6 +50,7 @@ class Penjualan extends BaseController
         $this->PelangganModel = new ModelPelanggan();
         $this->AuthModel = new ModelAuth();
         $this->HppBarangModel = new ModelHppBarang();
+        $this->StokBarangModel = new ModelStokBarang();
     }
 
     public function index()
@@ -56,7 +58,8 @@ class Penjualan extends BaseController
         $akun =   $this->AuthModel->getById(session('ID_AKUN'));
         $data =  array(
             'akun' => $akun,
-            'produk' => $this->BarangModel->getAllBarang(),
+            'produk' => $this->StokBarangModel->getAllBarang2(),
+            'frontliner' => $this->AuthModel->getAkunFrontliner(),
             'kategori' => $this->KategoriModel->getKategori(),
             'suplier' => $this->SuplierModel->getSuplier(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
@@ -125,6 +128,7 @@ class Penjualan extends BaseController
 
 
         $id_pelanggan = $this->request->getPost('selectedidpelanggan');
+        $sales_by = $this->request->getPost('sales_by');
 
 
         $data1 = array(
@@ -138,7 +142,7 @@ class Penjualan extends BaseController
             'bayar' => $bayar,
             'created_on' => $created_on,
             'input_by' => session('ID_AKUN'),
-            'sales_by' => session('ID_AKUN'),
+            'sales_by' => $sales_by,
             'unit_idunit' => $unit_idunit,
             'id_pelanggan' => $id_pelanggan,
             'total_ppn' => $total_ppn,
@@ -195,55 +199,52 @@ class Penjualan extends BaseController
 
             $result2 = $this->DetailPenjualanModel->insert_detail($data2);
         }
+        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
 
-        if ($result & $result2) {
-            session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-
-            $sub_total_cetak = $this->sanitizeCurrency($total_penjualan) + $this->sanitizeCurrency($nilaidiskon) - $total_ppn;
-            $kembalian_cetak = max(0, $this->sanitizeCurrency($bayar) - $this->sanitizeCurrency($total_penjualan));
-            $dataCustomer = $this->PelangganModel->getById($id_pelanggan);
-            if ($dataCustomer !== null) {
-                $namaCustomer = $dataCustomer->nama;
-            } else {
-                $namaCustomer = 'Pelanggan Umum';
-            }
-            $data3 = array(
-
-                'produk' => $produkData,
-                'tanggal' => $tanggal_waktu,
-                'kasir'  => $namauser,
-                'customer' => $namaCustomer,
-                'total_ppn' => $total_ppn,
-                'no_invoice' => $no_invoice,
-                'sub_total' => $sub_total_cetak,
-                'diskon' => $nilaidiskon,
-                'total' => $total_penjualan,
-                'bayar' => $bayar,
-                'kembalian' => $kembalian_cetak,
-
-            );
-
-
-            $html = view('cetak/cetak_penjualan', $data3);
-
-            error_reporting(0);
-
-            $mpdf = new \Mpdf\Mpdf(['curlUserAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0) Gecko/20100101 Firefox/108.0']);
-
-            ob_end_clean();
-
-            $mpdf->curlAllowUnsafeSslRequests = true;
-
-            $this->response->setHeader('Content-Type', 'application/pdf');
-
-            $this->response->setHeader('Content-Transfer-Encoding', 'binary');
-
-            $this->response->setHeader('Accept-Ranges', 'bytes');
-
-            $mpdf->WriteHTML($html);
-
-            return redirect()->to($mpdf->Output());
+        $sub_total_cetak = $this->sanitizeCurrency($total_penjualan) + $this->sanitizeCurrency($nilaidiskon) - $total_ppn;
+        $kembalian_cetak = max(0, $this->sanitizeCurrency($bayar) - $this->sanitizeCurrency($total_penjualan));
+        $dataCustomer = $this->PelangganModel->getById($id_pelanggan);
+        if ($dataCustomer !== null) {
+            $namaCustomer = $dataCustomer->nama;
+        } else {
+            $namaCustomer = 'Pelanggan Umum';
         }
+        $data3 = array(
+
+            'produk' => $produkData,
+            'tanggal' => $tanggal_waktu,
+            'kasir'  => $namauser,
+            'customer' => $namaCustomer,
+            'total_ppn' => $total_ppn,
+            'no_invoice' => $no_invoice,
+            'sub_total' => $sub_total_cetak,
+            'diskon' => $nilaidiskon,
+            'total' => $total_penjualan,
+            'bayar' => $bayar,
+            'kembalian' => $kembalian_cetak,
+
+        );
+
+
+        $html = view('cetak/cetak_penjualan', $data3);
+
+        error_reporting(0);
+
+        $mpdf = new \Mpdf\Mpdf(['curlUserAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0) Gecko/20100101 Firefox/108.0']);
+
+        ob_end_clean();
+
+        $mpdf->curlAllowUnsafeSslRequests = true;
+
+        $this->response->setHeader('Content-Type', 'application/pdf');
+
+        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
+
+        $this->response->setHeader('Accept-Ranges', 'bytes');
+
+        $mpdf->WriteHTML($html);
+
+        return redirect()->to($mpdf->Output());
     }
 
     function sanitizeCurrency($value)

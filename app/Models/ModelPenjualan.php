@@ -51,4 +51,28 @@ class ModelPenjualan extends Model
     {
         return $this->where(['kode_invoice' => $kode_invoice])->first();
     }
+
+    public function getPendapatan($unit_id = null, $per_bulan = false)
+{
+    if ($per_bulan) {
+        $this->select("DATE_FORMAT(created_at, '%Y-%m') AS bulan, SUM(total_penjualan) AS total")
+             ->groupBy("bulan")
+             ->orderBy("bulan", "ASC");
+
+        if ($unit_id) {
+            $this->where('unit_idunit', $unit_id);
+        }
+
+        return $this->findAll();
+    }
+
+    $this->selectSum('total_penjualan');
+
+    if ($unit_id) {
+        $this->where('unit_idunit', $unit_id);
+    }
+
+    return $this->first()->total_penjualan ?? 0;
+}
+
 }

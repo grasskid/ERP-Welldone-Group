@@ -42,49 +42,54 @@ class Pelanggan extends BaseController
     }
 
 
-    public function insert_pelanggan()
-    {
+public function insert_pelanggan()
+{
+    $nik = $this->request->getPost('nik');
+    $nama = $this->request->getPost('nama');
+    $alamat = $this->request->getPost('alamat');
+    $no_hp = $this->request->getPost('no_hp');
+    $kategori = $this->request->getPost('kategori');
 
-        $nik = $this->request->getPost('nik');
-        $nama = $this->request->getPost('nama');
-        $alamat = $this->request->getPost('alamat');
-        $no_hp = $this->request->getPost('no_hp');
+    $data = array(
+        'nik' => $nik,
+        'nama' => $nama,
+        'alamat' => $alamat,
+        'no_hp' => $no_hp,
+        'kategori' => $kategori,
+        'deleted' => '0'
+    );
 
-        $data = array(
-            'nik' => $nik,
-            'nama' => $nama,
-            'alamat' => $alamat,
-            'no_hp' => $no_hp,
-            'deleted' => '0'
-        );
-        $result = $this->PelangganModel->insert_Pelanggan($data);
-        if ($result) {
-            session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-            return redirect()->to(base_url('/pelanggan'));
-        }
+    $result = $this->PelangganModel->insert_Pelanggan($data);
+    if ($result) {
+        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+        return redirect()->to(base_url('/pelanggan'));
     }
+}
 
-    public function update_pelanggan()
-    {
-        $id_pelanggan = $this->request->getPost('id_pelanggan');
-        $nik = $this->request->getPost('nik');
-        $nama = $this->request->getPost('nama');
-        $alamat = $this->request->getPost('alamat');
-        $no_hp = $this->request->getPost('no_hp');
+public function update_pelanggan()
+{
+    $id_pelanggan = $this->request->getPost('id_pelanggan');
+    $nik = $this->request->getPost('nik');
+    $nama = $this->request->getPost('nama');
+    $alamat = $this->request->getPost('alamat');
+    $no_hp = $this->request->getPost('no_hp');
+    $kategori = $this->request->getPost('kategori'); // New field
 
-        $data = array(
-            'nik' => $nik,
-            'nama' => $nama,
-            'alamat' => $alamat,
-            'no_hp' => $no_hp,
-            'deleted' => '0'
-        );
-        $result = $this->PelangganModel->update($id_pelanggan, $data);
-        if ($result) {
-            session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-            return redirect()->to(base_url('/pelanggan'));
-        }
+    $data = array(
+        'nik' => $nik,
+        'nama' => $nama,
+        'alamat' => $alamat,
+        'no_hp' => $no_hp,
+        'kategori' => $kategori,
+        'deleted' => '0'
+    );
+
+    $result = $this->PelangganModel->update($id_pelanggan, $data);
+    if ($result) {
+        session()->setFlashdata('sukses', 'Data Berhasil Di Update');
+        return redirect()->to(base_url('/pelanggan'));
     }
+}
 
     public function delete_pelanggan()
     {
