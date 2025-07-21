@@ -332,7 +332,7 @@
 
                 const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
                 const waktuPulangDate = waktuPulang ? new Date(waktuPulang) : null;
-                const fotopulang = e.target.getAttribute('data-fotopulang') || '-';
+                const fotopulang = e.target.getAttribute('data-fotopulang');
 
                 document.getElementById('detail_nama_map').textContent = nama;
                 document.getElementById('detail_jarak_map').textContent = jarak + ' meter';

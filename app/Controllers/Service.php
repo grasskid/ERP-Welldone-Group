@@ -12,6 +12,7 @@ use App\Models\ModelServiceKerusakan;
 use App\Models\ModelServiceSparepart;
 use App\Models\ModelStokAwal;
 use App\Models\ModelHppBarang;
+use App\Models\ModelJurnal;
 
 class Service extends BaseController
 
@@ -26,6 +27,7 @@ class Service extends BaseController
     protected $ServiceSparepartModel;
     protected $StokAwalModel;
     protected $HppBarangModel;
+    protected $JurnalModel;
 
 
     public function __construct()
@@ -39,6 +41,7 @@ class Service extends BaseController
         $this->ServiceSparepartModel = new ModelServiceSparepart();
         $this->StokAwalModel = new ModelStokAwal();
         $this->HppBarangModel = new ModelHppBarang();
+        $this->JurnalModel = new ModelJurnal();
     }
 
     public function index()
@@ -156,10 +159,19 @@ class Service extends BaseController
             'input_by' => $idakun,
             'created_at' => $created_at,
         );
+
         $result = $this->ServiceModel->insertService($data);
+
+
         if ($result) {
             $idservice = $this->ServiceModel->insertID();
             session()->set('idservice', $idservice);
+
+            $ar_nilai[] = $dp_bayar;
+            $ar_nilai[] = 0;
+            $this->JurnalModel->insertJurnal($tanggal_cek, 'dp_service_tunai', $ar_nilai, "Pembayaran Uang Muka Jasa Service", $idservice, 'service');
+
+
             session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');
             return redirect()->to('/service?tab=kerusakan')->with('success', 'Data kerusakan berhasil diperbarui.');
         }
@@ -299,14 +311,13 @@ class Service extends BaseController
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
         $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
-        $dp_pembayaran = $this->rupiahToInt($this->request->getPost('dp_pembayaran'));
+
         $idservice = $this->request->getPost('idservice_p');
 
         $datap = array(
 
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
-            'dp_bayar' => $dp_pembayaran,
             'harus_dibayar' => $total_harga_pembayaran,
             'garansi_hari' => $garansi,
             'bayar' => $bayar_pembayaran,

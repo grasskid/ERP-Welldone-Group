@@ -45,8 +45,8 @@ class Produk extends BaseController
     {
 
         $nama_barang = $this->request->getPost('nama_barang');
-        $harga      = str_replace(',', '', $this->request->getPost('harga'));
-        $harga_beli      = str_replace(',', '', $this->request->getPost('harga_beli'));
+        $harga      = str_replace('.', '', $this->request->getPost('harga'));
+        $harga_beli      = str_replace('.', '', $this->request->getPost('harga_beli'));
         $input = $this->request->getPost('input_by');
         $stok_minimum = $this->request->getPost('stok_minimum');
         $kategori = $this->request->getPost('kategori');
@@ -97,8 +97,8 @@ class Produk extends BaseController
     {
         $idbarang = $this->request->getPost('id_barang');
         $nama_barang = $this->request->getPost('nama_barang');
-        $harga      = str_replace(',', '', $this->request->getPost('harga'));
-        $harga_beli      = str_replace(',', '', $this->request->getPost('harga_beli'));
+        $harga      = str_replace('.', '', $this->request->getPost('harga'));
+        $harga_beli      = str_replace('.', '', $this->request->getPost('harga_beli'));
         $input = $this->request->getPost('input_by');
         $kategori = $this->request->getPost('kategori');
         $stok_minimum = $this->request->getPost('stok_minimum');

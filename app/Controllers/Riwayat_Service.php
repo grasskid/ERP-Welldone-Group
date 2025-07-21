@@ -19,6 +19,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use App\Models\ModelJurnal;
 
 class Riwayat_Service extends BaseController
 
@@ -35,6 +36,7 @@ class Riwayat_Service extends BaseController
     protected $HppBarangModel;
     protected $StokAwalModel;
     protected $ProsesServiceModel;
+    protected $JurnalModel;
 
 
 
@@ -51,6 +53,7 @@ class Riwayat_Service extends BaseController
         $this->HppBarangModel = new ModelHppBarang();
         $this->StokAwalModel = new ModelStokAwal();
         $this->ProsesServiceModel = new ModelProsesService();
+        $this->JurnalModel = new ModelJurnal();
     }
 
     public function index()
@@ -118,7 +121,6 @@ class Riwayat_Service extends BaseController
 
         $data = array(
             'imei' => $imei,
-            'dp_bayar' => $dp_bayar,
             'tipe_passcode' => $tipe_passcode,
             'passcode' => $passcode,
             'email_icloud' => $email_icloud,
@@ -257,6 +259,8 @@ class Riwayat_Service extends BaseController
     {
 
         //pembayaran
+        $idservice = $this->request->getPost('idservice_p');
+        $data_service = $this->ServiceModel->getServiceById($idservice);
         $service_by = $this->request->getPost('service_by_pembayaran');
         $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
         $garansi = (int) $this->request->getPost('garansi');
@@ -264,15 +268,19 @@ class Riwayat_Service extends BaseController
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
         $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
-        $dp_pembayaran = $this->rupiahToInt($this->request->getPost('dp_pembayaran'));
-        $idservice = $this->request->getPost('idservice_p');
+        $dp_bayar = $data_service->dp_bayar;
+
+        $harus_dibayar = $total_harga_pembayaran  - $dp_bayar;
+
+
+
+
 
         $datap = array(
 
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
-            'dp_bayar' => $dp_pembayaran,
-            'harus_dibayar' => $total_harga_pembayaran,
+            'harus_dibayar' => $harus_dibayar,
             'garansi_hari' => $garansi,
             'bayar' => $bayar_pembayaran,
             'service_by' => $service_by_pembayaran
@@ -593,19 +601,47 @@ class Riwayat_Service extends BaseController
 
     public function update_sudah_diambil()
     {
-
         $idservice = $this->request->getPost('idservice');
         $wibTime = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
-        $data = array(
+
+        $dataservice = $this->ServiceModel->getServiceById($idservice);
+        $harus_dibayar = $dataservice->harus_dibayar;
+        $dp_bayar = $dataservice->dp_bayar;
+        $created_at = $dataservice->created_at;
+        $tanggal_saja = date('Y-m-d', strtotime($created_at));
+        $total_service = $dataservice->total_service;
+
+        $data = [
             'status_service' => 4,
             'tanggal_selesai' => $wibTime->format('Y-m-d H:i:s'),
-        );
+        ];
+
         $result = $this->ServiceModel->updateService($idservice, $data);
+
         if ($result) {
+            // Siapkan nilai-nilai sesuai urutan array_value di template
+            $kas_diterima = $total_service - $dp_bayar;
+
+            $ar_nilai = [
+                0 => $kas_diterima,   // Kas
+                1 => $dp_bayar,       // Diterima di muka
+                2 => $total_service,  // Pendapatan
+            ];
+
+            $this->JurnalModel->insertJurnal(
+                $tanggal_saja,
+                'pembayaran_service_tunai',
+                $ar_nilai,
+                'Pembayaran Service Tunai',
+                $idservice,
+                'service'
+            );
+
             session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
             return redirect()->to(base_url('bisa_diambil'));
         }
     }
+
 
     //end service bisa diambil
 

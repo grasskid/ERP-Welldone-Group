@@ -22,7 +22,7 @@ class Tugas extends BaseController
         $this->TugasTemplateModel = new ModelTugasTemplate();
     }
 
-    public function index()
+public function index()
 {
     date_default_timezone_set('Asia/Jakarta');
 
@@ -38,7 +38,10 @@ class Tugas extends BaseController
         return redirect()->to(current_url() . "?tanggal_awal=$default_awal&tanggal_akhir=$default_akhir");
     }
 
-    $templates = $this->TugasTemplateModel->getTugasTemplateByAkun($idakun);
+    // ✅ Only get templates where user's ID_JABATAN matches
+    $templates = $this->TugasTemplateModel
+        ->where('ID_JABATAN', $akun->ID_JABATAN)
+        ->findAll();
 
     foreach ($templates as $template) {
         $existing = $this->TugasModel
@@ -61,13 +64,12 @@ class Tugas extends BaseController
         }
     }
 
-    // ✅ Get updated tugas list after insertion
     $tugas = $this->TugasModel->getTugasByAkun2($idakun, $tanggal_awal, $tanggal_akhir);
 
     $data = [
         'akun' => $akun,
         'tugas' => $tugas,
-        'tugastemplate' => $this->TugasTemplateModel->getTugasTemplateByAkun($idakun),
+        'tugastemplate' => $templates,
         'tanggal_awal' => $tanggal_awal,
         'tanggal_akhir' => $tanggal_akhir,
         'body' => 'HR/tugas'
@@ -75,7 +77,6 @@ class Tugas extends BaseController
 
     return view('template', $data);
 }
-
 
     public function index2()
     {

@@ -185,6 +185,10 @@ class RiwayatPresensi extends BaseController
         $jam_jadwal_pulang = $this->request->getPost('jam_pulang');
         $jam_toleransi = $this->request->getPost('jam_toleransi');
         $foto_kehadiran = $this->request->getFile('foto_kehadiran');
+        $jampresensi = $this->request->getPost('jam_prensensi');
+        $datetime = new \DateTime($jampresensi);
+        $formattedJam = $datetime->format('Y-m-d H:i:s');
+
 
         $waktuMasuk = date('H:i:s');
         $tsMasuk = strtotime($waktuMasuk);
@@ -249,7 +253,7 @@ class RiwayatPresensi extends BaseController
 
 
         $data = [
-            'waktu_masuk' => date('Y-m-d H:i:s'),
+            'waktu_masuk' => $formattedJam,
             'jam_jadwal_masuk' => $jam_jadwal_masuk,
             'jam_jadwal_pulang' => $jam_jadwal_pulang,
             'jam_toleransi' => $jam_toleransi,
@@ -268,6 +272,35 @@ class RiwayatPresensi extends BaseController
 
         $this->PresensiModel->insertPresensi($data);
         session()->setFlashdata('sukses', 'Absen masuk berhasil!');
+        return redirect()->to(base_url('approval_presensi'));
+    }
+
+
+    public function kirim_lokasi_pulang_manual()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $idpresensi = $this->request->getPost('idpresensi');
+
+        $jampresensi = $this->request->getPost('jam_prensensi');
+        $datetime = new \DateTime($jampresensi);
+        $formattedJam = $datetime->format('Y-m-d H:i:s');
+
+        $namaFoto = null;
+        $foto_kehadiran = $this->request->getFile('foto_kehadiran');
+        if ($foto_kehadiran && $foto_kehadiran->isValid() && !$foto_kehadiran->hasMoved()) {
+            $ext = $foto_kehadiran->getClientExtension();
+            $timestamp = date('Ymd_His');
+            $namaFoto = 'absen_' . $idpresensi . '_' . $timestamp . '.' . $ext;
+
+            $foto_kehadiran->move(ROOTPATH . 'public/foto_presensi', $namaFoto);
+        }
+
+        $data = array(
+            'foto_pulang' => $namaFoto,
+            'waktu_pulang' => $formattedJam,
+        );
+        $this->PresensiModel->update($idpresensi, $data);
+        session()->setFlashdata('sukses', 'Absen pulang berhasil!');
         return redirect()->to(base_url('approval_presensi'));
     }
 

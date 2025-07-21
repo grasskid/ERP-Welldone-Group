@@ -1,5 +1,3 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
-
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
         <h4 class="fw-semibold mb-0">Datamaster Barang</h4>
@@ -475,8 +473,11 @@
         document.querySelectorAll('.currency').forEach(function(el) {
             new Cleave(el, {
                 numeral: true,
-                numeralThousandsGroupStyle: 'thousand'
+                numeralThousandsGroupStyle: 'thousand',
+                delimiter: '.',
+                numeralDecimalMark: ','
             });
         });
+
     });
 </script>

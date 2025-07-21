@@ -81,7 +81,19 @@
                             <td><?= esc($row->NAMA_AKUN) ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
                             <td><?= esc(date('H:i:s', strtotime($row->waktu_masuk))) ?></td>
-                            <td><?= esc(date('H:i:s', strtotime($row->waktu_pulang))) ?></td>
+                            <?php if ($row->waktu_pulang) : ?>
+                                <td>
+                                    <?= esc(date('H:i:s', strtotime($row->waktu_pulang))) ?>
+                                </td>
+                            <?php else : ?>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#modal-konfirmasi-absen-pulang_manual" data-idabsenpulang="<?= $row->idpresensi ?>">
+                                        Submit
+                                    </button>
+                                </td>
+                            <?php endif; ?>
+
 
 
 
@@ -328,6 +340,13 @@
                     </div>
 
 
+                    <div class="mb-2">
+                        <label>Jam Presensi</label>
+                        <input type="datetime-local" id="jam_prensensi" name="jam_prensensi" class="form-control">
+                    </div>
+
+
+
                     <div class="mb-3">
                         <label for="jadwal-select" class="form-label">Pilih Jadwal Masuk</label>
                         <select id="jadwal-select" class="form-select">
@@ -383,6 +402,44 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- Modal Konfirmasi Absen Pulang  Manual-->
+<div class="modal fade" id="modal-konfirmasi-absen-pulang_manual" tabindex="-1" aria-labelledby="konfirmasiAbsenPulangLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center">
+                <h4 class="modal-title" id="konfirmasiAbsenPulangLabel">Konfirmasi Absen Pulang</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-style: italic;">Apakah Anda yakin ingin melakukan absen pulang sekarang?</p>
+                <form action="kirim/lokasi_pulang_manual" enctype="multipart/form-data" method="post">
+                    <input hidden name="idpresensi" id="input-idpresensi-pulang">
+
+                    <div class="mb-2">
+                        <label>Jam Presensi</label>
+                        <input type="datetime-local" id="jam_prensensi" name="jam_prensensi" class="form-control">
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="foto" class="form-label">Ambil Foto Kepulangan</label>
+                        <input type="file" name="foto_kehadiran" id="foto" class="form-control" accept="image/*"
+                            capture="environment" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Ya, Absen Pulang</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 
@@ -538,7 +595,7 @@
                 const nama = e.target.getAttribute('data-nama') || '-';
                 const jadwalmasuk = e.target.getAttribute('data-jadwalmasuk') || '-';
                 const jadwalpulang = e.target.getAttribute('data-jadwalpulang') || '-';
-                const fotopulang = e.target.getAttribute('data-fotopulang') || '-';
+                const fotopulang = e.target.getAttribute('data-fotopulang');
 
                 const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
                 const waktuPulangDate = waktuPulang ? new Date(waktuPulang) : null;
@@ -751,5 +808,34 @@
 
         // Submit form
         document.getElementById('form-masuk').submit();
+    });
+</script>
+
+<script>
+    document.getElementById("formPresensi").addEventListener("submit", function(e) {
+        const input = document.getElementById("jam_prensensi");
+        const dateValue = new Date(input.value);
+
+        // Format ke yyyy-mm-dd hh:mm:ss
+        const formatted =
+            dateValue.getFullYear() + "-" +
+            String(dateValue.getMonth() + 1).padStart(2, '0') + "-" +
+            String(dateValue.getDate()).padStart(2, '0') + " " +
+            String(dateValue.getHours()).padStart(2, '0') + ":" +
+            String(dateValue.getMinutes()).padStart(2, '0') + ":" +
+            String(dateValue.getSeconds()).padStart(2, '0');
+
+
+        input.value = formatted;
+    });
+</script>
+
+<script>
+    const modalAbsenPulang = document.getElementById('modal-konfirmasi-absen-pulang_manual');
+    modalAbsenPulang.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const idpresensi = button.getAttribute('data-idabsenpulang');
+        const input = modalAbsenPulang.querySelector('#input-idpresensi-pulang');
+        input.value = idpresensi;
     });
 </script>

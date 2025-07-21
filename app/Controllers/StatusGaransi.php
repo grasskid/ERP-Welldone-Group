@@ -276,6 +276,9 @@ class StatusGaransi extends BaseController
     {
 
         //pembayaran
+        $idservice = $this->request->getPost('idservice_p');
+        $data_service = $this->ServiceModel->getServiceById($idservice);
+
         $service_by = $this->request->getPost('service_by_pembayaran');
 
         $diskon_pembayaran_garansi = $this->rupiahToInt($this->request->getPost('diskon_pembayaran_garansi'));
@@ -291,8 +294,10 @@ class StatusGaransi extends BaseController
         $status_service = $this->request->getPost('status_service_pembayaran');
 
         $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
-        $idservice = $this->request->getPost('idservice_p');
+
         $biaya_garansi_pembayaran = $this->rupiahToInt($this->request->getPost('biaya_garansi_pembayaran'));
+
+        $harus_dibayar_garansi = $total_harga_pembayaran_akhir;
 
         $datap = array(
 
@@ -301,7 +306,7 @@ class StatusGaransi extends BaseController
             'biaya_tambahan_garansi' => $biaya_garansi_pembayaran,
             'total_diskon_garansi' => $diskon_pembayaran_garansi,
             'bayar_garansi' => $bayar_pembayaran,
-            'harus_dibayar_garansi' => $total_harga_pembayaran_akhir
+            'harus_dibayar_garansi' => $harus_dibayar_garansi
 
 
         );

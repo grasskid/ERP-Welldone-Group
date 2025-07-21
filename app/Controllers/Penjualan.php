@@ -21,7 +21,7 @@ use Mpdf\Mpdf;
 use App\Models\ModelAuth;
 use App\Models\ModelHppBarang;
 use App\Models\ModelStokBarang;
-
+use App\Models\ModelJurnal;
 
 
 class Penjualan extends BaseController
@@ -38,6 +38,7 @@ class Penjualan extends BaseController
     protected $AuthModel;
     protected $HppBarangModel;
     protected $StokBarangModel;
+    protected $JurnalModel;
 
     public function __construct()
     {
@@ -51,6 +52,7 @@ class Penjualan extends BaseController
         $this->AuthModel = new ModelAuth();
         $this->HppBarangModel = new ModelHppBarang();
         $this->StokBarangModel = new ModelStokBarang();
+        $this->JurnalModel = new ModelJurnal();
     }
 
     public function index()
@@ -224,6 +226,17 @@ class Penjualan extends BaseController
             'kembalian' => $kembalian_cetak,
 
         );
+
+        // Insert Jurnal
+        if ($hutang == 0) {
+            // ini Penjualan Tunai Lunas
+            $ar_nilai[] = $total_penjualan;
+            $ar_nilai[] = $total_ppn;
+            $this->JurnalModel->insertJurnal($tanggal, 'penjualan_hp_baru_cash_tunai', $ar_nilai, "Penjualan HP Baru Cash Tunai Non PPN", $penjualan_idpenjualan, 'penjualan');
+        } else {
+            // ini Penjualan Tunai Hutang
+            $this->JurnalModel->insertJurnal($tanggal, 'penjualan_hp_baru_cash_tunai', $ar_nilai, "Penjualan HP Baru Cash Tunai Non PPN", $penjualan_idpenjualan, 'penjualan');
+        }
 
 
         $html = view('cetak/cetak_penjualan', $data3);

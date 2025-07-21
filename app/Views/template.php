@@ -1814,5 +1814,6 @@
 <script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.full.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/js/forms/select2.init.js') ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
 
 </html>

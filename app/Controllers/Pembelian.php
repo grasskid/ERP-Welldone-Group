@@ -16,6 +16,7 @@ use App\Models\ModelSuplier;
 use App\Models\ModelAuth;
 use App\Models\ModelPelanggan;
 use App\Models\ModelHppBarang;
+use App\Models\ModelJurnal;
 
 
 class Pembelian extends BaseController
@@ -31,6 +32,7 @@ class Pembelian extends BaseController
     protected $AuthModel;
     protected $PelangganModel;
     protected $HppBarangModel;
+    protected $JurnalModel;
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
@@ -42,6 +44,7 @@ class Pembelian extends BaseController
         $this->AuthModel = new ModelAuth();
         $this->PelangganModel = new ModelPelanggan();
         $this->HppBarangModel = new ModelHppBarang();
+        $this->JurnalModel = new ModelJurnal();
     }
 
     public function index()
@@ -244,6 +247,16 @@ class Pembelian extends BaseController
             );
 
             $result2 = $this->DetailPembelianModel->insert_detail($data2);
+        }
+
+        if ($sisa == 0) {
+            // ini Penjualan Tunai Lunas
+            $ar_nilai[] = $total_harga;
+            $ar_nilai[] = $total_ppn; 
+            $this->JurnalModel->insertJurnal($tanggal_masuk, 'pembelian_sup_ppn_lunas', $ar_nilai, "Persediaan Handphone Baru", $idPembelian, 'pembelian');
+        } else {
+            // ini Penjualan Tunai Hutang
+            $this->JurnalModel->insertJurnal($tanggal_masuk, 'pembelian_sup_ppn_lunas', $ar_nilai, "Persediaan Handphone Baru", $idPembelian, 'pembelian');
         }
 
         if ($result & $result2) {

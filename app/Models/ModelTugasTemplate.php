@@ -16,14 +16,19 @@ class ModelTugasTemplate extends Model
         return $this->findAll();
     }
 
-    public function getTugasTemplateByAkun($id_akun)
-    {
-        return $this->select('tugas_template.*, akun.NAMA_AKUN, akun.ID_UNIT, unit.NAMA_UNIT, unit.idunit')
-            ->join('akun', 'akun.ID_JABATAN = tugas_template.ID_JABATAN')
-            ->join('unit', 'unit.idunit = akun.ID_UNIT')
-            ->where('akun.ID_AKUN', $id_akun)
-            ->findAll();
-    }
+public function getTugasTemplateByAkun()
+{
+    return $this->select('
+        tugas_template.*,
+        jabatan.NAMA_JABATAN,
+        unit.NAMA_UNIT
+    ')
+    ->join('jabatan', 'jabatan.ID_JABATAN = tugas_template.ID_JABATAN', 'left')
+    ->join('akun', 'akun.ID_JABATAN = tugas_template.ID_JABATAN', 'left')
+    ->join('unit', 'unit.idunit = akun.ID_UNIT', 'left')
+    ->groupBy('tugas_template.idtemplate_tugas') // prevent duplication
+    ->findAll();
+}
 
     public function getAllTugasWithAkun()
     {
@@ -32,7 +37,7 @@ class ModelTugasTemplate extends Model
             ->findAll();
     }
 
-    public function insert_TugasTemplate($data)
+    public function insertTugasTemplate($data)
     {
         return $this->insert($data);
     }

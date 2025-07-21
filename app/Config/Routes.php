@@ -15,7 +15,7 @@ $routes->get('/Logout', 'Auth::proses_logout');
 //Datamaster
 
 
-
+$routes->get('/bank', 'Bank::index', ['filter' => 'auth']);
 
 //produk
 $routes->group('pegawai', ['filter' => 'auth'], function ($routes) {
@@ -274,9 +274,36 @@ $routes->post('presensi/update_status_kehadiran', 'RiwayatPresensi::submit_appro
 
 //absen manual
 $routes->post('kirim/lokasi_masuk_manual', 'RiwayatPresensi::submit_absen_manual', ['filter' => 'auth']);
+$routes->post('kirim/lokasi_pulang_manual', 'RiwayatPresensi::kirim_lokasi_pulang_manual', ['filter' => 'auth']);
 
 
 //Noakun data master
 $routes->get('datamaster_akun', 'NoAkun::index', ['filter' => 'auth']);
 $routes->post('insert_noakun', 'NoAkun::insert', ['filter' => 'auth']);
 $routes->post('update_noakun', 'NoAkun::update', ['filter' => 'auth']);
+
+
+//laporan jurnal
+$routes->get('laporan_jurnal', 'Jurnal::index', ['filter' => 'auth']);
+$routes->post('export_jurnal', 'Jurnal::export_jurnal', ['filter' => 'auth']);
+
+//sisikeuangan
+$routes->get('sisi_keuangan', 'SisiKeuangan::index', ['filter' => 'auth']);
+$routes->get('cetak/posisi_keuangan', 'SisiKeuangan::export_pdf', ['filter' => 'auth']);
+
+//kategorikas
+$routes->get('/kategori_kas', 'Kategori_Kas::index');
+$routes->post('insert_kategori', 'Kategori_Kas::insert_kategori', ['filter' => 'auth']);
+$routes->post('update_kategori', 'Kategori_Kas::update_kategori', ['filter' => 'auth']);
+$routes->post('delete_kategori', 'Kategori_Kas::delete_kategori', ['filter' => 'auth']);
+
+//kategorikas
+$routes->get('/kas_keluar', 'Kas_Keluar::index');
+$routes->post('insert_kas_keluar', 'Kas_Keluar::insert_kas_keluar', ['filter' => 'auth']);
+$routes->post('update_kas_keluar', 'Kas_Keluar::update_kas_keluar', ['filter' => 'auth']);
+$routes->post('delete_kas_keluar', 'Kas_Keluar::delete_kas_keluar', ['filter' => 'auth']);
+
+$routes->get('asset', 'Asset::index', ['filter' => 'auth']);
+$routes->post('insert_asset', 'Asset::insert_asset', ['filter' => 'auth']);
+$routes->post('update_asset', 'Asset::update_asset', ['filter' => 'auth']);
+$routes->post('delete_asset', 'Asset::delete_asset', ['filter' => 'auth']);
