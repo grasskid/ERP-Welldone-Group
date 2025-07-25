@@ -5,9 +5,9 @@
     <div class="brand-logo d-flex justify-content-center align-items-center py-3">
         <h2 style="text-align: center; margin-top: 2px;"><?= session()->get('NAMA_UNIT'); ?></h2>
         <a href="<?php echo base_url('template/') ?>dark/index.html" class="text-nowrap logo-img">
-            <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png" class="dark-logo w-100 h-auto"
+            <img src="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" class="dark-logo w-100 h-auto"
                 alt="Logo-Dark" />
-            <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png" class="light-logo w-100 h-auto"
+            <img src="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" class="light-logo w-100 h-auto"
                 alt="Logo-light" />
         </a>
         <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
