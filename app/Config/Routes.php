@@ -307,3 +307,30 @@ $routes->get('asset', 'Asset::index', ['filter' => 'auth']);
 $routes->post('insert_asset', 'Asset::insert_asset', ['filter' => 'auth']);
 $routes->post('update_asset', 'Asset::update_asset', ['filter' => 'auth']);
 $routes->post('delete_asset', 'Asset::delete_asset', ['filter' => 'auth']);
+
+//template_penilaian
+$routes->get('template_penilaian', 'TemplatePenilaian::index', ['filter' => 'auth']);
+$routes->post('insert_template_penilaian', 'TemplatePenilaian::insert', ['filter' => 'auth']);
+$routes->post('update_template_penilaian', 'TemplatePenilaian::update', ['filter' => 'auth']);
+$routes->post('delete_template_penilaian', 'TemplatePenilaian::delete', ['filter' => 'auth']);
+
+//template_kpi
+$routes->get('template_kpi', 'TemplateKPI::index', ['filter' => 'auth']);
+$routes->post('insert_template_kpi', 'TemplateKPI::insert', ['filter' => 'auth']);
+$routes->post('update_template_kpi', 'TemplateKPI::update', ['filter' => 'auth']);
+$routes->post('delete_template_kpi', 'TemplateKPI::delete', ['filter' => 'auth']);
+
+
+//penilaian
+$routes->get('penilaian', 'Penilaian::index', ['filter' => 'auth']);
+$routes->post('insert_penilaian', 'Penilaian::insert_penilaian', ['filter' => 'auth']);
+$routes->post('update_penilaian', 'Penilaian::update_penilaian', ['filter' => 'auth']);
+$routes->post('delete_penilaian', 'Penilaian::delete_penilaian', ['filter' => 'auth']);
+$routes->post('export_penilaian', 'Penilaian::export_penilaian', ['filter' => 'auth']);
+
+//penilaian kpi
+$routes->get('penilaian_kpi', 'PenilaianKPI::index', ['filter' => 'auth']);
+$routes->post('insert_penilaian', 'PenilaianKPI::insert_penilaian', ['filter' => 'auth']);
+$routes->post('update_penilaian', 'PenilaianKPI::update_penilaian', ['filter' => 'auth']);
+$routes->post('delete_penilaian', 'PenilaianKPI::delete_penilaian', ['filter' => 'auth']);
+$routes->post('export_penilaian', 'PenilaianKPI::export_penilaian', ['filter' => 'auth']);

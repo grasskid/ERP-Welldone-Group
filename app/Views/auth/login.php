@@ -8,12 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="<?php echo base_url('template/') ?>assets/images/logo_urban.png" />
+    <link rel="shortcut icon" type="image/png" href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" />
 
     <!-- Core Css -->
     <link rel="stylesheet" href="<?php echo base_url('template/') ?>assets/css/styles.css" />
 
-    <title>WellDone Group</title>
+    <title><?= env('app.name', 'App ERP') ?></title>
 </head>
 
 <body>
@@ -42,19 +42,19 @@
 
                             </div>
                             <div class="col-lg-6 col-xl-5">
-                                <h2 class="mb-6 fs-8 fw-bolder">Welcome to WellDone Group</h2>
+                                <h2 class="mb-6 fs-8 fw-bolder">Welcome to <?= env('app.name', 'App ERP') ?></h2>
                                 <p class="text-dark fs-4 mb-7">Your Admin Dashboard</p>
 
                                 <form action="<?= base_url('/proses_login') ?>" method="post">
                                     <?php if (session()->getFlashdata('pesan_error')) { ?>
-                                    <div class="text-danger mt-2">
-                                        <?= session()->getFlashdata('pesan_error') ?>
-                                    </div>
+                                        <div class="text-danger mt-2">
+                                            <?= session()->getFlashdata('pesan_error') ?>
+                                        </div>
                                     <?php } ?>
                                     <?php if (session()->getFlashdata('pesan_username')) { ?>
-                                    <div class="text-danger mt-2">
-                                        <?= session()->getFlashdata('pesan_username') ?>
-                                    </div>
+                                        <div class="text-danger mt-2">
+                                            <?= session()->getFlashdata('pesan_username') ?>
+                                        </div>
                                     <?php } ?>
                                     <div class="mb-7">
                                         <label for="InputUsername" class="form-label text-dark fw-bold">Username</label>
@@ -62,9 +62,9 @@
                                             aria-describedby="emailHelp" />
                                     </div>
                                     <?php if (session()->getFlashdata('pesan_password')) { ?>
-                                    <div class="text-danger mt-2">
-                                        <?= session()->getFlashdata('pesan_password') ?>
-                                    </div>
+                                        <div class="text-danger mt-2">
+                                            <?= session()->getFlashdata('pesan_password') ?>
+                                        </div>
                                     <?php } ?>
                                     <div class="mb-9">
                                         <label for="exampleInputPassword1"

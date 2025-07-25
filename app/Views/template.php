@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="<?php echo base_url('template/') ?>assets/images/logo_urban.png" />
+    <link rel="shortcut icon" type="image/png" href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -18,7 +18,7 @@
 
 
 
-    <title>WellDone Group</title>
+    <title><?= env('app.name', 'App ERP') ?></title>
 
     <!-- jvectormap  -->
     <link rel="stylesheet" href="<?php echo base_url('template/') ?>assets/libs/jvectormap/jquery-jvectormap.css">

@@ -117,7 +117,7 @@ class Pegawai extends BaseController
             'ROLES'             => json_encode($this->request->getPost('roles')),
             'ID_UNIT'           => $this->request->getPost('unit'),
             'ID_JABATAN'        => $this->request->getPost('jabatan'),
-            'PASSWORD'          => password_hash("welldone", PASSWORD_DEFAULT, array("cost" => 10)),
+            'PASSWORD'          => password_hash($this->request->getPost('noid'), PASSWORD_DEFAULT, array("cost" => 10)),
         );
 
         $result = db_connect()->table('akun')->insert($data);
