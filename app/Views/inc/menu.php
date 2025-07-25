@@ -383,11 +383,11 @@
                             <img src="<?php echo base_url('template/') ?>assets/images/profile/user-1.jpg" width="45"
                                 height="45" class="img-fluid rounded-circle" alt="" />
                             <div>
-                                <h5 class="mb-1">Mike</h5>
-                                <p class="mb-0">Admin</p>
+                                <h5 class="mb-1"><?php echo session('NAMA') ?></h5>
+                                <p class="mb-0"><?php echo session('NAMA_JABATAN') ?></p>
                             </div>
                         </div>
-                        <a href="<?php echo base_url('template/') ?>dark/authentication-login.html"
+                        <a href="<?php echo base_url('Logout') ?>"
                             class="position-relative" data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-title="Logout">
                             <iconify-icon icon="solar:logout-line-duotone" class="fs-8"></iconify-icon>
