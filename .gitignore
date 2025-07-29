@@ -2,14 +2,23 @@
 .env
 .env.*
 !.env.example
-writable/
+writable/cache/*
+writable/debugbar/*
+writable/logs/*
+writable/sessions/*
+writable/slow_queries/*
+writable/session/*
+writable/uploads/*
+
 #public/index.php
 #public/.htaccess
 public/favicon.ico
 public/robots.txt
-public/uploads/
-public/foto_nota/
-public/qr_service/
+public/uploads/*
+public/foto_nota/*
+public/qr_service/*
+public/foto_presensi/*
+public/foto_tugas/*
 public/error_log
 
 # Composer
