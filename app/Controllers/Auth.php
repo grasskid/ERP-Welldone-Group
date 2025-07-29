@@ -171,6 +171,28 @@ class Auth extends BaseController
         return redirect()->back();
     }
 
+    public function changePassword()
+    {
+    $userId = session('ID_AKUN');
+    $newPassword = $this->request->getPost('new_password');
+    $confirmPassword = $this->request->getPost('confirm_password');
+
+    if (empty($newPassword) || empty($confirmPassword)) {
+        return redirect()->back()->with('error', 'Password tidak boleh kosong.');
+    }
+
+    if ($newPassword !== $confirmPassword) {
+        return redirect()->back()->with('error', 'Konfirmasi password tidak cocok.');
+    }
+
+    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+    $userModel = new \App\Models\ModelAuth();
+    $userModel->update($userId, ['PASSWORD' => $hashedPassword]);
+
+    return redirect()->back()->with('success', 'Password berhasil diubah.');
+    }
+
     function proses_logout()
     {
         $idlogin = session()->get('ID_LOGIN');

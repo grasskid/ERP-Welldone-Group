@@ -165,6 +165,20 @@ class Pegawai extends BaseController
         }
     }
 
+    public function reset_password()
+    {
+        $id = $this->request->getPost('ID_AKUN');
+        $hashedPassword = password_hash('urbankeren', PASSWORD_BCRYPT);
+        $data = array(
+            'PASSWORD' => $hashedPassword
+        );
+        $result = $this->AuthModel->update($id, $data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Berhasil Update Data');
+            return redirect()->to(base_url('pegawai'));
+        }
+    }
+
 
     //     $result = db_connect()->table('akun')->where('ID_AKUN', $id)->update($data);
 

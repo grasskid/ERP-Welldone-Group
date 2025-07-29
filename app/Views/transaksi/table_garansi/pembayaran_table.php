@@ -1,4 +1,4 @@
-<form action="<?php echo base_url('update_service_garansi/savePembayaran') ?>" enctype="multipart/form-data"
+<form action="<?php echo base_url('update_service_garansi/savePembayaran') ?>" id="form_pemPembayaran" enctype="multipart/form-data"
     method="post">
     <div class="mt-3">
 
@@ -171,6 +171,8 @@
     });
 </script>
 
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const dpInput = document.getElementById('dp_bayar');
@@ -207,5 +209,22 @@
             // Trigger format on load
             formatAndUpdateInput(totalAkhirInput);
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form_pemPembayaran = document.getElementById('form_pemPembayaran');
+
+        form_pemPembayaran.addEventListener('submit', function(e) {
+            const totalHargaStr = document.getElementById('total_harga_pembayaran_akhir').value;
+            const totalHarga = parseRupiahToNumber(totalHargaStr);
+
+            const bayarStr = document.getElementById('bayar').value;
+            const bayar = parseRupiahToNumber(bayarStr);
+
+            if (bayar < totalHarga) {
+                alert('Pembayaran kurang! Silakan periksa kembali.');
+                e.preventDefault();
+            }
+        });
     });
 </script>

@@ -22,6 +22,9 @@ use App\Models\ModelAuth;
 use App\Models\ModelHppBarang;
 use App\Models\ModelStokBarang;
 use App\Models\ModelJurnal;
+use App\Models\ModelPenilaianKPI;
+use App\Models\ModelPenilaian;
+use App\Models\ModelTemplateKpi;
 
 
 class Penjualan extends BaseController
@@ -39,6 +42,9 @@ class Penjualan extends BaseController
     protected $HppBarangModel;
     protected $StokBarangModel;
     protected $JurnalModel;
+    protected $ModelPenilaianKPI;
+    protected $ModelPenilaian;
+    protected $ModelTemplateKPI;
 
     public function __construct()
     {
@@ -53,6 +59,9 @@ class Penjualan extends BaseController
         $this->HppBarangModel = new ModelHppBarang();
         $this->StokBarangModel = new ModelStokBarang();
         $this->JurnalModel = new ModelJurnal();
+        $this->PenilaianKPIModel = new ModelPenilaianKPI();
+        $this->PenilaianModel = new ModelPenilaian();
+        $this->TemplateKpiModel = new ModelTemplateKpi();
     }
 
     public function index()
@@ -238,6 +247,35 @@ class Penjualan extends BaseController
             $this->JurnalModel->insertJurnal($tanggal, 'penjualan_hp_baru_cash_tunai', $ar_nilai, "Penjualan HP Baru Cash Tunai Non PPN", $penjualan_idpenjualan, 'penjualan');
         }
 
+        if ($hutang == 0) {
+        $pegawai_idpegawai = session('ID_AKUN');
+        $jabatan_id = 35;
+        $tanggal_penilaian_kpi = $tanggal_formatted;
+
+        $template = $this->TemplateKpiModel->getByJabatanAndNama($jabatan_id, 'Penjualan(Omzet)');
+
+        if ($template) {
+        $kpi_utama = $template->template_kpi;
+        $bobot = $template->bobot;
+        $target = $template->target;
+        $realisasi = [$total_penjualan];
+        
+        $ratio = ($target > 0) ? ($total_penjualan / $target) : 0;
+        $raw_score = $ratio * $bobot;
+
+        $score = [round(min($raw_score, $bobot), 2)];
+
+        $this->PenilaianKPIModel->insertKPI(
+            $kpi_utama,
+            $bobot,
+            $target,
+            $realisasi,
+            $score,
+            $pegawai_idpegawai,
+            $tanggal_penilaian_kpi
+                );
+            }
+        }
 
         $html = view('cetak/cetak_penjualan', $data3);
 

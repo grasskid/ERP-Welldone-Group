@@ -8,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" />
+    <link rel="shortcut icon" type="image/png"
+        href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -32,6 +33,9 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
 
 
 
@@ -388,34 +392,41 @@
                                                     <!--  Messages -->
                                                     <div class="d-flex align-items-center py-3 px-7">
                                                         <h3 class="mb-0 fs-5">Stok Minimum</h3>
-                                                        <span class="badge bg-info ms-3"><?= count($stokMinimum) ?> new</span>
+                                                        <span class="badge bg-info ms-3"><?= count($stokMinimum) ?>
+                                                            new</span>
                                                     </div>
 
                                                     <div class="message-body" data-simplebar>
                                                         <?php if (!empty($stokMinimum)) : ?>
                                                             <?php foreach ($stokMinimum as $item) : ?>
-                                                                <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                                <a href="javascript:void(0)"
+                                                                    class="dropdown-item px-7 d-flex align-items-center py-6">
                                                                     <span class="flex-shrink-0">
                                                                         <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
                                                                             alt="user" width="45" class="rounded-circle" />
                                                                     </span>
                                                                     <div class="w-100 d-inline-block v-middle ps-3">
-                                                                        <div class="d-flex align-items-center justify-content-between">
+                                                                        <div
+                                                                            class="d-flex align-items-center justify-content-between">
                                                                             <h5 class="mb-0 fs-3 fw-normal">
                                                                                 <?= esc($item->nama_barang) ?>
                                                                             </h5>
                                                                         </div>
-                                                                        <span class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
+                                                                        <span
+                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
                                                                             Unit: <?= esc($item->nama_unit) ?>
                                                                         </span>
-                                                                        <span class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
-                                                                            Sisa <?= esc($item->stok_akhir) ?> (Min: <?= esc($item->stok_minimum) ?>)
+                                                                        <span
+                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
+                                                                            Sisa <?= esc($item->stok_akhir) ?> (Min:
+                                                                            <?= esc($item->stok_minimum) ?>)
                                                                         </span>
                                                                     </div>
                                                                 </a>
                                                             <?php endforeach; ?>
                                                         <?php else : ?>
-                                                            <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok minimum</div>
+                                                            <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
+                                                                minimum</div>
                                                         <?php endif; ?>
                                                     </div>
 
@@ -556,31 +567,33 @@
                                             <!-- ------------------------------- -->
                                             <!-- start profile Dropdown -->
                                             <!-- ------------------------------- -->
+
+
                                             <li class="nav-item dropdown">
                                                 <a class="nav-link position-relative ms-6" href="javascript:void(0)"
                                                     id="drop1" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <div class="d-flex align-items-center flex-shrink-0">
                                                         <div class="user-profile me-sm-3 me-2">
-                                                            <img src="<?php echo base_url('template/') ?>assets/images/profile/user-1.jpg"
+                                                            <img src="<?= base_url('template/') ?>assets/images/profile/user-1.jpg"
                                                                 width="45" class="rounded-circle" alt="">
                                                         </div>
                                                         <span class="d-sm-none d-block">
                                                             <iconify-icon icon="solar:alt-arrow-down-line-duotone">
                                                             </iconify-icon>
                                                         </span>
-
                                                         <div class="d-none d-sm-block">
                                                             <h6 class="fw-bold fs-4 mb-1 profile-name">
-                                                                <?php echo session('NAMA') ?>
+                                                                <?= session('NAMA') ?>
                                                             </h6>
                                                             <p class="fs-3 lh-base mb-0 profile-subtext">
-                                                                Admin
+                                                                <?= session('NAMA_JABATAN') ?>
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </a>
+
                                                 <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                                    aria-labelledby="drop1">
+                                                    aria-labelledby="drop1" data-bs-auto-close="outside">
                                                     <div class="profile-dropdown position-relative" data-simplebar>
                                                         <div
                                                             class="d-flex align-items-center justify-content-between pt-3 px-7">
@@ -593,78 +606,91 @@
                                                         </div>
 
                                                         <div class="d-flex align-items-center mx-7 py-9 border-bottom">
-                                                            <img src="<?php echo base_url('template/') ?>assets/images/profile/user-1.jpg"
+                                                            <img src="<?= base_url('template/') ?>assets/images/profile/user-1.jpg"
                                                                 alt="user" width="90" class="rounded-circle" />
                                                             <div class="ms-4">
-                                                                <h4 class="mb-0 fs-5 fw-normal">Mike Nielsen</h4>
-                                                                <span class="text-muted">super admin</span>
+                                                                <h4 class="mb-0 fs-5 fw-normal"><?= session('NAMA') ?>
+                                                                </h4>
+                                                                <span
+                                                                    class="text-muted"><?= session('NAMA_JABATAN') ?></span>
                                                                 <p
                                                                     class="text-muted mb-0 mt-1 d-flex align-items-center">
                                                                     <iconify-icon icon="solar:mailbox-line-duotone"
                                                                         class="fs-4 me-1"></iconify-icon>
-                                                                    info@spike.com
+                                                                    <?= session('EMAIL') ?>
                                                                 </p>
                                                             </div>
                                                         </div>
 
                                                         <div class="message-body">
-                                                            <a href="<?php echo base_url('template/') ?>dark/page-user-profile.html"
-                                                                class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                <span
-                                                                    class="btn px-3 py-2 bg-info-subtle rounded-1 text-info shadow-none">
-                                                                    <iconify-icon icon="solar:wallet-2-line-duotone"
-                                                                        class="fs-7"></iconify-icon>
-                                                                </span>
-                                                                <div class="w-75 d-inline-block v-middle ps-3 ms-1">
-                                                                    <h5 class="mb-0 mt-1 fs-4 fw-normal">
-                                                                        My Profile
-                                                                    </h5>
-                                                                    <span
-                                                                        class="fs-3 text-nowrap d-block fw-normal mt-1 text-muted">Account
-                                                                        Settings</span>
-                                                                </div>
-                                                            </a>
 
-                                                            <a href="<?php echo base_url('template/') ?>dark/app-email.html"
-                                                                class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                <span
-                                                                    class="btn px-3 py-2 bg-success-subtle rounded-1 text-success shadow-none">
-                                                                    <iconify-icon
-                                                                        icon="solar:shield-minimalistic-line-duotone"
-                                                                        class="fs-7"></iconify-icon>
-                                                                </span>
-                                                                <div class="w-75 d-inline-block v-middle ps-3 ms-1">
-                                                                    <h5 class="mb-0 mt-1 fs-4 fw-normal">My Inbox</h5>
+                                                            <!-- Ganti Password Toggle -->
+                                                            <div class="px-7 pt-4">
+                                                                <button type="button"
+                                                                    class="dropdown-item px-0 d-flex align-items-center"
+                                                                    onclick="document.getElementById('password-form').classList.toggle('d-none')">
                                                                     <span
-                                                                        class="fs-3 text-nowrap d-block fw-normal mt-1 text-muted">Messages
-                                                                        & Emails</span>
-                                                                </div>
-                                                            </a>
+                                                                        class="btn px-3 py-2 bg-info-subtle rounded-1 text-info shadow-none">
+                                                                        <iconify-icon icon="solar:wallet-2-line-duotone"
+                                                                            class="fs-7"></iconify-icon>
+                                                                    </span>
+                                                                    <div class="w-75 d-inline-block v-middle ps-3 ms-1">
+                                                                        <h5 class="mb-0 mt-1 fs-4 fw-normal">Ganti
+                                                                            Password</h5>
+                                                                        <span
+                                                                            class="fs-3 text-nowrap d-block fw-normal mt-1 text-muted">Account
+                                                                            Settings</span>
+                                                                    </div>
+                                                                </button>
 
-                                                            <a href="<?php echo base_url('template/') ?>dark/app-notes.html"
-                                                                class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                <span
-                                                                    class="btn px-3 py-2 bg-danger-subtle rounded-1 text-danger shadow-none">
-                                                                    <iconify-icon icon="solar:card-2-line-duotone"
-                                                                        class="fs-7"></iconify-icon>
-                                                                </span>
-                                                                <div class="w-75 d-inline-block v-middle ps-3 ms-1">
-                                                                    <h5 class="mb-0 mt-1 fs-4 fw-normal">My Task</h5>
-                                                                    <span
-                                                                        class="fs-3 text-nowrap d-block fw-normal mt-1 text-muted">To-do
-                                                                        and Daily
-                                                                        Tasks</span>
+                                                                <!-- Hidden Password Form -->
+                                                                <div id="password-form" class="d-none mt-3">
+                                                                    <form method="post"
+                                                                        action="<?= base_url('auth/changePassword') ?>">
+                                                                        <?= csrf_field() ?>
+                                                                        <div class="mb-2">
+                                                                            <input type="password" name="new_password"
+                                                                                class="form-control form-control-sm"
+                                                                                placeholder="Password Baru" required>
+                                                                        </div>
+                                                                        <div class="mb-2">
+                                                                            <input type="password"
+                                                                                name="confirm_password"
+                                                                                class="form-control form-control-sm"
+                                                                                placeholder="Konfirmasi Password"
+                                                                                required>
+                                                                        </div>
+                                                                        <button type="submit"
+                                                                            class="btn btn-sm btn-primary w-100">Simpan</button>
+                                                                    </form>
                                                                 </div>
-                                                            </a>
-                                                        </div>
+                                                            </div>
 
-                                                        <div class="py-6 px-7 mb-1">
-                                                            <a href="<?php echo base_url('template/') ?>dark/authentication-login.html"
-                                                                class="btn btn-primary w-100">Log Out</a>
+                                                            <!-- Logout -->
+                                                            <div class="py-6 px-7 mb-1">
+                                                                <a href="<?= base_url('Logout') ?>"
+                                                                    class="btn btn-primary w-100">Log Out</a>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             </li>
+
+                                            <!-- Minimal JS to prevent dropdown from closing -->
+                                            <script>
+                                                document.querySelectorAll(
+                                                        '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
+                                                    )
+                                                    .forEach(el => {
+                                                        el.addEventListener('click', function(e) {
+                                                            e.stopPropagation();
+                                                        });
+                                                    });
+                                            </script>
+
+                                            </li>
+
                                             <!-- ------------------------------- -->
                                             <!-- end profile Dropdown -->
                                             <!-- ------------------------------- -->
@@ -1809,7 +1835,8 @@
 
 <script src="<?php echo base_url('template/assets/libs/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/js/datatable/datatable-basic.init.js') ?>"></script>
-<link rel="stylesheet" href="<?php echo base_url('template/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') ?>" />
+<link rel="stylesheet"
+    href="<?php echo base_url('template/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') ?>" />
 <script src="<?php echo base_url('template/assets/js/plugins/toastr-init.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.full.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.min.js') ?>"></script>

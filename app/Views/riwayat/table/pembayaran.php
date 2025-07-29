@@ -1,4 +1,4 @@
-<form action="<?php echo base_url('update_insert/service/savePembayaran') ?>" enctype="multipart/form-data" method="post">
+<form action="<?php echo base_url('update_insert/service/savePembayaran') ?>" id="form_pemPembayaran" enctype="multipart/form-data" method="post">
     <div class="mt-3">
 
         <div class="mb-3">
@@ -60,18 +60,6 @@
             <input type="text" name="kembalian" id="kembalian" class="form-control form-control-lg" readonly
                 value="Rp 0">
         </div>
-
-        <!-- <div class="mb-5">
-            <label class="form-label fw-semibold">Status</label>
-            <select class="form-select form-select-lg" name="status_service_pembayaran">
-                <option selected disabled>---Pilih Status---</option>
-                <option value="1">Menunggu</option>
-                <option value="2">Proses</option>
-                <option value="3">Pengambilan</option>
-                <option value="4">Selesai dan Sudah Dibayar</option>
-                <option value="5">Dibatalkan</option>
-            </select>
-        </div> -->
     </div>
 
 
@@ -142,9 +130,22 @@
         document.getElementById('total_harga_pembayaran').value = formatRupiah(value);
     }
 
-    // Example initial set (optional)
-    // setDiskon(50000);
-    // setTotalHarga(200000);
+    document.addEventListener('DOMContentLoaded', function() {
+        const form_pemPembayaran = document.getElementById('form_pemPembayaran');
+
+        form_pemPembayaran.addEventListener('submit', function(e) {
+            const totalHargaStr = document.getElementById('total_harga_pembayaran_akhir').value;
+            const totalHarga = parseRupiahToNumber(totalHargaStr);
+
+            const bayarStr = document.getElementById('bayar').value;
+            const bayar = parseRupiahToNumber(bayarStr);
+
+            if (bayar < totalHarga) {
+                alert('Pembayaran kurang! Silakan periksa kembali.');
+                e.preventDefault();
+            }
+        });
+    });
 </script>
 
 <script>

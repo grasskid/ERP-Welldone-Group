@@ -22,16 +22,28 @@ class ModelPenilaianKPI extends Model
         'updated_on'
     ];
 
+    public function insertKPI($kpi_utama, $bobot, $target, $ar_target, $score, $pegawai_idpegawai, $tanggal_penilaian_kpi)
+    {
+        $data = [
+            'kpi_utama'             => $kpi_utama,
+            'bobot'                 => $bobot,
+            'target'                => $target,
+            'realisasi'             => $ar_target[0] ?? 0,
+            'score'                 => $score[0] ?? 0,
+            'pegawai_idpegawai'     => $pegawai_idpegawai,
+            'tanggal_penilaian_kpi' => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
+            'created_on'            => date('Y-m-d H:i:s'),
+            'updated_on'            => date('Y-m-d H:i:s'),
+        ];
+
+        return $this->insert($data);
+    }
+
     public function getAllKPI()
     {
         return $this->select('penilaian_kpi.*, akun.NAMA_AKUN')
             ->join('akun', 'akun.ID_AKUN = penilaian_kpi.pegawai_idpegawai', 'left')
             ->findAll();
-    }
-
-    public function insertKPI($data)
-    {
-        return $this->insert($data);
     }
 
     public function getById($idpenilaian_kpi)

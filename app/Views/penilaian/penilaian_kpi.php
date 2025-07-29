@@ -2,12 +2,6 @@
     <div class="card-body d-flex align-items-center justify-content-between p-4">
         <h4 class="fw-semibold mb-0">Penilaian KPI</h4>
         <div class="d-flex">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-penilaian-modal"
-                style="display: inline-flex; align-items: center; height: 50px;">
-                <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
-                    style="margin-right: 8px;"></iconify-icon>
-                Input
-            </button>
         </div>
     </div>
 </div>
@@ -15,7 +9,7 @@
 <div class="card shadow-none position-relative overflow-hidden">
     <div class="card-body">
         <div class="table-responsive">
-            <table id="zero_config" class="table border table-striped table-bordered text-nowrap">
+            <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
                 <thead class="text-dark fs-4">
                     <tr>
                         <th>Nama Pegawai</th>
@@ -25,8 +19,6 @@
                         <th>Realisasi</th>
                         <th>Score</th>
                         <th>Tanggal Penilaian</th>
-                        <th>Terakhir Diperbarui</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,22 +32,6 @@
                         <td><?= esc($row->realisasi) ?></td>
                         <td><?= esc($row->score) ?></td>
                         <td><?= esc(date('d-m-Y', strtotime($row->tanggal_penilaian_kpi))) ?></td>
-                        <td><?= $row->updated_on ? esc(date('d-m-Y', strtotime($row->updated_on))) : '-' ?></td>
-                        <td>
-                            <button class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                data-bs-target="#edit-penilaian-modal" data-id="<?= $row->idpenilaian_kpi ?>"
-                                data-kpi_utama="<?= esc($row->kpi_utama) ?>" data-bobot="<?= esc($row->bobot) ?>"
-                                data-target="<?= esc($row->target) ?>" data-realisasi="<?= esc($row->realisasi) ?>"
-                                data-score="<?= esc($row->score) ?>" data-pegawai_id="<?= $row->pegawai_idpegawai ?>"
-                                data-tanggal="<?= $row->tanggal_penilaian_kpi ?>">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-
-                            <button class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                data-bs-target="#delete-penilaian-modal" data-id="<?= $row->idpenilaian_kpi ?>">
-                                <i class="ti ti-trash"></i>
-                            </button>
-                        </td>
                     </tr>
                     <?php endforeach; ?>
                     <?php else: ?>

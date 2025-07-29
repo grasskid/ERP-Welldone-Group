@@ -10,6 +10,8 @@ $routes->get('/template', 'Template::index');
 $routes->get('/Login', 'Auth::login');
 $routes->post('/proses_login', 'Auth::proses_login');
 $routes->get('/Logout', 'Auth::proses_logout');
+$routes->post('auth/changePassword', 'Auth::changePassword');
+
 
 
 //Datamaster
@@ -39,6 +41,8 @@ $routes->group('produk', ['filter' => 'auth'], function ($routes) {
     $routes->post('update_produk', 'Produk::update_produk');
     $routes->post('delete_produk', 'Produk::delete_produk');
 });
+
+$routes->post('pegawai/reset', 'Pegawai::reset_password', ['filter' => 'auth']);
 
 //supplier
 $routes->get('/supplier', 'Supplier::index', ['filter' => 'auth']);

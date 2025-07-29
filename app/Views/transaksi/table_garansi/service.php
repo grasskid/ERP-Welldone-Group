@@ -14,6 +14,14 @@
 
 <div class="card w-100 position-relative overflow-hidden">
     <div class="card-body">
+
+        <div style="width: 250px; padding-left: 20px; margin-bottom: 20px;">
+            <button class="btn btn-primary" style="width: 200px;" onclick="history.back()">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </button>
+
+
+        </div>
         <!-- Nav tabs -->
         <ul class="nav nav-pills nav-fill" role="tablist">
             <li class="nav-item">

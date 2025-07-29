@@ -1,4 +1,4 @@
-<form action="<?php echo base_url('insert/service/savePembayaran') ?>" enctype="multipart/form-data" method="post">
+<form action="<?php echo base_url('insert/service/savePembayaran') ?>" id="form_pemPembayaran" enctype="multipart/form-data" method="post">
     <div class="mt-3">
 
         <div class="mb-3">
@@ -101,18 +101,18 @@
 
 
 
-    // Called on "bayar" input change
+
     function handleBayarInput() {
         const bayarInput = document.getElementById('bayar');
         let cursorPos = bayarInput.selectionStart;
 
-        // Parse current value to number
+
         let numberValue = parseRupiahToNumber(bayarInput.value);
 
-        // Format and set back with Rp prefix
+
         bayarInput.value = formatRupiah(numberValue);
 
-        // Reset cursor position to the end (better UX for this type of formatting)
+
         bayarInput.setSelectionRange(bayarInput.value.length, bayarInput.value.length);
 
         hitungKembalian();
@@ -141,10 +141,6 @@
     function setTotalHarga(value) {
         document.getElementById('total_harga_pembayaran').value = formatRupiah(value);
     }
-
-    // Example initial set (optional)
-    // setDiskon(50000);
-    // setTotalHarga(200000);
 </script>
 
 <script>

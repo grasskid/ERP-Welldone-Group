@@ -108,6 +108,13 @@
                                     <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
                                 </button>
 
+                                <button type="button" class="btn btn-primary reset-button"
+                                    data-id="<?= $row->ID_AKUN ?>"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#reset-pegawai-modal">
+                                    <i class="fas fa-lock"></i>
+                                </button>
+
 
                                 <button type="button" class="btn btn-danger delete-button"
                                     data-id="<?= $row->ID_AKUN ?>"
@@ -309,7 +316,6 @@
 
 
 <!-- modal delete pegawai -->
-
 <div class="modal fade" id="delete-pegawai-modal" tabindex="-1" aria-labelledby="deletepegawaiModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -320,13 +326,38 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input id="delete-id_pegawai" name="ID_AKUN">
+                    <input hidden id="delete-id_pegawai" name="ID_AKUN">
                     <p style="font-style: italic;">Apa anda yakin ingin menghapus data ini?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"
                         data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal reset pegawai -->
+<div class="modal fade" id="reset-pegawai-modal" tabindex="-1" aria-labelledby="resetpegawaiModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="<?= base_url('pegawai/reset') ?>" method="post">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="resetpegawaiModalLabel">Reset Password pegawai</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input hidden id="reset-id_pegawai" name="ID_AKUN">
+                    <p style="font-style: italic;">Apa anda yakin ingin Reset password pegawai ini?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Reset</button>
                 </div>
             </form>
         </div>
@@ -383,6 +414,11 @@
     $(document).on('click', '.delete-button', function() {
         const id = $(this).data('id');
         $('#delete-id_pegawai').val(id);
+    });
+
+    $(document).on('click', '.reset-button', function() {
+        const id = $(this).data('id');
+        $('#reset-id_pegawai').val(id);
     });
 </script>
 
