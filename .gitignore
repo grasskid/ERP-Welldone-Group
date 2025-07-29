@@ -16,9 +16,13 @@ public/favicon.ico
 public/robots.txt
 public/uploads/*
 public/foto_nota/*
+!public/foto_nota/.gitkeep
 public/qr_service/*
+!public/qr_service/.gitkeep
 public/foto_presensi/*
+!public/foto_presensi/.gitkeep
 public/foto_tugas/*
+!public/foto_tugas/.gitkeep
 public/error_log
 
 # Composer
