@@ -11,9 +11,11 @@
 
         <input hidden type="text" name="idservice" value="<?php echo @$idservice ?>">
         <input hidden type="text" id="created_at" value="<?php echo @$old_service_pelanggan->created_at ?>">
+        <input type="text" hidden name="" id="idpela">
 
         <div class="col-md-6">
             <label class="form-label">Nama Pelanggan</label>
+
             <input type="text" class="form-control" id="nama_pelanggan" value="<?php echo @$old_service_pelanggan->nama ?>">
         </div>
         <!-- <div class="col-md-6">
@@ -133,6 +135,7 @@
                         <option disabled selected>Select</option>
                         <?php foreach ($pelanggan as $p): ?>
                             <option value="<?= htmlspecialchars($p->id_pelanggan) ?>"
+                                data-pelangganterpilih="<?= htmlspecialchars($p->id_pelanggan) ?>"
                                 data-nama="<?= htmlspecialchars($p->nama) ?>" data-nohp="<?= htmlspecialchars($p->no_hp) ?>"
                                 data-alamat="<?= htmlspecialchars($p->alamat) ?>">
                                 <?= htmlspecialchars($p->nama) ?> : <?= htmlspecialchars($p->no_hp) ?>
@@ -240,11 +243,13 @@
             const nama = selectedOption.getAttribute('data-nama');
             const no_hp = selectedOption.getAttribute('data-nohp');
             const alamat = selectedOption.getAttribute('data-alamat');
+            const idpel = selectedOption.getAttribute('data-pelangganterpilih');
 
             // Set nilai ke form input
             document.getElementById('nama_pelanggan').value = nama;
             document.getElementById('no_hp').value = no_hp;
             document.getElementById('alamat').value = alamat;
+            document.getElementById('idpela').value = idpel;
 
 
             pelangganModal.hide();
@@ -285,18 +290,36 @@
     });
 </script>
 
+
+
 <script>
     document.getElementById('btn-next-to-kerusakan').addEventListener('click', function() {
         var idservice = document.querySelector('input[name="idservice"]').value;
 
         if (!idservice) {
-            alert('Harap isi dan simpan pelanggan terlebih dahulu.');
+            alert('Harap pilih pelanggan dan simpan pelanggan terlebih dahulu.');
         } else {
             var tabTrigger = new bootstrap.Tab(document.querySelector('#kerusakan-tab'));
             tabTrigger.show();
         }
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('btn-simpan').addEventListener('click', function(e) {
+            const idPela = document.getElementById('idpela').value;
+
+            if (!idPela || idPela.trim() === '') {
+                e.preventDefault(); // cegah form submit
+                alert('Silakan pilih pelanggan terlebih dahulu melalui tombol input data pelanggan!');
+                // Atau bisa pakai SweetAlert jika kamu pakai
+                return false;
+            }
+        });
+    });
+</script>
+
 
 <script>
     document.querySelectorAll(".toggle-password").forEach(function(el) {

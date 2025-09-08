@@ -9,7 +9,7 @@ class ModelTugas extends Model
     protected $table = 'tugas';
     protected $primaryKey = 'idtugas';
     protected $returnType = 'object';
-    protected $allowedFields = ['idtugas', 'nama_tugas', 'deskripsi', 'foto_tugas', 'status_template', 'start_date', 'end_date', 'akun_ID_AKUN', 'status', 'created_at', 'updated_at'];
+    protected $allowedFields = ['idtugas', 'nama_tugas', 'deskripsi', 'foto_tugas', 'status_template', 'start_date', 'end_date', 'akun_ID_AKUN', 'status', 'created_at', 'updated_at', 'template_penilaian_idtemplate_penilaian', 'jumlah', 'template_kpi_idtemplate_kpi',];
 
     public function getTugas()
     {

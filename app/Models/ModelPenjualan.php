@@ -19,6 +19,9 @@ class ModelPenjualan extends Model
         'harus_dibayar',
         'waktu_penjualan',
         'bayar',
+        'bayar_tunai',
+        'bayar_bank',
+        'bank_idbank',
         'id_pelanggan',
         'total_ppn',
         'created_on',
@@ -33,6 +36,20 @@ class ModelPenjualan extends Model
     {
         return $this->findAll();
     }
+
+    public function getByIdPelanggan($id_pelanggan)
+    {
+        return $this->select('penjualan.*, unit.NAMA_UNIT, pelanggan.nama as nama_pelanggan, akun.NAMA_AKUN as nama_sales')
+            ->join('unit', 'unit.idunit = penjualan.unit_idunit', 'left')
+            ->join('pelanggan', 'pelanggan.id_pelanggan = penjualan.id_pelanggan', 'left')
+            ->join('akun', 'akun.ID_AKUN = penjualan.sales_by', 'left')
+            ->where('penjualan.id_pelanggan', $id_pelanggan)
+            ->orderBy('penjualan.tanggal', 'DESC')
+            ->findAll();
+    }
+
+
+
 
 
 
@@ -53,26 +70,34 @@ class ModelPenjualan extends Model
     }
 
     public function getPendapatan($unit_id = null, $per_bulan = false)
-{
-    if ($per_bulan) {
-        $this->select("DATE_FORMAT(created_at, '%Y-%m') AS bulan, SUM(total_penjualan) AS total")
-             ->groupBy("bulan")
-             ->orderBy("bulan", "ASC");
+    {
+        if ($per_bulan) {
+            $this->select("DATE_FORMAT(created_at, '%Y-%m') AS bulan, SUM(total_penjualan) AS total")
+                ->groupBy("bulan")
+                ->orderBy("bulan", "ASC");
+
+            if ($unit_id) {
+                $this->where('unit_idunit', $unit_id);
+            }
+
+            return $this->findAll();
+        }
+
+        $this->selectSum('total_penjualan');
 
         if ($unit_id) {
             $this->where('unit_idunit', $unit_id);
         }
 
-        return $this->findAll();
+        return $this->first()->total_penjualan ?? 0;
     }
 
-    $this->selectSum('total_penjualan');
-
-    if ($unit_id) {
-        $this->where('unit_idunit', $unit_id);
+    public function getOmsetBySales($sales_by, $bulan)
+    {
+        return $this->selectSum('total_penjualan')
+            ->where('sales_by', $sales_by)
+            ->like('tanggal', $bulan) // YYYY-MM
+            ->first()
+            ->total_penjualan ?? 0;
     }
-
-    return $this->first()->total_penjualan ?? 0;
-}
-
 }

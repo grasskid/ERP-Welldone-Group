@@ -41,10 +41,12 @@ class ModelPenilaianKPI extends Model
 
     public function getAllKPI()
     {
-        return $this->select('penilaian_kpi.*, akun.NAMA_AKUN')
+        return $this->select('penilaian_kpi.*, akun.NAMA_AKUN, template_kpi.template_kpi AS nama_template')
             ->join('akun', 'akun.ID_AKUN = penilaian_kpi.pegawai_idpegawai', 'left')
+            ->join('template_kpi', 'template_kpi.template_kpi = penilaian_kpi.kpi_utama', 'left')
             ->findAll();
     }
+
 
     public function getById($idpenilaian_kpi)
     {
@@ -54,5 +56,23 @@ class ModelPenilaianKPI extends Model
     public function getByPegawai($pegawai_id)
     {
         return $this->where(['pegawai_idpegawai' => $pegawai_id])->findAll();
+    }
+
+    public function getJumlahByTemplateKPI($id_akun = null)
+    {
+        $builder = $this->db->table('tugas')
+            ->select('
+            template_kpi.idtemplate_kpi,
+            template_kpi.template_kpi,
+            tugas.jumlah
+        ')
+            ->join('template_kpi', 'template_kpi.idtemplate_kpi = tugas.template_kpi_idtemplate_kpi', 'left')
+            ->where('tugas.status', 4); // only status = 4
+
+        if ($id_akun) {
+            $builder->where('tugas.akun_ID_AKUN', $id_akun);
+        }
+
+        return $builder->get()->getResult();
     }
 }

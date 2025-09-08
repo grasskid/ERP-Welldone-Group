@@ -70,12 +70,16 @@
 
     <div class="mb-3">
         <label class="form-label">Garansi</label>
-        <select class="form-select" name="garansi">
+        <select class="form-select" name="garansi" id="garansiSelect" onchange="cekGaransi(this)">
             <option selected disabled>---Pilih Garansi---</option>
             <option value="0">Tidak Ada</option>
             <option value="7">1 Minggu</option>
             <option value="30">1 Bulan</option>
+            <option value="manual">Lainnya (isi manual)</option>
         </select>
+
+        <!-- Input manual akan muncul kalau pilih 'manual' -->
+        <input type="text" class="form-control mt-2 d-none" name="garansi_manual" id="garansiManual" placeholder="Masukkan garansi dalam hari (contoh: 45 )">
     </div>
 
     <div class="mb-3">
@@ -283,4 +287,17 @@
         var tabTrigger = new bootstrap.Tab(document.querySelector('#kerusakan-tab'));
         tabTrigger.show();
     });
+</script>
+
+<script>
+    function cekGaransi(select) {
+        const manualInput = document.getElementById('garansiManual');
+        if (select.value === 'manual') {
+            manualInput.classList.remove('d-none');
+            manualInput.setAttribute("required", "required");
+        } else {
+            manualInput.classList.add('d-none');
+            manualInput.removeAttribute("required");
+        }
+    }
 </script>

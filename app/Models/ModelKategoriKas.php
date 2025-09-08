@@ -25,5 +25,4 @@ class ModelKategoriKas extends Model
     {
         return $this->where(['idkategori_kas' => $idkategori_kas])->first();
     }
-
 }

@@ -76,6 +76,7 @@ $routes->post('delete_pelanggan', 'Pelanggan::delete_pelanggan', ['filter' => 'a
 $routes->get('export/pelanggan', 'Pelanggan::export_pelanggan', ['filter' => 'auth']);
 $routes->post('import/pelanggan', 'Pelanggan::import_pelanggan', ['filter' => 'auth']);
 $routes->post('simpan/pelanggan', 'Pelanggan::simpanPelanggan', ['filter' => 'auth']);
+$routes->get('riwayat_transaksi_pelanggan/(:num)', 'Pelanggan::riwayat_transaksi_pelanggan/$1', ['filter' => 'auth']);
 
 //kerusakan
 $routes->get('kerusakan', 'Kerusakan::index', ['filter' => 'auth']);
@@ -295,22 +296,34 @@ $routes->post('export_jurnal', 'Jurnal::export_jurnal', ['filter' => 'auth']);
 $routes->get('sisi_keuangan', 'SisiKeuangan::index', ['filter' => 'auth']);
 $routes->get('cetak/posisi_keuangan', 'SisiKeuangan::export_pdf', ['filter' => 'auth']);
 
+$routes->get('sisi_keuangan/export_excel', 'SisiKeuangan::export_excel', ['filter' => 'auth']);
 //kategorikas
 $routes->get('/kategori_kas', 'Kategori_Kas::index');
 $routes->post('insert_kategori', 'Kategori_Kas::insert_kategori', ['filter' => 'auth']);
 $routes->post('update_kategori', 'Kategori_Kas::update_kategori', ['filter' => 'auth']);
 $routes->post('delete_kategori', 'Kategori_Kas::delete_kategori', ['filter' => 'auth']);
 
-//kategorikas
+//kas keluar
 $routes->get('/kas_keluar', 'Kas_Keluar::index');
 $routes->post('insert_kas_keluar', 'Kas_Keluar::insert_kas_keluar', ['filter' => 'auth']);
 $routes->post('update_kas_keluar', 'Kas_Keluar::update_kas_keluar', ['filter' => 'auth']);
 $routes->post('delete_kas_keluar', 'Kas_Keluar::delete_kas_keluar', ['filter' => 'auth']);
+$routes->post('export_kas_keluar', 'Kas_Keluar::export', ['filter' => 'auth']);
+
+//kas masuk
+$routes->get('/kas_masuk', 'Kas_Masuk::index');
+$routes->post('insert_kas_masuk', 'Kas_Masuk::insert_kas_Masuk', ['filter' => 'auth']);
+$routes->post('update_kas_masuk', 'Kas_Masuk::update_kas_Masuk', ['filter' => 'auth']);
+$routes->post('delete_kas_masuk', 'Kas_Masuk::delete_kas_Masuk', ['filter' => 'auth']);
+$routes->post('export_kas_masuk', 'Kas_Masuk::export', ['filter' => 'auth']);
 
 $routes->get('asset', 'Asset::index', ['filter' => 'auth']);
 $routes->post('insert_asset', 'Asset::insert_asset', ['filter' => 'auth']);
 $routes->post('update_asset', 'Asset::update_asset', ['filter' => 'auth']);
 $routes->post('delete_asset', 'Asset::delete_asset', ['filter' => 'auth']);
+$routes->get('export/asset', 'Asset::export_asset', ['filter' => 'auth']);
+$routes->get('pulihkan_asset/(:num)', 'Asset::pulihkan_asset/$1', ['filter' => 'auth']);
+
 
 //template_penilaian
 $routes->get('template_penilaian', 'TemplatePenilaian::index', ['filter' => 'auth']);
@@ -320,9 +333,9 @@ $routes->post('delete_template_penilaian', 'TemplatePenilaian::delete', ['filter
 
 //template_kpi
 $routes->get('template_kpi', 'TemplateKPI::index', ['filter' => 'auth']);
-$routes->post('insert_template_kpi', 'TemplateKPI::insert', ['filter' => 'auth']);
-$routes->post('update_template_kpi', 'TemplateKPI::update', ['filter' => 'auth']);
-$routes->post('delete_template_kpi', 'TemplateKPI::delete', ['filter' => 'auth']);
+$routes->post('templatekpi/insert', 'TemplateKPI::insert', ['filter' => 'auth']);
+$routes->post('templatekpi/update', 'TemplateKPI::update', ['filter' => 'auth']);
+$routes->post('templatekpi/delete', 'TemplateKPI::delete', ['filter' => 'auth']);
 
 
 //penilaian
@@ -331,6 +344,9 @@ $routes->post('insert_penilaian', 'Penilaian::insert_penilaian', ['filter' => 'a
 $routes->post('update_penilaian', 'Penilaian::update_penilaian', ['filter' => 'auth']);
 $routes->post('delete_penilaian', 'Penilaian::delete_penilaian', ['filter' => 'auth']);
 $routes->post('export_penilaian', 'Penilaian::export_penilaian', ['filter' => 'auth']);
+$routes->get('penilaian/get_template_by_jabatan/(:num)', 'Penilaian::get_template_by_jabatan/$1');
+
+
 
 //penilaian kpi
 $routes->get('penilaian_kpi', 'PenilaianKPI::index', ['filter' => 'auth']);
@@ -338,3 +354,50 @@ $routes->post('insert_penilaian', 'PenilaianKPI::insert_penilaian', ['filter' =>
 $routes->post('update_penilaian', 'PenilaianKPI::update_penilaian', ['filter' => 'auth']);
 $routes->post('delete_penilaian', 'PenilaianKPI::delete_penilaian', ['filter' => 'auth']);
 $routes->post('export_penilaian', 'PenilaianKPI::export_penilaian', ['filter' => 'auth']);
+
+
+//riwayat penyusutan asset
+$routes->get('riwayat_penyusutan_asset', 'RiwayatPenyusutanAsset::index', ['filter' => 'auth']);
+
+//cronjob
+$routes->get('penyusutan_cronjob', 'Asset::prosesPenyusutan');
+
+//kategori asset
+$routes->get('kategori_asset', 'KategoriAsset::index', ['filter' => 'auth']);
+$routes->post('insert_kategori_asset', 'KategoriAsset::insert', ['filter' => 'auth']);
+$routes->post('update_kategori_asset', 'KategoriAsset::udpatekategori', ['filter' => 'auth']);
+$routes->post('delete_kategori_asset', 'KategoriAsset::deletekategori', ['filter' => 'auth']);
+
+//template Jurnal Asset
+$routes->get('template_jurnal_asset', 'TemplateJurnalAsset::index', ['filter => auth']);
+$routes->post('insert_template_jurnal_asset', 'TemplateJurnalAsset::insert', ['filter => auth']);
+$routes->post('delete_template_jurnal', 'TemplateJurnalAsset::delete', ['filter => auth']);
+
+//pembayaran hutang
+$routes->get('riwayat_pembayaran_hutang', 'PembayaranHutang::riwayat_pembayaran', ['filter => auth']);
+$routes->get('daftar_tagihan', 'PembayaranHutang::daftar_tagihan', ['filter => auth']);
+$routes->get('umur_hutang', 'PembayaranHutang::umur_hutang', ['filter => auth']);
+$routes->post('update_cicilan_hutang', 'PembayaranHutang::insert_cicilan', ['filter => auth']);
+$routes->post('export_riwayat_cicilan', 'PembayaranHutang::export_riwayat_cicilan', ['filter => auth']);
+$routes->post('export_umur_hutang', 'PembayaranHutang::export_umur_hutang', ['filter => auth']);
+$routes->post('export_daftar_hutang', 'PembayaranHutang::export_daftar_hutang', ['filter => auth']);
+
+
+//bundle
+$routes->get('bundle', 'Bundle::index',  ['filter => auth']);
+$routes->get('input_bundle', 'Bundle::input',  ['filter => auth']);
+$routes->post('insert_bundle', 'Bundle::insert',  ['filter => auth']);
+$routes->get('edit_bundle/(:num)', 'Bundle::edit/$1',  ['filter => auth']);
+$routes->post('update_bundle', 'Bundle::update',  ['filter => auth']);
+$routes->post('delete_bundle', 'Bundle::delete',  ['filter => auth']);
+
+//Piutang
+$routes->get('piutang', 'Piutang::index',  ['filter => auth']);
+$routes->post('input_piutang', 'Piutang::insert',  ['filter => auth']);
+$routes->get('riwayat_pembayaran_piutang', 'Piutang::riwayat_pembayaran_piutang',  ['filter => auth']);
+$routes->get('daftar_piutang', 'Piutang::daftar_tagihan',  ['filter => auth']);
+$routes->post('update_cicilan_piutang', 'Piutang::bayar_piutang',  ['filter => auth']);
+$routes->post('export_riwayat_ciputang', 'Piutang::export_riwayat_piutang',  ['filter => auth']);
+$routes->post('export_daftar_piutang', 'Piutang::export_daftar_piutang',  ['filter => auth']);
+$routes->get('umur_piutang', 'Piutang::umur_piutang',  ['filter => auth']);
+$routes->post('export_aging_piutang', 'Piutang::export_aging_piutang',  ['filter => auth']);

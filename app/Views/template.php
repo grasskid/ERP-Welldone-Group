@@ -379,7 +379,7 @@
                                                     href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
                                                     aria-expanded="false">
                                                     <div class="nav-icon-hover-bg rounded-circle ">
-                                                        <iconify-icon icon="solar:chat-dots-line-duotone"
+                                                        <iconify-icon icon="solar:bell-bing-line-duotone"
                                                             class="fs-7 text-dark"></iconify-icon>
                                                     </div>
                                                     <div class="pulse">
@@ -450,116 +450,15 @@
                                             <!-- ------------------------------- -->
                                             <li class="nav-item dropdown">
                                                 <a class="nav-link position-relative nav-icon-hover"
-                                                    href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
-                                                    aria-expanded="false">
+                                                    href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#Modal-Manualbook">
                                                     <div class="nav-icon-hover-bg rounded-circle ">
-                                                        <iconify-icon icon="solar:bell-bing-line-duotone"
+                                                        <iconify-icon icon="solar:book-2-line-duotone"
                                                             class="fs-7 text-dark"></iconify-icon>
                                                     </div>
-                                                    <div class="pulse">
-                                                        <span class="heartbit border-success"></span>
-                                                        <span class="point text-bg-success"></span>
-                                                    </div>
                                                 </a>
-                                                <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                                    aria-labelledby="drop2">
-                                                    <div class="d-flex align-items-center px-7 py-3">
-                                                        <h3 class="mb-0 fs-5">Notifications</h3>
-                                                        <span class="badge bg-warning ms-3">5 new</span>
-                                                    </div>
 
-                                                    <div class="message-body" data-simplebar>
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-2 d-flex align-items-center px-7 py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-2.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-75 d-inline-block v-middle ps-3">
-                                                                <h5 class="mb-0 fs-3 fw-normal">
-                                                                    Roman Joined the Team!
-                                                                </h5>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Congratulate
-                                                                    him</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-2 d-flex align-items-center px-7 py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-3.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-75 d-inline-block v-middle ps-3">
-                                                                <h5 class="mb-0 mt-1 fs-3 fw-normal">
-                                                                    New message received
-                                                                </h5>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Salma
-                                                                    sent you new
-                                                                    message</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-2 d-flex align-items-center px-7 py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-4.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-75 d-inline-block v-middle ps-3">
-                                                                <h5 class="mb-0 mt-1 fs-3 fw-normal">
-                                                                    New Payment received
-                                                                </h5>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Check
-                                                                    your
-                                                                    earnings</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-2 d-flex align-items-center px-7 py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-5.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-75 d-inline-block v-middle ps-3">
-                                                                <h5 class="mb-0 fs-3 fw-normal">
-                                                                    New message received
-                                                                </h5>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Salma
-                                                                    sent you new
-                                                                    message</span>
-                                                            </div>
-                                                        </a>
-
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-2 d-flex align-items-center px-7 py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?php echo base_url('template/') ?>assets/images/profile/user-6.jpg"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-75 d-inline-block v-middle ps-3">
-                                                                <h5 class="mb-0 fs-3 fw-normal">
-                                                                    Roman Joined the Team!
-                                                                </h5>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">Congratulate
-                                                                    him</span>
-                                                            </div>
-                                                        </a>
-                                                    </div>
-
-                                                    <div class="py-6 px-7 mb-1">
-                                                        <button class="btn btn-primary w-100">
-                                                            See All Notifications
-                                                        </button>
-                                                    </div>
-                                                </div>
                                             </li>
+
                                             <!-- ------------------------------- -->
                                             <!-- end notification Dropdown -->
                                             <!-- ------------------------------- -->
@@ -698,6 +597,7 @@
                                     </div>
                                 </div>
                             </nav>
+
                             <!-- ---------------------------------- -->
                             <!-- End Vertical Layout Header -->
                             <!-- ---------------------------------- -->
@@ -1768,7 +1668,36 @@
         <div class="dark-transparent sidebartoggler"></div>
     </div>
 
-
+    <div class="modal fade" id="Modal-Manualbook" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scroll-long-outer-modal" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-flex align-items-center">
+                    <h4 class="modal-title" id="myLargeModalLabel">
+                        Manual Book
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <?php
+                    $uri = \Config\Services::request()->getUri()->getPath();
+                    // remove index.php
+                    $uri = str_replace('/index.php/', '', $uri);
+                    $manualbook = db_connect()->table('menu')->where(array("url" => $uri))->get()->getFirstRow();
+                    if (!empty($manualbook) && $manualbook->manualbook != null): ?>
+                        <h4><?= $manualbook->nama_menu ?></h4>
+                        <embed type="application/pdf" src="<?= $manualbook->manualbook ?>" width="100%" height="800"></embed>
+                    <?php else: ?>
+                        <h4>Manual Book Tidak Tersedia</h4>
+                    <?php endif; ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-danger-subtle text-danger  waves-effect text-start" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 

@@ -21,12 +21,12 @@
         <div class="d-flex gap-2">
 
         </div>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-penilaian-modal"
+        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-penilaian-modal"
             style="display: inline-flex; align-items: center; height: 50px;">
             <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
                 style="margin-right: 8px;"></iconify-icon>
             Input
-        </button>
+        </button> -->
 
     </div>
 
@@ -48,18 +48,18 @@
                     <th>Keterangan</th>
                     <th>Jabatan</th>
                     <th>Aspek KPI</th>
-                    <th>Action</th>
+                    <!-- <th>Action</th> -->
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($penilaian)): ?>
-                    <?php foreach ($penilaian as $row): ?>
-                        <tr>
-                            <td><?= esc($row->aspek_penilaian) ?></td>
-                            <td><?= esc($row->keterangan_penilaian) ?></td>
-                            <td><?= esc($row->jabatan) ?></td>
-                            <td><?= esc($row->aspek_kpi) ?></td>
-                            <td>
+                <?php foreach ($penilaian as $row): ?>
+                <tr>
+                    <td><?= esc($row->aspek_penilaian) ?></td>
+                    <td><?= esc($row->keterangan_penilaian) ?></td>
+                    <td><?= esc($row->jabatan) ?></td>
+                    <td><?= esc($row->aspek_kpi) ?></td>
+                    <!-- <td>
                                 <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
                                     data-bs-target="#edit-penilaian-modal"
                                     data-idtemplate_penilaian="<?= esc($row->idtemplate_penilaian) ?>"
@@ -77,13 +77,13 @@
                                     data-bs-target="#delete-penilaian-modal" data-idtemplate_penilaian="<?= esc($row->idtemplate_penilaian) ?>">
                                     <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24"></iconify-icon>
                                 </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                            </td> -->
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="8" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="8" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -92,7 +92,8 @@
 </div>
 
 <!-- Modal Input penilaian -->
-<div class="modal fade" id="input-penilaian-modal" tabindex="-1" aria-labelledby="inputPenilaianModalLabel" aria-hidden="true">
+<div class="modal fade" id="input-penilaian-modal" tabindex="-1" aria-labelledby="inputPenilaianModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="<?= base_url('insert_template_penilaian') ?>" method="post">
@@ -117,9 +118,9 @@
                         <select class="form-select" name="jabatan_idjabatan" id="input-jabatan_idjabatan" required>
                             <option value="" disabled>-- Pilih Jabatan --</option>
                             <?php foreach ($jabatan as $row): ?>
-                                <option value="<?= esc($row->ID_JABATAN) ?>">
-                                    <?= esc($row->NAMA_JABATAN) ?>
-                                </option>
+                            <option value="<?= esc($row->ID_JABATAN) ?>">
+                                <?= esc($row->NAMA_JABATAN) ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
 
@@ -129,11 +130,10 @@
                     <select class="form-select" name="aspek_kpi" id="aspek_kpi" required>
                         <option value="" disabled selected>-- Pilih Aspek KPI --</option>
                         <?php foreach ($template as $row): ?>
-                            <option
-                                value="<?= esc($row->idtemplate_kpi) ?>"
-                                data-jabatan-id="<?= esc($row->jabatan_idjabatan) ?>">
-                                <?= esc($row->template_kpi) ?>
-                            </option>
+                        <option value="<?= esc($row->idtemplate_kpi) ?>"
+                            data-jabatan-id="<?= esc($row->jabatan_idjabatan) ?>">
+                            <?= esc($row->template_kpi) ?>
+                        </option>
                         <?php endforeach; ?>
                     </select>
 
@@ -141,7 +141,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
@@ -152,7 +153,8 @@
 
 
 <!-- Modal Edit penilaian -->
-<div class="modal fade" id="edit-penilaian-modal" tabindex="-1" aria-labelledby="editPenilaianModalLabel" aria-hidden="true">
+<div class="modal fade" id="edit-penilaian-modal" tabindex="-1" aria-labelledby="editPenilaianModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="<?= base_url('update_template_penilaian') ?>" method="post">
@@ -179,9 +181,9 @@
                         <select class=" form-control" name="jabatan_idjabatan" id="edit-jabatan_idjabatan" required>
                             <option value="" disabled>-- Pilih Jabatan --</option>
                             <?php foreach ($jabatan as $row): ?>
-                                <option value="<?= esc($row->ID_JABATAN) ?>">
-                                    <?= esc($row->NAMA_JABATAN) ?>
-                                </option>
+                            <option value="<?= esc($row->ID_JABATAN) ?>">
+                                <?= esc($row->NAMA_JABATAN) ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -190,11 +192,10 @@
                         <select class="form-select" name="aspek_kpi" id="edit-aspek_kpi" required>
                             <option value="" disabled selected>-- Pilih Aspek KPI --</option>
                             <?php foreach ($template as $row): ?>
-                                <option
-                                    value="<?= esc($row->idtemplate_kpi) ?>"
-                                    data-jabatan-id="<?= esc($row->jabatan_idjabatan) ?>">
-                                    <?= esc($row->template_kpi) ?>
-                                </option>
+                            <option value="<?= esc($row->idtemplate_kpi) ?>"
+                                data-jabatan-id="<?= esc($row->jabatan_idjabatan) ?>">
+                                <?= esc($row->template_kpi) ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
 
@@ -205,7 +206,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
@@ -232,7 +234,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Delete</button>
                 </div>
             </form>
@@ -268,98 +271,99 @@
 <!-- JavaScript for Edit/Delete Modal -->
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const editJabatanSelect = document.getElementById('edit-jabatan_idjabatan');
-        const editAspekKpiSelect = document.getElementById('edit-aspek_kpi');
+document.addEventListener('DOMContentLoaded', function() {
+    const editJabatanSelect = document.getElementById('edit-jabatan_idjabatan');
+    const editAspekKpiSelect = document.getElementById('edit-aspek_kpi');
 
 
-        const originalAspekKpiOptions = Array.from(editAspekKpiSelect.querySelectorAll('option'))
-            .filter(opt => opt.value);
+    const originalAspekKpiOptions = Array.from(editAspekKpiSelect.querySelectorAll('option'))
+        .filter(opt => opt.value);
 
-        window.filterEditAspekKpi = function(jabatanId, selectedKpiId = null) {
+    window.filterEditAspekKpi = function(jabatanId, selectedKpiId = null) {
 
-            editAspekKpiSelect.innerHTML = '<option value="" disabled>-- Pilih Aspek KPI --</option>';
-
-
-            originalAspekKpiOptions.forEach(opt => {
-                if (opt.dataset.jabatanId === jabatanId) {
-                    editAspekKpiSelect.appendChild(opt.cloneNode(true));
-                }
-            });
+        editAspekKpiSelect.innerHTML = '<option value="" disabled>-- Pilih Aspek KPI --</option>';
 
 
-            if (selectedKpiId) {
-                editAspekKpiSelect.value = selectedKpiId;
+        originalAspekKpiOptions.forEach(opt => {
+            if (opt.dataset.jabatanId === jabatanId) {
+                editAspekKpiSelect.appendChild(opt.cloneNode(true));
             }
+        });
 
 
-            if ($(editAspekKpiSelect).hasClass('select2')) {
-                $(editAspekKpiSelect).trigger('change');
-            }
+        if (selectedKpiId) {
+            editAspekKpiSelect.value = selectedKpiId;
         }
 
 
-        editJabatanSelect.addEventListener('change', function() {
-            filterEditAspekKpi(this.value);
-        });
+        if ($(editAspekKpiSelect).hasClass('select2')) {
+            $(editAspekKpiSelect).trigger('change');
+        }
+    }
 
 
-        document.querySelector('#zero_config').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const button = e.target.closest('.edit-button');
-
-                const idPenilaian = button.getAttribute('data-idtemplate_penilaian');
-                const aspek = button.getAttribute('data-aspek_penilaian');
-                const keterangan = button.getAttribute('data-keterangan_penilaian');
-                const jabatanId = button.getAttribute('data-jabatan_idjabatan');
-                const aspekKpiId = button.getAttribute('data-idtemplate_kpi');
-
-                document.getElementById('edit-idtemplate_penilaian').value = idPenilaian;
-                document.getElementById('edit-aspek').value = aspek;
-                document.getElementById('edit-keterangan').value = keterangan;
-
-
-                editJabatanSelect.value = jabatanId;
-                $('#edit-jabatan_idjabatan').val(jabatanId).trigger('change');
-
-
-                filterEditAspekKpi(jabatanId, aspekKpiId);
-            }
-
-            if (e.target.closest('.delete-button')) {
-                const button = e.target.closest('.delete-button');
-                document.getElementById('delete-idtemplate_penilaian').value = button.getAttribute('data-idtemplate_penilaian');
-            }
-        });
+    editJabatanSelect.addEventListener('change', function() {
+        filterEditAspekKpi(this.value);
     });
+
+
+    document.querySelector('#zero_config').addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const button = e.target.closest('.edit-button');
+
+            const idPenilaian = button.getAttribute('data-idtemplate_penilaian');
+            const aspek = button.getAttribute('data-aspek_penilaian');
+            const keterangan = button.getAttribute('data-keterangan_penilaian');
+            const jabatanId = button.getAttribute('data-jabatan_idjabatan');
+            const aspekKpiId = button.getAttribute('data-idtemplate_kpi');
+
+            document.getElementById('edit-idtemplate_penilaian').value = idPenilaian;
+            document.getElementById('edit-aspek').value = aspek;
+            document.getElementById('edit-keterangan').value = keterangan;
+
+
+            editJabatanSelect.value = jabatanId;
+            $('#edit-jabatan_idjabatan').val(jabatanId).trigger('change');
+
+
+            filterEditAspekKpi(jabatanId, aspekKpiId);
+        }
+
+        if (e.target.closest('.delete-button')) {
+            const button = e.target.closest('.delete-button');
+            document.getElementById('delete-idtemplate_penilaian').value = button.getAttribute(
+                'data-idtemplate_penilaian');
+        }
+    });
+});
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const jabatanSelect = document.getElementById('input-jabatan_idjabatan');
-        const aspekKpiSelect = document.getElementById('aspek_kpi');
-        const allAspekKpiOptions = Array.from(aspekKpiSelect.options).filter(opt => opt.value); // skip default
+document.addEventListener('DOMContentLoaded', function() {
+    const jabatanSelect = document.getElementById('input-jabatan_idjabatan');
+    const aspekKpiSelect = document.getElementById('aspek_kpi');
+    const allAspekKpiOptions = Array.from(aspekKpiSelect.options).filter(opt => opt.value); // skip default
 
-        function filterAspekKpi(jabatanId) {
+    function filterAspekKpi(jabatanId) {
 
-            aspekKpiSelect.innerHTML = '<option value="" disabled selected>-- Pilih Aspek KPI --</option>';
+        aspekKpiSelect.innerHTML = '<option value="" disabled selected>-- Pilih Aspek KPI --</option>';
 
 
-            allAspekKpiOptions.forEach(opt => {
-                if (opt.dataset.jabatanId === jabatanId) {
-                    aspekKpiSelect.appendChild(opt);
-                }
-            });
-
-            t2
-            if ($(aspekKpiSelect).hasClass("select2")) {
-                $(aspekKpiSelect).val(null).trigger('change');
+        allAspekKpiOptions.forEach(opt => {
+            if (opt.dataset.jabatanId === jabatanId) {
+                aspekKpiSelect.appendChild(opt);
             }
-        }
-
-        jabatanSelect.addEventListener('change', function() {
-            const selectedJabatanId = this.value;
-            filterAspekKpi(selectedJabatanId);
         });
+
+        t2
+        if ($(aspekKpiSelect).hasClass("select2")) {
+            $(aspekKpiSelect).val(null).trigger('change');
+        }
+    }
+
+    jabatanSelect.addEventListener('change', function() {
+        const selectedJabatanId = this.value;
+        filterAspekKpi(selectedJabatanId);
     });
+});
 </script>

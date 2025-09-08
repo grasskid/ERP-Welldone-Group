@@ -40,4 +40,39 @@ class ModelPenilaian extends Model
             ->where('tanggal_penilaian <=', $tanggalAkhir)
             ->findAll();
     }
+    
+public function getSkorByPegawaiAndJabatan($pegawai_idpegawai, $jabatan_idjabatan)
+{
+    $result = $this->select('aspek, skor')
+        ->where('pegawai_idpegawai', $pegawai_idpegawai)
+        ->findAll();
+
+    $skorMap = [];
+
+    foreach ($result as $row) {
+        // Use aspek as key, value is skor
+        $skorMap[$row->aspek] = $row->skor;
+    }
+
+    return $skorMap;
+}
+
+public function getJumlahByTemplatePenilaian($id_akun = null)
+{
+    $builder = $this->db->table('tugas')
+        ->select('
+            template_penilaian.idtemplate_penilaian,
+            template_penilaian.aspek_penilaian,
+            tugas.jumlah
+        ')
+        ->join('template_penilaian', 'template_penilaian.idtemplate_penilaian = tugas.template_penilaian_idtemplate_penilaian', 'left')
+        ->where('tugas.status', 4); // only status = 4
+
+    if ($id_akun) {
+        $builder->where('tugas.akun_ID_AKUN', $id_akun);
+    }
+
+    return $builder->get()->getResult();
+}
+
 }

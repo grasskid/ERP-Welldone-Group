@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use App\Models\ModelUnit;
 
 
 
@@ -27,6 +28,7 @@ class Riwayat_Penjualan extends BaseController
     protected $PenjualanModel;
     protected $AuthModel;
     protected $PelangganModel;
+    protected $UnitModel;
 
     public function __construct()
     {
@@ -36,6 +38,7 @@ class Riwayat_Penjualan extends BaseController
         $this->PenjualanModel = new ModelPenjualan();
         $this->AuthModel = new ModelAuth();
         $this->PelangganModel = new ModelPelanggan();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -177,6 +180,7 @@ class Riwayat_Penjualan extends BaseController
             'total' => $total_penjualan,
             'bayar' => $bayar,
             'kembalian' => $kembalian_cetak,
+            'dataunit' => $this->UnitModel->getById(session('ID_UNIT'))
 
         );
 

@@ -56,38 +56,40 @@
                     <th>NIK</th>
                     <th>Nomer HP</th>
                     <th>Jenis Pelanggan</th>
+                    <th>Riwayat Transaksi</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($pelanggan)): ?>
-                <?php foreach ($pelanggan as $row): ?>
-                <tr>
-                    <td><?= esc($row->nama) ?></td>
-                    <td><?= esc($row->alamat) ?></td>
-                    <td><?= esc($row->nik) ?></td>
-                    <td><?= esc($row->no_hp) ?></td>
-                    <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
-                    <td>
-                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                            data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
-                            data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
-                            data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
-                            data-kategori="<?= esc($row->kategori) ?>">
-                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                        </button>
-                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                            data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
-                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                            </iconify-icon>
-                        </button>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($pelanggan as $row): ?>
+                        <tr>
+                            <td><?= esc($row->nama) ?></td>
+                            <td><?= esc($row->alamat) ?></td>
+                            <td><?= esc($row->nik) ?></td>
+                            <td><?= esc($row->no_hp) ?></td>
+                            <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
+                            <td><a href="<?php echo base_url('riwayat_transaksi_pelanggan/' . $row->id_pelanggan) ?>"><button class="btn btn-success">Check</button></a></td>
+                            <td>
+                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                                    data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
+                                    data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
+                                    data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
+                                    data-kategori="<?= esc($row->kategori) ?>">
+                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                                </button>
+                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                                    data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
+                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                                    </iconify-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="6" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -222,23 +224,23 @@
 
 <!-- JavaScript for Edit/Delete Modal -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#zero_config').addEventListener('click', function(e) {
-        if (e.target.closest('.edit-button')) {
-            const button = e.target.closest('.edit-button');
-            document.getElementById('edit-id_pelanggan').value = button.getAttribute(
-                'data-id_pelanggan');
-            document.getElementById('edit-nama').value = button.getAttribute('data-nama');
-            document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
-            document.getElementById('edit-nik').value = button.getAttribute('data-nik');
-            document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
-            document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
-        }
-        if (e.target.closest('.delete-button')) {
-            const button = e.target.closest('.delete-button');
-            document.getElementById('delete-id_pelanggan').value = button.getAttribute(
-                'data-id_pelanggan');
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#zero_config').addEventListener('click', function(e) {
+            if (e.target.closest('.edit-button')) {
+                const button = e.target.closest('.edit-button');
+                document.getElementById('edit-id_pelanggan').value = button.getAttribute(
+                    'data-id_pelanggan');
+                document.getElementById('edit-nama').value = button.getAttribute('data-nama');
+                document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
+                document.getElementById('edit-nik').value = button.getAttribute('data-nik');
+                document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
+                document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
+            }
+            if (e.target.closest('.delete-button')) {
+                const button = e.target.closest('.delete-button');
+                document.getElementById('delete-id_pelanggan').value = button.getAttribute(
+                    'data-id_pelanggan');
+            }
+        });
     });
-});
 </script>

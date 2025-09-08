@@ -40,6 +40,12 @@ class Core extends Model
         return db_connect()->table('gedung')->where(array("ID_GEDUNG" => session()->get('ID_GEDUNG')))->get()->getFirstRow();
     }
 
+    function getManualBook()
+    {
+        $uri = $this->request->getUri()->getPath();
+        return db_connect()->table('menu')->where(array("url" => $uri))->get()->getFirstRow();
+    }
+
     // function biaya_admin($id)
     // {
     //     $this->db->where("idbiaya_admin", $id);

@@ -21,6 +21,11 @@ class ModelBarang extends Model
             ->findAll();
     }
 
+    public function semuaBarang()
+    {
+        return $this->where('deleted', 0)->findAll();
+    }
+
     public function getAllBarang()
     {
         $id_unit = session('ID_UNIT');

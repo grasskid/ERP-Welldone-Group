@@ -8,6 +8,8 @@
 </head>
 
 
+
+
 <body>
     <div class="card shadow-none position-relative overflow-hidden mb-4">
         <div class="card-body d-flex align-items-center justify-content-between p-4">
@@ -32,10 +34,10 @@
         </div>
 
         <?php
-// Check if the GET values exist, otherwise use default values
-$tanggal_awal = $_GET['tanggal_awal'] ?? date('Y-m-d', strtotime('-1 month'));
-$tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
-?>
+        // Check if the GET values exist, otherwise use default values
+        $tanggal_awal = $_GET['tanggal_awal'] ?? date('Y-m-d', strtotime('-1 month'));
+        $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
+        ?>
 
         <form method="get" class="mb-4" style="padding-left: 20px;">
             <div class="row">
@@ -110,9 +112,10 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                             href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
                                                             data-nama_tugas="<?= esc($t->nama_tugas) ?>"
                                                             data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-jumlah="<?= esc($t->jumlah) ?>"
                                                             data-file="<?= esc($t->foto_tugas) ?>"
-                                                            data-status="<?= $t->status ?>"
-                                                            data-status_template="<?= $t->status_template ?>">
+                                                            data-penilaian="<?= $t->template_penilaian_idtemplate_penilaian ?>"
+                                                            data-status="<?= $t->status ?>">
                                                             <i class="ti ti-pencil fs-5"></i>Edit
                                                         </a>
 
@@ -156,6 +159,15 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                             class="badge rounded-pill text-bg-success fs-1">Todo</span>
                                                     </div>
                                                 </div>
+                                                <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                <span class="hstack gap-2 fs-2"
+                                                    style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                    keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                </span>
+                                                <?php endif; ?>
+
                                             </div>
                                         </div>
                                     </div>
@@ -215,7 +227,9 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                             href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
                                                             data-nama_tugas="<?= esc($t->nama_tugas) ?>"
                                                             data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-jumlah="<?= esc($t->jumlah) ?>"
                                                             data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-penilaian="<?= $t->template_penilaian_idtemplate_penilaian ?>"
                                                             data-status="<?= $t->status ?>"
                                                             data-template="<?= $t->status_template ?>">
                                                             <i class="ti ti-pencil fs-5"></i>Edit
@@ -263,7 +277,16 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                         <span class="badge rounded-pill text-bg-primary fs-1">In
                                                             Progress</span>
                                                     </div>
+
                                                 </div>
+                                                <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                <span class="hstack gap-2 fs-2"
+                                                    style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                    keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                </span>
+                                                <?php endif; ?>
                                             </div>
 
                                         </div>
@@ -324,7 +347,9 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                             href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
                                                             data-nama_tugas="<?= esc($t->nama_tugas) ?>"
                                                             data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-jumlah="<?= esc($t->jumlah) ?>"
                                                             data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-penilaian="<?= $t->template_penilaian_idtemplate_penilaian ?>"
                                                             data-status="<?= $t->status ?>"
                                                             data-template="<?= $t->status_template ?>">
                                                             <i class="ti ti-pencil fs-5"></i>Edit
@@ -373,7 +398,16 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                             class="badge rounded-pill text-bg-warning fs-1">Pending</span>
                                                     </div>
                                                 </div>
+
                                             </div>
+                                            <?php
+                                                    date_default_timezone_set('Asia/Jakarta');
+                                                    if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                            <span class="hstack gap-2 fs-2"
+                                                style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                            </span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <?php endif; ?>
@@ -431,11 +465,16 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                                             href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
                                                             data-nama_tugas="<?= esc($t->nama_tugas) ?>"
                                                             data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-jumlah="<?= esc($t->jumlah) ?>"
                                                             data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-penilaian="<?= $t->template_penilaian_idtemplate_penilaian ?>"
+                                                            data-kpi="<?= $t->template_kpi_idtemplate_kpi ?>"
                                                             data-status="<?= $t->status ?>"
-                                                            data-template="<?= $t->status_template ?>">
+                                                            data-template="<?= $t->status_template ?>"
+                                                            **data-bs-toggle="modal" data-bs-target="#editTaskModal" **>
                                                             <i class="ti ti-pencil fs-5"></i>Edit
                                                         </a>
+
 
 
                                                         <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
@@ -515,6 +554,10 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                 required></textarea>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="jumlah" class="form-label">Jumlah</label>
+                            <input type="text" class="form-control" id="jumlah" name="jumlah" required>
+                        </div>
 
                         <div class="mb-3">
                             <label for="foto_tugas" class="form-label">Upload File (Foto Tugas)</label>
@@ -538,6 +581,12 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                                 <option value="4">Done</option>
                             </select>
                         </div>
+
+                        <!-- <div class="mb-3">
+                            <label for="deadline" class="form-label">Deadline</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline" required>
+                        </div> -->
+
                     </div>
 
                     <div class="modal-footer">
@@ -565,6 +614,7 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
 
                         <input type="hidden" id="edit-idtugas" name="idtugas">
                         <input type="hidden" id="edit-status_template" name="status_template">
+                        <input type="hidden" id="edit-penilaian" name="template_penilaian_idtemplate_penilaian">
 
                         <div class="mb-3">
                             <label for="edit-nama_tugas" class="form-label">Nama Tugas</label>
@@ -575,6 +625,11 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
                             <label for="edit-deskripsi" class="form-label">Deskripsi</label>
                             <textarea class="form-control" id="edit-deskripsi" name="deskripsi_tugas" rows="3"
                                 required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="jumlah" class="form-label">Jumlah</label>
+                            <input type="text" class="form-control" id="jumlah" name="jumlah" required>
                         </div>
 
                         <div class="mb-3">
@@ -720,6 +775,8 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
             const deskripsiInput = document.getElementById('edit-deskripsi');
             const fileInput = document.getElementById('edit-file');
             const statusSelect = document.getElementById('edit-status');
+            const penilaianInput = document.getElementById('edit-penilaian');
+            const kpiInput = document.getElementById('edit-kpi');
 
             // Preview
             document.getElementById('file-lama').textContent = fileName || 'Tidak ada file';
@@ -733,6 +790,8 @@ $tanggal_akhir = $_GET['tanggal_akhir'] ?? date('Y-m-d');
             deskripsiInput.value = button.getAttribute('data-deskripsi');
             statusSelect.value = button.getAttribute('data-status');
             document.getElementById('edit-status_template').value = statusTemplate;
+            penilaianInput.value = button.getAttribute('data-penilaian');
+            kpiInput.value = button.getAttribute('data-kpi');
 
             // Apply readonly or disabled
             if (statusTemplate === 1) {

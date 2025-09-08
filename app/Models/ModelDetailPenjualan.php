@@ -103,4 +103,21 @@ class ModelDetailPenjualan extends Model
             ->get()
             ->getResult();
     }
+
+    public function countByCategory($categoryId = 2, $startDate = null, $endDate = null)
+{
+    $builder = $this->db->table('detail_penjualan')
+        ->select('COUNT(detail_penjualan.iddetail_penjualan) as total_category')
+        ->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan')
+        ->join('barang', 'barang.idbarang = detail_penjualan.barang_idbarang')
+        ->where('barang.idkategori', $categoryId);
+
+    if (!empty($startDate) && !empty($endDate)) {
+        $builder->where('DATE(penjualan.tanggal) >=', $startDate)
+                ->where('DATE(penjualan.tanggal) <=', $endDate);
+    }
+
+    return $builder->get()->getRow();
+}
+
 }

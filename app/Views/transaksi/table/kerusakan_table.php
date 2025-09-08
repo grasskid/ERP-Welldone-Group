@@ -51,11 +51,29 @@
         <div>
             <input hidden type="text" name="idservice_k" value="<?php echo @$idservice ?>">
             <button type="button" class="btn btn-light" id="btn-previous-to-pelanggan">Sebelumnya</button>
-            <button type="submit" class="btn btn-success">Selanjutnya</button>
+            <button type="submit" id="btnnextnya" class="btn btn-success">Selanjutnya</button>
         </div>
 
     </div>
+
+    <input type="text" hidden id="idpelakan" value="<?php echo @$idservice ?>">
 </form>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('btnnextnya').addEventListener('click', function(e) {
+            const idPela = document.getElementById('idpelakan').value;
+
+            if (!idPela || idPela.trim() === '') {
+                e.preventDefault(); // cegah form submit
+                alert('Silakan pilih pelanggan terlebih dahulu melalui tombol input data pelanggan pada tab pelanggan kemudian tekan tombol simpan!');
+                // Atau bisa pakai SweetAlert jika kamu pakai
+                return false;
+            }
+        });
+    });
+</script>
 
 
 

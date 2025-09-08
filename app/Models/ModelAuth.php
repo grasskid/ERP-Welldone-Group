@@ -110,6 +110,10 @@ class ModelAuth extends Model
 
     public function getdataakun()
     {
-        return $this->findAll();
+        return $this->db->table($this->table)
+            ->select('akun.*, jabatan.NAMA_JABATAN')
+            ->join('jabatan', 'jabatan.ID_JABATAN = akun.ID_JABATAN', 'left')
+            ->get()
+            ->getResult();
     }
 }

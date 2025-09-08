@@ -70,12 +70,16 @@
 
     <div class="mb-3">
         <label class="form-label">Garansi</label>
-        <select class="form-select" name="garansi">
+        <select class="form-select" name="garansi" id="garansiSelect" onchange="cekGaransi(this)">
             <option selected disabled>---Pilih Garansi---</option>
             <option value="0">Tidak Ada</option>
             <option value="7">1 Minggu</option>
             <option value="30">1 Bulan</option>
+            <option value="manual">Lainnya (isi manual)</option>
         </select>
+
+        <!-- Input manual akan muncul kalau pilih 'manual' -->
+        <input type="text" class="form-control mt-2 d-none" name="garansi_manual" id="garansiManual" placeholder="Masukkan garansi dalam hari (contoh: 45 )">
     </div>
 
     <div class="mb-3">
@@ -92,10 +96,28 @@
         <div>
             <input hidden type="text" name="idservice_s" value="<?php echo @$idservice ?>">
             <button type="button" class="btn btn-light" id="btn-previous-to-kerusakan">Sebelumnya</button>
-            <button type="submit" class="btn btn-success">Selanjutnya</button>
+            <button type="submit" id="selanjutnyabtnnya" class="btn btn-success">Selanjutnya</button>
         </div>
     </div>
+    <input type="text" hidden value="<?php echo @$idservice ?>" name="" id="idpelabel">
 </form>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('selanjutnyabtnnya').addEventListener('click', function(e) {
+            const idPela = document.getElementById('idpelabel').value;
+
+            if (!idPela || idPela.trim() === '') {
+                e.preventDefault(); // cegah form submit
+                alert('Silakan pilih pelanggan terlebih dahulu melalui tombol input data pelanggan pada tab pelanggan kemudian tekan tombol simpan!');
+                // Atau bisa pakai SweetAlert jika kamu pakai
+                return false;
+            }
+        });
+    });
+</script>
+
 
 <script>
     $(document).ready(function() {
@@ -283,4 +305,17 @@
         var tabTrigger = new bootstrap.Tab(document.querySelector('#kerusakan-tab'));
         tabTrigger.show();
     });
+</script>
+
+<script>
+    function cekGaransi(select) {
+        const manualInput = document.getElementById('garansiManual');
+        if (select.value === 'manual') {
+            manualInput.classList.remove('d-none');
+            manualInput.setAttribute("required", "required");
+        } else {
+            manualInput.classList.add('d-none');
+            manualInput.removeAttribute("required");
+        }
+    }
 </script>

@@ -16,4 +16,9 @@ class ModelBank extends Model
 
         return $this->findAll();
     }
+
+    public function getById($idbank)
+    {
+        return $this->where(['idbank' => $idbank])->first();
+    }
 }

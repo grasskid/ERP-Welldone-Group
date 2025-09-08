@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Laporan Posisi Keuangan</title>
+    <title>Laporan Keuangan</title>
     <style>
         body {
             font-family: sans-serif;
@@ -12,88 +12,67 @@
         table {
             border-collapse: collapse;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         th,
         td {
             border: 1px solid #000;
-            padding: 6px 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #eee;
+            padding: 6px;
         }
 
         .text-end {
             text-align: right;
         }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .text-danger {
-            color: red;
-        }
-
-        .fw-semibold {
+        .fw-bold {
             font-weight: bold;
+        }
+
+        .saldo-zero {
+            color: #aaa;
         }
     </style>
 </head>
 
 <body>
-
-    <h2 style="text-align:center;">Laporan Posisi Keuangan</h2>
-
-    <?php if (!empty($tanggal_awal) && !empty($tanggal_akhir)): ?>
-        <p><strong>Periode:</strong> <?= date('d-m-Y', strtotime($tanggal_awal)) ?> s/d <?= date('d-m-Y', strtotime($tanggal_akhir)) ?></p>
-    <?php endif; ?>
+    <h3>Laporan Keuangan</h3>
+    <p>Tanggal: <?= date('d-m-Y', strtotime($tanggal_awal)) ?> s/d <?= date('d-m-Y', strtotime($tanggal_akhir)) ?></p>
 
     <table>
         <thead>
             <tr>
-                <th>Kode Parent</th>
-                <th>Nama Akun Parent</th>
-                <th class="text-end">Debit - Kredit</th>
+                <th style="background-color: #aaa;">Kode Akun</th>
+                <th style="background-color: #aaa;">Nama Akun</th>
+                <th style="background-color: #aaa;">Saldo</th>
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($data_parent)): ?>
-                <?php foreach ($data_parent as $row):
-                    $saldo = $row['total_debet'] - $row['total_kredit'];
-                    $saldoDisplay = number_format(abs($saldo), 0, ',', '.');
-                    $saldoClass = $saldo < 0 ? 'text-danger' : '';
-                ?>
-                    <tr>
-                        <td><?= esc($row['parent_no_akun']) ?></td>
-                        <td><?= esc($row['parent_nama_akun']) ?></td>
-                        <td class="text-end fw-semibold <?= $saldoClass ?>"><?= $saldoDisplay ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="3" class="text-center">Tidak ada data keuangan.</td>
+            <?php if (!empty($data_grand_parent)): ?>
+                <!-- Grandparent -->
+                <tr style="background-color: cadetblue">
+                    <td><?= esc($data_grand_parent->no_akun) ?></td>
+                    <td><?= esc($data_grand_parent->nama_akun) ?></td>
+                    <td><?= number_format(abs($data_grand_parent->total_debet - $data_grand_parent->total_kredit), 0, ',', '.') ?></td>
                 </tr>
             <?php endif; ?>
-        </tbody>
 
-        <?php if (!empty($data_grand_parent)):
-            $grandSaldo = $data_grand_parent->total_debet - $data_grand_parent->total_kredit;
-            $grandSaldoDisplay = number_format(abs($grandSaldo), 0, ',', '.');
-            $grandSaldoClass = $grandSaldo < 0 ? 'text-danger' : '';
-        ?>
-            <tfoot>
-                <tr>
-                    <td colspan="2" class="text-end"><strong>Total Grandparent (<?= esc($data_grand_parent->nama_akun) ?>)</strong></td>
-                    <td class="text-end fw-semibold <?= $grandSaldoClass ?>"><?= $grandSaldoDisplay ?></td>
+            <?php foreach ($data_parent as $row): ?>
+                <tr style="background-color: antiquewhite">
+                    <td><?= esc($row['parent_no_akun']) ?></td>
+                    <td><?= esc($row['parent_nama_akun']) ?></td>
+                    <td><?= number_format(abs($row['total_debet'] - $row['total_kredit']), 0, ',', '.') ?></td>
                 </tr>
-            </tfoot>
-        <?php endif; ?>
+                <?php foreach ($row['children'] as $child): ?>
+                    <tr>
+                        <td><?= esc($child->no_akun) ?></td>
+                        <td>↳ <?= esc($child->nama_akun) ?></td>
+                        <td><?= number_format(abs($child->total_debet - $child->total_kredit), 0, ',', '.') ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        </tbody>
     </table>
-
 </body>
 
 </html>

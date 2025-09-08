@@ -93,8 +93,9 @@
 
     <div class="invoice">
         <div class="invoice-header">
-            <h2>Urban Store</h2>
-            <p>Jl. Jalan No.123, Jember<br>Telp: (021) 12345678</p>
+            <h2><?php echo @$dataunit->NAMA_UNIT ?></h2>
+            <p><?php echo @$dataunit->JALAN_UNIT . ', ' . @$dataunit->KABUPATEN_UNIT ?><br>Telp:
+                <?php echo @$dataunit->NOTELP ?></p>
         </div>
 
         <table class="invoice-info">
@@ -128,13 +129,14 @@
             <tbody>
                 <?php foreach ($produk as $p) : ?>
                 <?php
-                        $harga = (int)$p['harga'];
-                        $jumlah = (int)$p['jumlah'];
-                        $diskon = (int)($p['diskon'] ?? 0);
-                        $subtotal = $harga * $jumlah;
-                        $subtotalSetelahDiskon = $subtotal - $diskon;
-                        $ppn = isset($p['ppn']) && $p['ppn'] ? round($subtotalSetelahDiskon * 0.11) : 0;
-                        $totalItem = $subtotalSetelahDiskon + $ppn;
+                    $harga  = isset($p['harga']) ? (int)str_replace(['Rp', '.', ' '], '', $p['harga']) : 0;
+$jumlah = (int)($p['jumlah'] ?? 0);
+$diskon = isset($p['diskon']) ? (int)str_replace(['Rp', '.', ' '], '', $p['diskon']) : 0;
+
+$subtotal = $harga * $jumlah;
+$subtotalSetelahDiskon = $subtotal - $diskon;
+$ppn = (!empty($p['ppn'])) ? round($subtotalSetelahDiskon * 0.11) : 0;
+$totalItem = $subtotalSetelahDiskon + $ppn;
                     ?>
                 <tr>
                     <td><?= $p['nama'] ?></td>

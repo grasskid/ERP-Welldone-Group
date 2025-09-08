@@ -79,7 +79,24 @@
         <button type="button" class="btn btn-light btn-lg me-2" id="btn-previous-to-sparepart">Sebelumnya</button>
         <button type="submit" id="submitSemuaForm" class="btn btn-success btn-lg">Submit</button>
     </div>
+    <input type="text" hidden id="idpelayar" value="<?php echo @$idservice ?>">
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('submitSemuaForm').addEventListener('click', function(e) {
+            const idPela = document.getElementById('idpelayar').value;
+
+            if (!idPela || idPela.trim() === '') {
+                e.preventDefault(); // cegah form submit
+                alert('Silakan pilih pelanggan terlebih dahulu melalui tombol input data pelanggan pada tab pelanggan kemudian tekan tombol simpan!');
+                // Atau bisa pakai SweetAlert jika kamu pakai
+                return false;
+            }
+        });
+    });
+</script>
+
 <script>
     function parseRupiahToNumber(rp) {
         if (!rp) return 0;

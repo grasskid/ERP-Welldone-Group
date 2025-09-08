@@ -17,6 +17,7 @@ use App\Models\ModelAuth;
 use App\Models\ModelPelanggan;
 use App\Models\ModelHppBarang;
 use App\Models\ModelJurnal;
+use App\Models\ModelBank;
 
 
 class Pembelian extends BaseController
@@ -33,6 +34,7 @@ class Pembelian extends BaseController
     protected $PelangganModel;
     protected $HppBarangModel;
     protected $JurnalModel;
+    protected $BankModel;
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
@@ -45,6 +47,7 @@ class Pembelian extends BaseController
         $this->PelangganModel = new ModelPelanggan();
         $this->HppBarangModel = new ModelHppBarang();
         $this->JurnalModel = new ModelJurnal();
+        $this->BankModel = new ModelBank();
     }
 
     public function index()
@@ -55,6 +58,7 @@ class Pembelian extends BaseController
             'produk' => $this->BarangModel->getAllBarang(),
             'kategori' => $this->KategoriModel->getKategori(),
             'suplier' => $this->SuplierModel->getSuplier(),
+            'bank' => $this->BankModel->getBank(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'body'  => 'transaksi/pembelian'
         );
@@ -102,7 +106,10 @@ class Pembelian extends BaseController
         $total_harga = $this->cleanRupiah($this->request->getPost('total-harga'));
         $total_diskon = $this->cleanRupiah($this->request->getPost('total-diskon'));
         $total_ppn = $this->cleanRupiah($this->request->getPost('total-ppn'));
-        $total_bayar = $this->cleanRupiah($this->request->getPost('bayar'));
+        $bayar_tunai = $this->cleanRupiah($this->request->getPost('bayar'));
+        $bayar_bank = $this->cleanRupiah($this->request->getPost('bayar_bank'));
+        $total_bayar = $bayar_tunai + $bayar_bank;
+        $bank_idbank = $this->request->getPost('bank_idbank');
 
         // dd($id_suplier_text);
 
@@ -120,7 +127,7 @@ class Pembelian extends BaseController
 
         if ($lastNota) {
             // Ambil 4 digit terakhir (urutan)
-            $lastNumber = (int) substr($lastNota->no_nota, -4);
+            $lastNumber = (int) substr($lastNota->no_nota_supplier, -4);
             $urutan = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         } else {
             $urutan = '0001';
@@ -190,11 +197,16 @@ class Pembelian extends BaseController
             'total_diskon' => $total_diskon,
             'total_ppn' => $total_ppn,
             'total_bayar' => $total_bayar,
+            'bayar_tunai' => $bayar_tunai,
+            'bayar_bank' => $bayar_bank,
+            'bank_idbank' => $bank_idbank,
+            'jatuh_tempo' => $this->request->getPost('jatuh_tempo'),
             'bayar' => $total_bayar,
             'unit_idunit' => $useridunit,
             'pelanggan_id_pelanggan' => $id_pelanggan ?? null,
             'input_by' => $input_by
         );
+
 
         // foreach ($produkData as $produk) {
         //     $produkid = $produk['id'];
@@ -249,15 +261,7 @@ class Pembelian extends BaseController
             $result2 = $this->DetailPembelianModel->insert_detail($data2);
         }
 
-        if ($sisa == 0) {
-            // ini Penjualan Tunai Lunas
-            $ar_nilai[] = $total_harga;
-            $ar_nilai[] = $total_ppn; 
-            $this->JurnalModel->insertJurnal($tanggal_masuk, 'pembelian_sup_ppn_lunas', $ar_nilai, "Persediaan Handphone Baru", $idPembelian, 'pembelian');
-        } else {
-            // ini Penjualan Tunai Hutang
-            $this->JurnalModel->insertJurnal($tanggal_masuk, 'pembelian_sup_ppn_lunas', $ar_nilai, "Persediaan Handphone Baru", $idPembelian, 'pembelian');
-        }
+
 
         if ($result & $result2) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');

@@ -141,6 +141,13 @@
                                                                     class="badge rounded-pill text-bg-success fs-1">Todo</span>
                                                             </div>
                                                         </div>
+                                                        <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                            <span class="hstack gap-2 fs-2" style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -245,6 +252,13 @@
                                                                     Progress</span>
                                                             </div>
                                                         </div>
+                                                        <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                            <span class="hstack gap-2 fs-2" style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
 
                                                 </div>
@@ -350,6 +364,13 @@
                                                                     class="badge rounded-pill text-bg-warning fs-1">Pending</span>
                                                             </div>
                                                         </div>
+                                                        <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                            <span class="hstack gap-2 fs-2" style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -512,6 +533,11 @@
                                 <option value="4">Done</option>
                             </select>
                         </div>
+
+                        <!-- <div class="mb-3">
+                            <label for="deadline" class="form-label">Deadline</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline" required>
+                        </div> -->
                     </div>
 
                     <div class="modal-footer">

@@ -11,6 +11,11 @@ class ModelJurnal extends Model
     protected $returnType = 'object';
     protected $allowedFields = ['idjurnal', 'tanggal', 'no_akun', 'nama_akun', 'debet', 'kredit', 'keterangan', 'id_referensi', 'tabel_referensi', 'id_unit', 'id_akun'];
 
+    public function insert_biasah($data)
+    {
+        $this->insert($data);
+    }
+
     public function insertJurnal($tanggal, $kode_template, $ar_value, $keterangan, $id_referensi, $tabel_referensi, $id_unit = null)
     {
         $id_akun = session('ID_AKUN');
@@ -120,7 +125,9 @@ class ModelJurnal extends Model
         $builderParent = $db->table('no_akun')
             ->select('no_akun, nama_akun')
             ->where('CHAR_LENGTH(no_akun)', 10)
-            ->where('RIGHT(no_akun, 7)', '0000000'); // Ini parent yang valid
+            ->where('RIGHT(no_akun, 7)', '0000000')
+            ->where('no_akun !=', '1000000000'); // <--- tambahkan ini
+
 
         $parents = $builderParent->get()->getResult();
 
@@ -160,12 +167,44 @@ class ModelJurnal extends Model
         return $result;
     }
 
+    public function getChildByParent($prefix, $tanggal_awal = null, $tanggal_akhir = null, $unit = null)
+    {
+        $db = \Config\Database::connect();
 
+        $builder = $db->table('no_akun na');
+        $builder->select("
+        na.no_akun,
+        na.nama_akun,
+        COALESCE(SUM(j.debet), 0) as total_debet,
+        COALESCE(SUM(j.kredit), 0) as total_kredit
+    ");
+        $builder->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder->like('na.no_akun', $prefix, 'after');
+        $builder->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder->where('RIGHT(na.no_akun, 7) !=', '0000000');
+        $builder->where('na.no_akun !=', '1000000000');
+        // pastikan bukan parent
 
+        if ($unit !== null) {
+            $builder->groupStart();
+            $builder->where('j.id_unit', $unit);
+            $builder->orWhere('j.id_unit IS NULL'); // agar akun tanpa jurnal tetap tampil
+            $builder->groupEnd();
+        }
 
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder->groupStart();
+            $builder->where('j.tanggal >=', $tanggal_awal);
+            $builder->where('j.tanggal <=', $tanggal_akhir);
+            $builder->orWhere('j.tanggal IS NULL'); // agar akun tetap tampil meski tidak ada transaksi
+            $builder->groupEnd();
+        }
 
+        $builder->groupBy('na.no_akun, na.nama_akun');
+        $builder->orderBy('na.no_akun', 'asc');
 
-
+        return $builder->get()->getResult();
+    }
     public function getTotalGrandparent($tanggal_awal = null, $tanggal_akhir = null, $unit = null)
     {
         $db = \Config\Database::connect();

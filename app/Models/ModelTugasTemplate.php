@@ -9,7 +9,7 @@ class ModelTugasTemplate extends Model
     protected $table = 'tugas_template';
     protected $primaryKey = 'idtemplate_tugas';
     protected $returnType = 'object';
-    protected $allowedFields = ['idtemplate_tugas', 'nama_tugas', 'deskripsi', 'start_date', 'end_date', 'ID_JABATAN'];
+    protected $allowedFields = ['idtemplate_tugas', 'nama_tugas', 'deskripsi', 'start_date', 'end_date', 'ID_JABATAN', 'template_penilaian_idtemplate_penilaian', 'template_kpi_idtemplate_kpi'];
 
     public function getTugasTemplate()
     {

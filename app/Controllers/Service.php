@@ -306,7 +306,16 @@ class Service extends BaseController
         //pembayaran
         $service_by = $this->request->getPost('service_by_pembayaran');
         $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
-        $garansi = (int) $this->request->getPost('garansi');
+        $garansi = $this->request->getPost('garansi');
+
+        if ($garansi === 'manual') {
+
+            $garansi = $this->request->getPost('garansi_manual');
+        }
+
+
+        $garansi = (int) $garansi;
+
         $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');

@@ -26,6 +26,8 @@
                 Export
             </a>
 
+            <button class="btn btn-warning" style="color: white;" data-bs-toggle="modal" data-bs-target="#asset-terdahulu"> Asset Terhapus </button>
+
         </div>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-asset-modal"
             style="display: inline-flex; align-items: center;">
@@ -41,13 +43,15 @@
                 <tr>
                     <th>Asset Code</th>
                     <th>Nama Asset</th>
+                    <th>Kategori Asset</th>
                     <th>Tanggal Perolehan</th>
                     <th>Nilai Perolehan</th>
+
                     <th>Penyusutan Bulanan</th>
+                    <th>Jangka Waktu Penyusutan</th>
                     <th>Nilai Sekarang</th>
                     <th>Kondisi</th>
                     <th>Keterangan</th>
-
                     <th>Action</th>
                 </tr>
             </thead>
@@ -57,9 +61,11 @@
                         <tr>
                             <td><?= esc($row->asset_code) ?></td>
                             <td><?= esc($row->asset) ?></td>
-                            <td><?= esc($row->tanggal_perolehan) ?></td>
+                            <td><?= esc($row->nama_kategori_asset) ?></td>
+                            <td><?= esc(date('d-m-Y', strtotime($row->tanggal_perolehan))) ?></td>
                             <td> <?= 'Rp ' . number_format($row->nilai_perolehan, 0, ',', '.') ?></td>
                             <td> <?= 'Rp ' . number_format($row->penyusutan_bulanan, 0, ',', '.') ?></td>
+                            <td><?= esc(date('d-m-Y', strtotime($row->jangka_waktu))) ?></td>
                             <td> <?= 'Rp ' . number_format($row->nilai_sekarang, 0, ',', '.') ?></td>
                             <td><?= esc($row->kondisi) ?></td>
                             <td><?= esc($row->keterangan) ?></td>
@@ -75,6 +81,8 @@
                                     data-penyusutan_bulanan="<?= esc($row->penyusutan_bulanan) ?>"
                                     data-nilai_sekarang="<?= esc($row->nilai_sekarang) ?>"
                                     data-kondisi="<?= esc($row->kondisi) ?>"
+                                    data-nama_kategori_asset="<?= esc($row->nama_kategori_asset) ?>"
+                                    data-jangkawaktu="<?= esc(date('Y-m-d', strtotime($row->jangka_waktu))) ?>"
                                     data-keterangan="<?= esc($row->keterangan) ?>">
                                     <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
                                 </button>
@@ -133,6 +141,25 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="kategori_asset">Kategori</label>
+                        <select class="form-control select2" name="kategori_asset" id="kategori_asset" required>
+                            <option value="">Pilih Kategori</option>
+                            <?php foreach ($kategori_asset as $b): ?>
+                                <option value="<?= esc($b->idkategori_asset) ?>">
+                                    <?= esc($b->kategori_asset) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Jangka Waktu</label>
+                        <input type="date" class="form-control" name="jangka_waktu" required>
+                    </div>
+
+
+                    <div class="mb-3">
                         <label for="penyusutan-bulanan" class="form-label">Penyusutan Bulanan</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
@@ -140,13 +167,13 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="nilai-sekarang" class="form-label">Nilai Sekarang</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
                             <input type="text" class="form-control currency" id="nilai-sekarang" name="nilai_sekarang" required>
                         </div>
-                    </div>
+                    </div> -->
 
 
                     <div class="mb-3">
@@ -181,28 +208,43 @@
                 </div>
 
                 <div class="modal-body">
-                    <input type="hidden" name="id_asset" id="edit-id_asset">
+                    <input hidden name="id_asset" id="edit-id_asset">
 
                     <div class="mb-3">
                         <label>Kode Asset</label>
-                        <input type="text" class="form-control" name="asset_code" id="edit-asset_code" required>
+                        <input readonly type="text" class="form-control" name="asset_code" id="edit-asset_code" required>
                     </div>
 
                     <div class="mb-3">
                         <label>Nama Asset</label>
-                        <input type="text" class="form-control" name="asset" id="edit-asset" required>
+                        <input readonly type="text" class="form-control" name="asset" id="edit-asset" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Nama Kategori</label>
+                        <input readonly type="text" class="form-control" name="nama_kategori_asset" id="edit-nama_kategori_asset" required>
                     </div>
 
                     <div class="mb-3">
                         <label>Tanggal Perolehan</label>
-                        <input type="date" class="form-control" name="tanggal_perolehan" id="edit-tanggal_perolehan" required>
+                        <input readonly type="date" class="form-control" name="tanggal_perolehan" id="edit-tanggal_perolehan" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="edit-nilai_perolehan" class="form-label">Nilai Perolehan</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control currency" id="edit-nilai_perolehan" name="nilai_perolehan" required>
+                            <input readonly type="text" class="form-control currency" id="edit-nilai_perolehan" name="nilai_perolehan" required>
+                        </div>
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label for="edit-nilai_sekarang" class="form-label">Nilai Sekarang</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input readonly type="text" class="form-control currency" id="edit-nilai_sekarang" name="nilai_sekarang" required>
                         </div>
                     </div>
 
@@ -215,11 +257,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit-nilai_sekarang" class="form-label">Nilai Sekarang</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control currency" id="edit-nilai_sekarang" name="nilai_sekarang" required>
-                        </div>
+                        <label>Jangka Waktu</label>
+                        <input type="date" class="form-control" name="jangka_waktu" id="edit-jangka_waktu" required>
                     </div>
 
 
@@ -294,6 +333,56 @@
     </div>
 </div>
 
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="asset-terdahulu" tabindex="-1" aria-labelledby="assetTerdahuluLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- modal-lg biar lebar -->
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="assetTerdahuluLabel">Daftar Asset Terhapus</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php if (!empty($asset_lama)) : ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="tabel_terhapus">
+                            <thead>
+                                <tr>
+                                    <th>Kode Asset</th>
+                                    <th>Nama Asset</th>
+                                    <th>Kategori Asset</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($asset_lama as $row): ?>
+                                    <tr>
+                                        <td><?= esc($row->asset_code) ?></td>
+                                        <td><?= esc($row->asset) ?></td>
+                                        <td><?= esc($row->nama_kategori_asset) ?></td>
+                                        <td><a href="<?php echo base_url('pulihkan_asset/' . $row->idasset) ?>" class="btn btn-sm btn-success">Pulihkan</
+                                                    <button class="btn btn-success">Pulihkan</button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else : ?>
+                    <p class="text-center text-muted">Tidak ada asset terhapus.</p>
+                <?php endif; ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- JavaScript for Edit/Delete Modal -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -303,12 +392,15 @@
                 document.getElementById('edit-id_asset').value = button.getAttribute('data-id_asset');
                 document.getElementById('edit-asset_code').value = button.getAttribute('data-asset_code');
                 document.getElementById('edit-asset').value = button.getAttribute('data-asset');
+                document.getElementById('edit-nama_kategori_asset').value = button.getAttribute('data-nama_kategori_asset');
                 document.getElementById('edit-tanggal_perolehan').value = button.getAttribute('data-tanggal_perolehan');
                 document.getElementById('edit-nilai_perolehan').value = button.getAttribute('data-nilai_perolehan');
                 document.getElementById('edit-penyusutan_bulanan').value = button.getAttribute('data-penyusutan_bulanan');
                 document.getElementById('edit-nilai_sekarang').value = button.getAttribute('data-nilai_sekarang');
+                document.getElementById('edit-jangka_waktu').value = button.getAttribute('data-jangkawaktu');
                 document.getElementById('edit-kondisi').value = button.getAttribute('data-kondisi');
                 document.getElementById('edit-keterangan').value = button.getAttribute('data-keterangan');
+
             }
             if (e.target.closest('.delete-button')) {
                 const button = e.target.closest('.delete-button');
@@ -328,6 +420,17 @@
                 numeralDecimalMark: ','
             });
         });
+
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#kategori_asset').select2({
+            dropdownParent: $('#input-asset-modal')
+        });
+
+        table = $('#tabel_terhapus').DataTable();
 
     });
 </script>

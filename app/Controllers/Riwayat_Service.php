@@ -20,6 +20,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Models\ModelJurnal;
+use App\Models\ModelUnit;
 
 class Riwayat_Service extends BaseController
 
@@ -37,6 +38,7 @@ class Riwayat_Service extends BaseController
     protected $StokAwalModel;
     protected $ProsesServiceModel;
     protected $JurnalModel;
+    protected $UnitModel;
 
 
 
@@ -54,6 +56,7 @@ class Riwayat_Service extends BaseController
         $this->StokAwalModel = new ModelStokAwal();
         $this->ProsesServiceModel = new ModelProsesService();
         $this->JurnalModel = new ModelJurnal();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -263,7 +266,16 @@ class Riwayat_Service extends BaseController
         $data_service = $this->ServiceModel->getServiceById($idservice);
         $service_by = $this->request->getPost('service_by_pembayaran');
         $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
-        $garansi = (int) $this->request->getPost('garansi');
+        $garansi = $this->request->getPost('garansi');
+
+        if ($garansi === 'manual') {
+
+            $garansi = $this->request->getPost('garansi_manual');
+        }
+
+
+        $garansi = (int) $garansi;
+
         $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
@@ -325,7 +337,8 @@ class Riwayat_Service extends BaseController
             'service'      => $service,
             'kerusakan'    => $kerusakan,
             'human'        => $human,
-            'qrImageUrl'   => $qrImageUrl
+            'qrImageUrl'   => $qrImageUrl,
+            'dataunit' => $this->UnitModel->getById(session('ID_UNIT'))
         ];
 
 

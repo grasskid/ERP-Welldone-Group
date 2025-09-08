@@ -52,7 +52,7 @@ class TemplateKPI extends BaseController
             'bobot' => $this->request->getPost('bobot'),
             'formula' => $this->request->getPost('formula'),
             'jabatan_idjabatan' => $this->request->getPost('jabatan_idjabatan'),
-            'updated_on' => date('Y-m-d H:i:s'),
+            'update_on' => date('Y-m-d H:i:s'),
         ];
 
         $this->TemplateKpiModel->update($id, $data);

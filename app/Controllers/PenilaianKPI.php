@@ -7,6 +7,11 @@ use App\Models\ModelPelanggan;
 use App\Models\ModelPenilaianKPI;
 use App\Models\ModelAuth;
 use App\Models\ModelTemplatePenilaian;
+use App\Models\ModelTemplateKpi;
+use App\Models\ModelPenilaian;
+use App\Models\ModelPenjualan;
+use App\Models\ModelPresensi;
+use App\Models\ModelDetailPenjualan;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -18,21 +23,103 @@ class PenilaianKPI extends BaseController
     protected $AuthModel;
     protected $TemplatePenilaianModel;
     protected $PenilaianKPIModel;
+    protected $TemplateKpiModel;
+    protected $PenilaianModel;
+    protected $PenjualanModel;
+    protected $PresensiModel;
+    protected $DetailPenjualanModel;
 
     public function __construct()
     {
         $this->AuthModel = new ModelAuth();
         $this->TemplatePenilaianModel = new ModelTemplatePenilaian();
         $this->PenilaianKPIModel = new ModelPenilaianKPI();
+        $this->TemplateKpiModel = new ModelTemplateKpi();
+        $this->PenilaianModel = new ModelPenilaian();
+        $this->PenjualanModel = new ModelPenjualan();
+        $this->PresensiModel = new ModelPresensi();
+        $this->DetailPenjualanModel = new ModelDetailPenjualan();
     }
 
     public function index()
     {
+        $pegawai_id = $this->request->getGet('pegawai_idpegawai');
+        $templatekpi = [];
+        $skorMap = [];
+
+        if ($pegawai_id) {
+            $pegawai = $this->AuthModel->getById($pegawai_id);
+
+            if ($pegawai && isset($pegawai->ID_JABATAN)) {
+                $templatekpi = $this->TemplateKpiModel->getByJabatan($pegawai->ID_JABATAN);
+
+                // Get penilaian
+                $penilaianList = $this->PenilaianModel
+                    ->where('pegawai_idpegawai', $pegawai_id)
+                    ->findAll();
+
+                foreach ($penilaianList as $p) {
+                    $skorMap[$p->aspek]['realisasi'] = $p->skor;
+                }
+
+                $bulanIni = date('Y-m-01');
+                $bulanAkhir = date('Y-m-t');
+
+                //Omset
+
+                $omsetResult = $this->PenjualanModel
+                    ->selectSum('total_penjualan')
+                    ->where('sales_by', $pegawai_id)
+                    ->where('tanggal >=', $bulanIni)
+                    ->where('tanggal <=', $bulanAkhir)
+                    ->first();
+
+                $omsetValue = $omsetResult->total_penjualan ?? 0;
+
+                $skorMap['Penjualan(Omzet)']['realisasi'] = $omsetValue;
+
+                $tanggalPenilaian = $this->request->getGet('tanggal_penilaian_kpi') ?? date('Y-m-d');
+
+                $bulan = date('m', strtotime($tanggalPenilaian));
+                $tahun = date('Y', strtotime($tanggalPenilaian));
+                $startDate = date('Y-m-01', strtotime("$tahun-$bulan-01"));
+                $endDate = date('Y-m-t', strtotime("$tahun-$bulan-01"));
+
+                $onTimeResult = $this->PresensiModel
+                    ->countOnTimeAbsensiPerBulan($pegawai_id, $startDate, $endDate);
+                $onTimeCount = $onTimeResult->total_ontime ?? 0;
+                $skorMap['Kehadiran & Disiplin Waktu']['realisasi'] = $onTimeCount;
+
+                $absensiResult = $this->PresensiModel
+                    ->countAbsensiPerBulan($pegawai_id, $startDate, $endDate);
+                $jumlahAbsensi = $absensiResult->total_absensi ?? 0;
+                $skorMap['Grooming & Penampilan']['realisasi'] = $jumlahAbsensi;
+
+                $categoryResult = $this->DetailPenjualanModel
+                    ->countByCategory(2, $startDate, $endDate);
+                $totalCategory = $categoryResult->total_category ?? 0;
+                $skorMap['Up-selling dan Cross-selling']['realisasi'] = $totalCategory;
+
+                //media
+                $jumlahByTemplate = $this->PenilaianKPIModel->getJumlahByTemplateKPI($pegawai_id);
+
+                foreach ($jumlahByTemplate as $row) {
+                    $skorMap[$row->template_kpi]['realisasi'] = $row->jumlah;
+                }
+
+
+            }
+        }
+
         $data = [
-            'penilaiankpi' => $this->PenilaianKPIModel->getAllKPI(),
+            'penilaiankpi' => [],
             'akun' => $this->AuthModel->getdataakun(),
+            'pegawai_idpegawai' => $pegawai_id,
+            'templatekpi' => $templatekpi,
+            'skorMap' => $skorMap,
             'body' => 'penilaian/penilaian_kpi',
         ];
+
         return view('template', $data);
     }
 
@@ -87,7 +174,7 @@ class PenilaianKPI extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $tanggal_awal  = $this->request->getPost('tanggal_awal');
+        $tanggal_awal = $this->request->getPost('tanggal_awal');
         $tanggal_akhir = $this->request->getPost('tanggal_akhir');
 
         $data = $this->PenilaianKPIModel

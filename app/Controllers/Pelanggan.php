@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Config\Database;
 use App\Models\ModelAuth;
+use App\Models\ModelPenjualan;
 
 class Pelanggan extends BaseController
 
@@ -21,12 +22,14 @@ class Pelanggan extends BaseController
     protected $PhoneModel;
     protected $PelangganModel;
     protected $AuthModel;
+    protected $PenjualanModel;
 
     public function __construct()
     {
         $this->PhoneModel = new ModelPhone();
         $this->PelangganModel = new ModelPelanggan();
         $this->AuthModel = new ModelAuth();
+        $this->PenjualanModel = new ModelPenjualan();
     }
 
     public function index()
@@ -42,54 +45,54 @@ class Pelanggan extends BaseController
     }
 
 
-public function insert_pelanggan()
-{
-    $nik = $this->request->getPost('nik');
-    $nama = $this->request->getPost('nama');
-    $alamat = $this->request->getPost('alamat');
-    $no_hp = $this->request->getPost('no_hp');
-    $kategori = $this->request->getPost('kategori');
+    public function insert_pelanggan()
+    {
+        $nik = $this->request->getPost('nik');
+        $nama = $this->request->getPost('nama');
+        $alamat = $this->request->getPost('alamat');
+        $no_hp = $this->request->getPost('no_hp');
+        $kategori = $this->request->getPost('kategori');
 
-    $data = array(
-        'nik' => $nik,
-        'nama' => $nama,
-        'alamat' => $alamat,
-        'no_hp' => $no_hp,
-        'kategori' => $kategori,
-        'deleted' => '0'
-    );
+        $data = array(
+            'nik' => $nik,
+            'nama' => $nama,
+            'alamat' => $alamat,
+            'no_hp' => $no_hp,
+            'kategori' => $kategori,
+            'deleted' => '0'
+        );
 
-    $result = $this->PelangganModel->insert_Pelanggan($data);
-    if ($result) {
-        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-        return redirect()->to(base_url('/pelanggan'));
+        $result = $this->PelangganModel->insert_Pelanggan($data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+            return redirect()->to(base_url('/pelanggan'));
+        }
     }
-}
 
-public function update_pelanggan()
-{
-    $id_pelanggan = $this->request->getPost('id_pelanggan');
-    $nik = $this->request->getPost('nik');
-    $nama = $this->request->getPost('nama');
-    $alamat = $this->request->getPost('alamat');
-    $no_hp = $this->request->getPost('no_hp');
-    $kategori = $this->request->getPost('kategori'); // New field
+    public function update_pelanggan()
+    {
+        $id_pelanggan = $this->request->getPost('id_pelanggan');
+        $nik = $this->request->getPost('nik');
+        $nama = $this->request->getPost('nama');
+        $alamat = $this->request->getPost('alamat');
+        $no_hp = $this->request->getPost('no_hp');
+        $kategori = $this->request->getPost('kategori'); // New field
 
-    $data = array(
-        'nik' => $nik,
-        'nama' => $nama,
-        'alamat' => $alamat,
-        'no_hp' => $no_hp,
-        'kategori' => $kategori,
-        'deleted' => '0'
-    );
+        $data = array(
+            'nik' => $nik,
+            'nama' => $nama,
+            'alamat' => $alamat,
+            'no_hp' => $no_hp,
+            'kategori' => $kategori,
+            'deleted' => '0'
+        );
 
-    $result = $this->PelangganModel->update($id_pelanggan, $data);
-    if ($result) {
-        session()->setFlashdata('sukses', 'Data Berhasil Di Update');
-        return redirect()->to(base_url('/pelanggan'));
+        $result = $this->PelangganModel->update($id_pelanggan, $data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Data Berhasil Di Update');
+            return redirect()->to(base_url('/pelanggan'));
+        }
     }
-}
 
     public function delete_pelanggan()
     {
@@ -220,5 +223,13 @@ public function update_pelanggan()
                 'message' => 'Gagal menyimpan data pelanggan'
             ]);
         }
+    }
+    public function riwayat_transaksi_pelanggan($id)
+    {
+        $data = array(
+            'body' => 'riwayat/transaksi_pelanggan',
+            'transaksi' => $this->PenjualanModel->getByIdPelanggan($id)
+        );
+        return view('template', $data);
     }
 }

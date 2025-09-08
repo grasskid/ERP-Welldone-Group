@@ -168,7 +168,7 @@ class Produk extends BaseController
         $sheet = $spreadsheet->getActiveSheet();
 
         // Header
-        $headers = ['Kode Barang', 'Nama Barang', 'Harga', 'Harga Beli', 'Kategori', 'Status PPN', 'Input'];
+        $headers = ['Kode Barang', 'Nama Barang', 'Warna', 'Harga', 'Harga Beli', 'Kategori', 'Status PPN', 'Input'];
         $col = 'A';
         foreach ($headers as $header) {
             $sheet->setCellValue($col . '1', $header);
@@ -187,7 +187,7 @@ class Produk extends BaseController
 
             $sheet->setCellValue('A' . $row, $product->kode_barang);
             $sheet->setCellValue('B' . $row, $product->nama_barang);
-            $sheet->setCellValue('C', $row, $product->warna);
+            $sheet->setCellValue('C' . $row, $product->warna);
             $sheet->setCellValue('D' . $row, $product->harga);
             $sheet->setCellValue('E' . $row, $product->harga_beli);
             $sheet->setCellValue('F' . $row, $product->nama_kategori);

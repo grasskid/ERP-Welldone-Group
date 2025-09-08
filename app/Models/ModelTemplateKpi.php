@@ -19,15 +19,26 @@ class ModelTemplateKpi extends Model
         'updated_on'
     ];
 
+    public function getByJabatan($jabatan_id)
+    {
+        return $this->where('jabatan_idjabatan', $jabatan_id)
+                    ->findAll();
+    }
+
     public function getByJabatanAndNama($jabatan_id, $template_kpi)
-{
-    return $this->where('jabatan_idjabatan', $jabatan_id)
-                ->where('template_kpi', $template_kpi)
-                ->first();
-}
+    {
+        return $this->where('jabatan_idjabatan', $jabatan_id)
+                    ->where('template_kpi', $template_kpi)
+                    ->first();
+    }
 
     public function getTemplateKPI()
     {
         return $this->findAll();
+    }
+
+    public function getById($id)
+    {
+        return $this->where('idtemplate_kpi', $id)->first();
     }
 }

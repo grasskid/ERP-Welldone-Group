@@ -12,6 +12,9 @@ use App\Models\ModelService;
 use App\Models\ModelPresensi;
 use App\Models\ModelJadwalMasuk;
 use App\Models\ModelUnit;
+use App\Models\ModelPenilaianKPI;
+use App\Models\ModelPenilaian;
+use App\Models\ModelTemplateKpi;
 
 class Absensi extends BaseController
 
@@ -25,6 +28,9 @@ class Absensi extends BaseController
     protected $PresensiModel;
     protected $JadwalMasukModel;
     protected $UnitModel;
+    protected $PenilaianKPIModel;
+    protected $PenilaianModel;
+    protected $TemplateKpiModel;
 
     public function __construct()
     {
@@ -36,6 +42,9 @@ class Absensi extends BaseController
         $this->PresensiModel = new ModelPresensi();
         $this->JadwalMasukModel = new ModelJadwalMasuk();
         $this->UnitModel = new ModelUnit();
+        $this->PenilaianKPIModel = new ModelPenilaianKPI();
+        $this->PenilaianModel = new ModelPenilaian();
+        $this->TemplateKpiModel = new ModelTemplateKpi();
     }
 
     public function index()
@@ -151,6 +160,31 @@ class Absensi extends BaseController
             'jarak' => $jarakmeter,
             'status_kehadiran' => $statusKehadiran
         ];
+
+            $pegawai_idpegawai = session('ID_AKUN');
+            $jabatan_id = session('ID_JABATAN');
+            $tanggal_penilaian_kpi = date('Y-m-d H:i:s');
+
+            $template = $this->TemplateKpiModel->getByJabatanAndNama($jabatan_id, 'Kehadiran & Disiplin Waktu ');
+
+            // if ($template) {
+            //     $kpi_utama = $template->template_kpi;
+            //     $bobot = $template->bobot;
+            //     $target = $template->target;
+            //     $realisasi = ["1"];
+            //     $score = ["1"];
+
+            //     $this->PenilaianKPIModel->insertKPI(
+            //         $kpi_utama,
+            //         $bobot,
+            //         $target,
+            //         $realisasi,
+            //         $score,
+            //         $pegawai_idpegawai,
+            //         $tanggal_penilaian_kpi
+            //     );
+            // }
+        
 
         $this->PresensiModel->insertPresensi($data);
         session()->setFlashdata('sukses', 'Absen masuk berhasil!');
