@@ -27,12 +27,7 @@
                     Export
                 </button>
 
-                <a href="<?php echo base_url('format_excell/format_kartu_stok.xlsx') ?>"><button type="button"
-                        class="btn btn-success" style="display: inline-flex; align-items: center;">
-                        <iconify-icon icon="solar:download-broken" width="24" height="24" style="margin-right: 8px;">
-                        </iconify-icon>
-                        Download Format Excell
-                    </button></a>
+
             </div>
 
         </div>
@@ -62,7 +57,7 @@
 
             <label class="me-2 ms-4">Tanggal Awal:</label>
             <input name="tanggal_awal" type="date" id="startDate" class="form-control d-inline" style="width: auto; display: inline-block;" onchange="filterKategori()">
-
+            <br><br>
             <label class="me-2 ms-2">Tanggal Akhir:</label>
             <input name="tanggal_akhir" type="date" id="endDate" class="form-control d-inline" style="width: auto; display: inline-block;" onchange="filterKategori()">
 

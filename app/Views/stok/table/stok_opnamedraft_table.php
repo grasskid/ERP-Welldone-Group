@@ -39,7 +39,8 @@
                         <td><?= esc($row->nama_barang) ?></td>
                         <td><?= esc($row->nama_unit) ?></td>
                         <td><?= esc($row->stok_dasar) ?></td>
-                        <td><?= esc($row->tanggal_stok_dasar) ?></td>
+                        <td><?= esc(date('d-m-Y', strtotime($row->tanggal_stok_dasar))) ?></td>
+
                         <td>
                             <input class="form-control jumlah-komp" name="data[<?= $index ?>][jumlah_komp]" value="<?= $row->stok_akhir ?>">
                         </td>

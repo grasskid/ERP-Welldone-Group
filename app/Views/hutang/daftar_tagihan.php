@@ -89,7 +89,8 @@
                             <td><?= esc($row->NAMA_UNIT) ?></td>
                             <td><?= esc($row->no_nota_supplier) ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->jatuh_tempo))) ?></td>
-                            <td><?= esc($row->sisa) ?></td>
+                            <td><?= esc('Rp ' . number_format($row->sisa, 0, ',', '.')) ?></td>
+
                             <td>
                                 <button type="button" class="btn btn-warning edit-button" style="display: flex; gap: 5px; justify-content: center; padding-top: 16px;" data-bs-toggle="modal"
                                     data-bs-target="#bayar-tagihan-modal"

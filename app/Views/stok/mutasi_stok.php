@@ -186,52 +186,53 @@
                     });
 
                     confirmBtn.addEventListener('click', function() {
-                        document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
+                        // Ambil semua checkbox yang ada di datatable, termasuk yang tidak terlihat karena pagination
+                        const dataTable = $('#produk-modal-table').DataTable();
+                        const allCheckboxes = dataTable.rows({
+                            search: 'applied'
+                        }).nodes().to$().find('.produk-checkbox:checked');
+
+                        allCheckboxes.each(function() {
+                            const cb = this;
                             const id = cb.getAttribute('data-id');
                             const kode = cb.getAttribute('data-kode');
                             const nama = cb.getAttribute('data-nama');
                             const harga = cb.getAttribute('data-harga');
                             const harga_beli = cb.getAttribute('data-harga_beli');
                             const kategori = cb.getAttribute('data-kategori');
-                            const input = cb.getAttribute('data-input');
 
                             if (!document.getElementById('produk-row-' + id)) {
                                 const row = document.createElement('tr');
                                 row.id = 'produk-row-' + id;
                                 row.innerHTML = `
-                        <td>
-                            ${kode}
-                            <input type="hidden" name="produk[${id}][id]" value="${id}">
-                            <input type="hidden" name="produk[${id}][kode]" value="${kode}">
-                        </td>
-                        <td>
-                            ${nama}
-                            <input type="hidden" name="produk[${id}][nama]" value="${nama}">
-                        </td>
-                        <td>
-                            ${kategori}
-                            <input type="hidden" name="produk[${id}][kategori]" value="${kategori}">
-                        </td>
-                        <td>
-                            <input type="number" name="produk[${id}][jumlah_kirim]" class="form-control jumlah-input" data-id="${id}"  min="1">
-                        </td>
-                        <td>
-                            <input type="number" name="produk[${id}][jumlah_terima]" class="form-control jumlah-input" data-id="${id}"  min="1">
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="hapusProduk('${id}')">
-                                <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="20" height="20"></iconify-icon>
-                            </button>
-                        </td>
-                    `;
+                <td>
+                    ${kode}
+                    <input type="hidden" name="produk[${id}][id]" value="${id}">
+                    <input type="hidden" name="produk[${id}][kode]" value="${kode}">
+                </td>
+                <td>
+                    ${nama}
+                    <input type="hidden" name="produk[${id}][nama]" value="${nama}">
+                </td>
+                <td>
+                    ${kategori}
+                    <input type="hidden" name="produk[${id}][kategori]" value="${kategori}">
+                </td>
+                <td>
+                    <input type="number" name="produk[${id}][jumlah_kirim]" class="form-control jumlah-input" data-id="${id}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="produk[${id}][jumlah_terima]" class="form-control jumlah-input" data-id="${id}" min="1">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="hapusProduk('${id}')">
+                        <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="20" height="20"></iconify-icon>
+                    </button>
+                </td>
+            `;
                                 selectedTable.appendChild(row);
 
-                                row.querySelector('.jumlah-input').addEventListener('input',
-                                    updateTotals);
-                                row.querySelector('.diskon-input').addEventListener('input',
-                                    updateTotals);
-                                row.querySelector('.ppn-checkbox').addEventListener('change',
-                                    updateTotals);
+                                row.querySelector('.jumlah-input').addEventListener('input', updateTotals);
                             }
                         });
 
@@ -243,11 +244,13 @@
                             document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
                         }, 500);
 
-                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
+                        // Reset checkbox setelah konfirmasi
+                        dataTable.rows().nodes().to$().find('.produk-checkbox').prop('checked', false);
                         selectAll.checked = false;
 
                         updateTotals();
                     });
+
 
                     bayarInput.addEventListener('input', function() {
                         const numeric = this.value.replace(/[^\d]/g, '');

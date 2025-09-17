@@ -48,7 +48,7 @@
                         onchange="tampilkanIdSuplier()">
                         <option value="" disabled selected>Pilih Unit</option>
                         <?php foreach ($suplier as $b): ?>
-                            <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
+                        <option value="<?= $b->id_suplier; ?>"><?= $b->nama_suplier; ?></option>
                         <?php endforeach; ?>
                     </select>
                     <input name="id_suplier_text" type="hidden" id="id_suplier_text"
@@ -106,6 +106,11 @@
                         style="margin-right: 8px;"></iconify-icon>
                     Pilih Produk
                 </button>
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#input-produk-modal">
+                    Tambah Produk
+                </button>
             </div>
 
             <!-- Modal Pilih Produk -->
@@ -148,24 +153,24 @@
                                     </thead>
                                     <tbody>
                                         <?php foreach ($produk as $p): ?>
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" class="produk-checkbox"
-                                                        data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
-                                                        data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
-                                                        data-harga_beli="<?= $p->harga_beli ?>"
-                                                        data-kategori="<?= $p->nama_kategori ?>"
-                                                        data-input="<?= $p->input ?>" data-imei="<?= $p->imei ?>">
-                                                </td>
-                                                <td><?= $p->kode_barang ?></td>
-                                                <td><?= $p->nama_barang ?></td>
-                                                <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
-                                                <td><?= $p->nama_kategori ?></td>
-                                                <td><?= $p->imei ? $p->imei : 'Tidak Ada' ?></td>
-                                                <td><?= $p->internal ? $p->internal : 'Tidak Ada' ?></td>
-                                                <td><?= $p->warna ? $p->warna : 'Tidak Ada' ?></td>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="produk-checkbox"
+                                                    data-id="<?= $p->idbarang ?>" data-kode="<?= $p->kode_barang ?>"
+                                                    data-nama="<?= $p->nama_barang ?>" data-harga="<?= $p->harga ?>"
+                                                    data-harga_beli="<?= $p->harga_beli ?>"
+                                                    data-kategori="<?= $p->nama_kategori ?>"
+                                                    data-input="<?= $p->input ?>" data-imei="<?= $p->imei ?>">
+                                            </td>
+                                            <td><?= $p->kode_barang ?></td>
+                                            <td><?= $p->nama_barang ?></td>
+                                            <td><?= 'Rp ' . number_format($p->harga, 0, ',', '.') ?></td>
+                                            <td><?= $p->nama_kategori ?></td>
+                                            <td><?= $p->imei ? $p->imei : 'Tidak Ada' ?></td>
+                                            <td><?= $p->internal ? $p->internal : 'Tidak Ada' ?></td>
+                                            <td><?= $p->warna ? $p->warna : 'Tidak Ada' ?></td>
 
-                                            </tr>
+                                        </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -233,21 +238,18 @@
                 </div>
 
                 <div class="row mb-3 transfer-section">
-                    <div class="col-md-6">
-                        <label for="bayar_bank" class="form-label">Bayar Bank</label>
-                        <input type="text" class="form-control" id="bayar_bank" name="bayar_bank" value="Rp 0">
-                    </div>
 
-                    <div class="col-md-6">
-                        <label for="bank_idbank" class="form-label">Pilih Bank</label>
-                        <select id="bank_idbank" name="bank_idbank" class="select2 form-control" style="width: 100%;">
-                            <option disabled selected>Pilih Bank</option>
-                            <?php foreach ($bank as $p): ?>
-                                <option value="<?= htmlspecialchars($p->idbank) ?>">
-                                    <?= htmlspecialchars($p->nama_bank) ?> : <?= htmlspecialchars($p->norek) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+
+                    <div class="row mb-3 transfer-section">
+                        <div class="col-12">
+                            <label class="form-label">Pembayaran via Bank</label>
+                            <div id="bank-payment-container">
+                                <!-- Baris bank akan ditambahkan secara dinamis -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="tambah-bank">
+                                + Tambah Bank
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -292,9 +294,9 @@
                                     style="width: 100%;">
                                     <option disabled selected>Select</option>
                                     <?php foreach ($pelanggan as $p): ?>
-                                        <option value="<?= htmlspecialchars($p->id_pelanggan) ?>">
-                                            <?= htmlspecialchars($p->nama) ?> : <?= htmlspecialchars($p->no_hp) ?>
-                                        </option>
+                                    <option value="<?= htmlspecialchars($p->id_pelanggan) ?>">
+                                        <?= htmlspecialchars($p->nama) ?> : <?= htmlspecialchars($p->no_hp) ?>
+                                    </option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -309,50 +311,133 @@
                     </div>
                 </div>
 
+                <!-- //modal Input Produk -->
+                <div class="modal fade" id="input-produk-modal" tabindex="-1" aria-labelledby="inputProdukModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header d-flex align-items-center">
+                                <h4 class="modal-title" id="inputProdukModalLabel">Input Data Barang</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="<?= base_url('insert_produk') ?>" method="post">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="nama_barang" class="form-label">Nama Barang</label>
+                                        <input type="text" class="form-control" id="nama_barang" name="nama_barang"
+                                            required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="id_kategori" class="form-label">Kategori</label>
+                                        <select class="form-control" id="id_kategori" name="kategori" required>
+                                            <option value="">-- Pilih Kategori --</option>
+                                            <?php foreach ($kategori as $k) : ?>
+                                            <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="harga" class="form-label">Harga</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rp</span>
+                                            <input type="text" class="form-control currency" id="harga" name="harga"
+                                                required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="harga_beli" class="form-label">Harga Beli</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rp</span>
+                                            <input type="text" class="form-control currency" id="harga_beli"
+                                                name="harga_beli" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="warna" class="form-label">Warna</label>
+                                        <input type="text" class="form-control" id="warna" name="warna" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="stok_minimum" class="form-label">Stok Minim</label>
+                                        <input type="text" class="form-control" id="stok_minim" name="stok_minimum"
+                                            required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="ppn_status" class="form-label">Status PPN</label>
+                                        <select class="form-control" id="ppn_status" name="status_ppn" required>
+                                            <option value="">-- Pilih Status PPN --</option>
+                                            <option value="1">PPN</option>
+                                            <option value="0">Non PPN</option>
+                                        </select>
+                                    </div>
+
+
+                                    <div class="mb-3">
+                                        <label for="input_by" class="form-label">Input By</label>
+                                        <input type="text" class="form-control" value="<?= @$akun->NAMA_AKUN ?>"
+                                            id="input_by" name="input_by" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn bg-danger-subtle text-danger"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <script>
-                function formatToRupiah(angka) {
-                    const cleaned = angka.replace(/[^\d]/g, '');
-                    const number = parseInt(cleaned) || 0;
-                    return 'Rp ' + number.toLocaleString('id-ID');
-                }
+            function formatToRupiah(angka) {
+                const cleaned = angka.replace(/[^\d]/g, '');
+                const number = parseInt(cleaned) || 0;
+                return 'Rp ' + number.toLocaleString('id-ID');
+            }
 
-                function unformatRupiah(rupiah) {
-                    return parseInt(rupiah.replace(/[^\d]/g, '')) || 0;
-                }
+            function unformatRupiah(rupiah) {
+                return parseInt(rupiah.replace(/[^\d]/g, '')) || 0;
+            }
 
-                document.addEventListener('DOMContentLoaded', function() {
-                    const selectedTable = document.getElementById('selected-produk-table');
-                    const confirmBtn = document.getElementById('confirm-produk-btn');
-                    const selectAll = document.getElementById('select-all-produk');
-                    const modalEl = document.getElementById('pilih-produk-modal');
-                    const modalInstance = new bootstrap.Modal(modalEl);
-                    const bayarInput = document.getElementById('bayar');
-                    const bayarBank = document.getElementById('bayar_bank');
+            document.addEventListener('DOMContentLoaded', function() {
+                const selectedTable = document.getElementById('selected-produk-table');
+                const confirmBtn = document.getElementById('confirm-produk-btn');
+                const selectAll = document.getElementById('select-all-produk');
+                const modalEl = document.getElementById('pilih-produk-modal');
+                const modalInstance = new bootstrap.Modal(modalEl);
+                const bayarInput = document.getElementById('bayar');
+                const bayarBank = document.getElementById('bayar_bank');
 
-                    selectAll.addEventListener('change', function() {
-                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
-                            .checked);
-                    });
+                selectAll.addEventListener('change', function() {
+                    document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = this
+                        .checked);
+                });
 
-                    confirmBtn.addEventListener('click', function() {
-                        document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
-                            const id = cb.getAttribute('data-id');
-                            const kode = cb.getAttribute('data-kode');
-                            const nama = cb.getAttribute('data-nama');
-                            const harga = cb.getAttribute('data-harga');
-                            const harga_beli = cb.getAttribute('data-harga_beli');
-                            const kategori = cb.getAttribute('data-kategori');
+                confirmBtn.addEventListener('click', function() {
+                    document.querySelectorAll('.produk-checkbox:checked').forEach(cb => {
+                        const id = cb.getAttribute('data-id');
+                        const kode = cb.getAttribute('data-kode');
+                        const nama = cb.getAttribute('data-nama');
+                        const harga = cb.getAttribute('data-harga');
+                        const harga_beli = cb.getAttribute('data-harga_beli');
+                        const kategori = cb.getAttribute('data-kategori');
 
-                            const imeiAttr = cb.getAttribute('data-imei');
-                            const hasImei = imeiAttr !== null && imeiAttr.trim() !== '';
-                            const imei = hasImei ? imeiAttr : 'tidak ada imei';
+                        const imeiAttr = cb.getAttribute('data-imei');
+                        const hasImei = imeiAttr !== null && imeiAttr.trim() !== '';
+                        const imei = hasImei ? imeiAttr : 'tidak ada imei';
 
-                            if (!document.getElementById('produk-row-' + id)) {
-                                const row = document.createElement('tr');
-                                row.id = 'produk-row-' + id;
-                                row.innerHTML = `
+                        if (!document.getElementById('produk-row-' + id)) {
+                            const row = document.createElement('tr');
+                            row.id = 'produk-row-' + id;
+                            row.innerHTML = `
                         <td>
                             ${kode}
                             <input type="hidden" name="produk[${id}][id]" value="${id}">
@@ -395,140 +480,149 @@
                         </td>
                     `;
 
-                                selectedTable.appendChild(row);
+                            selectedTable.appendChild(row);
 
-                                const jumlahInput = row.querySelector('.jumlah-input');
-                                jumlahInput.value = 1;
-                                if (hasImei) {
-                                    jumlahInput.setAttribute('readonly', true);
-                                }
-
-                                row.querySelector('.jumlah-input').addEventListener('input',
-                                    updateTotals);
-                                row.querySelector('.ppn-checkbox').addEventListener('change',
-                                    updateTotals);
-
-                                const hargaBeliInput = row.querySelector('.harga-beli-input');
-                                hargaBeliInput.addEventListener('input', function() {
-                                    const id = this.getAttribute('data-id');
-                                    const numeric = this.value.replace(/[^\d]/g, '');
-                                    this.value = formatToRupiah(numeric);
-                                    document.getElementById(`harga-beli-hidden-${id}`)
-                                        .value = numeric;
-                                    updateTotals();
-                                });
-
-                                const diskonInput = row.querySelector('.diskon-input');
-                                diskonInput.addEventListener('input', function() {
-                                    const id = this.getAttribute('data-id');
-                                    const numeric = this.value.replace(/[^\d]/g, '');
-                                    this.value = formatToRupiah(numeric);
-                                    document.getElementById(`diskon-hidden-${id}`).value =
-                                        numeric;
-                                    updateTotals();
-                                });
+                            const jumlahInput = row.querySelector('.jumlah-input');
+                            jumlahInput.value = 1;
+                            if (hasImei) {
+                                jumlahInput.setAttribute('readonly', true);
                             }
-                        });
 
-                        modalInstance.hide();
-                        setTimeout(() => {
-                            document.body.classList.remove('modal-open');
-                            document.body.style.removeProperty('padding-right');
-                            document.body.style.removeProperty('overflow');
-                            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-                        }, 500);
+                            row.querySelector('.jumlah-input').addEventListener('input',
+                                updateTotals);
+                            row.querySelector('.ppn-checkbox').addEventListener('change',
+                                updateTotals);
 
-                        document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
-                        selectAll.checked = false;
+                            const hargaBeliInput = row.querySelector('.harga-beli-input');
+                            hargaBeliInput.addEventListener('input', function() {
+                                const id = this.getAttribute('data-id');
+                                const numeric = this.value.replace(/[^\d]/g, '');
+                                this.value = formatToRupiah(numeric);
+                                document.getElementById(`harga-beli-hidden-${id}`)
+                                    .value = numeric;
+                                updateTotals();
+                            });
 
-                        updateTotals();
-                    });
-
-                    bayarInput.addEventListener('input', function() {
-                        const numeric = this.value.replace(/[^\d]/g, '');
-                        this.value = formatToRupiah(numeric);
-                        updateHutang();
-                    });
-
-                    bayarBank.addEventListener('input', function() {
-                        const numeric = this.value.replace(/[^\d]/g, '');
-                        this.value = formatToRupiah(numeric);
-                        updateHutang();
-                    });
-
-                    const totalDiskonInput = document.getElementById('total-diskon');
-                    totalDiskonInput.addEventListener('input', function() {
-                        const numeric = this.value.replace(/[^\d]/g, '');
-                        this.value = formatToRupiah(numeric);
-                        updateTotals();
-                    });
-                });
-
-                function hapusProduk(id) {
-                    const row = document.getElementById('produk-row-' + id);
-                    if (row) row.remove();
-                    updateTotals();
-                }
-
-                function updateTotals() {
-                    let total = 0;
-                    let totalDiskon = 0;
-                    let totalPPN = 0;
-
-                    document.querySelectorAll('#selected-produk-table tr').forEach(row => {
-                        const hargaBeliHiddenInput = row.querySelector('input[id^="harga-beli-hidden-"]');
-                        const jumlahInput = row.querySelector('.jumlah-input');
-                        const diskonHiddenInput = row.querySelector('input[id^="diskon-hidden-"]');
-                        const ppnCheckbox = row.querySelector('.ppn-checkbox');
-
-                        if (hargaBeliHiddenInput && jumlahInput && diskonHiddenInput) {
-                            const hargaBeli = parseInt(hargaBeliHiddenInput.value) || 0;
-                            const jumlah = parseInt(jumlahInput.value) || 0;
-                            const diskon = parseInt(diskonHiddenInput.value) || 0;
-                            const isPpn = ppnCheckbox?.checked;
-
-                            let subtotal = hargaBeli * jumlah;
-                            let setelahDiskon = subtotal - diskon;
-                            let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
-
-                            totalDiskon += diskon;
-                            totalPPN += ppnAmount;
-                            total += setelahDiskon + ppnAmount;
+                            const diskonInput = row.querySelector('.diskon-input');
+                            diskonInput.addEventListener('input', function() {
+                                const id = this.getAttribute('data-id');
+                                const numeric = this.value.replace(/[^\d]/g, '');
+                                this.value = formatToRupiah(numeric);
+                                document.getElementById(`diskon-hidden-${id}`).value =
+                                    numeric;
+                                updateTotals();
+                            });
                         }
                     });
 
-                    const totalDiskonInput = document.getElementById('total-diskon');
-                    totalDiskonInput.min = totalDiskon;
+                    modalInstance.hide();
+                    setTimeout(() => {
+                        document.body.classList.remove('modal-open');
+                        document.body.style.removeProperty('padding-right');
+                        document.body.style.removeProperty('overflow');
+                        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                    }, 500);
 
-                    let manualDiskon = unformatRupiah(totalDiskonInput.value);
-                    if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
-                        manualDiskon = totalDiskon;
-                    }
-                    totalDiskonInput.value = formatToRupiah(manualDiskon.toString());
+                    document.querySelectorAll('.produk-checkbox').forEach(cb => cb.checked = false);
+                    selectAll.checked = false;
 
-                    const totalHargaFinal = total - (manualDiskon - totalDiskon);
-                    document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
-                    document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
+                    updateTotals();
+                });
 
+                bayarInput.addEventListener('input', function() {
+                    const numeric = this.value.replace(/[^\d]/g, '');
+                    this.value = formatToRupiah(numeric);
                     updateHutang();
+                });
+
+                bayarBank.addEventListener('input', function() {
+                    const numeric = this.value.replace(/[^\d]/g, '');
+                    this.value = formatToRupiah(numeric);
+                    updateHutang();
+                });
+
+                const totalDiskonInput = document.getElementById('total-diskon');
+                totalDiskonInput.addEventListener('input', function() {
+                    const numeric = this.value.replace(/[^\d]/g, '');
+                    this.value = formatToRupiah(numeric);
+                    updateTotals();
+                });
+            });
+
+            function hapusProduk(id) {
+                const row = document.getElementById('produk-row-' + id);
+                if (row) row.remove();
+                updateTotals();
+            }
+
+            function updateTotals() {
+                let total = 0;
+                let totalDiskon = 0;
+                let totalPPN = 0;
+
+                document.querySelectorAll('#selected-produk-table tr').forEach(row => {
+                    const hargaBeliHiddenInput = row.querySelector('input[id^="harga-beli-hidden-"]');
+                    const jumlahInput = row.querySelector('.jumlah-input');
+                    const diskonHiddenInput = row.querySelector('input[id^="diskon-hidden-"]');
+                    const ppnCheckbox = row.querySelector('.ppn-checkbox');
+
+                    if (hargaBeliHiddenInput && jumlahInput && diskonHiddenInput) {
+                        const hargaBeli = parseInt(hargaBeliHiddenInput.value) || 0;
+                        const jumlah = parseInt(jumlahInput.value) || 0;
+                        const diskon = parseInt(diskonHiddenInput.value) || 0;
+                        const isPpn = ppnCheckbox?.checked;
+
+                        let subtotal = hargaBeli * jumlah;
+                        let setelahDiskon = subtotal - diskon;
+                        let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
+
+                        totalDiskon += diskon;
+                        totalPPN += ppnAmount;
+                        total += setelahDiskon + ppnAmount;
+                    }
+                });
+
+                const totalDiskonInput = document.getElementById('total-diskon');
+                totalDiskonInput.min = totalDiskon;
+
+                let manualDiskon = unformatRupiah(totalDiskonInput.value);
+                if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
+                    manualDiskon = totalDiskon;
                 }
+                totalDiskonInput.value = formatToRupiah(manualDiskon.toString());
 
-                function updateHutang() {
-                    const totalStr = document.getElementById('total-harga').value.replace(/[^\d]/g, '') || "0";
-                    const bayarStr = document.getElementById('bayar').value || "Rp 0";
-                    const bayarbank = document.getElementById('bayar_bank').value || "Rp 0";
+                const totalHargaFinal = total - (manualDiskon - totalDiskon);
+                document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
+                document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
 
-                    const bayar = unformatRupiah(bayarStr);
-                    const bankbayar = unformatRupiah(bayarbank);
-                    const total = parseInt(totalStr);
-                    const selisih = (bayar + bankbayar) - total;
+                updateHutang();
+            }
 
-                    const hutang = Math.max(total - (bayar + bankbayar), 0);
-                    const kembalian = selisih > 0 ? selisih : 0;
+            function updateHutang() {
+                const totalInput = document.getElementById('total-harga');
+                const bayarEl = document.getElementById('bayar');
+                const hutangInput = document.getElementById('hutang');
+                const kembalianInput = document.getElementById('kembalian');
 
-                    document.getElementById('hutang').value = 'Rp ' + hutang.toLocaleString('id-ID');
-                    document.getElementById('kembalian').value = 'Rp ' + kembalian.toLocaleString('id-ID');
-                }
+                if (!totalInput || !bayarEl || !hutangInput || !kembalianInput) return;
+
+                const total = unformatRupiah(totalInput.value || 'Rp 0');
+                const bayar = unformatRupiah(bayarEl.value || 'Rp 0');
+
+                // **🔑 Ambil semua pembayaran bank**
+                let bankTotal = 0;
+                document.querySelectorAll('.bank-amount').forEach(input => {
+                    bankTotal += unformatRupiah(input.value || 'Rp 0');
+                });
+
+                const selisih = (bayar + bankTotal) - total;
+
+                const hutang = Math.max(total - (bayar + bankTotal), 0);
+                const kembalian = selisih > 0 ? selisih : 0;
+
+                hutangInput.value = 'Rp ' + hutang.toLocaleString('id-ID');
+                kembalianInput.value = 'Rp ' + kembalian.toLocaleString('id-ID');
+            }
             </script>
 
 
@@ -572,211 +666,293 @@
 
 
         <script>
-            $(document).ready(function() {
-                var table = $('#produk-modal-table').DataTable();
+        $(document).ready(function() {
+            var table = $('#produk-modal-table').DataTable();
 
 
-            });
+        });
         </script>
         <script>
-            function tampilkanIdSuplier() {
-                const select = document.getElementById('suplier');
-                const idSuplierInput = document.getElementById('id_suplier_text');
-                const selectedValue = select.value;
-                idSuplierInput.value = selectedValue;
+        function tampilkanIdSuplier() {
+            const select = document.getElementById('suplier');
+            const idSuplierInput = document.getElementById('id_suplier_text');
+            const selectedValue = select.value;
+            idSuplierInput.value = selectedValue;
+        }
+        </script>
+
+        <script>
+        document.getElementById('notaFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('previewNota');
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
             }
+        });
         </script>
 
+
         <script>
-            document.getElementById('notaFileInput').addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                const preview = document.getElementById('previewNota');
+        document.addEventListener('DOMContentLoaded', function() {
 
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
+            const pelangganModalTrigger = new bootstrap.Modal(document.getElementById('pelangganModal'));
+            const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
+            const tipePihak = document.getElementById('tipe_pihak');
 
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                    };
 
-                    reader.readAsDataURL(file);
-                } else {
-                    preview.src = '#';
-                    preview.style.display = 'none';
-                }
+            $('.select2').select2({
+                dropdownParent: $('#pelangganModal')
             });
-        </script>
 
+            // Cek apakah ada produk kategori handphone dan tipe pihak adalah pelanggan
+            function checkForHandphone() {
+                const rows = document.querySelectorAll('#selected-produk-table tr');
+                let show = false;
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-
-                const pelangganModalTrigger = new bootstrap.Modal(document.getElementById('pelangganModal'));
-                const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
-                const tipePihak = document.getElementById('tipe_pihak');
-
-
-                $('.select2').select2({
-                    dropdownParent: $('#pelangganModal')
+                rows.forEach(row => {
+                    const kategoriInput = row.querySelector('input[name$="[kategori]"]');
+                    if (tipePihak.value === 'pelanggan') {
+                        show = true;
+                    }
                 });
 
-                // Cek apakah ada produk kategori handphone dan tipe pihak adalah pelanggan
-                function checkForHandphone() {
-                    const rows = document.querySelectorAll('#selected-produk-table tr');
-                    let show = false;
+                // Hapus tombol lama jika ada
+                document.getElementById('pelanggan-button')?.remove();
 
-                    rows.forEach(row => {
-                        const kategoriInput = row.querySelector('input[name$="[kategori]"]');
-                        if (tipePihak.value === 'pelanggan') {
-                            show = true;
-                        }
-                    });
-
-                    // Hapus tombol lama jika ada
-                    document.getElementById('pelanggan-button')?.remove();
-
-                    if (show) {
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.id = 'pelanggan-button';
-                        btn.className = 'btn btn-warning mt-2';
-                        btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
-                        btn.innerHTML = `
+                if (show) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.id = 'pelanggan-button';
+                    btn.className = 'btn btn-warning mt-2';
+                    btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
+                    btn.innerHTML = `
                     <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
                     Input Data Pelanggan
                 `;
-                        btn.onclick = () => pelangganModalTrigger.show();
+                    btn.onclick = () => pelangganModalTrigger.show();
 
-                        const container = document.querySelector('.table-responsive.mt-3.mb-4');
-                        if (container) {
-                            container.appendChild(btn);
-                        }
+                    const container = document.querySelector('.table-responsive.mt-3.mb-4');
+                    if (container) {
+                        container.appendChild(btn);
                     }
                 }
+            }
 
-                // Cek saat klik tombol konfirmasi produk
-                const confirmBtn = document.getElementById('confirm-produk-btn');
-                if (confirmBtn) {
-                    confirmBtn.addEventListener('click', () => {
-                        setTimeout(checkForHandphone, 500); // beri jeda waktu agar DOM update
-                    });
+            // Cek saat klik tombol konfirmasi produk
+            const confirmBtn = document.getElementById('confirm-produk-btn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', () => {
+                    setTimeout(checkForHandphone, 500); // beri jeda waktu agar DOM update
+                });
+            }
+
+            // Juga cek saat tipe pihak berubah
+            tipePihak.addEventListener('change', function() {
+                checkForHandphone();
+
+                const suplierSelect = document.getElementById('suplier');
+                if (this.value === 'pelanggan') {
+                    suplierSelect.disabled = true;
+                    suplierSelect.value = '';
+                    document.getElementById('id_suplier_text').value = '';
+                } else if (this.value === 'suplier') {
+                    suplierSelect.disabled = false;
+                }
+            });
+
+            // Tombol "Tambah" di bawah dropdown
+            document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
+                modalTambah.show();
+            });
+
+            // Saat tombol "Pilih" ditekan
+            document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
+                const select = document.getElementById('pelanggan-select');
+                const selectedOption = select.options[select.selectedIndex];
+
+                // Cek apakah belum memilih (masih di "Select")
+                if (!selectedOption || selectedOption.disabled) {
+                    alert('Silakan pilih pelanggan terlebih dahulu.');
+                    return;
                 }
 
-                // Juga cek saat tipe pihak berubah
-                tipePihak.addEventListener('change', function() {
-                    checkForHandphone();
+                // Jika sudah memilih pelanggan
+                document.getElementById('pelanggan-container').style.display = 'block';
+                document.getElementById('pelanggan').value = selectedOption.text;
 
-                    const suplierSelect = document.getElementById('suplier');
-                    if (this.value === 'pelanggan') {
-                        suplierSelect.disabled = true;
-                        suplierSelect.value = '';
-                        document.getElementById('id_suplier_text').value = '';
-                    } else if (this.value === 'suplier') {
-                        suplierSelect.disabled = false;
-                    }
-                });
-
-                // Tombol "Tambah" di bawah dropdown
-                document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
-                    modalTambah.show();
-                });
-
-                // Saat tombol "Pilih" ditekan
-                document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
-                    const select = document.getElementById('pelanggan-select');
-                    const selectedOption = select.options[select.selectedIndex];
-
-                    // Cek apakah belum memilih (masih di "Select")
-                    if (!selectedOption || selectedOption.disabled) {
-                        alert('Silakan pilih pelanggan terlebih dahulu.');
-                        return;
-                    }
-
-                    // Jika sudah memilih pelanggan
-                    document.getElementById('pelanggan-container').style.display = 'block';
-                    document.getElementById('pelanggan').value = selectedOption.text;
-
-                    // Tutup modal
-                    pelangganModalTrigger.hide();
-                });
+                // Tutup modal
+                pelangganModalTrigger.hide();
+            });
 
 
-                // Submit form tambah pelanggan
-                $('#formTambahPelanggan').on('submit', function(e) {
-                    e.preventDefault();
+            // Submit form tambah pelanggan
+            $('#formTambahPelanggan').on('submit', function(e) {
+                e.preventDefault();
 
-                    const formData = $(this).serialize();
+                const formData = $(this).serialize();
 
-                    $.ajax({
-                        url: '<?= base_url('simpan/pelanggan') ?>',
-                        method: 'POST',
-                        data: formData,
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                modalTambah.hide();
-                                $('#formTambahPelanggan')[0].reset();
+                $.ajax({
+                    url: '<?= base_url('simpan/pelanggan') ?>',
+                    method: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            modalTambah.hide();
+                            $('#formTambahPelanggan')[0].reset();
 
-                                const newOption = new Option(response.data.nama + ' : ' +
-                                    response.data.no_hp, response.data.id_pelanggan, true,
-                                    true);
-                                $('#pelanggan-select').append(newOption).trigger('change');
+                            const newOption = new Option(response.data.nama + ' : ' +
+                                response.data.no_hp, response.data.id_pelanggan, true,
+                                true);
+                            $('#pelanggan-select').append(newOption).trigger('change');
 
-                                alert('Pelanggan berhasil ditambahkan');
-                            } else {
-                                alert('Error: ' + response.message);
-                            }
-                        },
-                        error: function() {
-                            alert('Terjadi kesalahan saat menyimpan data.');
+                            alert('Pelanggan berhasil ditambahkan');
+                        } else {
+                            alert('Error: ' + response.message);
                         }
-                    });
+                    },
+                    error: function() {
+                        alert('Terjadi kesalahan saat menyimpan data.');
+                    }
                 });
             });
+        });
         </script>
 
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const selectAllPPN = document.getElementById('select-all-ppn');
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllPPN = document.getElementById('select-all-ppn');
 
 
 
-                selectAllPPN.addEventListener('change', function() {
-                    const checkboxes = document.querySelectorAll('.ppn-checkbox');
-                    checkboxes.forEach(cb => cb.checked = selectAllPPN.checked);
-                    updateTotals();
-                });
+            selectAllPPN.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.ppn-checkbox');
+                checkboxes.forEach(cb => cb.checked = selectAllPPN.checked);
+                updateTotals();
             });
+        });
         </script>
 
 
         <script>
-            $(document).ready(function() {
-                // sembunyikan semua section dulu
-                $('.tunai-section, .transfer-section').hide();
+        $(document).ready(function() {
+            // Sembunyikan section awal
+            $('.tunai-section, .transfer-section').hide();
 
-                $('#metode_bayar').on('change', function() {
-                    var metode = $(this).val();
+            $('#metode_bayar').on('change', function() {
+                var metode = $(this).val();
 
-                    if (metode === 'tunai') {
-                        $('.tunai-section').show();
-                        $('.transfer-section').hide();
-                    } else if (metode === 'transfer') {
-                        $('.tunai-section').hide();
-                        $('.transfer-section').show();
-                    } else if (metode === 'tunai_transfer') {
-                        $('.tunai-section').show();
-                        $('.transfer-section').show();
-                    } else {
-                        $('.tunai-section, .transfer-section').hide();
-                    }
+                if (metode === 'tunai') {
+                    $('.tunai-section').show();
+                    $('.transfer-section').hide();
+                } else if (metode === 'transfer') {
+                    $('.tunai-section').hide();
+                    $('.transfer-section').show();
+                } else if (metode === 'tunai_transfer') {
+                    $('.tunai-section').show();
+                    $('.transfer-section').show();
+                } else {
+                    $('.tunai-section, .transfer-section').hide();
+                }
+            });
+
+            // Function untuk buat baris bank
+            function tambahBarisBank() {
+                const container = $('#bank-payment-container');
+                const index = container.children('.bank-row').length;
+
+                const newRow = $(`
+            <div class="row bank-row mb-2">
+                <div class="col-md-6">
+                    <select name="bank[${index}][id]" class="select2 form-control bank-select" style="width: 100%;" required>
+                        <option disabled selected>Pilih Bank</option>
+                        <?php foreach ($bank as $p): ?>
+                            <option value="<?= htmlspecialchars($p->idbank) ?>">
+                                <?= htmlspecialchars($p->nama_bank) ?> : <?= htmlspecialchars($p->norek) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control bank-amount" name="bank[${index}][jumlah]" value="Rp 0">
+                </div>
+                <div class="col-md-2 text-end">
+                    <button type="button" class="btn btn-danger btn-sm hapus-bank">&times;</button>
+                </div>
+            </div>
+        `);
+
+                container.append(newRow);
+
+                newRow.find('.bank-amount').on('input', function() {
+                    const numeric = this.value.replace(/[^\d]/g, '');
+                    this.value = formatToRupiah(numeric);
+                    updateHutang();
                 });
 
+                newRow.find('.hapus-bank').on('click', function() {
+                    $(this).closest('.bank-row').remove();
+                    updateHutang();
+                });
 
-                $('#bank_idbank').select2({
+                newRow.find('.bank-select').select2({
                     dropdownParent: $('body')
                 });
+            }
+
+            // Klik tombol tambah bank
+            $('#tambah-bank').on('click', tambahBarisBank);
+
+            // Panggil minimal satu kali jika metode transfer dipilih
+            $('#metode_bayar').on('change', function() {
+                if ($(this).val() === 'transfer' || $(this).val() === 'tunai_transfer') {
+                    if ($('#bank-payment-container .bank-row').length === 0) {
+                        tambahBarisBank();
+                    }
+                }
             });
+
+            $('#bank_idbank').select2({
+                dropdownParent: $('body')
+            });
+        });
+        </script>
+
+
+        <script>
+        document.getElementById('form-pembelian').addEventListener('submit', function(e) {
+            const requiredInputs = this.querySelectorAll('[required]');
+            let isValid = true;
+            let firstEmpty = null;
+            let emptyFields = [];
+
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    emptyFields.push(input.id || input.name);
+                    if (!firstEmpty) firstEmpty = input;
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Field berikut belum diisi:\n\n' + emptyFields.join(', '));
+                if (firstEmpty) firstEmpty.focus();
+            }
+        });
         </script>

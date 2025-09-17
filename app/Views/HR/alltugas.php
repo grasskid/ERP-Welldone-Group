@@ -1,8 +1,8 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
-        const BASE_URL = "<?= base_url() ?>";
-        const CSRF_TOKEN = "<?= csrf_hash() ?>";
+    const BASE_URL = "<?= base_url() ?>";
+    const CSRF_TOKEN = "<?= csrf_hash() ?>";
     </script>
     <script src="<?= base_url('template/assets/js/apps/kanban.js') ?>"></script>
 </head>
@@ -71,87 +71,87 @@
                                 </div>
                                 <div class="connect-sorting-content" data-sortable="true">
                                     <?php foreach ($tugas as $t): ?>
-                                        <?php if ($t->status == 1): ?>
-                                            <div data-draggable="true" class="card img-task">
-                                                <div class="card-body">
-                                                    <div class="task-header">
-                                                        <div>
-                                                            <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
-                                                                <?= esc($t->nama_tugas) ?>
-                                                                <small class="text-muted">
-                                                                    <br>
-                                                                    <?= esc($t->NAMA_AKUN) ?></small>
-                                                            </h4>
-                                                        </div>
-                                                        <div class="dropdown">
-                                                            <a class="dropdown-toggle" href="#" role="button"
-                                                                id="dropdownMenuLink-<?= $t->idtugas ?>"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="true">
-                                                                <i class="ti ti-dots-vertical text-dark"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end"
-                                                                aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
-                                                                <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
-                                                                    data-nama_tugas="<?= esc($t->nama_tugas) ?>"
-                                                                    data-deskripsi="<?= esc($t->deskripsi) ?>"
-                                                                    data-file="<?= esc($t->foto_tugas) ?>"
-                                                                    data-status="<?= $t->status ?>">
-                                                                    <i class="ti ti-pencil fs-5"></i>Edit
-                                                                </a>
+                                    <?php if ($t->status == 1): ?>
+                                    <div data-draggable="true" class="card img-task">
+                                        <div class="card-body">
+                                            <div class="task-header">
+                                                <div>
+                                                    <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
+                                                        <?= esc($t->nama_tugas) ?>
+                                                        <small class="text-muted">
+                                                            <br>
+                                                            <?= esc($t->NAMA_AKUN) ?></small>
+                                                    </h4>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                        id="dropdownMenuLink-<?= $t->idtugas ?>"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="true">
+                                                        <i class="ti ti-dots-vertical text-dark"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
+                                                        <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
+                                                            data-nama_tugas="<?= esc($t->nama_tugas) ?>"
+                                                            data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-status="<?= $t->status ?>">
+                                                            <i class="ti ti-pencil fs-5"></i>Edit
+                                                        </a>
 
-                                                                <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);"
-                                                                    data-idtugas="<?= $t->idtugas ?>">
-                                                                    <i class="ti ti-trash fs-5"></i>Delete
-                                                                </a>
+                                                        <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);"
+                                                            data-idtugas="<?= $t->idtugas ?>">
+                                                            <i class="ti ti-trash fs-5"></i>Delete
+                                                        </a>
 
 
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <?php if (!empty($t->deskripsi)): ?>
-                                                        <div class="task-content">
-                                                            <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
-                                                                <?= esc($t->deskripsi) ?>
-                                                            </p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if ($t->foto_tugas): ?>
-                                                        <div class="task-content p-0 mt-2">
-                                                            <center>
-                                                                <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
-                                                                    class="img-fluid img-thumbnail-preview"
-                                                                    alt="task image"
-                                                                    style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
-                                                                    data-bs-toggle="modal" data-bs-target="#modalFoto">
-                                                            </center>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div class="task-body">
-                                                        <div class="task-bottom">
-                                                            <div class="tb-section-1">
-                                                                <span class="hstack gap-2 fs-2">
-                                                                    <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
-                                                                </span>
-                                                            </div>
-                                                            <div class="tb-section-2">
-                                                                <span
-                                                                    class="badge rounded-pill text-bg-success fs-1">Todo</span>
-                                                            </div>
-                                                        </div>
-                                                        <?php
-                                                        date_default_timezone_set('Asia/Jakarta');
-                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
-                                                            <span class="hstack gap-2 fs-2" style="padding-left: 20px; color: red; padding-bottom: 20px;">
-                                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
-                                                            </span>
-                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
-                                        <?php endif; ?>
+                                            <?php if (!empty($t->deskripsi)): ?>
+                                            <div class="task-content">
+                                                <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
+                                                    <?= esc($t->deskripsi) ?>
+                                                </p>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if ($t->foto_tugas): ?>
+                                            <div class="task-content p-0 mt-2">
+                                                <center>
+                                                    <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
+                                                        class="img-fluid img-thumbnail-preview" alt="task image"
+                                                        style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
+                                                        data-bs-toggle="modal" data-bs-target="#modalFoto">
+                                                </center>
+                                            </div>
+                                            <?php endif; ?>
+                                            <div class="task-body">
+                                                <div class="task-bottom">
+                                                    <div class="tb-section-1">
+                                                        <span class="hstack gap-2 fs-2">
+                                                            <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="tb-section-2">
+                                                        <span
+                                                            class="badge rounded-pill text-bg-success fs-1">Todo</span>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                <span class="hstack gap-2 fs-2"
+                                                    style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                    keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -183,87 +183,87 @@
                                 </div>
                                 <div class="connect-sorting-content" data-sortable="true">
                                     <?php foreach ($tugas as $t): ?>
-                                        <?php if ($t->status == 2): ?>
-                                            <div data-draggable="true" class="card">
-                                                <div class="card-body">
-                                                    <div class="task-header">
-                                                        <div>
-                                                            <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
-                                                                <?= esc($t->nama_tugas) ?>
-                                                                <small class="text-muted">
-                                                                    <br>
-                                                                    <?= esc($t->NAMA_AKUN) ?></small>
-                                                            </h4>
-                                                        </div>
-                                                        <div class="dropdown">
-                                                            <a class="dropdown-toggle" href="#" role="button"
-                                                                id="dropdownMenuLink-<?= $t->idtugas ?>"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="true">
-                                                                <i class="ti ti-dots-vertical text-dark"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end"
-                                                                aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
-                                                                <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
-                                                                    data-nama_tugas="<?= esc($t->nama_tugas) ?>"
-                                                                    data-deskripsi="<?= esc($t->deskripsi) ?>"
-                                                                    data-file="<?= esc($t->foto_tugas) ?>"
-                                                                    data-status="<?= $t->status ?>">
-                                                                    <i class="ti ti-pencil fs-5"></i>Edit
-                                                                </a>
+                                    <?php if ($t->status == 2): ?>
+                                    <div data-draggable="true" class="card">
+                                        <div class="card-body">
+                                            <div class="task-header">
+                                                <div>
+                                                    <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
+                                                        <?= esc($t->nama_tugas) ?>
+                                                        <small class="text-muted">
+                                                            <br>
+                                                            <?= esc($t->NAMA_AKUN) ?></small>
+                                                    </h4>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                        id="dropdownMenuLink-<?= $t->idtugas ?>"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="true">
+                                                        <i class="ti ti-dots-vertical text-dark"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
+                                                        <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
+                                                            data-nama_tugas="<?= esc($t->nama_tugas) ?>"
+                                                            data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-status="<?= $t->status ?>">
+                                                            <i class="ti ti-pencil fs-5"></i>Edit
+                                                        </a>
 
-                                                                <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);"
-                                                                    data-idtugas="<?= $t->idtugas ?>">
-                                                                    <i class="ti ti-trash fs-5"></i>Delete
-                                                                </a>
+                                                        <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);"
+                                                            data-idtugas="<?= $t->idtugas ?>">
+                                                            <i class="ti ti-trash fs-5"></i>Delete
+                                                        </a>
 
-                                                            </div>
-                                                        </div>
                                                     </div>
-                                                    <?php if (!empty($t->deskripsi)): ?>
-                                                        <div class="task-content">
-                                                            <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
-                                                                <?= esc($t->deskripsi) ?>
-                                                            </p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if ($t->foto_tugas): ?>
-                                                        <div class="task-content p-0 mt-2">
-                                                            <center>
-                                                                <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
-                                                                    class="img-fluid img-thumbnail-preview"
-                                                                    alt="task image"
-                                                                    style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
-                                                                    data-bs-toggle="modal" data-bs-target="#modalFoto">
-                                                            </center>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div class="task-body">
-                                                        <div class="task-bottom">
-                                                            <div class="tb-section-1">
-                                                                <span class="hstack gap-2 fs-2">
-                                                                    <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
-                                                                </span>
-                                                            </div>
-                                                            <div class="tb-section-2">
-                                                                <span class="badge rounded-pill text-bg-primary fs-1">In
-                                                                    Progress</span>
-                                                            </div>
-                                                        </div>
-                                                        <?php
-                                                        date_default_timezone_set('Asia/Jakarta');
-                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
-                                                            <span class="hstack gap-2 fs-2" style="padding-left: 20px; color: red; padding-bottom: 20px;">
-                                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
-                                                            </span>
-                                                        <?php endif; ?>
-                                                    </div>
-
                                                 </div>
                                             </div>
-                                        <?php endif; ?>
+                                            <?php if (!empty($t->deskripsi)): ?>
+                                            <div class="task-content">
+                                                <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
+                                                    <?= esc($t->deskripsi) ?>
+                                                </p>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if ($t->foto_tugas): ?>
+                                            <div class="task-content p-0 mt-2">
+                                                <center>
+                                                    <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
+                                                        class="img-fluid img-thumbnail-preview" alt="task image"
+                                                        style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
+                                                        data-bs-toggle="modal" data-bs-target="#modalFoto">
+                                                </center>
+                                            </div>
+                                            <?php endif; ?>
+                                            <div class="task-body">
+                                                <div class="task-bottom">
+                                                    <div class="tb-section-1">
+                                                        <span class="hstack gap-2 fs-2">
+                                                            <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="tb-section-2">
+                                                        <span class="badge rounded-pill text-bg-primary fs-1">In
+                                                            Progress</span>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                <span class="hstack gap-2 fs-2"
+                                                    style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                    keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                </span>
+                                                <?php endif; ?>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -295,86 +295,86 @@
                                 </div>
                                 <div class="connect-sorting-content" data-sortable="true">
                                     <?php foreach ($tugas as $t): ?>
-                                        <?php if ($t->status == 3): ?>
-                                            <div data-draggable="true" class="card img-task">
-                                                <div class="card-body">
-                                                    <div class="task-header">
-                                                        <div>
-                                                            <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
-                                                                <?= esc($t->nama_tugas) ?>
-                                                                <small class="text-muted">
-                                                                    <br>
-                                                                    <?= esc($t->NAMA_AKUN) ?></small>
-                                                            </h4>
-                                                        </div>
-                                                        <div class="dropdown">
-                                                            <a class="dropdown-toggle" href="#" role="button"
-                                                                id="dropdownMenuLink-<?= $t->idtugas ?>"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="true">
-                                                                <i class="ti ti-dots-vertical text-dark"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end"
-                                                                aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
-                                                                <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
-                                                                    data-nama_tugas="<?= esc($t->nama_tugas) ?>"
-                                                                    data-deskripsi="<?= esc($t->deskripsi) ?>"
-                                                                    data-file="<?= esc($t->foto_tugas) ?>"
-                                                                    data-status="<?= $t->status ?>">
-                                                                    <i class="ti ti-pencil fs-5"></i>Edit
-                                                                </a>
+                                    <?php if ($t->status == 3): ?>
+                                    <div data-draggable="true" class="card img-task">
+                                        <div class="card-body">
+                                            <div class="task-header">
+                                                <div>
+                                                    <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
+                                                        <?= esc($t->nama_tugas) ?>
+                                                        <small class="text-muted">
+                                                            <br>
+                                                            <?= esc($t->NAMA_AKUN) ?></small>
+                                                    </h4>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                        id="dropdownMenuLink-<?= $t->idtugas ?>"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="true">
+                                                        <i class="ti ti-dots-vertical text-dark"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
+                                                        <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
+                                                            data-nama_tugas="<?= esc($t->nama_tugas) ?>"
+                                                            data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-status="<?= $t->status ?>">
+                                                            <i class="ti ti-pencil fs-5"></i>Edit
+                                                        </a>
 
-                                                                <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);"
-                                                                    data-idtugas="<?= $t->idtugas ?>">
-                                                                    <i class="ti ti-trash fs-5"></i>Delete
-                                                                </a>
+                                                        <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);"
+                                                            data-idtugas="<?= $t->idtugas ?>">
+                                                            <i class="ti ti-trash fs-5"></i>Delete
+                                                        </a>
 
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <?php if (!empty($t->deskripsi)): ?>
-                                                        <div class="task-content">
-                                                            <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
-                                                                <?= esc($t->deskripsi) ?>
-                                                            </p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if ($t->foto_tugas): ?>
-                                                        <div class="task-content p-0 mt-2">
-                                                            <center>
-                                                                <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
-                                                                    class="img-fluid img-thumbnail-preview"
-                                                                    alt="task image"
-                                                                    style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
-                                                                    data-bs-toggle="modal" data-bs-target="#modalFoto">
-                                                            </center>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div class="task-body">
-                                                        <div class="task-bottom">
-                                                            <div class="tb-section-1">
-                                                                <span class="hstack gap-2 fs-2">
-                                                                    <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
-                                                                </span>
-                                                            </div>
-                                                            <div class="tb-section-2">
-                                                                <span
-                                                                    class="badge rounded-pill text-bg-warning fs-1">Pending</span>
-                                                            </div>
-                                                        </div>
-                                                        <?php
-                                                        date_default_timezone_set('Asia/Jakarta');
-                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
-                                                            <span class="hstack gap-2 fs-2" style="padding-left: 20px; color: red; padding-bottom: 20px;">
-                                                                keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
-                                                            </span>
-                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
-                                        <?php endif; ?>
+                                            <?php if (!empty($t->deskripsi)): ?>
+                                            <div class="task-content">
+                                                <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
+                                                    <?= esc($t->deskripsi) ?>
+                                                </p>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if ($t->foto_tugas): ?>
+                                            <div class="task-content p-0 mt-2">
+                                                <center>
+                                                    <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
+                                                        class="img-fluid img-thumbnail-preview" alt="task image"
+                                                        style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
+                                                        data-bs-toggle="modal" data-bs-target="#modalFoto">
+                                                </center>
+                                            </div>
+                                            <?php endif; ?>
+                                            <div class="task-body">
+                                                <div class="task-bottom">
+                                                    <div class="tb-section-1">
+                                                        <span class="hstack gap-2 fs-2">
+                                                            <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="tb-section-2">
+                                                        <span
+                                                            class="badge rounded-pill text-bg-warning fs-1">Pending</span>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                                        date_default_timezone_set('Asia/Jakarta');
+                                                        if (date('Y-m-d H:i:s') > $t->end_date): ?>
+                                                <span class="hstack gap-2 fs-2"
+                                                    style="padding-left: 20px; color: red; padding-bottom: 20px;">
+                                                    keterangan : Melewati Deadline (<?= esc($t->end_date) ?>)
+                                                </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -405,78 +405,77 @@
                                 </div>
                                 <div class="connect-sorting-content" data-sortable="true">
                                     <?php foreach ($tugas as $t): ?>
-                                        <?php if ($t->status == 4): ?>
-                                            <div data-draggable="true" class="card img-task">
-                                                <div class="card-body">
-                                                    <div class="task-header">
-                                                        <div>
-                                                            <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
-                                                                <?= esc($t->nama_tugas) ?>
-                                                                <small class="text-muted">
-                                                                    <br>
-                                                                    <?= esc($t->NAMA_AKUN) ?></small>
-                                                            </h4>
-                                                        </div>
-                                                        <div class="dropdown">
-                                                            <a class="dropdown-toggle" href="#" role="button"
-                                                                id="dropdownMenuLink-<?= $t->idtugas ?>"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="true">
-                                                                <i class="ti ti-dots-vertical text-dark"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end"
-                                                                aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
-                                                                <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
-                                                                    data-nama_tugas="<?= esc($t->nama_tugas) ?>"
-                                                                    data-deskripsi="<?= esc($t->deskripsi) ?>"
-                                                                    data-file="<?= esc($t->foto_tugas) ?>"
-                                                                    data-status="<?= $t->status ?>">
-                                                                    <i class="ti ti-pencil fs-5"></i>Edit
-                                                                </a>
+                                    <?php if ($t->status == 4): ?>
+                                    <div data-draggable="true" class="card img-task">
+                                        <div class="card-body">
+                                            <div class="task-header">
+                                                <div>
+                                                    <h4 data-item-title="<?= esc($t->nama_tugas) ?>">
+                                                        <?= esc($t->nama_tugas) ?>
+                                                        <small class="text-muted">
+                                                            <br>
+                                                            <?= esc($t->NAMA_AKUN) ?></small>
+                                                    </h4>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <a class="dropdown-toggle" href="#" role="button"
+                                                        id="dropdownMenuLink-<?= $t->idtugas ?>"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="true">
+                                                        <i class="ti ti-dots-vertical text-dark"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="dropdownMenuLink-<?= $t->idtugas ?>">
+                                                        <a class="dropdown-item edit_item_task cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);" data-idtugas="<?= $t->idtugas ?>"
+                                                            data-nama_tugas="<?= esc($t->nama_tugas) ?>"
+                                                            data-deskripsi="<?= esc($t->deskripsi) ?>"
+                                                            data-file="<?= esc($t->foto_tugas) ?>"
+                                                            data-status="<?= $t->status ?>">
+                                                            <i class="ti ti-pencil fs-5"></i>Edit
+                                                        </a>
 
-                                                                <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
-                                                                    href="javascript:void(0);"
-                                                                    data-idtugas="<?= $t->idtugas ?>">
-                                                                    <i class="ti ti-trash fs-5"></i>Delete
-                                                                </a>
+                                                        <a class="dropdown-item kanban-item-delete cursor-pointer d-flex align-items-center gap-1"
+                                                            href="javascript:void(0);"
+                                                            data-idtugas="<?= $t->idtugas ?>">
+                                                            <i class="ti ti-trash fs-5"></i>Delete
+                                                        </a>
 
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <?php if (!empty($t->deskripsi)): ?>
-                                                        <div class="task-content">
-                                                            <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
-                                                                <?= esc($t->deskripsi) ?>
-                                                            </p>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if ($t->foto_tugas): ?>
-                                                        <div class="task-content p-0 mt-2">
-                                                            <center>
-                                                                <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
-                                                                    class="img-fluid img-thumbnail-preview"
-                                                                    alt="task image"
-                                                                    style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
-                                                                    data-bs-toggle="modal" data-bs-target="#modalFoto">
-                                                            </center>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div class="task-body">
-                                                        <div class="task-bottom">
-                                                            <div class="tb-section-1">
-                                                                <span class="hstack gap-2 fs-2">
-                                                                    <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
-                                                                </span>
-                                                            </div>
-                                                            <div class="tb-section-2">
-                                                                <span class="badge rounded-pill text-bg-info fs-1">Done</span>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        <?php endif; ?>
+                                            <?php if (!empty($t->deskripsi)): ?>
+                                            <div class="task-content">
+                                                <p class="mb-0" data-item-text="<?= esc($t->deskripsi) ?>">
+                                                    <?= esc($t->deskripsi) ?>
+                                                </p>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if ($t->foto_tugas): ?>
+                                            <div class="task-content p-0 mt-2">
+                                                <center>
+                                                    <img src="<?= base_url('foto_tugas/' . $t->foto_tugas) ?>"
+                                                        class="img-fluid img-thumbnail-preview" alt="task image"
+                                                        style="max-width: 200px; display: flex; justify-content: center; cursor: pointer;"
+                                                        data-bs-toggle="modal" data-bs-target="#modalFoto">
+                                                </center>
+                                            </div>
+                                            <?php endif; ?>
+                                            <div class="task-body">
+                                                <div class="task-bottom">
+                                                    <div class="tb-section-1">
+                                                        <span class="hstack gap-2 fs-2">
+                                                            <i class="ti ti-calendar fs-5"></i> <?= date('d M Y') ?>
+                                                        </span>
+                                                    </div>
+                                                    <div class="tb-section-2">
+                                                        <span class="badge rounded-pill text-bg-info fs-1">Done</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -708,17 +707,26 @@
 
 
 
-    <script>
-        // edit
+    <!-- Your existing HTML code remains the same until the script section -->
 
-        document.querySelectorAll('.edit_item_task').forEach(button => {
-            button.addEventListener('click', () => {
-                const fileName = button.getAttribute('data-file');
+    <script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Edit functionality - using event delegation
+        document.addEventListener('click', function(e) {
+            // Check if the clicked element or its parent has the edit class
+            const editBtn = e.target.closest('.edit_item_task');
+            if (editBtn) {
+                e.preventDefault();
+
+                const fileName = editBtn.getAttribute('data-file');
                 const baseUrl = '<?= base_url('foto_tugas/') ?>';
 
-                document.getElementById('file-lama').textContent = fileName ? fileName : 'Tidak ada file';
+                // Update file name display
+                document.getElementById('file-lama').textContent = fileName ? fileName :
+                    'Tidak ada file';
 
-
+                // Update preview image
                 const previewImg = document.getElementById('preview-edit-file');
                 if (fileName) {
                     previewImg.src = baseUrl + fileName;
@@ -728,183 +736,211 @@
                     previewImg.style.display = 'none';
                 }
 
+                // Populate form fields
+                document.getElementById('edit-idtugas').value = editBtn.getAttribute('data-idtugas');
+                document.getElementById('edit-nama_tugas').value = editBtn.getAttribute(
+                    'data-nama_tugas');
+                document.getElementById('edit-deskripsi').value = editBtn.getAttribute(
+                'data-deskripsi');
+                document.getElementById('edit-status').value = editBtn.getAttribute('data-status');
 
-                document.getElementById('edit-idtugas').value = button.getAttribute('data-idtugas');
-                document.getElementById('edit-nama_tugas').value = button.getAttribute('data-nama_tugas');
-                document.getElementById('edit-deskripsi').value = button.getAttribute('data-deskripsi');
-                document.getElementById('edit-status').value = button.getAttribute('data-status');
-
-
+                // Show the modal
                 const modaledit = new bootstrap.Modal(document.getElementById('edit-task-modal'));
                 modaledit.show();
-            });
-        });
-
-
-        document.getElementById('edit-file').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const previewImg = document.getElementById('preview-edit-file');
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewImg.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
             }
         });
 
-        // delete
-        document.querySelectorAll('.kanban-item-delete').forEach(button => {
-            button.addEventListener('click', () => {
-                const idtugas = button.getAttribute('data-idtugas');
+        // File input change handler for edit modal
+        const editFileInput = document.getElementById('edit-file');
+        if (editFileInput) {
+            editFileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                const previewImg = document.getElementById('preview-edit-file');
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Delete functionality
+        document.addEventListener('click', function(e) {
+            const deleteBtn = e.target.closest('.kanban-item-delete');
+            if (deleteBtn) {
+                e.preventDefault();
+
+                const idtugas = deleteBtn.getAttribute('data-idtugas');
                 document.getElementById('delete-idtugas').value = idtugas;
 
                 const modaldelete = new bootstrap.Modal(document.getElementById('delete-task-modal'));
                 modaldelete.show();
-            });
+            }
         });
 
-        // clear all
-        document.querySelectorAll('.clear_semua').forEach(button => {
-            button.addEventListener('click', () => {
+        // Clear all functionality
+        document.addEventListener('click', function(e) {
+            const clearBtn = e.target.closest('.clear_semua');
+            if (clearBtn) {
+                e.preventDefault();
 
-
-                const status = button.getAttribute('data-status');
-                const akunID = button.getAttribute('data-akun');
+                const status = clearBtn.getAttribute('data-status');
+                const akunID = clearBtn.getAttribute('data-akun');
 
                 document.getElementById('clear-status').value = status;
                 document.getElementById('clear-akun').value = akunID;
 
-
                 const modalclearall = new bootstrap.Modal(document.getElementById('clear-all-modal'));
                 modalclearall.show();
-            });
+            }
         });
+    });
+
+    // Preview image functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const fotoTugasInput = document.getElementById('foto_tugas');
+        if (fotoTugasInput) {
+            fotoTugasInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        document.getElementById('preview-foto_tugas').src = e.target.result;
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
     </script>
 
     <!-- preview image -->
     <script>
-        document.getElementById('foto_tugas').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
+    document.getElementById('foto_tugas').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
 
-                reader.onload = function(e) {
-                    document.getElementById('preview-foto_tugas').src = e.target.result;
-                };
+            reader.onload = function(e) {
+                document.getElementById('preview-foto_tugas').src = e.target.result;
+            };
 
-                reader.readAsDataURL(file);
-            }
-        });
+            reader.readAsDataURL(file);
+        }
+    });
     </script>
 
 
     <script>
-        const thumbnails = document.querySelectorAll('.img-thumbnail-preview');
-        const modalGambar = document.getElementById('modalGambar');
-        const modalFoto = document.getElementById('modalFoto');
+    const thumbnails = document.querySelectorAll('.img-thumbnail-preview');
+    const modalGambar = document.getElementById('modalGambar');
+    const modalFoto = document.getElementById('modalFoto');
 
-        let scale = 1;
-        let posX = 0;
-        let posY = 0;
-        let isDragging = false;
-        let startX, startY;
-        let modalInstance = null;
-
-
-
-        thumbnails.forEach(img => {
-            img.addEventListener('click', function() {
-                const src = this.getAttribute('src');
-                modalGambar.setAttribute('src', src);
-
-                scale = 1;
-                posX = 0;
-                posY = 0;
-                updateTransform();
-
-                if (!modalInstance) {
-                    modalInstance = new bootstrap.Modal(modalFoto);
-                }
-                modalInstance.show();
-            });
-        });
-
-        // Fungsi update transform CSS
-        function updateTransform() {
-            modalGambar.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-        }
+    let scale = 1;
+    let posX = 0;
+    let posY = 0;
+    let isDragging = false;
+    let startX, startY;
+    let modalInstance = null;
 
 
-        modalGambar.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -0.1 : 0.1;
-            scale = Math.min(Math.max(0.5, scale + delta), 5);
-            updateTransform();
-        });
 
-        // Drag dengan mouse
-        modalGambar.addEventListener('mousedown', function(e) {
-            isDragging = true;
-            startX = e.clientX - posX;
-            startY = e.clientY - posY;
-            modalGambar.style.cursor = 'grabbing';
-        });
+    thumbnails.forEach(img => {
+        img.addEventListener('click', function() {
+            const src = this.getAttribute('src');
+            modalGambar.setAttribute('src', src);
 
-        document.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
-            posX = e.clientX - startX;
-            posY = e.clientY - startY;
-            updateTransform();
-        });
-
-        document.addEventListener('mouseup', function() {
-            isDragging = false;
-            modalGambar.style.cursor = 'grab';
-        });
-
-        // Reset saat modal ditutup
-        modalFoto.addEventListener('hidden.bs.modal', function() {
             scale = 1;
             posX = 0;
             posY = 0;
             updateTransform();
 
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) backdrop.remove();
-
-            document.body.classList.remove('modal-open');
-            document.body.style.paddingRight = '';
-        });
-
-        // Fungsi tombol zoom
-        function zoomIn() {
-            scale = Math.min(scale + 0.1, 5);
-            updateTransform();
-        }
-
-        function zoomOut() {
-            scale = Math.max(scale - 0.1, 0.5);
-            updateTransform();
-        }
-
-        // Fungsi tombol geser
-        function panImage(x, y) {
-            posX += x;
-            posY += y;
-            updateTransform();
-        }
-
-
-
-        function tutupModal() {
-            const modalInstance = bootstrap.Modal.getInstance(modalFoto);
-            if (modalInstance) {
-                modalInstance.hide();
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalFoto);
             }
+            modalInstance.show();
+        });
+    });
+
+    // Fungsi update transform CSS
+    function updateTransform() {
+        modalGambar.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    }
+
+
+    modalGambar.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        scale = Math.min(Math.max(0.5, scale + delta), 5);
+        updateTransform();
+    });
+
+    // Drag dengan mouse
+    modalGambar.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        startX = e.clientX - posX;
+        startY = e.clientY - posY;
+        modalGambar.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        posX = e.clientX - startX;
+        posY = e.clientY - startY;
+        updateTransform();
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        modalGambar.style.cursor = 'grab';
+    });
+
+    // Reset saat modal ditutup
+    modalFoto.addEventListener('hidden.bs.modal', function() {
+        scale = 1;
+        posX = 0;
+        posY = 0;
+        updateTransform();
+
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) backdrop.remove();
+
+        document.body.classList.remove('modal-open');
+        document.body.style.paddingRight = '';
+    });
+
+    // Fungsi tombol zoom
+    function zoomIn() {
+        scale = Math.min(scale + 0.1, 5);
+        updateTransform();
+    }
+
+    function zoomOut() {
+        scale = Math.max(scale - 0.1, 0.5);
+        updateTransform();
+    }
+
+    // Fungsi tombol geser
+    function panImage(x, y) {
+        posX += x;
+        posY += y;
+        updateTransform();
+    }
+
+
+
+    function tutupModal() {
+        const modalInstance = bootstrap.Modal.getInstance(modalFoto);
+        if (modalInstance) {
+            modalInstance.hide();
         }
+    }
     </script>
 
 

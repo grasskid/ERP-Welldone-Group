@@ -94,6 +94,7 @@ $routes->get('approve/phone/(:num)', 'Approval::approve/$1', ['filter' => 'auth'
 //Transaksi
 
 //pembelian
+$routes->post('insert_produk', 'Pembelian::insert_produk');
 $routes->get('/pembelian', 'Pembelian::index', ['filter' => 'auth']);
 $routes->post('insert_pembelian', 'Pembelian::insert', ['filter' => 'auth']);
 
@@ -159,6 +160,8 @@ $routes->post('riwayat_expired_service/export', 'Expired_service::export', ['fil
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
 $routes->post('insert/stokawal', 'StokAwal::insert', ['filter' => 'auth']);
+$routes->get('/stok/getBarang', 'StokAwal::getBarang');
+
 
 //stokopname
 $routes->get('stok_opname', 'StokOpname::index', ['filter' => 'auth']);

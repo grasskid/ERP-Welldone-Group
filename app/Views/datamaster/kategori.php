@@ -30,6 +30,9 @@
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
+                    <th hidden>
+                        id
+                    </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">ID Kategori</h6>
                     </th>
@@ -43,11 +46,12 @@
             </thead>
             <tbody>
                 <?php if (!empty($kategori)): ?>
-                <?php foreach ($kategori as $row): ?>
-                <tr>
-                    <td><?= esc($row->idkategori) ?></td>
-                    <td><?= esc($row->nama_kategori) ?></td>
-                    <!-- <td>
+                    <?php foreach ($kategori as $row): ?>
+                        <tr>
+                            <td hidden><?= esc($row->id) ?></td>
+                            <td><?= esc($row->idkategori) ?></td>
+                            <td><?= esc($row->nama_kategori) ?></td>
+                            <!-- <td>
                         <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
                             data-bs-target="#edit-kategori-modal" data-id="<?= esc($row->id) ?>"
                             data-id_kategori="<?= esc($row->idkategori) ?>"
@@ -60,12 +64,12 @@
                             </iconify-icon>
                         </button>
                     </td> -->
-                </tr>
-                <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="3" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -159,23 +163,23 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#zero_config').addEventListener('click', function(e) {
-        if (e.target.closest('.edit-button')) {
-            const button = e.target.closest('.edit-button');
-            const id = button.getAttribute('data-id');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#zero_config').addEventListener('click', function(e) {
+            if (e.target.closest('.edit-button')) {
+                const button = e.target.closest('.edit-button');
+                const id = button.getAttribute('data-id');
 
-            const nama_kategori = button.getAttribute('data-nama_kategori');
-            document.getElementById('edit_id').value = id;
+                const nama_kategori = button.getAttribute('data-nama_kategori');
+                document.getElementById('edit_id').value = id;
 
-            document.getElementById('edit_nama_kategori').value = nama_kategori;
-        }
+                document.getElementById('edit_nama_kategori').value = nama_kategori;
+            }
 
-        if (e.target.closest('.delete-button')) {
-            const button = e.target.closest('.delete-button');
-            const id = button.getAttribute('data-id');
-            document.getElementById('delete_id').value = id;
-        }
+            if (e.target.closest('.delete-button')) {
+                const button = e.target.closest('.delete-button');
+                const id = button.getAttribute('data-id');
+                document.getElementById('delete_id').value = id;
+            }
+        });
     });
-});
 </script>

@@ -197,6 +197,20 @@ class Riwayat_Service extends BaseController
         $produkData = $this->request->getPost('produk');
         $idservice = $this->request->getPost('idservice_s');
 
+        $garansi = $this->request->getPost('garansi');
+
+        if ($garansi === 'manual') {
+
+            $garansi = $this->request->getPost('garansi_manual');
+        }
+
+
+        $garansi = (int) $garansi;
+        $garansiupdate = array(
+            'garansi_hari' => $garansi
+        );
+        $this->ServiceModel->updateService($idservice, $garansiupdate);
+
 
         $existingItems = $this->ServiceSparepartModel->getByServiceId($idservice);
         $existingMap = [];
@@ -266,15 +280,7 @@ class Riwayat_Service extends BaseController
         $data_service = $this->ServiceModel->getServiceById($idservice);
         $service_by = $this->request->getPost('service_by_pembayaran');
         $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
-        $garansi = $this->request->getPost('garansi');
 
-        if ($garansi === 'manual') {
-
-            $garansi = $this->request->getPost('garansi_manual');
-        }
-
-
-        $garansi = (int) $garansi;
 
         $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
@@ -288,16 +294,18 @@ class Riwayat_Service extends BaseController
 
 
 
+
+
         $datap = array(
 
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
             'harus_dibayar' => $harus_dibayar,
-            'garansi_hari' => $garansi,
+
             'bayar' => $bayar_pembayaran,
             'service_by' => $service_by_pembayaran
         );
-        $resultend =  $this->ServiceModel->updateService($idservice, $datap);
+        $this->ServiceModel->updateService($idservice, $datap);
 
         session()->remove('idservice');
         session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');

@@ -102,8 +102,9 @@
                             <td><?= esc($row->NAMA_UNIT) ?></td>
                             <td><?= esc($row->no_nota_supplier) ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->jatuh_tempo))) ?></td>
-                            <td><?= esc($row->bayar) ?></td>
-                            <td><?= esc($row->sisa_hutang) ?></td>
+                            <td><?= esc('Rp ' . number_format($row->bayar, 0, ',', '.')) ?></td>
+                            <td><?= esc('Rp ' . number_format($row->sisa_hutang, 0, ',', '.')) ?></td>
+
                             <td><?= esc($row->nama_input) ?></td>
                         </tr>
                     <?php endforeach; ?>

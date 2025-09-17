@@ -68,6 +68,8 @@ class ModelDetailPembelian extends Model
                 detail_pembelian.*,
                 detail_pembelian.tanggal,
                 barang.nama_barang,
+                pembelian.suplier_id_suplier,
+                pembelian.pelanggan_id_pelanggan,
                 unit.NAMA_UNIT')
             ->join('pembelian', 'pembelian.idpembelian = detail_pembelian.pembelian_idpembelian')
             ->join('barang', 'barang.idbarang = detail_pembelian.barang_idbarang')

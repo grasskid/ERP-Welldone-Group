@@ -200,7 +200,8 @@
                                     </td>
                                     <td><?= esc($row->kode_barang) ?></td>
                                     <td><?= esc($row->nama_barang) ?></td>
-                                    <td><?= esc($row->harga) ?></td>
+                                    <td><?= esc('Rp ' . number_format($row->harga, 0, ',', '.')) ?></td>
+
                                     <td><?= esc($row->imei) ?></td>
                                     <td><?= esc($row->jenis_hp) ?></td>
                                     <td><?= esc($row->internal) ?></td>

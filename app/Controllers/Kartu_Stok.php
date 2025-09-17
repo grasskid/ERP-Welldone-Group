@@ -73,7 +73,7 @@ class Kartu_Stok extends BaseController
         foreach ($stok as $item) {
             $sheet->setCellValue('A' . $row, $item->kode_barang);
             $sheet->setCellValue('B' . $row, $item->nama_barang);
-            $sheet->setCellValue('C' . $row, $item->status_ppn);
+            $sheet->setCellValue('C' . $row, ((int)$item->status_ppn === 1) ? 'PPN' : 'NON PPN');
             $sheet->setCellValue('D' . $row, $item->nama_unit);
             $sheet->setCellValue('E' . $row, $item->stok_dasar);
             $sheet->setCellValue('F' . $row, $item->tanggal_stok_dasar);

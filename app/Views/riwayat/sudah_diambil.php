@@ -179,14 +179,18 @@
 
 
 <script>
+    let dataTable;
+
     window.onload = function() {
-        const endDateInput = document.getElementById('endDate');
+        // Inisialisasi DataTable (pastikan id tabel kamu benar)
+        dataTable = $('#zero_config').DataTable();
+
         const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
 
         const today = new Date();
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
-
 
         const toDateInputValue = (date) => {
             const year = date.getFullYear();
@@ -195,37 +199,45 @@
             return `${year}-${month}-${day}`;
         };
 
+        // Set default 15 hari ke belakang
         startDateInput.value = toDateInputValue(fifteenDaysAgo);
         endDateInput.value = toDateInputValue(today);
 
-
-
+        // Filter pertama kali
         filterData();
+
+        // Jalankan filter setiap kali tanggal diubah
+        startDateInput.addEventListener('change', filterData);
+        endDateInput.addEventListener('change', filterData);
     };
 
     function filterData() {
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
 
+        const startDate = start ? new Date(start) : null;
+        const endDate = end ? new Date(end) : null;
 
-        const rows = document.querySelectorAll('#zero_config tbody tr');
-        rows.forEach(row => {
-            const dateCell = row.children[1];
-            if (!dateCell) return;
+        // Tambahkan custom filter DataTables
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Ambil tanggal dari kolom ke-2 (index 1) – ubah jika posisi kolom berbeda
+            const dateText = data[1].trim();
+            const parts = dateText.split('-'); // Asumsi format dd-mm-yyyy
+            if (parts.length !== 3) return true; // kalau format salah, jangan disaring
 
-            const dateText = dateCell.textContent.trim();
-            const parts = dateText.split('-');
             const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
-            const startDate = start ? new Date(start) : null;
-            const endDate = end ? new Date(end) : null;
+            if (startDate && rowDate < startDate) return false;
+            if (endDate && rowDate > endDate) return false;
 
-            let dateMatch = true;
-            if (startDate && rowDate < startDate) dateMatch = false;
-            if (endDate && rowDate > endDate) dateMatch = false;
-
-            row.style.display = (dateMatch) ? '' : 'none';
+            return true;
         });
+
+        // Redraw tabel
+        dataTable.draw();
+
+        // Hapus filter supaya tidak menumpuk setiap kali filterData dipanggil
+        $.fn.dataTable.ext.search.pop();
     }
 
     function resetFilter() {
@@ -235,6 +247,7 @@
         filterData();
     }
 </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

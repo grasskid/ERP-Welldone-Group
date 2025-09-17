@@ -236,6 +236,21 @@ class Service extends BaseController
         $idservice = $this->request->getPost('idservice_s');
 
 
+        $garansi = $this->request->getPost('garansi');
+
+        if ($garansi === 'manual') {
+
+            $garansi = $this->request->getPost('garansi_manual');
+        }
+
+
+        $garansi = (int) $garansi;
+        $garansiupdate = array(
+            'garansi_hari' => $garansi
+        );
+        $this->ServiceModel->updateService($idservice, $garansiupdate);
+
+
         $existingItems = $this->ServiceSparepartModel->getByServiceId($idservice);
         $existingMap = [];
 
@@ -306,15 +321,7 @@ class Service extends BaseController
         //pembayaran
         $service_by = $this->request->getPost('service_by_pembayaran');
         $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
-        $garansi = $this->request->getPost('garansi');
 
-        if ($garansi === 'manual') {
-
-            $garansi = $this->request->getPost('garansi_manual');
-        }
-
-
-        $garansi = (int) $garansi;
 
         $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
@@ -328,7 +335,7 @@ class Service extends BaseController
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
             'harus_dibayar' => $total_harga_pembayaran,
-            'garansi_hari' => $garansi,
+
             'bayar' => $bayar_pembayaran,
             'service_by' => $service_by_pembayaran,
             'total_service_garansi' => 0,

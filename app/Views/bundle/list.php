@@ -53,8 +53,9 @@
                         <tr>
 
                             <td><?= esc($row->nama_bundle) ?></td>
-                            <td><?= esc($row->harga_total) ?></td>
-                            <td><?= esc($row->harga_jual) ?></td>
+                            <td>Rp <?= number_format($row->harga_total, 0, ',', '.') ?></td>
+                            <td>Rp <?= number_format($row->harga_jual, 0, ',', '.') ?></td>
+
                             <td>
                                 <a href="<?php echo base_url('edit_bundle/' . $row->idbundle) ?>">
                                     <button type="button" class="btn btn-warning edit-button">
@@ -127,7 +128,7 @@
             </div>
             <form action="<?= base_url('delete_bundle') ?>" method="post">
                 <div class="modal-body">
-                    <input id="delete_id_bundle" name="idbundle">
+                    <input hidden id="delete_id_bundle" name="idbundle">
                     <p style="font-style: italic;">Apa anda yakin ingin menghapus data ini?</p>
                 </div>
                 <div class="modal-footer">

@@ -762,98 +762,120 @@
 
 
 
+    <!-- Your existing HTML code remains the same until the script section -->
+
     <script>
-    // edit
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Edit functionality - using event delegation
+        document.addEventListener('click', function(e) {
+            // Check if the clicked element or its parent has the edit class
+            const editBtn = e.target.closest('.edit_item_task');
+            if (editBtn) {
+                e.preventDefault();
 
-    document.querySelectorAll('.edit_item_task').forEach(button => {
-        button.addEventListener('click', () => {
-            const fileName = button.getAttribute('data-file');
-            const baseUrl = '<?= base_url('foto_tugas/') ?>';
-            const statusTemplate = parseInt(button.getAttribute('data-status_template'));
+                const fileName = editBtn.getAttribute('data-file');
+                const baseUrl = '<?= base_url('foto_tugas/') ?>';
 
-            const namaInput = document.getElementById('edit-nama_tugas');
-            const deskripsiInput = document.getElementById('edit-deskripsi');
-            const fileInput = document.getElementById('edit-file');
-            const statusSelect = document.getElementById('edit-status');
-            const penilaianInput = document.getElementById('edit-penilaian');
-            const kpiInput = document.getElementById('edit-kpi');
+                // Update file name display
+                document.getElementById('file-lama').textContent = fileName ? fileName :
+                    'Tidak ada file';
 
-            // Preview
-            document.getElementById('file-lama').textContent = fileName || 'Tidak ada file';
-            const previewImg = document.getElementById('preview-edit-file');
-            previewImg.src = fileName ? baseUrl + fileName : '';
-            previewImg.style.display = fileName ? 'block' : 'none';
+                // Update preview image
+                const previewImg = document.getElementById('preview-edit-file');
+                if (fileName) {
+                    previewImg.src = baseUrl + fileName;
+                    previewImg.style.display = 'block';
+                } else {
+                    previewImg.src = '';
+                    previewImg.style.display = 'none';
+                }
 
-            // Set form values
-            document.getElementById('edit-idtugas').value = button.getAttribute('data-idtugas');
-            namaInput.value = button.getAttribute('data-nama_tugas');
-            deskripsiInput.value = button.getAttribute('data-deskripsi');
-            statusSelect.value = button.getAttribute('data-status');
-            document.getElementById('edit-status_template').value = statusTemplate;
-            penilaianInput.value = button.getAttribute('data-penilaian');
-            kpiInput.value = button.getAttribute('data-kpi');
+                // Populate form fields
+                document.getElementById('edit-idtugas').value = editBtn.getAttribute('data-idtugas');
+                document.getElementById('edit-nama_tugas').value = editBtn.getAttribute(
+                    'data-nama_tugas');
+                document.getElementById('edit-deskripsi').value = editBtn.getAttribute(
+                'data-deskripsi');
+                document.getElementById('edit-status').value = editBtn.getAttribute('data-status');
 
-            // Apply readonly or disabled
-            if (statusTemplate === 1) {
-                namaInput.setAttribute('readonly', true);
-                deskripsiInput.setAttribute('readonly', true);
-                fileInput.setAttribute('disabled', true);
-            } else {
-                namaInput.removeAttribute('readonly');
-                deskripsiInput.removeAttribute('readonly');
-                fileInput.removeAttribute('disabled');
+                // Show the modal
+                const modaledit = new bootstrap.Modal(document.getElementById('edit-task-modal'));
+                modaledit.show();
             }
+        });
 
-            // Show modal
-            const modaledit = new bootstrap.Modal(document.getElementById('edit-task-modal'));
-            modaledit.show();
+        // File input change handler for edit modal
+        const editFileInput = document.getElementById('edit-file');
+        if (editFileInput) {
+            editFileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                const previewImg = document.getElementById('preview-edit-file');
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Delete functionality
+        document.addEventListener('click', function(e) {
+            const deleteBtn = e.target.closest('.kanban-item-delete');
+            if (deleteBtn) {
+                e.preventDefault();
+
+                const idtugas = deleteBtn.getAttribute('data-idtugas');
+                document.getElementById('delete-idtugas').value = idtugas;
+
+                const modaldelete = new bootstrap.Modal(document.getElementById('delete-task-modal'));
+                modaldelete.show();
+            }
+        });
+
+        // Clear all functionality
+        document.addEventListener('click', function(e) {
+            const clearBtn = e.target.closest('.clear_semua');
+            if (clearBtn) {
+                e.preventDefault();
+
+                const status = clearBtn.getAttribute('data-status');
+                const akunID = clearBtn.getAttribute('data-akun');
+
+                document.getElementById('clear-status').value = status;
+                document.getElementById('clear-akun').value = akunID;
+
+                const modalclearall = new bootstrap.Modal(document.getElementById('clear-all-modal'));
+                modalclearall.show();
+            }
         });
     });
 
-    // delete
-    document.querySelectorAll('.kanban-item-delete').forEach(button => {
-        button.addEventListener('click', () => {
-            const idtugas = button.getAttribute('data-idtugas');
-            document.getElementById('delete-idtugas').value = idtugas;
+    // Preview image functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const fotoTugasInput = document.getElementById('foto_tugas');
+        if (fotoTugasInput) {
+            fotoTugasInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
 
-            const modaldelete = new bootstrap.Modal(document.getElementById('delete-task-modal'));
-            modaldelete.show();
-        });
-    });
+                    reader.onload = function(e) {
+                        document.getElementById('preview-foto_tugas').src = e.target.result;
+                    };
 
-    // clear all
-    document.querySelectorAll('.clear_semua').forEach(button => {
-        button.addEventListener('click', () => {
-
-
-            const status = button.getAttribute('data-status');
-            const akunID = button.getAttribute('data-akun');
-
-            document.getElementById('clear-status').value = status;
-            document.getElementById('clear-akun').value = akunID;
-
-
-            const modalclearall = new bootstrap.Modal(document.getElementById('clear-all-modal'));
-            modalclearall.show();
-        });
-    });
-    </script>
-
-    <!-- preview image -->
-    <script>
-    document.getElementById('foto_tugas').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                document.getElementById('preview-foto_tugas').src = e.target.result;
-            };
-
-            reader.readAsDataURL(file);
+                    reader.readAsDataURL(file);
+                }
+            });
         }
     });
     </script>
+
+    <!-- The rest of your code remains the same -->
 
 
     <script>

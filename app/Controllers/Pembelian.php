@@ -268,4 +268,56 @@ class Pembelian extends BaseController
             return redirect()->to(base_url('/pembelian'));
         }
     }
+
+    public function insert_produk()
+    {
+
+        $nama_barang = $this->request->getPost('nama_barang');
+        $harga      = str_replace('.', '', $this->request->getPost('harga'));
+        $harga_beli      = str_replace('.', '', $this->request->getPost('harga_beli'));
+        $input = $this->request->getPost('input_by');
+        $stok_minimum = $this->request->getPost('stok_minimum');
+        $kategori = $this->request->getPost('kategori');
+        $data_kategori = $this->KategoriModel->getByName($kategori);
+
+        $idkategori = $data_kategori->id;
+        $kode_kategori = $data_kategori->idkategori;
+
+        $lastBarang = $this->BarangModel->getLastBarangByKategori($idkategori);
+
+        if ($lastBarang) {
+            $lastNumber = (int) substr($lastBarang->kode_barang, strlen($kode_kategori));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        $formattedNumber = str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+
+        $kode_barang = $kode_kategori . $formattedNumber;
+        $status_ppn = $this->request->getPost('status_ppn');
+        $warna = $this->request->getPost('warna');
+
+
+        $data = array(
+            'kode_barang' => $kode_barang,
+            'nama_barang' => $nama_barang,
+            'harga' => $harga,
+            'harga_beli' => $harga_beli,
+            'input' => $input,
+            'stok_minimum' => $stok_minimum,
+            'idkategori' => $idkategori,
+            'warna' => $warna,
+            'status' => "1",
+            'status_ppn' => $status_ppn,
+            'deleted' => '0'
+
+        );
+
+        $result = $this->BarangModel->insert_Barang($data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
+            return redirect()->to(base_url('/pembelian'));
+        }
+    }
 }

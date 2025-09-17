@@ -103,6 +103,9 @@ foreach ($detail_pembelian as $row) {
                             <h6 class="fs-4 fw-semibold mb-0">Nama Unit</h6>
                         </th>
 
+                        <th>
+                            <h6 class="fs-4 fw-semibold mb-0">Sumber</h6>
+                        </th>
 
                         <th>
                             <h6 class="fs-4 fw-semibold mb-0">Total Harga</h6>
@@ -123,7 +126,11 @@ foreach ($detail_pembelian as $row) {
                                 <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
                                 <td><?= esc($row->nama_barang) ?></td>
                                 <td><?= esc($row->NAMA_UNIT) ?></td>
-
+                                <?php if ($row->suplier_id_suplier == null || $row->suplier_id_suplier == 0) : ?>
+                                    <td>Pelanggan</td>
+                                <?php else: ?>
+                                    <td>Suplier</td>
+                                <?php endif ?>
                                 <td><?= esc(number_format($row->total_harga, 0, ',', '.')) ?></td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
@@ -233,7 +240,12 @@ foreach ($detail_pembelian as $row) {
 
     <!-- JavaScript untuk filter -->
     <script>
+        let table;
+
         window.onload = function() {
+            // Inisialisasi DataTable
+            table = $('#zero_config').DataTable();
+
             const endDateInput = document.getElementById('endDate');
             const startDateInput = document.getElementById('startDate');
 
@@ -241,7 +253,7 @@ foreach ($detail_pembelian as $row) {
             const fifteenDaysAgo = new Date();
             fifteenDaysAgo.setDate(today.getDate() - 15);
 
-
+            // Format ke yyyy-mm-dd agar cocok dengan input date
             const toDateInputValue = (date) => {
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -249,15 +261,16 @@ foreach ($detail_pembelian as $row) {
                 return `${year}-${month}-${day}`;
             };
 
+            // Set default value input
             startDateInput.value = toDateInputValue(fifteenDaysAgo);
             endDateInput.value = toDateInputValue(today);
 
             const unitSelect = document.getElementById('unitFilter');
             if (unitSelect.options.length > 1) {
-                unitSelect.selectedIndex = 1;
+                unitSelect.selectedIndex = 1; // otomatis pilih unit pertama
             }
 
-            filterData();
+            filterData(); // jalankan filter pertama kali
         };
 
         function filterData() {
@@ -265,37 +278,37 @@ foreach ($detail_pembelian as $row) {
             const end = document.getElementById('endDate').value;
             const selectedUnit = document.getElementById('unitFilter').value.toLowerCase();
 
-            const rows = document.querySelectorAll('#zero_config tbody tr');
-            rows.forEach(row => {
-                const dateCell = row.children[1];
-                const unitCell = row.children[3];
-                if (!dateCell || !unitCell) return;
+            // Hapus filter sebelumnya agar tidak double
+            $.fn.dataTable.ext.search = [];
 
-                // Ambil dan parsing tanggal
-                const dateText = dateCell.textContent.trim();
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                // Ambil kolom tanggal & unit dari tabel (pastikan index sesuai!)
+                const dateText = data[1]; // kolom ke-2 (tanggal)
+                const unitText = data[3].toLowerCase(); // kolom ke-4 (unit)
+
+                // Ubah format d-m-Y ke Y-m-d
                 const parts = dateText.split('-');
-                const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // ubah ke Y-m-d
+                const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
                 const startDate = start ? new Date(start) : null;
                 const endDate = end ? new Date(end) : null;
 
-                // Ambil dan cocokan nama unit
-                const unitName = unitCell.textContent.trim().toLowerCase();
-                const unitMatch = selectedUnit === "" || unitName === selectedUnit;
+                const unitMatch = selectedUnit === "" || unitText === selectedUnit;
 
                 let dateMatch = true;
                 if (startDate && rowDate < startDate) dateMatch = false;
                 if (endDate && rowDate > endDate) dateMatch = false;
 
-                // Tampilkan baris jika dua-duanya match
-                row.style.display = (unitMatch && dateMatch) ? '' : 'none';
+                return unitMatch && dateMatch;
             });
+
+            table.draw(); // render ulang datatable setelah filter
         }
 
         function resetFilter() {
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
             document.getElementById('unitFilter').value = '';
-            filterData();
+            filterData(); // apply filter kosong
         }
     </script>

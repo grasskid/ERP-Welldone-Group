@@ -46,7 +46,8 @@
                         <td><?= esc($row->kode_barang) ?></td>
                         <td><?= esc($row->nama_barang) ?></td>
                         <td><?= esc($row->NAMA_UNIT) ?></td>
-                        <td><?= esc($row->tanggal) ?></td>
+                        <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
+
 
                         <!-- Input fields -->
                         <td>

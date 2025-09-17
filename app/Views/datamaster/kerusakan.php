@@ -137,7 +137,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header d-flex align-items-center">
-                <h4 class="modal-title" id="deleteKerusakanModalLabel">Delete Data Kategori</h4>
+                <h4 class="modal-title" id="deleteKerusakanModalLabel">Delete Data Kerusakan</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url('delete_kerusakan') ?>" method="post">

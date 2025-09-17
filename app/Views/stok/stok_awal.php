@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
         <h4 class="fw-semibold mb-0">Datamaster Stok Awal</h4>
@@ -87,33 +88,33 @@
             </thead>
             <tbody id="produkTableBody">
                 <?php if (!empty($stok)): ?>
-                <?php foreach ($stok as $row): ?>
-                <tr>
-                    <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
+                    <?php foreach ($stok as $row): ?>
+                        <tr>
+                            <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
 
-                    <td><?= esc($row->jumlah) ?></td>
-                    <td><?= esc($row->nama_barang) ?></td>
-                    <td><?= esc($row->nama_kategori) ?></td>
-                    <td>Rp <?= number_format($row->harga_beli, 0, ',', '.') ?></td>
-                    <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
-                    <td><?= esc($row->satuan_terkecil) ?></td>
-                    <td><?= esc($row->NAMA_UNIT) ?></td>
-                    <td>
-                        <?php if (!empty($row->nama_suplier)): ?>
-                        <?= esc($row->nama_suplier) ?>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if (!empty($row->nama_pelanggan)): ?>
-                        <?= esc($row->nama_pelanggan) ?>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                            <td><?= esc($row->jumlah) ?></td>
+                            <td><?= esc($row->nama_barang) ?></td>
+                            <td><?= esc($row->nama_kategori) ?></td>
+                            <td>Rp <?= number_format($row->harga_beli, 0, ',', '.') ?></td>
+                            <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
+                            <td><?= esc($row->satuan_terkecil) ?></td>
+                            <td><?= esc($row->NAMA_UNIT) ?></td>
+                            <td>
+                                <?php if (!empty($row->nama_suplier)): ?>
+                                    <?= esc($row->nama_suplier) ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if (!empty($row->nama_pelanggan)): ?>
+                                    <?= esc($row->nama_pelanggan) ?>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="8" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="8" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
 
@@ -138,7 +139,7 @@
                             <select name="global_unit" id="global_unit" class="form-select" required>
                                 <option value="">-- Pilih Unit --</option>
                                 <?php foreach ($unit as $u): ?>
-                                <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
+                                    <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -162,77 +163,77 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($barang as $index => $b): ?>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" name="selected_products[]" value="<?= $b->kode_barang ?>"
-                                            id="product_<?= $index ?>" onchange="toggleProductFields(<?= $index ?>)">
-                                    </td>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="selected_products[]" value="<?= $b->kode_barang ?>"
+                                                id="product_<?= $index ?>" onchange="toggleProductFields(<?= $index ?>)">
+                                        </td>
 
-                                    <td style="min-width: 140px; text-align: center;">
-                                        <p style="font-weight: bold;"><?= esc($b->kode_barang) ?></p>
-                                        <p style="font-style: italic;"><?= esc($b->nama_barang) ?></p>
-                                    </td>
-                                    <td>
-                                        <input type="number" name="jumlah[<?= $b->kode_barang ?>]" class="form-control"
-                                            id="jumlah_<?= $index ?>" disabled style="min-width: 120px;">
-                                    </td>
+                                        <td style="min-width: 140px; text-align: center;">
+                                            <p style="font-weight: bold;"><?= esc($b->kode_barang) ?></p>
+                                            <p style="font-style: italic;"><?= esc($b->nama_barang) ?></p>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="jumlah[<?= $b->kode_barang ?>]" class="form-control"
+                                                id="jumlah_<?= $index ?>" disabled style="min-width: 120px;">
+                                        </td>
 
-                                    <!-- <td>
+                                        <!-- <td>
                                             <input  type="number" name="harga_beli[<?= $b->kode_barang ?>]"
                                                 class="form-control currency" id="harga_beli_<?= $index ?>" disabled
                                                 style="min-width: 120px;">
                                         </td> -->
-                                    <td>
-                                        <select name="satuan_terkecil[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="satuan_terkecil_<?= $index ?>" disabled style="min-width: 190px;">
-                                            <option value="">-- Pilih Satuan --</option>
-                                            <option value="pcs">pcs</option>
-                                            <option value="pack">pack</option>
-                                        </select>
-                                    </td>
+                                        <td>
+                                            <select name="satuan_terkecil[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="satuan_terkecil_<?= $index ?>" disabled style="min-width: 190px;">
+                                                <option value="">-- Pilih Satuan --</option>
+                                                <option value="pcs">pcs</option>
+                                                <option value="pack">pack</option>
+                                            </select>
+                                        </td>
 
-                                    <td>
-                                        <?php $isImeiEmpty = empty($b->imei);
+                                        <td>
+                                            <?php $isImeiEmpty = empty($b->imei);
                                             $tipeRelasiDisabled = $isImeiEmpty ? 'disabled' : ''; ?>
-                                        <select name="tipe_relasi[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="tipe_relasi_<?= $index ?>" onchange="toggleRelasiFields(<?= $index ?>)"
-                                            <?= $tipeRelasiDisabled ?> style="min-width: 190px;">
-                                            <option value="">-- Pilih Tipe --</option>
-                                            <option value="suplier" <?= $isImeiEmpty ? 'selected' : '' ?>>Suplier
-                                            </option>
-                                            <option value="pelanggan" <?= $isImeiEmpty ? 'disabled' : '' ?>>Pelanggan
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select name="id_suplier_text[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="id_suplier_text_<?= $index ?>" disabled style="min-width: 190px;">
-                                            <option value="">-- Pilih Suplier --</option>
-                                            <?php foreach ($suplier as $s): ?>
-                                            <option value="<?= $s->id_suplier ?>"><?= $s->nama_suplier ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select name="id_pelanggan_text[<?= $b->kode_barang ?>]" class="form-select"
-                                            id="id_pelanggan_text_<?= $index ?>" disabled style="min-width: 190px;">
-                                            <option value="">-- Pilih Pelanggan --</option>
-                                            <?php foreach ($pelanggan as $p): ?>
-                                            <option value="<?= $p->id_pelanggan ?>"><?= $p->nama ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select name="id_unit_text[<?= $b->kode_barang ?>]"
-                                            id="id_unit_text_<?= $index ?>" hidden>
-                                            <?php foreach ($unit as $u): ?>
-                                            <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
+                                            <select name="tipe_relasi[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="tipe_relasi_<?= $index ?>" onchange="toggleRelasiFields(<?= $index ?>)"
+                                                <?= $tipeRelasiDisabled ?> style="min-width: 190px;">
+                                                <option value="">-- Pilih Tipe --</option>
+                                                <option value="suplier" <?= $isImeiEmpty ? 'selected' : '' ?>>Suplier
+                                                </option>
+                                                <option value="pelanggan" <?= $isImeiEmpty ? 'disabled' : '' ?>>Pelanggan
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="id_suplier_text[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="id_suplier_text_<?= $index ?>" disabled style="min-width: 190px;">
+                                                <option value="">-- Pilih Suplier --</option>
+                                                <?php foreach ($suplier as $s): ?>
+                                                    <option value="<?= $s->id_suplier ?>"><?= $s->nama_suplier ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="id_pelanggan_text[<?= $b->kode_barang ?>]" class="form-select"
+                                                id="id_pelanggan_text_<?= $index ?>" disabled style="min-width: 190px;">
+                                                <option value="">-- Pilih Pelanggan --</option>
+                                                <?php foreach ($pelanggan as $p): ?>
+                                                    <option value="<?= $p->id_pelanggan ?>"><?= $p->nama ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="id_unit_text[<?= $b->kode_barang ?>]"
+                                                id="id_unit_text_<?= $index ?>" hidden>
+                                                <?php foreach ($unit as $u): ?>
+                                                    <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
 
-                                    </td>
-                                    <td hidden><?= esc($b->kode_barang) ?></td>
-                                </tr>
+                                        </td>
+                                        <td hidden><?= esc($b->kode_barang) ?></td>
+                                    </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -249,133 +250,134 @@
 </div>
 
 <script>
-let table;
+    let table;
 
-$(document).ready(function() {
-    table = $('#zero_config').DataTable();
+    $(document).ready(function() {
+        table = $('#zero_config').DataTable();
 
 
-    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-        const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
-        const ppnFilter = $('#ppnFilter').val().toLowerCase();
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
+            const ppnFilter = $('#ppnFilter').val().toLowerCase();
 
-        const kategori = data[3].toLowerCase();
-        const ppn = data[5].toLowerCase();
+            const kategori = data[3].toLowerCase();
+            const ppn = data[5].toLowerCase();
 
-        const matchKategori = !kategoriFilter || kategori === kategoriFilter;
-        const matchPPN = !ppnFilter || ppn === ppnFilter;
+            const matchKategori = !kategoriFilter || kategori === kategoriFilter;
+            const matchPPN = !ppnFilter || ppn === ppnFilter;
 
-        return matchKategori && matchPPN;
+            return matchKategori && matchPPN;
+        });
+
+
+        if ($('#ppnFilter option').length > 1) {
+            $('#ppnFilter')[0].selectedIndex = 1;
+        }
+        if ($('#kategoriFilter option').length > 1) {
+            $('#kategoriFilter')[0].selectedIndex = 1;
+        }
+
+
+        table.draw();
     });
 
-
-    if ($('#ppnFilter option').length > 1) {
-        $('#ppnFilter')[0].selectedIndex = 1;
-    }
-    if ($('#kategoriFilter option').length > 1) {
-        $('#kategoriFilter')[0].selectedIndex = 1;
+    function filterKategori() {
+        table.draw();
     }
 
-
-    table.draw();
-});
-
-function filterKategori() {
-    table.draw();
-}
-
-function resetKategoriFilter() {
-    $('#kategoriFilter').val('');
-    $('#ppnFilter').val('');
-    table.draw();
-}
+    function resetKategoriFilter() {
+        $('#kategoriFilter').val('');
+        $('#ppnFilter').val('');
+        table.draw();
+    }
 </script>
 <script>
-const suplierList = <?= json_encode($suplier) ?>;
-const pelangganList = <?= json_encode($pelanggan) ?>;
-const allBarang = <?= json_encode($barang) ?>;
-const stok = <?= json_encode($stok) ?>;
+    let tablecc = $('#table_barang').DataTable();
+    const suplierList = <?= json_encode($suplier) ?>;
+    const pelangganList = <?= json_encode($pelanggan) ?>;
+    const allBarang = <?= json_encode($barang) ?>;
+    const stok = <?= json_encode($stok) ?>;
 
-// Toggle enable/disable fields when checkbox is clicked
-function toggleProductFields(kodeBarang) {
-    const isChecked = document.getElementById('product_' + kodeBarang)?.checked;
+    // Toggle enable/disable fields when checkbox is clicked
+    function toggleProductFields(kodeBarang) {
+        const isChecked = document.getElementById('product_' + kodeBarang)?.checked;
 
-    const fields = [
-        'jumlah_',
-        'harga_beli_',
-        'satuan_terkecil_',
-        'tipe_relasi_',
-        'id_suplier_text_',
-        'id_pelanggan_text_'
-    ];
+        const fields = [
+            'jumlah_',
+            'harga_beli_',
+            'satuan_terkecil_',
+            'tipe_relasi_',
+            'id_suplier_text_',
+            'id_pelanggan_text_'
+        ];
 
-    fields.forEach(id => {
-        const el = document.getElementById(id + kodeBarang);
-        if (el) el.disabled = !isChecked;
-    });
-}
-
-// Toggle supplier/pelanggan fields based on selected relation type
-function toggleRelasiFields(kodeBarang) {
-    const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang)?.value;
-    const suplierSelect = document.getElementById('id_suplier_text_' + kodeBarang);
-    const pelangganSelect = document.getElementById('id_pelanggan_text_' + kodeBarang);
-
-    if (!suplierSelect || !pelangganSelect) return;
-
-    if (tipeRelasi === 'suplier') {
-        suplierSelect.disabled = false;
-        pelangganSelect.disabled = true;
-        pelangganSelect.value = '';
-    } else if (tipeRelasi === 'pelanggan') {
-        pelangganSelect.disabled = false;
-        suplierSelect.disabled = true;
-        suplierSelect.value = '';
-    } else {
-        suplierSelect.disabled = true;
-        pelangganSelect.disabled = true;
-        suplierSelect.value = '';
-        pelangganSelect.value = '';
+        fields.forEach(id => {
+            const el = document.getElementById(id + kodeBarang);
+            if (el) el.disabled = !isChecked;
+        });
     }
-}
 
-// Global unit change handler
-document.getElementById('global_unit').addEventListener('change', function() {
-    const selectedUnitId = this.value;
+    // Toggle supplier/pelanggan fields based on selected relation type
+    function toggleRelasiFields(kodeBarang) {
+        const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang)?.value;
+        const suplierSelect = document.getElementById('id_suplier_text_' + kodeBarang);
+        const pelangganSelect = document.getElementById('id_pelanggan_text_' + kodeBarang);
 
-    // Update hidden unit fields (if used)
-    allBarang.forEach(barang => {
-        const el = document.getElementById('id_unit_text_' + barang.kode_barang);
-        if (el) el.value = selectedUnitId;
+        if (!suplierSelect || !pelangganSelect) return;
+
+        if (tipeRelasi === 'suplier') {
+            suplierSelect.disabled = false;
+            pelangganSelect.disabled = true;
+            pelangganSelect.value = '';
+        } else if (tipeRelasi === 'pelanggan') {
+            pelangganSelect.disabled = false;
+            suplierSelect.disabled = true;
+            suplierSelect.value = '';
+        } else {
+            suplierSelect.disabled = true;
+            pelangganSelect.disabled = true;
+            suplierSelect.value = '';
+            pelangganSelect.value = '';
+        }
+    }
+
+    // Global unit change handler
+    document.getElementById('global_unit').addEventListener('change', function() {
+        const selectedUnitId = this.value;
+
+        // Update hidden unit fields (if used)
+        allBarang.forEach(barang => {
+            const el = document.getElementById('id_unit_text_' + barang.kode_barang);
+            if (el) el.value = selectedUnitId;
+        });
+
+        // Filter and update barang table
+        filterBarangByUnit(selectedUnitId);
     });
 
-    // Filter and update barang table
-    filterBarangByUnit(selectedUnitId);
-});
+    function filterBarangByUnit(unitId) {
+        const filteredBarang = allBarang.filter(barang => {
+            return !stok.some(s => s.unit_idunit == unitId && s.barang_idbarang == barang.idbarang);
+        });
+        updateBarangTable(filteredBarang);
+    }
 
-function filterBarangByUnit(unitId) {
-    const filteredBarang = allBarang.filter(barang => {
-        return !stok.some(s => s.unit_idunit == unitId && s.barang_idbarang == barang.idbarang);
-    });
-    updateBarangTable(filteredBarang);
-}
+    function updateBarangTable(filteredBarang) {
+        const tableBody = document.querySelector('#table_barang tbody');
+        tableBody.innerHTML = '';
 
-function updateBarangTable(filteredBarang) {
-    const tableBody = document.querySelector('#table_barang tbody');
-    tableBody.innerHTML = '';
+        filteredBarang.forEach((barang) => {
+            const kodeBarang = barang.kode_barang;
 
-    filteredBarang.forEach((barang) => {
-        const kodeBarang = barang.kode_barang;
+            const suplierOptions = suplierList.map(s =>
+                `<option value="${s.id_suplier}">${s.nama_suplier}</option>`
+            ).join('');
 
-        const suplierOptions = suplierList.map(s =>
-            `<option value="${s.id_suplier}">${s.nama_suplier}</option>`
-        ).join('');
+            const pelangganOptions = pelangganList.map(p =>
+                `<option value="${p.id_pelanggan}">${p.nama}</option>`
+            ).join('');
 
-        const pelangganOptions = pelangganList.map(p =>
-            `<option value="${p.id_pelanggan}">${p.nama}</option>`
-        ).join('');
-
-        tableBody.innerHTML += `
+            tableBody.innerHTML += `
             <tr>
                 <td>
                     <input type="checkbox" name="selected_products[]" value="${kodeBarang}" id="product_${kodeBarang}">
@@ -413,30 +415,27 @@ function updateBarangTable(filteredBarang) {
                 </td>
             </tr>
         `;
-    });
+        });
 
-    // Rebind event listeners after rendering
-    filteredBarang.forEach((barang) => {
-        const kodeBarang = barang.kode_barang;
-        const checkbox = document.getElementById('product_' + kodeBarang);
-        const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang);
+        // Rebind event listeners after rendering
+        filteredBarang.forEach((barang) => {
+            const kodeBarang = barang.kode_barang;
+            const checkbox = document.getElementById('product_' + kodeBarang);
+            const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang);
 
-        if (checkbox) {
-            checkbox.addEventListener('change', function() {
-                toggleProductFields(kodeBarang);
-            });
-        }
+            if (checkbox) {
+                checkbox.addEventListener('change', function() {
+                    toggleProductFields(kodeBarang);
+                });
+            }
 
-        if (tipeRelasi) {
-            tipeRelasi.addEventListener('change', function() {
-                toggleRelasiFields(kodeBarang);
-            });
-        }
-    });
-}
+            if (tipeRelasi) {
+                tipeRelasi.addEventListener('change', function() {
+                    toggleRelasiFields(kodeBarang);
+                });
+            }
+        });
+    }
 
-// Optional: Initialize DataTable
-$(document).ready(function() {
-    $('#table_barang').DataTable();
-});
+    // Optional: Initialize DataTable
 </script>

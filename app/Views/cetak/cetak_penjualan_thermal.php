@@ -7,63 +7,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
     body {
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        margin: 20px;
+        font-family: monospace, Arial, sans-serif;
+        font-size: 11px;
+        margin: 0;
         color: #000;
     }
 
     .invoice {
-        max-width: 400px;
+        width: 280px;
+        /* ukuran thermal 58mm, sesuaikan ke 320px kalau 80mm */
         margin: auto;
-        padding: 15px;
-        border: 1px solid #ccc;
+        padding: 5px;
     }
 
     .invoice-header {
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 8px;
     }
 
     .invoice-header h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 14px;
     }
 
     .invoice-header p {
         margin: 0;
-        font-size: 12px;
+        font-size: 10px;
     }
 
     .invoice-info,
     .invoice-total {
         width: 100%;
-        margin-bottom: 15px;
+        margin-bottom: 6px;
+        font-size: 11px;
     }
 
     .invoice-info td {
-        padding: 4px 0;
+        padding: 2px 0;
     }
 
     .items-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 15px;
+        margin-bottom: 6px;
+        font-size: 11px;
     }
 
     .items-table th,
     .items-table td {
-        border-bottom: 1px dashed #ccc;
-        padding: 5px 0;
+        padding: 2px 0;
         text-align: left;
     }
 
     .items-table th {
+        border-bottom: 1px dashed #000;
         font-weight: bold;
     }
 
+    .items-table td {
+        border-bottom: 1px dashed #ccc;
+    }
+
     .invoice-total td {
-        padding: 4px 0;
+        padding: 2px 0;
     }
 
     .text-end {
@@ -73,8 +79,8 @@
     .thank-you {
         text-align: center;
         font-style: italic;
-        font-size: 13px;
-        margin-top: 10px;
+        font-size: 11px;
+        margin-top: 6px;
     }
 
     @media print {
@@ -83,6 +89,7 @@
         }
 
         .invoice {
+            width: 100%;
             border: none;
         }
     }
@@ -100,20 +107,20 @@
 
         <table class="invoice-info">
             <tr>
-                <td>No. Invoice:</td>
-                <td><?= @$no_invoice ?></td>
+                <td>No. Invoice</td>
+                <td>: <?= @$no_invoice ?></td>
             </tr>
             <tr>
-                <td>Tanggal:</td>
-                <td><?= date('d-m-Y H:i:s', strtotime($tanggal)) ?></td>
+                <td>Tanggal</td>
+                <td>: <?= date('d-m-Y H:i:s', strtotime($tanggal)) ?></td>
             </tr>
             <tr>
-                <td>Kasir:</td>
-                <td><?= @$kasir ?></td>
+                <td>Kasir</td>
+                <td>: <?= @$kasir ?></td>
             </tr>
             <tr>
-                <td>Customer:</td>
-                <td><?= @$customer ?></td>
+                <td>Customer</td>
+                <td>: <?= @$customer ?></td>
             </tr>
         </table>
 
@@ -121,30 +128,29 @@
             <thead>
                 <tr>
                     <th>Barang</th>
-                    <th class="text-end">Jumlah</th>
+                    <th class="text-end">Jml</th>
                     <th class="text-end">Harga</th>
-                    <th class="text-end">Subtotal</th>
+                    <th class="text-end">Sub</th>
                 </tr>
             </thead>
             <tbody>
-                <?php
-                // **Perubahan minimal**: inisialisasi akumulator total (tidak mengubah per-item logic)
+                <?php 
+                // tambahan akumulator
                 $total_diskon_semua = 0;
-                $total_ppn_semua = 0;
+                $total_ppn_semua    = 0;
 
-                foreach ($produk as $p) :
+                foreach ($produk as $p) : 
                     $harga  = isset($p['harga']) ? (int)str_replace(['Rp', '.', ' '], '', $p['harga']) : 0;
                     $jumlah = (int)($p['jumlah'] ?? 0);
                     $diskon = isset($p['diskon']) ? (int)str_replace(['Rp', '.', ' '], '', $p['diskon']) : 0;
-
                     $subtotal = $harga * $jumlah;
                     $subtotalSetelahDiskon = $subtotal - $diskon;
                     $ppn = (!empty($p['ppn'])) ? round($subtotalSetelahDiskon * 0.11) : 0;
                     $totalItem = $subtotalSetelahDiskon + $ppn;
 
-                    // **akumulasi** tanpa menyentuh variable lain dari controller
+                    // akumulasi total
                     $total_diskon_semua += $diskon;
-                    $total_ppn_semua += $ppn;
+                    $total_ppn_semua    += $ppn;
                 ?>
                 <tr>
                     <td><?= $p['nama'] ?></td>
@@ -183,10 +189,7 @@
             </tr>
             <tr>
                 <td><strong>Total PPN</strong></td>
-                <!-- jika controller sudah mengisi @$total_ppn, biarkan; kalau tidak, pakai akumulasi view -->
-                <td class="text-end">
-                    <?= number_format((isset($total_ppn) && $total_ppn !== '') ? $total_ppn : $total_ppn_semua, 0, ',', '.') ?>
-                </td>
+                <td class="text-end"><?= number_format($total_ppn_semua, 0, ',', '.') ?></td>
             </tr>
             <tr>
                 <td><strong>Total</strong></td>
@@ -203,7 +206,7 @@
         </table>
 
         <div class="thank-you">
-            Terima kasih atas pembelian Anda!
+            *** Terima kasih atas pembelian Anda! ***
         </div>
     </div>
 

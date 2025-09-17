@@ -41,6 +41,7 @@ class Phone extends BaseController
             'nama_handphone' => $this->NamaHandphoneModel->getNamaHandphone(),
             'body'  => 'datamaster/phone'
         );
+
         return view('template', $data);
     }
 

@@ -68,18 +68,28 @@
 
     <input type="text" hidden name="idservice_s" value="<?php echo @$idservice ?>" id="">
 
+    <?php
+    $garansi_lama = @$old_service_pelanggan->garansi_hari;
+    $is_manual = !in_array($garansi_lama, [0, 7, 30]);
+    ?>
     <div class="mb-3">
         <label class="form-label">Garansi</label>
         <select class="form-select" name="garansi" id="garansiSelect" onchange="cekGaransi(this)">
-            <option selected disabled>---Pilih Garansi---</option>
-            <option value="0">Tidak Ada</option>
-            <option value="7">1 Minggu</option>
-            <option value="30">1 Bulan</option>
-            <option value="manual">Lainnya (isi manual)</option>
+            <option disabled <?= $garansi_lama === null ? 'selected' : '' ?>>---Pilih Garansi---</option>
+            <option value="0" <?= $garansi_lama == 0 ? 'selected' : '' ?>>Tidak Ada</option>
+            <option value="7" <?= $garansi_lama == 7 ? 'selected' : '' ?>>1 Minggu</option>
+            <option value="30" <?= $garansi_lama == 30 ? 'selected' : '' ?>>1 Bulan</option>
+            <option value="manual" <?= $is_manual ? 'selected' : '' ?>>Lainnya (isi manual)</option>
         </select>
 
         <!-- Input manual akan muncul kalau pilih 'manual' -->
-        <input type="text" class="form-control mt-2 d-none" name="garansi_manual" id="garansiManual" placeholder="Masukkan garansi dalam hari (contoh: 45 )">
+        <input
+            type="text"
+            class="form-control mt-2 <?= $is_manual ? '' : 'd-none' ?>"
+            name="garansi_manual"
+            id="garansiManual"
+            placeholder="Masukkan garansi dalam hari (contoh: 45)"
+            value="<?= $is_manual ? htmlspecialchars($garansi_lama) : '' ?>">
     </div>
 
     <div class="mb-3">
@@ -289,15 +299,15 @@
     });
 </script>
 
+
 <script>
     function cekGaransi(select) {
         const manualInput = document.getElementById('garansiManual');
         if (select.value === 'manual') {
             manualInput.classList.remove('d-none');
-            manualInput.setAttribute("required", "required");
         } else {
             manualInput.classList.add('d-none');
-            manualInput.removeAttribute("required");
+            manualInput.value = ''; // reset jika bukan manual
         }
     }
 </script>

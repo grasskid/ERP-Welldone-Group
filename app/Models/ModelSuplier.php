@@ -9,7 +9,7 @@ class ModelSuplier extends Model
     protected $table = 'suplier';
     protected $primaryKey = 'id_suplier';
     protected $returnType = 'object';
-    protected $allowedFields = ['nama_suplier', 'alamat', 'no_hp', 'deleted'];
+    protected $allowedFields = ['id_suplier', 'nama_suplier', 'alamat', 'no_hp', 'deleted'];
 
     public function getSuplier()
     {

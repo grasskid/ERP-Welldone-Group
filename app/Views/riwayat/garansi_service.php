@@ -229,14 +229,18 @@
 
 
 <script>
+    let dataTable;
+
     window.onload = function() {
+        // Inisialisasi DataTable
+        dataTable = $('#zero_config').DataTable();
+
         const endDateInput = document.getElementById('endDate');
         const startDateInput = document.getElementById('startDate');
 
         const today = new Date();
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
-
 
         const toDateInputValue = (date) => {
             const year = date.getFullYear();
@@ -245,37 +249,39 @@
             return `${year}-${month}-${day}`;
         };
 
+        // Set default 15 hari ke belakang
         startDateInput.value = toDateInputValue(fifteenDaysAgo);
         endDateInput.value = toDateInputValue(today);
 
-
-
+        // Jalankan filter pertama kali
         filterData();
+
+        // Tambahkan event agar filter jalan otomatis saat tanggal diganti
+        startDateInput.addEventListener('change', filterData);
+        endDateInput.addEventListener('change', filterData);
     };
 
     function filterData() {
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
 
+        const startDate = start ? new Date(start) : null;
+        const endDate = end ? new Date(end) : null;
 
-        const rows = document.querySelectorAll('#zero_config tbody tr');
-        rows.forEach(row => {
-            const dateCell = row.children[1];
-            if (!dateCell) return;
-
-            const dateText = dateCell.textContent.trim();
-            const parts = dateText.split('-');
+        // Custom filter DataTable
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Ambil tanggal dari kolom ke-2 (index 1)
+            const dateText = data[1].trim(); // Ubah jika kolom tanggal bukan index 1
+            const parts = dateText.split('-'); // Asumsi format dd-mm-yyyy
             const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
-            const startDate = start ? new Date(start) : null;
-            const endDate = end ? new Date(end) : null;
-
-            let dateMatch = true;
-            if (startDate && rowDate < startDate) dateMatch = false;
-            if (endDate && rowDate > endDate) dateMatch = false;
-
-            row.style.display = (dateMatch) ? '' : 'none';
+            if (startDate && rowDate < startDate) return false;
+            if (endDate && rowDate > endDate) return false;
+            return true;
         });
+
+        dataTable.draw(); // redraw tabel setelah filter
+        $.fn.dataTable.ext.search.pop(); // hapus filter setelah dipakai
     }
 
     function resetFilter() {

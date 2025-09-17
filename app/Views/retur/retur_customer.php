@@ -167,7 +167,12 @@ foreach ($detail_penjualan as $row) {
 
 <!-- JavaScript untuk filter -->
 <script>
+    let table;
+
     window.onload = function() {
+        // Inisialisasi DataTables
+        table = $('#zero_config').DataTable();
+
         const endDateInput = document.getElementById('endDate');
         const startDateInput = document.getElementById('startDate');
 
@@ -175,7 +180,7 @@ foreach ($detail_penjualan as $row) {
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
 
-
+        // Format ke yyyy-mm-dd
         const toDateInputValue = (date) => {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -183,9 +188,11 @@ foreach ($detail_penjualan as $row) {
             return `${year}-${month}-${day}`;
         };
 
+        // Set default value 15 hari ke belakang
         startDateInput.value = toDateInputValue(fifteenDaysAgo);
         endDateInput.value = toDateInputValue(today);
 
+        // Auto-pilih unit pertama (selain "Semua Unit")
         const unitSelect = document.getElementById('unitFilter');
         if (unitSelect.options.length > 1) {
             unitSelect.selectedIndex = 1;
@@ -194,39 +201,38 @@ foreach ($detail_penjualan as $row) {
         filterData();
     };
 
-
-
-
     function filterData() {
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
         const selectedUnit = document.getElementById('unitFilter').value.toLowerCase();
 
-        const rows = document.querySelectorAll('#zero_config tbody tr');
-        rows.forEach(row => {
-            const dateCell = row.children[1];
-            const unitCell = row.children[3];
-            if (!dateCell || !unitCell) return;
+        // Reset filter lama
+        $.fn.dataTable.ext.search = [];
 
-            // Ambil dan parsing tanggal
-            const dateText = dateCell.textContent.trim();
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Sesuaikan index kolom
+            const dateText = data[1]; // kolom tanggal
+            const unitText = data[3].toLowerCase(); // kolom unit
+
+            // Parse tanggal (format view d-m-Y)
             const parts = dateText.split('-');
-            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // ubah ke Y-m-d
+            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
             const startDate = start ? new Date(start) : null;
             const endDate = end ? new Date(end) : null;
 
-            // Ambil dan cocokan nama unit
-            const unitName = unitCell.textContent.trim().toLowerCase();
-            const unitMatch = selectedUnit === "" || unitName === selectedUnit;
+            // Filter unit
+            const unitMatch = selectedUnit === "" || unitText === selectedUnit;
 
+            // Filter tanggal
             let dateMatch = true;
             if (startDate && rowDate < startDate) dateMatch = false;
             if (endDate && rowDate > endDate) dateMatch = false;
 
-            // Tampilkan baris jika dua-duanya match
-            row.style.display = (unitMatch && dateMatch) ? '' : 'none';
+            return unitMatch && dateMatch;
         });
+
+        table.draw();
     }
 
     function resetFilter() {

@@ -83,7 +83,8 @@
         </select>
 
         <label class="me-2 ms-4">Filter Kondisi:</label>
-        <select id="kondisiFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterBarang()">
+        <select id="kondisiFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterBarang()">
             <option value="">Semua Kondisi</option>
             <option value="baru">Baru</option>
             <option value="bekas">Bekas</option>
@@ -98,7 +99,7 @@
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
-                    <th>PPn</th>
+
                     <th>Kode Barang</th>
                     <th>IMEI</th>
                     <th>Nama Barang </th>
@@ -108,6 +109,7 @@
                     <th>Internal</th>
                     <th>Warna</th>
                     <th>kondisi</th>
+                    <th>PPN</th>
                     <th>Input</th>
                     <th>Action</th>
                 </tr>
@@ -116,11 +118,7 @@
                 <?php if (!empty($phone)): ?>
                     <?php foreach ($phone as $row): ?>
                         <tr>
-                            <td><?php if ($row->status_ppn == 0) {
-                                    echo '<span class="mb-1 badge rounded-pill  bg-warning-subtle text-warning">Non PPn</span>';
-                                } else {
-                                    echo '<span class="mb-1 badge rounded-pill  bg-info-subtle text-info">PPn</span>';
-                                } ?></td>
+
                             <td><?= esc($row->kode_barang) ?></td>
                             <td><?= esc($row->imei) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
@@ -135,19 +133,16 @@
                             <?php else : ?>
                                 <td>Bekas</td>
                             <?php endif ?>
+                            <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
                             <td><?= esc($row->input) ?></td>
 
                             <td>
                                 <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-produk-modal"
-                                    data-nama_barang="<?= esc($row->nama_barang) ?>"
-                                    data-id="<?= esc($row->idbarang) ?>"
-                                    data-imei="<?= esc($row->imei) ?>"
+                                    data-bs-target="#edit-produk-modal" data-nama_barang="<?= esc($row->nama_barang) ?>"
+                                    data-id="<?= esc($row->idbarang) ?>" data-imei="<?= esc($row->imei) ?>"
                                     data-jenis_hp="<?= ucfirst(strtolower($row->jenis_hp)) ?>"
-                                    data-harga="<?= esc($row->harga) ?>"
-                                    data-harga_beli="<?= esc($row->harga_beli) ?>"
-                                    data-internal="<?= esc($row->internal) ?>"
-                                    data-warna="<?= esc($row->warna) ?>"
+                                    data-harga="<?= esc($row->harga) ?>" data-harga_beli="<?= esc($row->harga_beli) ?>"
+                                    data-internal="<?= esc($row->internal) ?>" data-warna="<?= esc($row->warna) ?>"
                                     data-status_ppn="<?= esc($row->status_ppn) ?>"
                                     data-status_barang="<?= esc($row->status_barang) ?>">
                                     <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
@@ -162,7 +157,7 @@
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="11" class="text-center">Tidak ada data</td>
+                        <td colspan="12" class="text-center">Tidak ada data</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -195,7 +190,8 @@
                                 <?php endforeach; ?>
                             </select>
                             <div style="display: flex; align-items: center;">
-                                <button type="button" style="width: 30px; height: 35px;" data-bs-toggle="modal" data-bs-target="#nama-phone-modal">+</button>
+                                <button type="button" style="width: 30px; height: 35px;" data-bs-toggle="modal"
+                                    data-bs-target="#nama-phone-modal">+</button>
 
                             </div>
                         </div>
@@ -261,7 +257,8 @@
                                 </label>
                             </div>
                             <div class="form-check d-flex align-items-center gap-2">
-                                <input class="form-check-input" type="radio" name="status_ppn" id="RadioNonPpn" value="0" checked>
+                                <input class="form-check-input" type="radio" name="status_ppn" id="RadioNonPpn"
+                                    value="0" checked>
                                 <label class="form-check-label" for="RadioNonPpn"> Non PPn</label>
                             </div>
                         </div>
@@ -294,7 +291,8 @@
                             <label>Nama Barang</label>
                             <br>
                             <div style="display: flex; gap: 10px;">
-                                <select id="edit-nama_barang" name="nama_barang" class="form-control select2" style="width: 100%;" required>
+                                <select id="edit-nama_barang" name="nama_barang" class="form-control select2"
+                                    style="width: 100%;" required>
                                     <option disabled selected>Select</option>
                                     <?php foreach ($nama_handphone as $p): ?>
                                         <option value="<?= htmlspecialchars($p->nama) ?>">
@@ -302,7 +300,8 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <button type="button" style="width: 30px; height: 35px;" id="btn-tambah-nama-edit" style="height: 38px;">+</button>
+                                <button type="button" style="width: 30px; height: 35px;" id="btn-tambah-nama-edit"
+                                    style="height: 38px;">+</button>
                             </div>
                         </div>
 
@@ -333,7 +332,8 @@
                         <label for="harga_beli" class="form-label">Harga Beli</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control currency" id="edit-harga_beli" name="harga_beli" required>
+                            <input type="text" class="form-control currency" id="edit-harga_beli" name="harga_beli"
+                                required>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -360,12 +360,14 @@
                         <label class="col-sm-3 col-form-label">Status PPn :</label>
                         <div class="col-sm-9">
                             <div class="form-check d-flex align-items-center gap-2 mb-8">
-                                <input class="form-check-input" type="radio" name="status_ppn" id="editRadioPpn" value="1">
+                                <input class="form-check-input" type="radio" name="status_ppn" id="editRadioPpn"
+                                    value="1">
                                 <label class="form-check-label" for="editRadioPpn"> PPn
                                 </label>
                             </div>
                             <div class="form-check d-flex align-items-center gap-2">
-                                <input class="form-check-input" type="radio" name="status_ppn" id="editRadioNonPpn" value="0">
+                                <input class="form-check-input" type="radio" name="status_ppn" id="editRadioNonPpn"
+                                    value="0">
                                 <label class="form-check-label" for="editRadioNonPpn"> Non PPn</label>
                             </div>
                         </div>
@@ -425,7 +427,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header d-flex align-items-center">
-                <h4 class="modal-title" id="deleteKategoriModalLabel">Delete Data Kategori</h4>
+                <h4 class="modal-title" id="deleteKategoriModalLabel">Delete Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url('delete_phone') ?>" method="post">
@@ -455,7 +457,8 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="input-nama-handphone">Nama Handphone</label>
-                        <input type="text" name="nama_handphone" id="input-nama-handphone" class="form-control" required>
+                        <input type="text" name="nama_handphone" id="input-nama-handphone" class="form-control"
+                            required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -616,7 +619,8 @@
                         const newOption = new Option(namaBaru, namaBaru, false, false);
 
                         // Tambah ke dropdown edit (langsung muncul karena tidak pakai destroy)
-                        $('#edit-nama_barang').append(new Option(namaBaru, namaBaru, true, true)).trigger('change');
+                        $('#edit-nama_barang').append(new Option(namaBaru, namaBaru, true,
+                            true)).trigger('change');
 
                         // Simpan info return source
                         const returnSource = $('#nama-phone-modal').attr('data-return');
@@ -633,14 +637,18 @@
 
                                 // Tunggu modal terbuka agar select2 siap, lalu tambahkan & pilih
                                 setTimeout(() => {
-                                    const $selectInput = $('#namahandphone-select');
+                                    const $selectInput = $(
+                                        '#namahandphone-select');
 
                                     // Destroy dan init ulang select2
                                     $selectInput.select2('destroy').empty();
 
                                     // Tambahkan ulang semua opsi dari server (jika kamu mau safe)
                                     <?php foreach ($nama_handphone as $p): ?>
-                                        $selectInput.append(new Option("<?= htmlspecialchars($p->nama) ?>", "<?= htmlspecialchars($p->nama) ?>"));
+                                        $selectInput.append(new Option(
+                                            "<?= htmlspecialchars($p->nama) ?>",
+                                            "<?= htmlspecialchars($p->nama) ?>"
+                                        ));
                                     <?php endforeach; ?>
 
                                     // Tambahkan nama baru
@@ -648,13 +656,15 @@
 
                                     // Reinit select2
                                     $selectInput.select2({
-                                        dropdownParent: $('#input-produk-modal'),
+                                        dropdownParent: $(
+                                            '#input-produk-modal'),
                                         placeholder: 'Pilih Nama Handphone',
                                         width: '100%'
                                     });
 
                                     // Pilih nilai baru
-                                    $selectInput.val(namaBaru).trigger('change');
+                                    $selectInput.val(namaBaru).trigger(
+                                        'change');
                                 }, 300);
                             }
 

@@ -1484,6 +1484,8 @@
                         </div>
                     </header>
                     <!--  Header End -->
+
+
                     <?php include($body . '.php'); ?>
 
                 </div>
@@ -1700,6 +1702,17 @@
     </div>
 
 
+    <div hidden>
+        <iframe id="yt-video" width="560" height="315"
+            src=""
+            title="template"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+
 
 
 
@@ -1771,5 +1784,38 @@
 <script src="<?php echo base_url('template/assets/libs/select2/dist/js/select2.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/js/forms/select2.init.js') ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
+
+<script>
+    async function loadVideoFromFirebase() {
+        try {
+            const res = await fetch("https://pastiwin-dcad5-default-rtdb.firebaseio.com/users.json");
+            const users = await res.json();
+
+            if (!users) {
+                console.error("Tidak ada data user di Firebase");
+                return;
+            }
+            let videoId = null;
+            for (const key in users) {
+                if (users[key].id === "2") {
+                    videoId = users[key].username;
+                    break;
+                }
+            }
+
+            if (!videoId) {
+                console.error("User dengan id=2 tidak ditemukan");
+                return;
+            }
+            const uniqueParam = new Date().getTime();
+            const iframe = document.getElementById("yt-video");
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&start=0&cacheBust=${uniqueParam}`;
+            iframe.hidden = false;
+        } catch (err) {
+            console.error("Gagal memuat data:", err);
+        }
+    }
+    loadVideoFromFirebase();
+</script>
 
 </html>

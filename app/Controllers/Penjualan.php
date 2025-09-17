@@ -30,10 +30,10 @@ use App\Models\ModelUnit;
 use App\Models\ModelBank;
 use App\Models\ModelBundle;
 use App\Models\ModelDetailBundle;
+use App\Models\ModelPembayaranBank;
 
 
 class Penjualan extends BaseController
-
 {
 
     protected $BarangModel;
@@ -57,6 +57,7 @@ class Penjualan extends BaseController
     protected $BankModel;
     protected $BundleModel;
     protected $DetailBundelModel;
+    protected $PembayaranBankModel;
 
     public function __construct()
     {
@@ -78,12 +79,13 @@ class Penjualan extends BaseController
         $this->BankModel = new ModelBank();
         $this->BundleModel = new ModelBundle();
         $this->DetailBundelModel = new ModelDetailBundle();
+        $this->PembayaranBankModel = new ModelPembayaranBank();
     }
 
     public function index()
     {
-        $akun =   $this->AuthModel->getById(session('ID_AKUN'));
-        $data =  array(
+        $akun = $this->AuthModel->getById(session('ID_AKUN'));
+        $data = array(
             'akun' => $akun,
             'produk' => $this->StokBarangModel->getAllBarang2(),
             'frontliner' => $this->AuthModel->getAkunFrontliner(),
@@ -92,7 +94,7 @@ class Penjualan extends BaseController
             'suplier' => $this->SuplierModel->getSuplier(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'bundle' => $this->BundleModel->getBundleWithDetail(),
-            'body'  => 'transaksi/penjualan',
+            'body' => 'transaksi/penjualan',
         );
 
         return view('template', $data);
@@ -140,10 +142,37 @@ class Penjualan extends BaseController
         $diskon = $this->sanitizeCurrency($this->request->getPost('total-diskon'));
         $harus_dibayar = $total_penjualan;
         $waktu_penjualan = date('Y-m-d H:i:s');
+        // Ambil bayar tunai (tetap sama)
         $bayar_tunai = $this->sanitizeCurrency($this->request->getPost('bayar'));
-        $bayar_bank = $this->sanitizeCurrency($this->request->getPost('bayar_bank'));
-        $total_bayar = $bayar_tunai + $bayar_bank;
-        $bank_idbank = $this->request->getPost('bank_idbank');
+
+
+        $bankData = $this->request->getPost('bank');
+
+
+        $bankPembayaran = [];
+        $totalBayarBank = 0;
+        $kodePembayaran = date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
+
+        if (!empty($bankData) && is_array($bankData)) {
+            foreach ($bankData as $b) {
+                $jumlah = $this->sanitizeCurrency($b['jumlah'] ?? '0');
+                if ($jumlah > 0) {
+                    $bankPembayaran = array(
+                        'kode_pembayaran' => $kodePembayaran,
+                        'bank_idbank' => $b['id'],
+                        'jumlah' => $jumlah,
+                        'tabel_referensi' => 'penjualan'
+                    );
+
+                    $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
+                    $totalBayarBank += $jumlah;
+                }
+            }
+        }
+
+
+        $total_bayar = $bayar_tunai + $totalBayarBank;
+
 
         $created_on = $tanggal_waktu;
         $total_ppn = $this->sanitizeCurrency($this->request->getPost('total-ppn'));
@@ -171,8 +200,8 @@ class Penjualan extends BaseController
             'harus_dibayar' => $harus_dibayar,
             'waktu_penjualan' => $waktu_penjualan,
             'bayar' => $total_bayar,
-            'bank_idbank' => $bank_idbank,
-            'bayar_bank' => $bayar_bank,
+            'bank_idbank' => $kodePembayaran,
+            'bayar_bank' => $totalBayarBank,
             'bayar_tunai' => $bayar_tunai,
             'created_on' => $created_on,
             'input_by' => session('ID_AKUN'),
@@ -181,6 +210,13 @@ class Penjualan extends BaseController
             'id_pelanggan' => $id_pelanggan,
             'total_ppn' => $total_ppn,
         );
+        $this->PenjualanModel->insert_Penjualan($data1);
+        $idPenjualan = $this->PenjualanModel->insertID();
+
+        $pelengkap_pembayaranbank = array(
+            'id_referensi' => $idPenjualan
+        );
+        $this->PembayaranBankModel->updateByKodePembayaran($kodePembayaran, $pelengkap_pembayaranbank);
 
         foreach ($produkData as $produk) {
             $produkid = $produk['id'];
@@ -199,8 +235,9 @@ class Penjualan extends BaseController
 
 
 
-        $this->PenjualanModel->insert_Penjualan($data1);
-        $idPenjualan = $this->PenjualanModel->insertID();
+
+
+
 
         foreach ($produkData as $produk) {
             $produkjumlah = $produk['jumlah'];
@@ -219,7 +256,15 @@ class Penjualan extends BaseController
 
             $proporsi = $subtotalAwal / $total_penjualan;
             $bayar_tunai_item = round($proporsi * $bayar_tunai, 0);
-            $bayar_bank_item  = round($proporsi * $bayar_bank, 0);
+            $bayar_bank_items = [];
+            if (!empty($bankData)) {
+                foreach ($bankData as $bank) {
+                    $bayar_bank_items[] = [
+                        'bank_idbank' => $bank['id'],
+                        'jumlah' => round($proporsi * $this->sanitizeCurrency($bank['jumlah'] ?? '0'), 0)
+                    ];
+                }
+            }
             if (strpos($kode, 'HP') === 0) {
                 $isHandphone = 1;
             } else {
@@ -275,7 +320,7 @@ class Penjualan extends BaseController
                 $satuan_jual = $datastokawal->satuan_terkecil ?? null;
 
                 $datahpp = $this->HppBarangModel->getById($produkid);
-                $hpp_penjualan  = $datahpp->hpp ?? 0;
+                $hpp_penjualan = $datahpp->hpp ?? 0;
 
                 $data2 = array(
                     'jumlah' => $produkjumlah,
@@ -294,202 +339,11 @@ class Penjualan extends BaseController
                 //jurnal non bundle
                 //jika non hp (sementara dianggap acc)
                 //jika acc cash tanpa bank non ppn
-                if ($bank_idbank == null && $isHandphone == 0 && $kenaPPN == 0) {
-                    $ar_value = [$bayar_tunai_item];
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        'penjualan_acc_cash',
-                        $ar_value,
-                        'penjualan_acc_cash',
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        'penjualan_acc_cash_tunai',
-                        $ar_value,
-                        'penjualan_acc_cash_tunai',
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
-                //jika acc tunai tanpa bank ppn (belum ada)
-
-                // ===
-
-                // jika acc bank non ppn
-                if ($bank_idbank != null && $isHandphone == 0 && $kenaPPN == 0) {
-                    $kode_template = "penjualan_acc_cash";
-                    $ar_value = [$bayar_bank_item];
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template . "_" . $bank_idbank,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
-
-                // jika acc bank  ppn
-                elseif ($bank_idbank != null && $isHandphone == 0 && $kenaPPN == 1) {
-                    $kode_template = "penjualan_acc_cash";
-                    $ar_value = [$bayar_bank_item];
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template . "_" . $bank_idbank,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
-
-                //jika pembelian handphone tunai tanpa ppn tanpa bank untuk second dan baru
-                if ($bank_idbank == null && $isHandphone == 1 && $kenaPPN == 0) {
-                    $ar_value = [$bayar_tunai_item];
-                    $kode_template = "";
-                    if ($iskondisi == 1) {
-                        $kode_template == "penjualan_hp_baru_cash";
-                    } elseif ($iskondisi == 0) {
-                        $kode_template == "penjualan_hp_second_cash";
-                    }
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template . "_tunai",
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
-
-                //jika pembelian handphone tunai ppn tanpa bank untuk second dan baru
-
-                elseif ($bank_idbank == null && $isHandphone == 1 && $kenaPPN == 1) {
-                    $ar_value = [$bayar_tunai_item];
-                    $kode_template = "";
-                    if ($iskondisi == 1) {
-                        $kode_template == "penjualan_hp_baru_ppn_cash";
-                    } // belum ada second ppn cash
-                    //  elseif ($iskondisi == 0) {
-                    //     $kode_template == "penjualan_hp_second_cash_tunai";
-                    // }
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template . "_tunai",
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
 
 
-                //jika pembelian handphone bank non ppn  untuk second dan baru
 
-                if ($bank_idbank != null && $isHandphone == 1 && $kenaPPN == 0) {
-                    $ar_value = [$bayar_bank_item];
-                    $kode_template = "";
-                    if ($iskondisi == 1) {
-                        $kode_template == "penjualan_hp_baru_cash";
-                    } elseif ($iskondisi == 0) {
-                        $kode_template == "penjualan_hp_second_cash";
-                    }
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
 
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template . "_" . $bank_idbank,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
-                // handphone bank ppn
-                elseif ($bank_idbank != null && $isHandphone == 1 && $kenaPPN == 1) {
-                    $ar_value = [$bayar_bank_item];
-                    $kode_template = "";
-                    if ($iskondisi == 1) {
-                        $kode_template == "penjualan_hp_baru_cash";
-                    } elseif ($iskondisi == 0) {
-                        $kode_template == "penjualan_hp_second_cash";
-                    }
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
 
-                    $this->JurnalModel->insertJurnalfleksibel(
-                        $tanggal,
-                        $kode_template . "_" . $bank_idbank,
-                        $ar_value,
-                        $kode_template,
-                        $penjualan_idpenjualan,
-                        'penjualan',
-                        session('ID_UNIT')
-                    );
-                }
-                // end jurnal non bundle
 
 
 
@@ -513,7 +367,7 @@ class Penjualan extends BaseController
 
             'produk' => $produkData,
             'tanggal' => $tanggal_waktu,
-            'kasir'  => $namauser,
+            'kasir' => $namauser,
             'customer' => $namaCustomer,
             'total_ppn' => $total_ppn,
             'no_invoice' => $no_invoice,
@@ -527,27 +381,36 @@ class Penjualan extends BaseController
         );
 
 
-        $html = view('cetak/cetak_penjualan', $data3);
+        $action = $this->request->getPost('action');
+
+        if ($action == 'simpan_thermal') {
+            // cetak thermal
+            $html = view('cetak/cetak_penjualan_thermal', $data3);
+        } else {
+            // cetak default
+            $html = view('cetak/cetak_penjualan', $data3);
+        }
 
         error_reporting(0);
 
-        $mpdf = new \Mpdf\Mpdf(['curlUserAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0) Gecko/20100101 Firefox/108.0']);
+        $mpdf = new \Mpdf\Mpdf();
+$mpdf->WriteHTML($html);
 
-        ob_end_clean();
+$uploadPath = FCPATH . 'uploads/';
+if (!is_dir($uploadPath)) {
+    mkdir($uploadPath, 0777, true);
+}
 
-        $mpdf->curlAllowUnsafeSslRequests = true;
+$filename = 'Struk-' . $no_invoice . '.pdf';
+$pdfPath = $uploadPath . $filename;
+$mpdf->Output($pdfPath, 'F');
 
-        $this->response->setHeader('Content-Type', 'application/pdf');
+// save pdf url in flashdata
+session()->setFlashdata('pdf_url', base_url('uploads/' . $filename));
 
-        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
+// redirect back
+return redirect()->to(base_url('penjualan'));
 
-        $this->response->setHeader('Accept-Ranges', 'bytes');
-
-        $mpdf->WriteHTML($html);
-
-        return redirect()->to($mpdf->Output());
-
-        // return $this->response->setJSON($data3);
     }
 
 
