@@ -1,4 +1,6 @@
 <?php date_default_timezone_set('Asia/Jakarta'); ?>
+
+
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
         <h4 class="fw-semibold mb-0">Presensi</h4>
@@ -29,7 +31,15 @@
         <div style="display: flex; justify-content: space-between;">
             <h5 style="display: flex; padding-left: 20px; padding-top: 20px; padding-bottom: 20px;">Absensi Masuk Tanggal
                 : <?= date('d-m-Y') ?></h2>
-                <button type="button" id="btn-absen-masuk" style="width: 100px; height: 30px; color: white; background-color: cornflowerblue; outline: none; border: none; border-radius: 10px;">Tambah </button>
+                <div style="display: flex; gap: 20px;">
+                    <button type="button"
+                        style="width: 100px; height: 30px; color: black; background-color: antiquewhite; outline: none; border: none; border-radius: 10px;"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-lokasi-saya">
+                        Cek Lokasi Saya
+                    </button>
+                    <button type="button" id="btn-absen-masuk" style="width: 100px; height: 30px; color: white; background-color: cornflowerblue; outline: none; border: none; border-radius: 10px;">Absen </button>
+                </div>
         </div>
         <div class="table-responsive mb-4 px-4">
             <table class="table border text-nowrap mb-0 align-middle">
@@ -381,6 +391,31 @@
         </div>
     </div>
 
+    <!-- modal lokasi -->
+    <div class="modal fade" id="modal-lokasi-saya" tabindex="-1" aria-labelledby="modalLokasiSayaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Lokasi Saya & Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="map2" style="height: 500px; width: 100%;"></div>
+
+                    <!-- Tombol ambil lokasi -->
+                    <div class="text-center my-3">
+                        <button id="btn-ambil-lokasi" class="btn btn-primary">
+                            Ambil Lokasi Saya
+                        </button>
+                    </div>
+
+                    <!-- Status lokasi -->
+                    <div id="status-lokasi" class="text-center text-muted"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <script>
@@ -713,5 +748,171 @@
             translateX += x;
             translateY += y;
             updateTransform();
+        }
+    </script>
+
+    <!-- Tambahkan CDN SweetAlert2 di head -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+    <script>
+        const latitudeUnit = parseFloat(<?= json_encode($data_latlong->LATITUDE ?? 0) ?>);
+        const longitudeUnit = parseFloat(<?= json_encode($data_latlong->LONGTITUDE ?? 0) ?>);
+
+        console.log("Lat Unit:", latitudeUnit, "Long Unit:", longitudeUnit);
+
+        let map = null;
+        let latitudeUser = null;
+        let longitudeUser = null;
+
+        function hitungJarak(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // KM
+        }
+
+        // Reset status setiap kali modal dibuka
+        document.getElementById('modal-lokasi-saya').addEventListener('shown.bs.modal', function() {
+            document.getElementById('status-lokasi').textContent = "Klik tombol untuk mengambil lokasi.";
+        });
+
+        document.getElementById('btn-ambil-lokasi').addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                Swal.fire("Error", "Browser kamu tidak mendukung Geolocation.", "error");
+                return;
+            }
+
+            // Jika browser support API permissions, cek status izin
+            if (navigator.permissions) {
+                navigator.permissions.query({
+                    name: 'geolocation'
+                }).then(function(result) {
+                    console.log("Status izin lokasi:", result.state);
+                    if (result.state === "denied") {
+                        Swal.fire("Izin Lokasi Ditolak",
+                            "Silakan aktifkan izin lokasi untuk browser ini di pengaturan HP Anda.",
+                            "warning"
+                        );
+                        return;
+                    }
+                    ambilLokasiUser();
+                }).catch(() => {
+                    ambilLokasiUser(); // fallback jika tidak bisa cek izin
+                });
+            } else {
+                ambilLokasiUser();
+            }
+        });
+
+        function ambilLokasiUser() {
+            document.getElementById('status-lokasi').textContent = "Mengambil lokasi...";
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                latitudeUser = pos.coords.latitude;
+                longitudeUser = pos.coords.longitude;
+                console.log("Lokasi User:", latitudeUser, longitudeUser);
+                document.getElementById('status-lokasi').textContent = "Lokasi berhasil diambil ✅";
+                tampilkanMap();
+            }, function(err) {
+                console.error("Geolocation Error:", err);
+                switch (err.code) {
+                    case err.PERMISSION_DENIED:
+                        Swal.fire("Izin Lokasi Ditolak", "Silakan izinkan akses lokasi di browser.", "error");
+                        break;
+                    case err.POSITION_UNAVAILABLE:
+                        Swal.fire("Lokasi Tidak Tersedia", "Pastikan GPS/Location Service aktif.", "warning");
+                        break;
+                    case err.TIMEOUT:
+                        Swal.fire("Timeout", "Gagal mendapatkan lokasi. Coba lagi.", "error");
+                        break;
+                    default:
+                        Swal.fire("Error", "Terjadi kesalahan saat mengambil lokasi.", "error");
+                }
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+        }
+
+        function tampilkanMap() {
+            if (map) {
+                map.remove();
+                map = null;
+            }
+
+            map = L.map('map2').setView([latitudeUnit, longitudeUnit], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Marker Unit
+            L.marker([latitudeUnit, longitudeUnit])
+                .addTo(map)
+                .bindPopup('Lokasi Unit')
+                .openPopup();
+
+            // Marker User
+            L.marker([latitudeUser, longitudeUser])
+                .addTo(map)
+                .bindPopup('Lokasi Anda');
+
+            // Polyline
+            const latlngs = [
+                [latitudeUnit, longitudeUnit],
+                [latitudeUser, longitudeUser]
+            ];
+            const polyline = L.polyline(latlngs, {
+                color: 'blue'
+            }).addTo(map);
+
+            // Hitung jarak
+            const jarakKM = hitungJarak(latitudeUnit, longitudeUnit, latitudeUser, longitudeUser);
+            const jarakMeter = jarakKM * 1000;
+
+            // Mid point untuk tooltip
+            const midLat = (latitudeUnit + latitudeUser) / 2;
+            const midLng = (longitudeUnit + longitudeUser) / 2;
+
+            L.tooltip({
+                    permanent: true,
+                    direction: 'top',
+                    className: 'leaflet-distance-label'
+                })
+                .setContent(`${jarakMeter.toFixed(0)} meter`)
+                .setLatLng([midLat, midLng])
+                .addTo(map);
+
+            // Hapus pesan lama jika ada
+            const modalBody = document.querySelector('#modal-lokasi-saya .modal-body');
+            const oldInfoDiv = modalBody.querySelector('.info-jarak');
+            if (oldInfoDiv) oldInfoDiv.remove();
+
+            // Tambahkan pesan jarak
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('info-jarak');
+            infoDiv.style.padding = '10px';
+            infoDiv.style.textAlign = 'center';
+            infoDiv.style.fontWeight = 'bold';
+
+            if (jarakMeter > 200) {
+                infoDiv.style.color = 'red';
+                infoDiv.textContent = "Anda harus berada kurang dari 200 meter dari jarak ke unit";
+            } else {
+                infoDiv.style.color = 'green';
+                infoDiv.textContent = "✅ Selamat anda bisa absen disini";
+            }
+
+            modalBody.appendChild(infoDiv);
+
+            // Auto fit view
+            map.fitBounds(latlngs);
         }
     </script>

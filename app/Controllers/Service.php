@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+
 use Config\Database;
 use App\Models\ModelAuth;
 use App\Models\ModelKerusakan;
@@ -13,6 +14,8 @@ use App\Models\ModelServiceSparepart;
 use App\Models\ModelStokAwal;
 use App\Models\ModelHppBarang;
 use App\Models\ModelJurnal;
+use App\Models\ModelBank;
+use App\Models\ModelPembayaranBank;
 
 class Service extends BaseController
 
@@ -28,6 +31,8 @@ class Service extends BaseController
     protected $StokAwalModel;
     protected $HppBarangModel;
     protected $JurnalModel;
+    protected $BankModel;
+    protected $PembayaranBankModel;
 
 
     public function __construct()
@@ -42,6 +47,8 @@ class Service extends BaseController
         $this->StokAwalModel = new ModelStokAwal();
         $this->HppBarangModel = new ModelHppBarang();
         $this->JurnalModel = new ModelJurnal();
+        $this->BankModel = new ModelBank();
+        $this->PembayaranBankModel = new ModelPembayaranBank();
     }
 
     public function index()
@@ -54,6 +61,7 @@ class Service extends BaseController
         $data =  array(
             'akun' => $akun,
             'teknisi' => $teknisi,
+            'bank' => $this->BankModel->getBank(),
             'fungsi' => $this->KerusakanModel->getKerusakan(),
             'idservice' => $idservice,
             'old_service_pelanggan' => $this->ServiceModel->getByIdWithPelanggan($idservice),
@@ -326,24 +334,52 @@ class Service extends BaseController
         $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
-        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
-
+        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran')); // ini tunai
         $idservice = $this->request->getPost('idservice_p');
+
+        $kodePembayaran =  'ksr' . date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
+        $bankData = $this->request->getPost('bank');
+        $bankPembayaran = [];
+        $totalBayarBank = 0;
+
+        if (!empty($bankData) && is_array($bankData)) {
+            foreach ($bankData as $b) {
+                $jumlah = $this->sanitizeCurrency($b['jumlah'] ?? '0');
+                if ($jumlah > 0) {
+                    $bankPembayaran = array(
+                        'kode_pembayaran' => $kodePembayaran,
+                        'bank_idbank' => $b['id'],
+                        'jumlah' => $jumlah,
+                        'tabel_referensi' => 'service_baru',
+                        'id_referensi' => $idservice
+                    );
+
+                    $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
+                    $totalBayarBank += $jumlah;
+                }
+            }
+        }
+
+
+        $total_bayar = $bayar_pembayaran + $totalBayarBank;
+
+
 
         $datap = array(
 
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
             'harus_dibayar' => $total_harga_pembayaran,
-
-            'bayar' => $bayar_pembayaran,
+            'bayar' => $total_bayar,
             'service_by' => $service_by_pembayaran,
             'total_service_garansi' => 0,
             'biaya_tambahan_garansi' => 0,
             'total_diskon_garansi' => 0,
-            'harga_penjualan_garansi' => 0
+            'harga_penjualan_garansi' => 0,
+            'bayar_tunai' => $bayar_pembayaran,
+            'bayar_bank' => $kodePembayaran
         );
-        $resultend =  $this->ServiceModel->updateService($idservice, $datap);
+        $this->ServiceModel->updateService($idservice, $datap);
 
         session()->remove('idservice');
         session()->setFlashdata('sukses', 'Berhasil Menambahkan Data');
@@ -358,5 +394,12 @@ class Service extends BaseController
 
 
         return (int) preg_replace('/[^0-9]/', '', $cleaned);
+    }
+
+    function sanitizeCurrency($value)
+    {
+
+        $cleaned = str_replace(['Rp', '.', ' '], '', $value);
+        return (float) $cleaned;
     }
 }

@@ -61,8 +61,10 @@ class Absensi extends BaseController
             'jadwalmasuk' => $this->JadwalMasukModel->getAll(),
             'presensiHariIni' => $this->PresensiModel->getPresensiHariIni(session('ID_AKUN'), $tanggalHariIni),
             'dataunit' => $dataunit,
-
+            'data_latlong' => $this->AuthModel->getLatLongByAkun($akunId)
         ];
+
+
 
         return view('template', $data);
     }
@@ -161,30 +163,30 @@ class Absensi extends BaseController
             'status_kehadiran' => $statusKehadiran
         ];
 
-            $pegawai_idpegawai = session('ID_AKUN');
-            $jabatan_id = session('ID_JABATAN');
-            $tanggal_penilaian_kpi = date('Y-m-d H:i:s');
+        $pegawai_idpegawai = session('ID_AKUN');
+        $jabatan_id = session('ID_JABATAN');
+        $tanggal_penilaian_kpi = date('Y-m-d H:i:s');
 
-            $template = $this->TemplateKpiModel->getByJabatanAndNama($jabatan_id, 'Kehadiran & Disiplin Waktu ');
+        $template = $this->TemplateKpiModel->getByJabatanAndNama($jabatan_id, 'Kehadiran & Disiplin Waktu ');
 
-            // if ($template) {
-            //     $kpi_utama = $template->template_kpi;
-            //     $bobot = $template->bobot;
-            //     $target = $template->target;
-            //     $realisasi = ["1"];
-            //     $score = ["1"];
+        // if ($template) {
+        //     $kpi_utama = $template->template_kpi;
+        //     $bobot = $template->bobot;
+        //     $target = $template->target;
+        //     $realisasi = ["1"];
+        //     $score = ["1"];
 
-            //     $this->PenilaianKPIModel->insertKPI(
-            //         $kpi_utama,
-            //         $bobot,
-            //         $target,
-            //         $realisasi,
-            //         $score,
-            //         $pegawai_idpegawai,
-            //         $tanggal_penilaian_kpi
-            //     );
-            // }
-        
+        //     $this->PenilaianKPIModel->insertKPI(
+        //         $kpi_utama,
+        //         $bobot,
+        //         $target,
+        //         $realisasi,
+        //         $score,
+        //         $pegawai_idpegawai,
+        //         $tanggal_penilaian_kpi
+        //     );
+        // }
+
 
         $this->PresensiModel->insertPresensi($data);
         session()->setFlashdata('sukses', 'Absen masuk berhasil!');

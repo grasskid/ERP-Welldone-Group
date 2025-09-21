@@ -19,6 +19,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use App\Models\ModelBank;
+use App\Models\ModelPembayaranBank;
+use App\Models\ModelRiwayatKlaimGaransi;
+
+
 
 class StatusGaransi extends BaseController
 
@@ -35,6 +40,9 @@ class StatusGaransi extends BaseController
     protected $HppBarangModel;
     protected $StokAwalModel;
     protected $ProsesServiceModel;
+    protected $BankModel;
+    protected $PembayaranBankModel;
+    protected $RiwayatKlaimGaransiModel;
 
 
 
@@ -51,19 +59,54 @@ class StatusGaransi extends BaseController
         $this->HppBarangModel = new ModelHppBarang();
         $this->StokAwalModel = new ModelStokAwal();
         $this->ProsesServiceModel = new ModelProsesService();
+        $this->BankModel = new ModelBank();
+        $this->PembayaranBankModel = new ModelPembayaranBank();
+        $this->RiwayatKlaimGaransiModel = new ModelRiwayatKlaimGaransi();
     }
 
     public function index()
     {
-
+        $service = $this->ServiceModel->getRiwayatService();
+        $riwayatKlaim = [];
+        foreach ($service as $s) {
+            $riwayatKlaim[$s->idservice] = $this->RiwayatKlaimGaransiModel->getByService($s->idservice);
+        }
         $data =  array(
             'fungsi' => $this->KerusakanModel->getKerusakan(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
+            'riwayatKlaim' => $riwayatKlaim,
             'service' => $this->ServiceModel->getRiwayatService(),
             'body'  => 'riwayat/garansi_service'
         );
         return view('template', $data);
     }
+
+
+    public function getRiwayatKlaim($idservice)
+    {
+        $riwayat = $this->RiwayatKlaimGaransiModel->getByService($idservice);
+
+        if (empty($riwayat)) {
+            return $this->response->setJSON([
+                'html' => '<div class="alert alert-info">Belum ada klaim garansi untuk service ini.</div>'
+            ]);
+        }
+
+        $html = '<table class="table table-sm table-bordered">
+                <thead><tr><th>#</th><th>Tanggal Klaim</th></tr></thead><tbody>';
+
+        foreach ($riwayat as $i => $row) {
+            $html .= '<tr>
+                    <td>' . ($i + 1) . '</td>
+                    <td>' . date('d-m-Y', strtotime($row->tanggal_claim)) . '</td>
+                </tr>';
+        }
+
+        $html .= '</tbody></table>';
+
+        return $this->response->setJSON(['html' => $html]);
+    }
+
 
     public function claim_garansi()
     {
@@ -78,6 +121,13 @@ class StatusGaransi extends BaseController
         );
         $this->ServiceModel->updateService($idservice, $data);
         $this->ProsesServiceModel->deleteByServiceId($idservice);
+
+        $data2 = array(
+            'service_idservice' => $idservice,
+            'tanggal_claim' => $wibTime->format('Y-m-d H:i:s'),
+        );
+        $this->RiwayatKlaimGaransiModel->insertRiwayat($data2);
+
         session()->setFlashData('sukses', 'Berhasil claim garansi service');
         return redirect()->to(base_url('garansi_service'));
     }
@@ -96,7 +146,9 @@ class StatusGaransi extends BaseController
             'idservice' => $idservice,
             'old_service_pelanggan' => $this->ServiceModel->getByIdWithPelanggan($idservice),
             'oldkerusakan' => $oldkerusakan,
+            'pembayaran_lama' => $this->PembayaranBankModel->getByServiceGaransi($idservice),
             'oldsparepart' => $oldsparepart,
+            'bank' => $this->BankModel->getBank(),
             'lama_garansi' => $lama_garansi ? (int)$lama_garansi->garansi_hari : null,
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'sparepart' => $this->StokBarangModel->getSparepart(),
@@ -293,22 +345,74 @@ class StatusGaransi extends BaseController
 
         $status_service = $this->request->getPost('status_service_pembayaran');
 
-        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
+        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran')); //inii tunai
 
         $biaya_garansi_pembayaran = $this->rupiahToInt($this->request->getPost('biaya_garansi_pembayaran'));
 
         $harus_dibayar_garansi = $total_harga_pembayaran_akhir;
+        $oldservicepelanggan = $this->ServiceModel->getServiceById($idservice);
+        $biaya_tambahan_garansi_lama = $oldservicepelanggan->biaya_tambahan_garansi;
+        $biaya_tambahan_garansi_akhir = $biaya_garansi_pembayaran + $biaya_tambahan_garansi_lama;
+        $total_service_garansi_lama = $oldservicepelanggan->total_service_garansi;
+        $total_service_garansi_akhir = $total_harga_pembayaran_akhir + $total_service_garansi_lama;
+        $total_diskon_garansi_lama = $oldservicepelanggan->total_diskon_garansi;
+        $total_diskon_garansi_akhir = $diskon_pembayaran_garansi + $total_diskon_garansi_lama;
+
+        $tunailama = $oldservicepelanggan->bayar_tunai_garansi;
+        $pembayaranbanklama = $this->PembayaranBankModel->getByServiceGaransi($idservice);
+        $jumlahbanklama = 0;
+        foreach ($pembayaranbanklama as $item) {
+            $jumlahbanklama += $item->jumlah;
+        }
+
+        $kodePembayaran = $oldservicepelanggan->bayar_bank;
+
+        if (empty($kodePembayaran)) {
+
+            $noService = $oldservicepelanggan->no_service;
+
+
+            $angkaNoService = preg_replace('/\D/', '', $noService);
+
+
+            $kodePembayaran = 'ksr' . $angkaNoService;
+        }
+
+
+        $bankData = $this->request->getPost('bank');
+        $bankPembayaran = [];
+        $totalBayarBank = 0;
+
+        if (!empty($bankData) && is_array($bankData)) {
+            foreach ($bankData as $b) {
+                $jumlah = $this->sanitizeCurrency($b['jumlah'] ?? '0');
+                if ($jumlah > 0) {
+                    $bankPembayaran = array(
+                        'kode_pembayaran' => $kodePembayaran,
+                        'bank_idbank' => $b['id'],
+                        'jumlah' => $jumlah,
+                        'tabel_referensi' => 'service_garansi_1',
+                        'id_referensi' => $idservice
+                    );
+
+                    $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
+                    $totalBayarBank += $jumlah;
+                }
+            }
+        }
+
+        $total_bayar_akhir = $bayar_pembayaran + $totalBayarBank + $tunailama + $jumlahbanklama;
+        $tunaitotal = $bayar_pembayaran + $tunailama;
+
+
 
         $datap = array(
 
             'service_by_garansi' => $service_by,
-            'total_service_garansi' => $total_harga_pembayaran_akhir,
-            'biaya_tambahan_garansi' => $biaya_garansi_pembayaran,
-            'total_diskon_garansi' => $diskon_pembayaran_garansi,
-            'bayar_garansi' => $bayar_pembayaran,
-            'harus_dibayar_garansi' => $harus_dibayar_garansi
-
-
+            'total_service_garansi' => $total_service_garansi_akhir,
+            'bayar_garansi' => $total_bayar_akhir,
+            'harus_dibayar_garansi' => $harus_dibayar_garansi,
+            'bayar_tunai_garansi' => $tunaitotal,
         );
 
         $this->ServiceModel->updateService($idservice, $datap);
@@ -319,7 +423,12 @@ class StatusGaransi extends BaseController
     }
 
 
+    function sanitizeCurrency($value)
+    {
 
+        $cleaned = str_replace(['Rp', '.', ' '], '', $value);
+        return (float) $cleaned;
+    }
 
     function rupiahToInt($rupiah)
     {

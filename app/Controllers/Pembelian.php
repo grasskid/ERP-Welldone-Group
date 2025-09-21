@@ -18,7 +18,7 @@ use App\Models\ModelPelanggan;
 use App\Models\ModelHppBarang;
 use App\Models\ModelJurnal;
 use App\Models\ModelBank;
-
+use App\Models\ModelPembayaranBank;
 
 class Pembelian extends BaseController
 
@@ -35,6 +35,7 @@ class Pembelian extends BaseController
     protected $HppBarangModel;
     protected $JurnalModel;
     protected $BankModel;
+    protected $PembayaranBankModel;
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
@@ -48,6 +49,7 @@ class Pembelian extends BaseController
         $this->HppBarangModel = new ModelHppBarang();
         $this->JurnalModel = new ModelJurnal();
         $this->BankModel = new ModelBank();
+        $this->PembayaranBankModel = new ModelPembayaranBank();
     }
 
     public function index()
@@ -58,6 +60,7 @@ class Pembelian extends BaseController
             'produk' => $this->BarangModel->getAllBarang(),
             'kategori' => $this->KategoriModel->getKategori(),
             'suplier' => $this->SuplierModel->getSuplier(),
+            'frontliner' => $this->AuthModel->getAkunFrontliner(),
             'bank' => $this->BankModel->getBank(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'body'  => 'transaksi/pembelian'
@@ -106,11 +109,34 @@ class Pembelian extends BaseController
         $total_harga = $this->cleanRupiah($this->request->getPost('total-harga'));
         $total_diskon = $this->cleanRupiah($this->request->getPost('total-diskon'));
         $total_ppn = $this->cleanRupiah($this->request->getPost('total-ppn'));
-        $bayar_tunai = $this->cleanRupiah($this->request->getPost('bayar'));
-        $bayar_bank = $this->cleanRupiah($this->request->getPost('bayar_bank'));
-        $total_bayar = $bayar_tunai + $bayar_bank;
-        $bank_idbank = $this->request->getPost('bank_idbank');
+        $bayar_tunai = $this->cleanRupiah($this->request->getPost('bayar')); //ini tunai
 
+
+
+        $bankData = $this->request->getPost('bank');
+
+
+        $bankPembayaran = [];
+        $totalBayarBank = 0;
+        $kodePembayaran = 'PBL' . date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
+
+        if (!empty($bankData) && is_array($bankData)) {
+            foreach ($bankData as $b) {
+                $jumlah = $this->sanitizeCurrency($b['jumlah'] ?? '0');
+                if ($jumlah > 0) {
+                    $bankPembayaran = array(
+                        'kode_pembayaran' => $kodePembayaran,
+                        'bank_idbank' => $b['id'],
+                        'jumlah' => $jumlah,
+                        'tabel_referensi' => 'pembelian'
+                    );
+
+                    $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
+                    $totalBayarBank += $jumlah;
+                }
+            }
+        }
+        $total_bayar = $bayar_tunai + $totalBayarBank;
         // dd($id_suplier_text);
 
         //invoice otomatis 
@@ -183,7 +209,7 @@ class Pembelian extends BaseController
             }
         }
 
-
+        $frontliner = $this->request->getPost('frontliner');
 
 
         $data = array(
@@ -197,9 +223,10 @@ class Pembelian extends BaseController
             'total_diskon' => $total_diskon,
             'total_ppn' => $total_ppn,
             'total_bayar' => $total_bayar,
+            'frontliner' => $frontliner,
             'bayar_tunai' => $bayar_tunai,
-            'bayar_bank' => $bayar_bank,
-            'bank_idbank' => $bank_idbank,
+            'bayar_bank' => $totalBayarBank,
+            'bank_idbank' => $kodePembayaran,
             'jatuh_tempo' => $this->request->getPost('jatuh_tempo'),
             'bayar' => $total_bayar,
             'unit_idunit' => $useridunit,
@@ -222,6 +249,11 @@ class Pembelian extends BaseController
 
         $result = $this->PembelianModel->insert_Pembelian($data);
         $idPembelian = $this->PembelianModel->insertID();
+        $pelengkap_pembayaranbank = array(
+            'id_referensi' => $idPembelian
+        );
+        $this->PembayaranBankModel->updateByKodePembayaran($kodePembayaran, $pelengkap_pembayaranbank);
+
         foreach ($produkData as $produk) {
             $datastokawal = $this->StokAwalModel->getByIdBarang($produk['id']);
             $databarang = $this->BarangModel->getById($produk['id']);
@@ -319,5 +351,12 @@ class Pembelian extends BaseController
             session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
             return redirect()->to(base_url('/pembelian'));
         }
+    }
+
+    function sanitizeCurrency($value)
+    {
+
+        $cleaned = str_replace(['Rp', '.', ' '], '', $value);
+        return (float) $cleaned;
     }
 }

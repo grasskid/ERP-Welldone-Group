@@ -46,7 +46,11 @@ class ModelService extends Model
         'total_service_garansi',
         'tanggal_claim_garansi',
         'bayar_garansi',
-        'harus_dibayar_garansi'
+        'harus_dibayar_garansi',
+        'bayar_tunai',
+        'bayar_bank',
+        'bayar_tunai_garansi',
+        'prioritas'
     ];
 
     public function getAllService()
@@ -115,6 +119,22 @@ class ModelService extends Model
     }
 
 
+    public function getExpiredproses()
+    {
+        return $this->select('service.*, pelanggan.nama as nama_pelanggan')
+            ->join('pelanggan', 'pelanggan.id_pelanggan = service.pelanggan_id_pelanggan')
+            ->groupStart()
+            ->where('tanggal_bisa_diambil IS NULL', null, false)
+            ->orWhere('tanggal_bisa_diambil', '0000-00-00')
+            ->orWhere('tanggal_bisa_diambil', '1970-01-01')
+            ->groupEnd()
+            // gunakan DATE_ADD di SQL: created_at + 1 month < NOW()
+            ->where('DATE_ADD(created_at, INTERVAL 1 MONTH) < NOW()', null, false)
+            ->findAll();
+    }
+
+
+
 
     public function getExpiredServiceByRange($tanggal_awal, $tanggal_akhir)
     {
@@ -164,7 +184,7 @@ class ModelService extends Model
 
     public function getServiceWithLaba()
     {
-    return $this->select('
+        return $this->select('
             service.*,
             akun.NAMA_AKUN AS nama_teknisi,
             
@@ -179,11 +199,11 @@ class ModelService extends Model
                 - COALESCE(SUM(service_sparepart.hpp_penjualan_garansi * service_sparepart.jumlah_tambahan_garansi), 0) 
                 - COALESCE(SUM(service_sparepart.diskon_penjualan_garansi), 0) AS laba_garansi
         ')
-        ->join('service_sparepart', 'service_sparepart.service_idservice = service.idservice', 'left')
-        ->join('akun', 'akun.ID_AKUN = service.service_by', 'left')
-        ->where('service.status_service', 4)
-        ->groupBy('service.idservice')
-        ->findAll();
+            ->join('service_sparepart', 'service_sparepart.service_idservice = service.idservice', 'left')
+            ->join('akun', 'akun.ID_AKUN = service.service_by', 'left')
+            ->where('service.status_service', 4)
+            ->groupBy('service.idservice')
+            ->findAll();
     }
 
     //kerusakan
@@ -300,13 +320,18 @@ class ModelService extends Model
     //untuk proses service
     public function ProsesServiceAktif()
     {
+        // ambil semua data service dengan join nama pelanggan
         $services = $this->select('service.*, pelanggan.nama as nama_pelanggan')
             ->join('pelanggan', 'pelanggan.id_pelanggan = service.pelanggan_id_pelanggan')
             ->whereIn('status_service', [1, 2])
             ->findAll();
 
+        // load model lain
+        $modelKerusakan = new \App\Models\ModelServiceKerusakan();
+        $modelSparepart = new \App\Models\ModelServiceSparepart();
 
         foreach ($services as &$service) {
+            // hitung lama service
             if ($service->created_at) {
                 $created = new \DateTime($service->created_at, new \DateTimeZone('Asia/Jakarta'));
                 $now = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
@@ -316,6 +341,55 @@ class ModelService extends Model
             } else {
                 $service->lama_service = 'Tanggal tidak tersedia';
             }
+
+            // hitung jumlah kerusakan untuk service ini
+            $service->jumlah_kerusakan = $modelKerusakan
+                ->where('service_idservice', $service->idservice)
+                ->countAllResults();
+
+            // hitung jumlah sparepart untuk service ini
+            $service->jumlah_sparepart = $modelSparepart
+                ->where('service_idservice', $service->idservice)
+                ->countAllResults();
+        }
+
+        return $services;
+    }
+
+
+    public function ProsesServiceDibatalkan()
+    {
+        // ambil semua data service dengan join nama pelanggan
+        $services = $this->select('service.*, pelanggan.nama as nama_pelanggan')
+            ->join('pelanggan', 'pelanggan.id_pelanggan = service.pelanggan_id_pelanggan')
+            ->whereIn('status_service', [90, 91])
+            ->findAll();
+
+        // load model lain
+        $modelKerusakan = new \App\Models\ModelServiceKerusakan();
+        $modelSparepart = new \App\Models\ModelServiceSparepart();
+
+        foreach ($services as &$service) {
+            // hitung lama service
+            if ($service->created_at) {
+                $created = new \DateTime($service->created_at, new \DateTimeZone('Asia/Jakarta'));
+                $now = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
+                $interval = $created->diff($now);
+
+                $service->lama_service = $interval->format('%a hari, %h jam, %i menit');
+            } else {
+                $service->lama_service = 'Tanggal tidak tersedia';
+            }
+
+            // hitung jumlah kerusakan untuk service ini
+            $service->jumlah_kerusakan = $modelKerusakan
+                ->where('service_idservice', $service->idservice)
+                ->countAllResults();
+
+            // hitung jumlah sparepart untuk service ini
+            $service->jumlah_sparepart = $modelSparepart
+                ->where('service_idservice', $service->idservice)
+                ->countAllResults();
         }
 
         return $services;
@@ -323,12 +397,18 @@ class ModelService extends Model
 
     public function ServiceBisaDiambil()
     {
+        // Ambil data service dengan status 3
         $services = $this->select('service.*, pelanggan.nama as nama_pelanggan')
             ->join('pelanggan', 'pelanggan.id_pelanggan = service.pelanggan_id_pelanggan')
             ->whereIn('status_service', [3])
             ->findAll();
 
+        // Load model lain
+        $modelKerusakan = new \App\Models\ModelServiceKerusakan();
+        $modelSparepart = new \App\Models\ModelServiceSparepart();
+
         foreach ($services as &$service) {
+            // Hitung lama service berdasarkan tanggal bisa diambil
             if ($service->tanggal_bisa_diambil) {
                 $created = new \DateTime($service->tanggal_bisa_diambil, new \DateTimeZone('Asia/Jakarta'));
                 $now = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
@@ -338,11 +418,21 @@ class ModelService extends Model
             } else {
                 $service->lama_service = 'Tanggal tidak tersedia';
             }
-        }
 
+            // Hitung jumlah kerusakan
+            $service->jumlah_kerusakan = $modelKerusakan
+                ->where('service_idservice', $service->idservice)
+                ->countAllResults();
+
+            // Hitung jumlah sparepart
+            $service->jumlah_sparepart = $modelSparepart
+                ->where('service_idservice', $service->idservice)
+                ->countAllResults();
+        }
 
         return $services;
     }
+
 
 
     public function ServiceSudahDiambil()

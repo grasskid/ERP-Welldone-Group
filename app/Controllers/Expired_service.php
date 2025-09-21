@@ -148,4 +148,16 @@ class Expired_service extends BaseController
         $writer->save('php://output');
         exit;
     }
+
+    public function expired_proses()
+    {
+        $data =  array(
+
+            'fungsi' => $this->KerusakanModel->getKerusakan(),
+            'pelanggan' => $this->PelangganModel->getPelanggan(),
+            'service' => $this->ServiceModel->getExpiredproses(),
+            'body'  => 'riwayat/expired_proses'
+        );
+        return view('template', $data);
+    }
 }

@@ -116,4 +116,12 @@ class ModelAuth extends Model
             ->get()
             ->getResult();
     }
+
+    public function getLatLongByAkun($idAkun)
+    {
+        return $this->select('unit.LATITUDE, unit.LONGTITUDE')
+            ->join('unit', 'unit.idunit = akun.ID_UNIT')
+            ->where('akun.ID_AKUN', $idAkun)
+            ->first();
+    }
 }

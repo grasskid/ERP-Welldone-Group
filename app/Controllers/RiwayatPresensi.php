@@ -216,16 +216,16 @@ class RiwayatPresensi extends BaseController
 
 
         //  Cek jarak dari titik unit
-        $jarakKm = $this->hitungJarakKm($lat, $long, $latUnit, $longUnit);
-        $radiusKm = floatval($radius) / 1000;
-        $jarakmeter = $jarakKm * 1000;
+        // $jarakKm = $this->hitungJarakKm($lat, $long, $latUnit, $longUnit);
+        // $radiusKm = floatval($radius) / 1000;
+        // $jarakmeter = $jarakKm * 1000;
 
 
 
-        if ($jarakmeter > floatval($radius)) {
-            session()->setFlashdata('gagal', 'Lokasi Anda terlalu jauh dari titik absen. Maksimal ' . $radius . ' meter.');
-            return redirect()->to(base_url('absensi'));
-        }
+        // if ($jarakmeter > floatval($radius)) {
+        //     session()->setFlashdata('gagal', 'Lokasi Anda terlalu jauh dari titik absen. Maksimal ' . $radius . ' meter.');
+        //     return redirect()->to(base_url('absensi'));
+        // }
 
         // Cek apakah sudah absen hari ini
         $presensiHariIni = $this->PresensiModel

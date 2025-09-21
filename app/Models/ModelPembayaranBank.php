@@ -45,4 +45,26 @@ class ModelPembayaranBank extends Model
             ->set($data)
             ->update();
     }
+
+    public function getByServiceBaru($idservice)
+    {
+        return $this->where('tabel_referensi', 'service_baru')
+            ->where('id_referensi', $idservice)
+            ->findAll();
+    }
+
+    public function getByServiceGaransi($idservice)
+    {
+        return $this->where('tabel_referensi', 'service_garansi_1')
+            ->where('id_referensi', $idservice)
+            ->findAll();
+    }
+
+    public function updateByReferensi($idReferensi, $data)
+    {
+        return $this->where('tabel_referensi', 'service_garansi_1')
+            ->where('id_referensi', $idReferensi)
+            ->set($data)
+            ->update();
+    }
 }

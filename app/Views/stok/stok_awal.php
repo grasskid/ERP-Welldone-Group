@@ -136,13 +136,19 @@
                     <div class="row mb-3">
                         <label for="global_unit" class="col-sm-2 col-form-label">Unit</label>
                         <div class="col-sm-10">
-                            <select name="global_unit" id="global_unit" class="form-select" required>
-                                <option value="">-- Pilih Unit --</option>
-                                <?php foreach ($unit as $u): ?>
-                                    <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
-                                <?php endforeach; ?>
+                            <select name="global_unit" id="global_unit" class="form-select" required readonly>
+                                <?php
+                                // Cari unit yang sesuai dengan session ID_UNIT
+                                foreach ($unit as $u):
+                                    if ($u->idunit == session('ID_UNIT')): ?>
+                                        <option value="<?= $u->idunit ?>" selected><?= $u->NAMA_UNIT ?></option>
+                                <?php
+                                    endif;
+                                endforeach;
+                                ?>
                             </select>
                         </div>
+
                     </div>
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="table_barang">

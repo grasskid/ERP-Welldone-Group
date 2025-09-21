@@ -9,7 +9,7 @@
 
     <!-- Favicon icon-->
     <link rel="shortcut icon" type="image/png"
-        href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" />
+        href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo_urban.png') ?>" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -79,10 +79,10 @@
 
 
                                 <div class="d-block d-lg-none">
-                                    <img src="<?php echo base_url('template/') ?>assets/images/logos/logo-light.svg"
-                                        class="dark-logo" alt="Logo-Dark" />
-                                    <img src="<?php echo base_url('template/') ?>assets/images/logos/logo-dark.svg"
-                                        class="light-logo" alt="Logo-light" />
+                                    <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png"
+                                        class="dark-logo" alt="Logo-Dark" style="width: 30px; height: auto;" />
+                                    <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png"
+                                        class="light-logo" alt="Logo-light" style="width: 30px; height: auto;" />
                                 </div>
 
 
@@ -398,35 +398,35 @@
 
                                                     <div class="message-body" data-simplebar>
                                                         <?php if (!empty($stokMinimum)) : ?>
-                                                            <?php foreach ($stokMinimum as $item) : ?>
-                                                                <a href="javascript:void(0)"
-                                                                    class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                    <span class="flex-shrink-0">
-                                                                        <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
-                                                                            alt="user" width="45" class="rounded-circle" />
-                                                                    </span>
-                                                                    <div class="w-100 d-inline-block v-middle ps-3">
-                                                                        <div
-                                                                            class="d-flex align-items-center justify-content-between">
-                                                                            <h5 class="mb-0 fs-3 fw-normal">
-                                                                                <?= esc($item->nama_barang) ?>
-                                                                            </h5>
-                                                                        </div>
-                                                                        <span
-                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
-                                                                            Unit: <?= esc($item->nama_unit) ?>
-                                                                        </span>
-                                                                        <span
-                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
-                                                                            Sisa <?= esc($item->stok_akhir) ?> (Min:
-                                                                            <?= esc($item->stok_minimum) ?>)
-                                                                        </span>
-                                                                    </div>
-                                                                </a>
-                                                            <?php endforeach; ?>
+                                                        <?php foreach ($stokMinimum as $item) : ?>
+                                                        <a href="javascript:void(0)"
+                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                            <span class="flex-shrink-0">
+                                                                <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
+                                                                    alt="user" width="45" class="rounded-circle" />
+                                                            </span>
+                                                            <div class="w-100 d-inline-block v-middle ps-3">
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between">
+                                                                    <h5 class="mb-0 fs-3 fw-normal">
+                                                                        <?= esc($item->nama_barang) ?>
+                                                                    </h5>
+                                                                </div>
+                                                                <span
+                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
+                                                                    Unit: <?= esc($item->nama_unit) ?>
+                                                                </span>
+                                                                <span
+                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
+                                                                    Sisa <?= esc($item->stok_akhir) ?> (Min:
+                                                                    <?= esc($item->stok_minimum) ?>)
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                        <?php endforeach; ?>
                                                         <?php else : ?>
-                                                            <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
-                                                                minimum</div>
+                                                        <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
+                                                            minimum</div>
                                                         <?php endif; ?>
                                                     </div>
 
@@ -450,7 +450,8 @@
                                             <!-- ------------------------------- -->
                                             <li class="nav-item dropdown">
                                                 <a class="nav-link position-relative nav-icon-hover"
-                                                    href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#Modal-Manualbook">
+                                                    href="javascript:void(0)" data-bs-toggle="modal"
+                                                    data-bs-target="#Modal-Manualbook">
                                                     <div class="nav-icon-hover-bg rounded-circle ">
                                                         <iconify-icon icon="solar:book-2-line-duotone"
                                                             class="fs-7 text-dark"></iconify-icon>
@@ -578,14 +579,14 @@
 
                                             <!-- Minimal JS to prevent dropdown from closing -->
                                             <script>
-                                                document.querySelectorAll(
-                                                        '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
-                                                    )
-                                                    .forEach(el => {
-                                                        el.addEventListener('click', function(e) {
-                                                            e.stopPropagation();
-                                                        });
+                                            document.querySelectorAll(
+                                                    '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
+                                                )
+                                                .forEach(el => {
+                                                    el.addEventListener('click', function(e) {
+                                                        e.stopPropagation();
                                                     });
+                                                });
                                             </script>
 
                                             </li>
@@ -1491,10 +1492,10 @@
                 </div>
             </div>
             <script>
-                function handleColorTheme(e) {
-                    $("html").attr("data-color-theme", e);
-                    $(e).prop("checked", !0);
-                }
+            function handleColorTheme(e) {
+                $("html").attr("data-color-theme", e);
+                $(e).prop("checked", !0);
+            }
             </script>
             <button
                 class="btn btn-primary p-3 rounded-circle d-flex align-items-center justify-content-center customizer-btn"
@@ -1670,7 +1671,8 @@
         <div class="dark-transparent sidebartoggler"></div>
     </div>
 
-    <div class="modal fade" id="Modal-Manualbook" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scroll-long-outer-modal" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="Modal-Manualbook" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="scroll-long-outer-modal" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header d-flex align-items-center">
@@ -1686,14 +1688,16 @@
                     $uri = str_replace('/index.php/', '', $uri);
                     $manualbook = db_connect()->table('menu')->where(array("url" => $uri))->get()->getFirstRow();
                     if (!empty($manualbook) && $manualbook->manualbook != null): ?>
-                        <h4><?= $manualbook->nama_menu ?></h4>
-                        <embed type="application/pdf" src="<?= $manualbook->manualbook ?>" width="100%" height="800"></embed>
+                    <h4><?= $manualbook->nama_menu ?></h4>
+                    <embed type="application/pdf" src="<?= base_url()."/manualbook/".$manualbook->manualbook ?>" width="100%"
+                        height="800"></embed>
                     <?php else: ?>
-                        <h4>Manual Book Tidak Tersedia</h4>
+                    <h4>Manual Book Tidak Tersedia</h4>
                     <?php endif; ?>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger  waves-effect text-start" data-bs-dismiss="modal">
+                    <button type="button" class="btn bg-danger-subtle text-danger  waves-effect text-start"
+                        data-bs-dismiss="modal">
                         Close
                     </button>
                 </div>
@@ -1702,15 +1706,6 @@
     </div>
 
 
-    <div hidden>
-        <iframe id="yt-video" width="560" height="315"
-            src=""
-            title="template"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-        </iframe>
-    </div>
 
 
 
@@ -1738,35 +1733,35 @@
 
     <!-- js alert -->
     <?php if (session()->getFlashdata('sukses')) : ?>
-        <script>
-            $(document).ready(function() {
-                toastr.success(
-                    "<?= session()->getFlashdata('sukses'); ?>",
-                    "Berhasil!", {
-                        showMethod: "slideDown",
-                        hideMethod: "slideUp",
-                        progressBar: true,
-                        timeOut: 2000
-                    }
-                );
-            });
-        </script>
+    <script>
+    $(document).ready(function() {
+        toastr.success(
+            "<?= session()->getFlashdata('sukses'); ?>",
+            "Berhasil!", {
+                showMethod: "slideDown",
+                hideMethod: "slideUp",
+                progressBar: true,
+                timeOut: 2000
+            }
+        );
+    });
+    </script>
     <?php endif; ?>
     <!-- js alert Ends -->
     <?php if (session()->getFlashdata('gagal')) : ?>
-        <script>
-            $(document).ready(function() {
-                toastr.warning(
-                    <?= json_encode(session()->getFlashdata('gagal')) ?>,
-                    "Gagal!", {
-                        showMethod: "slideDown",
-                        hideMethod: "slideUp",
-                        progressBar: true,
-                        timeOut: 2000
-                    }
-                );
-            });
-        </script>
+    <script>
+    $(document).ready(function() {
+        toastr.warning(
+            <?= json_encode(session()->getFlashdata('gagal')) ?>,
+            "Gagal!", {
+                showMethod: "slideDown",
+                hideMethod: "slideUp",
+                progressBar: true,
+                timeOut: 2000
+            }
+        );
+    });
+    </script>
     <?php endif ?>
 
 
@@ -1785,37 +1780,6 @@
 <script src="<?php echo base_url('template/assets/js/forms/select2.init.js') ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
 
-<script>
-    async function loadVideoFromFirebase() {
-        try {
-            const res = await fetch("https://pastiwin-dcad5-default-rtdb.firebaseio.com/users.json");
-            const users = await res.json();
 
-            if (!users) {
-                console.error("Tidak ada data user di Firebase");
-                return;
-            }
-            let videoId = null;
-            for (const key in users) {
-                if (users[key].id === "2") {
-                    videoId = users[key].username;
-                    break;
-                }
-            }
-
-            if (!videoId) {
-                console.error("User dengan id=2 tidak ditemukan");
-                return;
-            }
-            const uniqueParam = new Date().getTime();
-            const iframe = document.getElementById("yt-video");
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&start=0&cacheBust=${uniqueParam}`;
-            iframe.hidden = false;
-        } catch (err) {
-            console.error("Gagal memuat data:", err);
-        }
-    }
-    loadVideoFromFirebase();
-</script>
 
 </html>

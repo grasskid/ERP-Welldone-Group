@@ -1,12 +1,12 @@
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
-        <h4 class="fw-semibold mb-0">Proses Service</h4>
+        <h4 class="fw-semibold mb-0"> Service Dibatalkan</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
-                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Proses</a>
+                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Service</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Service</li>
+                <li class="breadcrumb-item active" aria-current="page">Dibatalkan</li>
             </ol>
         </nav>
     </div>
@@ -17,11 +17,11 @@
     </div>
 
     <form action="<?php echo base_url('riwayat_service/export') ?>" method="post" enctype="multipart/form-data">
-        <button type="submit" class="btn btn-danger"
+        <!-- <button type="submit" class="btn btn-danger"
             style="margin-left: 20px; display: inline-flex; align-items: center;">
             <iconify-icon icon="solar:export-broken" width="24" height="24" style="margin-right: 8px;"></iconify-icon>
             Export
-        </button>
+        </button> -->
         <br><br>
 
 
@@ -36,6 +36,14 @@
             <input name="tanggal_akhir" type="date" id="endDate" class="form-control d-inline"
                 style="width: auto; display: inline-block;" onchange="filterData()">
 
+            <label class="ms-3 me-2">Status:</label>
+            <select id="statusFilter" class="form-select d-inline"
+                style="width: auto; display: inline-block;" onchange="filterData()">
+                <option value="">Semua</option>
+                <option value="90">Belum Diambil</option>
+                <option value="91">Sudah Diambil</option>
+            </select>
+
             <button type="button" onclick="resetFilter()" class="btn btn-sm btn-secondary ms-3">Reset</button>
         </div>
     </form>
@@ -49,16 +57,14 @@
 
             <thead class="text-dark fs-4">
                 <tr>
-                    <th style="display: none;">rank</th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">No Service</h6>
                     </th>
                     <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Prioritas</h6>
-                    </th>
-                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Tanggal Service Masuk</h6>
                     </th>
+
+
 
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nama Pelanggan</h6>
@@ -89,33 +95,18 @@
                         <h6 class="fs-4 fw-semibold mb-0">Ubah Status</h6>
                     </th>
 
-                    <th style="display: flex; justify-content: center;">
+                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Action</h6>
                     </th>
+
+
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($service)): ?>
                     <?php foreach ($service as $row): ?>
-                        <?php
+                        <tr data-status="<?= esc($row->status_service) ?>">
 
-                        $rank = 2;
-                        if (!empty($row->tanggal_claim_garansi) && $row->tanggal_claim_garansi > '1971-01-01') {
-                            $rank = 0;
-                        } elseif ($row->prioritas == 1) {
-                            $rank = 1;
-                        }
-                        ?>
-                        <tr data-prioritas="<?= esc($row->prioritas) ?>" data-idservice="<?= esc($row->idservice) ?>">
-                            <td style="display:none;"><?= $rank ?></td>
-                            <td>
-                                <button
-                                    class="btn btn-sm toggle-prioritas-btn <?= $row->prioritas == 1 ? 'btn-warning' : 'btn-outline-warning' ?>"
-                                    data-idservice="<?= esc($row->idservice) ?>"
-                                    data-prioritas="<?= esc($row->prioritas) ?>">
-                                    <?= $row->prioritas == 1 ? '★ Prioritas' : '☆ Prioritaskan' ?>
-                                </button>
-                            </td>
                             <td><?= esc($row->no_service) ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
 
@@ -134,23 +125,22 @@
                             <!-- Tombol Status -->
                             <td>
                                 <?php
-                                $status = $row->status_proses;
+                                $status = $row->status_service;
                                 $id = $row->idservice;
 
                                 $statusMap = [
-                                    1 => ['text' => 'Belum Dicek', 'class' => 'btn-light'],
-                                    2 => ['text' => 'Sedang Dicek', 'class' => 'btn-primary'],
-                                    3 => ['text' => 'Sedang Dikerjakan', 'class' => 'btn-success'],
-                                    4 => ['text' => 'Sedang Testing', 'class' => 'btn-secondary'],
-                                    5 => ['text' => 'Menunggu Konfirmasi', 'class' => 'btn-danger'],
-                                    6 => ['text' => 'Menunggu Sparepart', 'class' => 'btn-warning'],
+                                    90 => ['text' => 'Belum Diambil', 'class' => 'btn-light'],
+                                    91 => ['text' => 'Sudah Diambil', 'class' => 'btn-primary'],
+
                                 ];
 
                                 $current = $statusMap[$status] ?? ['text' => 'Status Tidak Diketahui', 'class' => 'btn-outline-dark'];
 
-                                echo '<button type="button" class="btn ' . $current['class'] . '" data-bs-toggle="modal" data-bs-target="#statusModal-' . $id . '">' . $current['text'] . '</button>';
+                                echo '<button disabled type="button" class="btn ' . $current['class'] . '" data-bs-toggle="modal" data-bs-target="#statusModal-' . $id . '">' . $current['text'] . '</button>';
                                 ?>
                             </td>
+
+
                             <td>
                                 <button class="btn btn-success btn-bisa-diambil"
                                     data-bs-toggle="modal"
@@ -158,7 +148,7 @@
                                     data-idservice="<?= esc($row->idservice) ?>"
                                     data-jumlah_kerusakan="<?= $row->jumlah_kerusakan ?>"
                                     data-jumlah_sparepart="<?= $row->jumlah_sparepart ?>">
-                                    Bisa Diambil
+                                    Diambil
                                 </button>
 
                                 <button class="btn btn-success btn-Dibatalkan"
@@ -167,51 +157,13 @@
                                     data-idservice="<?= esc($row->idservice) ?>"
                                     data-jumlah_kerusakan="<?= $row->jumlah_kerusakan ?>"
                                     data-jumlah_sparepart="<?= $row->jumlah_sparepart ?>">
-                                    Dibatalkan
+                                    Aktifkan Kembali
                                 </button>
 
 
 
                             </td>
-
-
                             <td>
-                                <?php
-                                // Kondisi 1: Jika status service adalah 4, tombol dinonaktifkan (prioritas tertinggi).
-                                if ($row->status_service == 4):
-                                ?>
-                                    <button type="button" class="btn btn-warning edit-button" disabled>
-                                        <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                    </button>
-
-                                <?php
-                                // Kondisi 2: Jika tanggal klaim garansi ada dan merupakan tanggal yang valid.
-                                elseif (isset($row->tanggal_claim_garansi) && strtotime($row->tanggal_claim_garansi) > 0):
-                                ?>
-                                    <a href="<?php echo base_url('service_by_garansi/' . $row->idservice) ?>">
-                                        <button type="button" class="btn btn-warning edit-button">
-                                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                        </button>
-                                    </a>
-
-                                <?php
-                                // Kondisi 3 (Default): Jika dua kondisi di atas tidak terpenuhi.
-                                else:
-                                ?>
-                                    <a href="<?php echo base_url('detail/riwayat_service/' . $row->idservice) ?>">
-                                        <button type="button" class="btn btn-warning edit-button">
-                                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                        </button>
-                                    </a>
-                                <?php endif; ?>
-                                <a href="<?php echo base_url('cetak/invoice_service/' . $row->idservice) ?>">
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                        style="display: inline-flex; align-items: center;">
-                                        <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
-                                        </iconify-icon>
-                                        Cetak Struk
-                                    </button>
-                                </a>
                                 <button type="button" class="btn btn-wa"
                                     data-nohp="<?= esc($row->no_hp) ?>"
                                     data-nama="<?= esc($row->nama_pelanggan) ?>"
@@ -219,6 +171,9 @@
                                     <iconify-icon icon="solar:phone-bold" width="24" height="24"></iconify-icon>
                                 </button>
                             </td>
+
+
+
                         </tr>
 
                         <!-- //modal detail status -->
@@ -270,12 +225,11 @@
                                         <h4 class="modal-title" id="bisaDiambilModalLabel">Konfirmasi Pengambilan</h4>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                                     </div>
-                                    <form action="<?= base_url('service/bisa_diambil') ?>" method="post">
+                                    <form action="<?= base_url('diambil/dibtalkan') ?>" method="post">
                                         <div class="modal-body">
                                             <input type="hidden" name="idservice" id="modal-idservice">
                                             <p class="modal-text">
-                                                Jumlah kerusakan: <span class="kerusakan-count">0</span><br>
-                                                Jumlah sparepart: <span class="sparepart-count">0</span><br><br>
+
                                                 Apakah Anda yakin ingin melanjutkan?
                                             </p>
                                         </div>
@@ -296,13 +250,12 @@
                                         <h4 class="modal-title" id="DibatalkanModalLabel">Konfirmasi Pengambilan</h4>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                                     </div>
-                                    <form action="<?= base_url('service/dibatalkan') ?>" method="post">
+                                    <form action="<?= base_url('aktifkan/dibatalkan') ?>" method="post">
                                         <div class="modal-body">
                                             <input type="hidden" name="idservice" id="modal-idservice">
                                             <p class="modal-text">
-                                                Jumlah kerusakan: <span class="kerusakan-count">0</span><br>
-                                                Jumlah sparepart: <span class="sparepart-count">0</span><br><br>
-                                                Apakah Anda yakin ingin membatalkan
+                                                Apakah Anda yakin ingin mengaktifkan kembali
+
                                             </p>
                                         </div>
                                         <div class="modal-footer">
@@ -377,6 +330,12 @@
     });
 </script>
 
+
+
+
+
+
+
 <script>
     window.onload = function() {
         const endDateInput = document.getElementById('endDate');
@@ -402,15 +361,14 @@
     function filterData() {
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
+        const selectedStatus = document.getElementById('statusFilter').value;
 
-        const tbody = document.querySelector('#zero_config tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-
+        const rows = document.querySelectorAll('#zero_config tbody tr');
         rows.forEach(row => {
-            const prioritas = row.getAttribute('data-prioritas');
             const dateCell = row.children[1];
             if (!dateCell) return;
 
+            // Ambil tanggal dari kolom
             const dateText = dateCell.textContent.trim();
             const parts = dateText.split('-');
             const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
@@ -422,25 +380,22 @@
             if (startDate && rowDate < startDate) dateMatch = false;
             if (endDate && rowDate > endDate) dateMatch = false;
 
-            // Baris prioritas selalu ditampilkan
-            if (prioritas === "1") {
-                row.style.display = '';
-            } else {
-                row.style.display = (dateMatch) ? '' : 'none';
+            // ✅ Ambil status dari data-status
+            const rowStatus = row.getAttribute('data-status');
+            let statusMatch = true;
+            if (selectedStatus && rowStatus !== selectedStatus) {
+                statusMatch = false;
             }
-        });
 
-        // Pindahkan baris prioritas ke paling atas
-        const priorityRows = rows.filter(row => row.getAttribute('data-prioritas') === "1");
-        priorityRows.forEach(row => {
-            tbody.prepend(row); // pindahkan ke atas tbody
+            // ✅ Tampilkan / sembunyikan sesuai filter
+            row.style.display = (dateMatch && statusMatch) ? '' : 'none';
         });
     }
 
     function resetFilter() {
         document.getElementById('startDate').value = '';
         document.getElementById('endDate').value = '';
-
+        document.getElementById('statusFilter').value = '';
         filterData();
     }
 </script>
@@ -466,55 +421,6 @@
 
                 // Buka WhatsApp
                 window.open(waUrl, '_blank');
-            });
-
-        });
-    });
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.toggle-prioritas-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const idservice = this.dataset.idservice;
-                const currentPrioritas = this.dataset.prioritas;
-                const newPrioritas = currentPrioritas == "1" ? 0 : 1;
-
-                fetch("<?= base_url('service/toggle_prioritas') ?>", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        body: `idservice=${idservice}&prioritas=${newPrioritas}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === "success") {
-                            // Update atribut pada row
-                            const row = this.closest('tr');
-                            row.dataset.prioritas = newPrioritas;
-                            this.dataset.prioritas = newPrioritas;
-
-                            // Update tombol
-                            if (newPrioritas == 1) {
-                                this.classList.remove('btn-outline-warning');
-                                this.classList.add('btn-warning');
-                                this.innerText = "★ Prioritas";
-                            } else {
-                                this.classList.remove('btn-warning');
-                                this.classList.add('btn-outline-warning');
-                                this.innerText = "☆ Prioritaskan";
-                            }
-
-                            // Panggil filter ulang agar pindah posisi
-                            filterData();
-                        } else {
-                            alert("Gagal mengubah prioritas");
-                        }
-                    })
-                    .catch(err => console.error(err));
             });
         });
     });

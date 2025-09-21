@@ -110,11 +110,17 @@ $routes->get('service_sparepart', 'Service::sparepart_table', ['filter' => 'auth
 $routes->post('insert/pelanggan_service', 'Service::insert_service', ['filter' => 'auth']);
 
 $routes->get('proses_service', 'Riwayat_Service::proses_service', ['filter' => 'auth']);
+$routes->post('service/toggle_prioritas', 'Riwayat_Service::togglePrioritas', ['filter' => 'auth']);
 $routes->post('update_status_proses', 'Riwayat_Service::update_status_proses', ['filter' => 'auth']);
 $routes->post('service/bisa_diambil', 'Riwayat_Service::update_bisa_diambil', ['filter' => 'auth']);
+$routes->post('service/dibatalkan', 'Riwayat_Service::update_dibatalkan', ['filter' => 'auth']);
+$routes->get('list/service/dibatalkan', 'Riwayat_Service::service_dibatalkan', ['filter' => 'auth']);
 $routes->get('bisa_diambil', 'Riwayat_Service::service_bisa_diambil', ['filter' => 'auth']);
 $routes->post('service/sudah_diambil', 'Riwayat_Service::update_sudah_diambil', ['filter' => 'auth']);
 $routes->get('sudah_diambil', 'Riwayat_Service::service_sudah_diambil', ['filter' => 'auth']);
+
+$routes->post('diambil/dibtalkan', 'Riwayat_Service::dibatalkan_sudah_diambil', ['filter' => 'auth']);
+$routes->post('aktifkan/dibatalkan', 'Riwayat_Service::dibatalkan_aktifkan_lagi', ['filter' => 'auth']);
 
 //insertservice
 $routes->post('service/saveKerusakan', 'Service::insert_kerusakan', ['filter' => 'auth']);
@@ -140,6 +146,7 @@ $routes->post('update_service_garansi/savePembayaran', 'StatusGaransi::insert_pe
 //garansiservice
 $routes->get('garansi_service', 'StatusGaransi::index', ['filter' => 'auth']);
 $routes->post('claim_garansi', 'StatusGaransi::claim_garansi', ['filter' => 'auth']);
+$routes->get('riwayat-klaim/(:num)', 'StatusGaransi::getRiwayatKlaim/$1');
 
 //status service
 $routes->get('status_service/(:num)', 'Status_Service::index/$1');
@@ -155,7 +162,7 @@ $routes->post('riwayat_service_garansi/export', 'Riwayat_Service::export2', ['fi
 //expired service
 $routes->get('expired_service', 'Expired_service::index', ['filter' => 'auth']);
 $routes->post('riwayat_expired_service/export', 'Expired_service::export', ['filter' => 'auth']);
-
+$routes->get('expired_proses', 'Expired_service::expired_proses', ['filter' => 'auth']);
 
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
@@ -209,6 +216,8 @@ $routes->post('riwayat_stok_opname/export', 'Riwayat_StokOpname::export', ['filt
 //riwayat mutasi
 $routes->get('riwayat_mutasi', 'Riwayat_MutasiStok::index', ['filter' => 'auth']);
 $routes->post('riwayat_mutasi/export', 'Riwayat_MutasiStok::export', ['filter' => 'auth']);
+$routes->get('cetak/invoice_mutasi/(:num)', 'MutasiStok::cetak_notamutasi/$1', ['filter' => 'auth']);
+
 //retur
 $routes->get('retur_suplier', 'Retur_Suplier::index', ['filter' => 'auth']);
 $routes->post('insert_retur_suplier', 'Retur_Suplier::insert', ['filter' => 'auth']);

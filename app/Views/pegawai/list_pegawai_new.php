@@ -143,11 +143,11 @@
                                             <div class="mb-3 col-md-6">
                                                 <label for="noid" class="form-label">No ID Pegawai</label> <span
                                                     class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="noid" name="noid" required readonly>
+                                                <input type="text" class="form-control" id="noid" name="noid" required>
                                             </div>
                                             <div class="mb-3 col-md-6">
                                                 <label for="no_ktp" class="form-label">No KTP</label> <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="no_ktp" name="no_ktp" required>
+                                                <input type="text" class="form-control" id="no_ktp" name="no_ktp">
                                             </div>
                                             <div class="mb-3 col-md-6">
                                                 <label for="email" class="form-label">Email</label> <span class="text-danger">*</span></label>

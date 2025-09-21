@@ -248,6 +248,8 @@
 
 
 <script>
+    let table;
+
     window.onload = function() {
         const endDateInput = document.getElementById('endDate');
         const startDateInput = document.getElementById('startDate');
@@ -255,7 +257,6 @@
         const today = new Date();
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
-
 
         const toDateInputValue = (date) => {
             const year = date.getFullYear();
@@ -267,43 +268,43 @@
         startDateInput.value = toDateInputValue(fifteenDaysAgo);
         endDateInput.value = toDateInputValue(today);
 
+        // ✅ Inisialisasi DataTable
+        table = $('#zero_config').DataTable();
 
+        // ✅ Tambahkan custom filter untuk date range
+        $.fn.dataTable.ext.search.push(function(settings, data) {
+            const start = startDateInput.value ? new Date(startDateInput.value) : null;
+            const end = endDateInput.value ? new Date(endDateInput.value) : null;
 
-        filterData();
+            // Ambil tanggal dari kolom ke-2 (index 1) -> format "dd-mm-yyyy"
+            const dateParts = data[1].split('-');
+            const rowDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+
+            if (start && rowDate < start) return false;
+            if (end && rowDate > end) return false;
+
+            return true;
+        });
+
+        // ✅ Jalankan filter pertama kali
+        table.draw();
+
+        // ✅ Tambahkan event listener agar filter otomatis saat user ubah tanggal
+        startDateInput.addEventListener('change', () => table.draw());
+        endDateInput.addEventListener('change', () => table.draw());
     };
 
     function filterData() {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-
-
-        const rows = document.querySelectorAll('#zero_config tbody tr');
-        rows.forEach(row => {
-            const dateCell = row.children[1];
-            if (!dateCell) return;
-
-            const dateText = dateCell.textContent.trim();
-            const parts = dateText.split('-');
-            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-
-            const startDate = start ? new Date(start) : null;
-            const endDate = end ? new Date(end) : null;
-
-            let dateMatch = true;
-            if (startDate && rowDate < startDate) dateMatch = false;
-            if (endDate && rowDate > endDate) dateMatch = false;
-
-            row.style.display = (dateMatch) ? '' : 'none';
-        });
+        table.draw(); // ✅ Refresh DataTable setelah ganti filter
     }
 
     function resetFilter() {
         document.getElementById('startDate').value = '';
         document.getElementById('endDate').value = '';
-
-        filterData();
+        table.draw(); // ✅ Refresh table setelah reset
     }
 </script>
+
 
 
 <?php foreach ($presensi as $p): ?>

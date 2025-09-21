@@ -142,17 +142,25 @@
 
 
                             <td>
-                                <!-- tombol garansi    -->
+                                <!-- tombol garansi -->
                                 <?php
+                                $tanggal_selesai = !empty($row->tanggal_selesai) ? $row->tanggal_selesai : null;
+                                $garansi_hari = (int)$row->garansi_hari;
 
-                                $ada_garansi = $row->garansi_hari > 0 && !empty($row->tanggal_selesai);
-                                $sudah_diklaim = !empty($row->tanggal_claim_garansi) && $row->tanggal_claim_garansi > '1971-01-01';
+                                // Cek apakah ada garansi
+                                $ada_garansi = $garansi_hari > 0 && !empty($tanggal_selesai);
 
+                                // Hitung tanggal akhir garansi
+                                $masih_dalam_garansi = false;
+                                if ($ada_garansi) {
+                                    $tanggal_akhir_garansi = date('Y-m-d', strtotime($tanggal_selesai . " +{$garansi_hari} days"));
+                                    $hari_ini = date('Y-m-d');
+                                    $masih_dalam_garansi = $hari_ini <= $tanggal_akhir_garansi;
+                                }
 
-                                if ($ada_garansi && !$sudah_diklaim) {
-                                    // KONDISI: Tombol Aktif (Ada garansi dan belum pernah diklaim)
+                                if ($ada_garansi && $masih_dalam_garansi) {
+                                    // KONDISI: Tombol Aktif selama masa garansi
                                 ?>
-
                                     <button type="button" class="btn btn-sm btn-danger"
                                         style="display: inline-flex; align-items: center;"
                                         data-bs-toggle="modal"
@@ -161,11 +169,9 @@
                                         <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24"></iconify-icon>
                                         Claim Garansi
                                     </button>
-
                                 <?php
                                 } else {
-                                    // KONDISI: Tombol Tidak Aktif (Tidak ada garansi atau sudah pernah diklaim)
-
+                                    // KONDISI: Tombol Tidak Aktif (Tidak ada garansi atau garansi sudah habis)
                                 ?>
                                     <button type="button" class="btn btn-sm btn-danger" style="display: inline-flex; align-items: center;" disabled>
                                         <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24"></iconify-icon>
@@ -176,14 +182,24 @@
                                 ?>
                                 <!-- end tombol garansi -->
 
-
                                 <button type="button" class="btn btn-wa"
                                     data-nohp="<?= esc($row->no_hp) ?>"
                                     data-nama="<?= esc($row->nama_pelanggan) ?>"
                                     style="width: 100px; height: 40px; background-color: greenyellow;">
                                     <iconify-icon icon="solar:phone-bold" width="24" height="24"></iconify-icon>
                                 </button>
+                                <!-- Tombol -->
+                                <button type="button" class="btn btn-wa btn-riwayat"
+                                    data-idservice="<?= esc($row->idservice) ?>"
+                                    style=" height: 40px; background-color: antiquewhite;">
+
+                                    Riwayat Klaim
+                                </button>
+
+
+
                             </td>
+
                         </tr>
 
                         <!-- modal bsa dimabil -->
@@ -192,13 +208,13 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header d-flex align-items-center">
-                                        <h4 class="modal-title" id="ClaimGaransiModalLabel-<?= esc($row->idservice) ?>">Konfirmasi Pengambilan</h4>
+                                        <h4 class="modal-title" id="ClaimGaransiModalLabel-<?= esc($row->idservice) ?>">Konfirmasi Klaim Garansi</h4>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                                     </div>
                                     <form action="<?= base_url('claim_garansi') ?>" method="post">
                                         <div class="modal-body">
                                             <input type="hidden" name="idservice" value="<?= esc($row->idservice) ?>">
-                                            <p>Apakah Anda yakin service ini sudah diambil oleh pelanggan?</p>
+                                            <p>Apakah Anda yakin service Akan klaim garansi?</p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
@@ -222,6 +238,32 @@
         </table>
     </div>
 </div>
+
+
+
+
+
+
+<!-- Modal Global Riwayat Klaim -->
+<div class="modal fade" id="modalRiwayatKlaim" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Riwayat Klaim</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="riwayat-klaim-content" class="text-center">
+                    <span class="text-muted">Pilih data untuk melihat riwayat klaim...</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 
@@ -312,6 +354,24 @@
 
                 // Buka WhatsApp
                 window.open(waUrl, '_blank');
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // pakai event delegation
+        $(document).on('click', '.btn-riwayat', function() {
+            const idservice = $(this).data('idservice');
+
+            // tampilkan loading
+            $('#riwayat-klaim-content').html('<div class="text-center p-3">Loading...</div>');
+            $('#modalRiwayatKlaim').modal('show');
+
+            // request data via AJAX
+            $.get('<?= base_url('riwayat-klaim') ?>/' + idservice, function(response) {
+                $('#riwayat-klaim-content').html(response.html);
             });
         });
     });

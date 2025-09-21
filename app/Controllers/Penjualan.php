@@ -151,7 +151,7 @@ class Penjualan extends BaseController
 
         $bankPembayaran = [];
         $totalBayarBank = 0;
-        $kodePembayaran = date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
+        $kodePembayaran = 'PJL' . date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
 
         if (!empty($bankData) && is_array($bankData)) {
             foreach ($bankData as $b) {
@@ -394,23 +394,22 @@ class Penjualan extends BaseController
         error_reporting(0);
 
         $mpdf = new \Mpdf\Mpdf();
-$mpdf->WriteHTML($html);
+        $mpdf->WriteHTML($html);
 
-$uploadPath = FCPATH . 'uploads/';
-if (!is_dir($uploadPath)) {
-    mkdir($uploadPath, 0777, true);
-}
+        $uploadPath = FCPATH . 'uploads/';
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath, 0777, true);
+        }
 
-$filename = 'Struk-' . $no_invoice . '.pdf';
-$pdfPath = $uploadPath . $filename;
-$mpdf->Output($pdfPath, 'F');
+        $filename = 'Struk-' . $no_invoice . '.pdf';
+        $pdfPath = $uploadPath . $filename;
+        $mpdf->Output($pdfPath, 'F');
 
-// save pdf url in flashdata
-session()->setFlashdata('pdf_url', base_url('uploads/' . $filename));
+        // save pdf url in flashdata
+        session()->setFlashdata('pdf_url', base_url('uploads/' . $filename));
 
-// redirect back
-return redirect()->to(base_url('penjualan'));
-
+        // redirect back
+        return redirect()->to(base_url('penjualan'));
     }
 
 

@@ -96,12 +96,15 @@
 
                             <!-- Tombol Status -->
                             <td>
-                                <button class="btn btn-success"
+                                <button class="btn btn-success btn-sudah-diambil"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#sudahDiambilModal-<?= esc($row->idservice) ?>"
-                                    data-idservice="<?= esc($row->idservice) ?>">
+                                    data-bs-target="#sudahDiambilModal"
+                                    data-idservice="<?= esc($row->idservice) ?>"
+                                    data-jumlah_kerusakan="<?= $row->jumlah_kerusakan ?>"
+                                    data-jumlah_sparepart="<?= $row->jumlah_sparepart ?>">
                                     Sudah Diambil
                                 </button>
+
 
 
                             </td>
@@ -140,17 +143,21 @@
 
                         <!-- modal bsa dimabil -->
 
-                        <div class="modal fade" id="sudahDiambilModal-<?= esc($row->idservice) ?>" tabindex="-1" aria-labelledby="sudahDiambilModalLabel-<?= esc($row->idservice) ?>" aria-hidden="true">
+                        <div class="modal fade" id="sudahDiambilModal" tabindex="-1" aria-labelledby="sudahDiambilModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header d-flex align-items-center">
-                                        <h4 class="modal-title" id="sudahDiambilModalLabel-<?= esc($row->idservice) ?>">Konfirmasi Pengambilan</h4>
+                                        <h4 class="modal-title" id="sudahDiambilModalLabel">Konfirmasi Pengambilan</h4>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                                     </div>
                                     <form action="<?= base_url('service/sudah_diambil') ?>" method="post">
                                         <div class="modal-body">
-                                            <input type="hidden" name="idservice" value="<?= esc($row->idservice) ?>">
-                                            <p>Apakah Anda yakin service ini sudah diambil oleh pelanggan?</p>
+                                            <input type="hidden" name="idservice" id="modal-sudah-idservice">
+                                            <p class="modal-text">
+                                                Jumlah kerusakan: <span class="kerusakan-count">0</span><br>
+                                                Jumlah sparepart: <span class="sparepart-count">0</span><br><br>
+                                                Apakah Anda yakin service ini sudah diambil oleh pelanggan?
+                                            </p>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
@@ -160,6 +167,7 @@
                                 </div>
                             </div>
                         </div>
+
 
 
 
@@ -259,6 +267,27 @@
                 // Buka WhatsApp
                 window.open(waUrl, '_blank');
             });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('sudahDiambilModal');
+
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.btn-sudah-diambil');
+            if (button) {
+                // Ambil data dari tombol
+                const idservice = button.getAttribute('data-idservice');
+                const jumlahKerusakan = button.getAttribute('data-jumlah_kerusakan');
+                const jumlahSparepart = button.getAttribute('data-jumlah_sparepart');
+
+                // Isi modal
+                modalElement.querySelector('#modal-sudah-idservice').value = idservice;
+                modalElement.querySelector('.kerusakan-count').textContent = jumlahKerusakan;
+                modalElement.querySelector('.sparepart-count').textContent = jumlahSparepart;
+            }
         });
     });
 </script>

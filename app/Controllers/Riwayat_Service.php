@@ -21,6 +21,8 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Models\ModelJurnal;
 use App\Models\ModelUnit;
+use App\Models\ModelBank;
+use App\Models\ModelPembayaranBank;
 
 class Riwayat_Service extends BaseController
 
@@ -39,6 +41,8 @@ class Riwayat_Service extends BaseController
     protected $ProsesServiceModel;
     protected $JurnalModel;
     protected $UnitModel;
+    protected $BankModel;
+    protected $PembayaranBankModel;
 
 
 
@@ -57,6 +61,8 @@ class Riwayat_Service extends BaseController
         $this->ProsesServiceModel = new ModelProsesService();
         $this->JurnalModel = new ModelJurnal();
         $this->UnitModel = new ModelUnit();
+        $this->BankModel = new ModelBank();
+        $this->PembayaranBankModel = new ModelPembayaranBank();
     }
 
     public function index()
@@ -97,7 +103,9 @@ class Riwayat_Service extends BaseController
             'akun' => $akun,
             'teknisi' => $teknisi,
             'fungsi' => $this->KerusakanModel->getKerusakan(),
+            'bank' => $this->BankModel->getBank(),
             'idservice' => $idservice,
+            'pembayaran_lama' => $this->PembayaranBankModel->getByServiceBaru($idservice),
             'old_service_pelanggan' => $this->ServiceModel->getByIdWithPelanggan($idservice),
             'oldkerusakan' => $oldkerusakan,
             'oldsparepart' => $oldsparepart,
@@ -285,10 +293,55 @@ class Riwayat_Service extends BaseController
         $total_harga_pembayaran = $this->rupiahToInt($this->request->getPost('total_harga_pembayaran'));
         $status_service = $this->request->getPost('status_service_pembayaran');
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
-        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran'));
+        $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran')); //ini tunai
         $dp_bayar = $data_service->dp_bayar;
 
         $harus_dibayar = $total_harga_pembayaran  - $dp_bayar;
+
+        $pembayaranbanklama = $this->PembayaranBankModel->getByServiceBaru($idservice);
+        $jumlahbanklama = 0;
+        foreach ($pembayaranbanklama as $item) {
+            $jumlahbanklama += $item->jumlah;
+        }
+        $oldservicepelanggan = $this->ServiceModel->getServiceById($idservice);
+        $tunailama = $oldservicepelanggan->bayar_tunai;
+        $kodePembayaran = $oldservicepelanggan->bayar_bank;
+
+        if (empty($kodePembayaran)) {
+
+            $noService = $oldservicepelanggan->no_service;
+
+
+            $angkaNoService = preg_replace('/\D/', '', $noService);
+
+
+            $kodePembayaran = 'ksr' . $angkaNoService;
+        }
+
+        $bankData = $this->request->getPost('bank');
+        $bankPembayaran = [];
+        $totalBayarBank = 0;
+
+        if (!empty($bankData) && is_array($bankData)) {
+            foreach ($bankData as $b) {
+                $jumlah = $this->sanitizeCurrency($b['jumlah'] ?? '0');
+                if ($jumlah > 0) {
+                    $bankPembayaran = array(
+                        'kode_pembayaran' => $kodePembayaran,
+                        'bank_idbank' => $b['id'],
+                        'jumlah' => $jumlah,
+                        'tabel_referensi' => 'service_baru',
+                        'id_referensi' => $idservice
+                    );
+
+                    $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
+                    $totalBayarBank += $jumlah;
+                }
+            }
+        }
+
+
+        $total_bayar = $bayar_pembayaran + $totalBayarBank + $tunailama + $jumlahbanklama;
 
 
 
@@ -301,9 +354,8 @@ class Riwayat_Service extends BaseController
             'total_service' => $total_harga_pembayaran,
             'total_diskon' => $diskon_pembayaran,
             'harus_dibayar' => $harus_dibayar,
-
-            'bayar' => $bayar_pembayaran,
-            'service_by' => $service_by_pembayaran
+            'bayar' => $total_bayar,
+            'service_by' => $service_by_pembayaran,
         );
         $this->ServiceModel->updateService($idservice, $datap);
 
@@ -545,6 +597,20 @@ class Riwayat_Service extends BaseController
     }
 
 
+    //service dibatalkan
+
+    public function service_dibatalkan()
+    {
+
+        $data =  array(
+            'fungsi' => $this->KerusakanModel->getKerusakan(),
+            'pelanggan' => $this->PelangganModel->getPelanggan(),
+            'service' => $this->ServiceModel->ProsesServiceDibatalkan(),
+            'body'  => 'riwayat/service_dibatalkan'
+        );
+        return view('template', $data);
+    }
+
 
     //proses service
 
@@ -559,6 +625,25 @@ class Riwayat_Service extends BaseController
         );
         return view('template', $data);
     }
+
+    public function togglePrioritas()
+    {
+        if ($this->request->isAJAX()) {
+            $idservice = $this->request->getPost('idservice');
+            $prioritas = $this->request->getPost('prioritas'); // 1 = prioritas, 0 = non-prioritas
+
+            $this->ServiceModel->update($idservice, [
+                'prioritas' => $prioritas
+            ]);
+
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => $prioritas == 1 ? 'Diprioritaskan' : 'Prioritas dihapus'
+            ]);
+        }
+        return $this->response->setJSON(['status' => 'error']);
+    }
+
 
     public function update_status_proses()
     {
@@ -596,8 +681,60 @@ class Riwayat_Service extends BaseController
         );
         $result = $this->ServiceModel->updateService($idservice, $data);
 
+        if ($result) {
+            session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
+            return redirect()->to(base_url('proses_service'));
+        }
+    }
 
 
+    //dibatalkan sudah diambil
+    public function dibatalkan_sudah_diambil()
+    {
+
+        $idservice = $this->request->getPost('idservice');
+        $wibTime = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
+        $data = array(
+            'status_service' => 91,
+            'tanggal_selesai' => $wibTime->format('Y-m-d H:i:s'),
+        );
+        $result = $this->ServiceModel->updateService($idservice, $data);
+
+        if ($result) {
+            session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
+            return redirect()->to(base_url('list/service/dibatalkan'));
+        }
+    }
+
+
+    public function dibatalkan_aktifkan_lagi()
+    {
+
+        $idservice = $this->request->getPost('idservice');
+        $wibTime = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
+        $data = array(
+            'status_service' => 2,
+            'tanggal_bisa_diambil' => null,
+        );
+        $result = $this->ServiceModel->updateService($idservice, $data);
+
+        if ($result) {
+            session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
+            return redirect()->to(base_url('list/service/dibatalkan'));
+        }
+    }
+
+
+    public function update_dibatalkan()
+    {
+
+        $idservice = $this->request->getPost('idservice');
+        $wibTime = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
+        $data = array(
+            'status_service' => 90,
+            'tanggal_bisa_diambil' => $wibTime->format('Y-m-d H:i:s'),
+        );
+        $result = $this->ServiceModel->updateService($idservice, $data);
 
         if ($result) {
             session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
@@ -637,30 +774,15 @@ class Riwayat_Service extends BaseController
             'tanggal_selesai' => $wibTime->format('Y-m-d H:i:s'),
         ];
 
-        $result = $this->ServiceModel->updateService($idservice, $data);
+        $this->ServiceModel->updateService($idservice, $data);
 
-        if ($result) {
-            // Siapkan nilai-nilai sesuai urutan array_value di template
-            $kas_diterima = $total_service - $dp_bayar;
+        // $datapbgaransi = array(
+        //     'tabel_referensi' => 'service_garansi_0'
+        // );
+        // $this->PembayaranBankModel->updateByReferensi($idservice, $datapbgaransi);
 
-            $ar_nilai = [
-                0 => $kas_diterima,   // Kas
-                1 => $dp_bayar,       // Diterima di muka
-                2 => $total_service,  // Pendapatan
-            ];
-
-            $this->JurnalModel->insertJurnal(
-                $tanggal_saja,
-                'pembayaran_service_tunai',
-                $ar_nilai,
-                'Pembayaran Service Tunai',
-                $idservice,
-                'service'
-            );
-
-            session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
-            return redirect()->to(base_url('bisa_diambil'));
-        }
+        session()->setFlashdata('sukses', 'Berhasil Memperbarui Status');
+        return redirect()->to(base_url('bisa_diambil'));
     }
 
 
@@ -676,5 +798,12 @@ class Riwayat_Service extends BaseController
             'body'  => 'riwayat/sudah_diambil'
         );
         return view('template', $data);
+    }
+
+    function sanitizeCurrency($value)
+    {
+
+        $cleaned = str_replace(['Rp', '.', ' '], '', $value);
+        return (float) $cleaned;
     }
 }

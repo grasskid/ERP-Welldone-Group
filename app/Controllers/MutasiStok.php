@@ -18,6 +18,8 @@ use App\Models\ModelUnit;
 use App\Models\ModelHppBarang;
 use App\Models\ModelDetailMutasi;
 use App\Models\ModelStokBarang;
+use Mpdf\Mpdf;
+use DateTime;
 
 class MutasiStok extends BaseController
 
@@ -77,6 +79,12 @@ class MutasiStok extends BaseController
         $kirim_idunit = $this->request->getPost('id_unit1_text');
         $terima_idunit = $this->request->getPost('id_unit2_text');
 
+        $dataunitkirim = $this->UnitModel->getById($kirim_idunit);
+        $dataunitterima = $this->UnitModel->getById($terima_idunit);
+        $kirim_namaunit = $dataunitkirim->NAMA_UNIT;
+        $terima_namaunit = $dataunitterima->NAMA_UNIT;
+
+
         if ($kirim_idunit == $terima_idunit) {
             session()->setFlashdata('gagal', 'Tidak dapat memilih unit yang sama');
             return redirect()->back();
@@ -92,6 +100,9 @@ class MutasiStok extends BaseController
 
         $tanggal_kirim_datetime = $tanggal_kirim . ' ' . $waktu_sekarang;
         $tanggal_terima_datetime = $tanggal_terima . ' ' . $waktu_sekarang;
+
+        $namainputer = $this->AuthModel->getById(session('ID_AKUN'));
+        $namanya = $namainputer->NAMA_AKUN;
 
 
 
@@ -152,6 +163,8 @@ class MutasiStok extends BaseController
 
             $produkjumlahKirim = $produk['jumlah_kirim'];
             $produkjumlahTerima = $produk['jumlah_terima'];
+            $produkharga_beli = $produk['harga_beli'];
+            $produkharga_mutasi = $produk['harga_mutasi'];
 
             $datahpp = $this->HppBarangModel->getById($idbarang);
             $hpp = $datahpp->hpp ?? 0;
@@ -168,15 +181,95 @@ class MutasiStok extends BaseController
                 'barang_idbarang' => $idbarang,
                 'kirim_idunit' => $kirim_idunit,
                 'terima_idunit' => $terima_idunit,
-                'mutasi_idmutasi' => $idMutasi
+                'mutasi_idmutasi' => $idMutasi,
+                'harga_mutasi' => $produkharga_mutasi,
+                'harga_beli' => $produkharga_beli
 
             );
             $result2 = $this->DetailMutasiModel->insert_DetailMutasiStok($data2);
         }
 
         if ($result & $result2) {
+
+            $notamutasi = array(
+                'tanggal' => $tanggal_kirim,
+                'pengirim' => $kirim_namaunit,
+                'penerima' => $terima_namaunit,
+                'data_produk' => $produkData,
+                'namainputer' => $namanya,
+                'kode_mutasi' => $no_nota_mutasi
+            );
+
+            $html = view('cetak/mutasi_stok', $notamutasi);
+
+            $mpdf = new \Mpdf\Mpdf([
+                'curlAllowUnsafeSslRequests' => true,
+                'curlUserAgent' => 'Mozilla/5.0',
+            ]);
+
+            ob_end_clean();
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('nota_mutasi.pdf', 'I');
+            exit;
+
+
+
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
             return redirect()->to(base_url('/mutasi_stok'));
         }
+    }
+
+    public function cetak_notamutasi($idmutasi)
+    {
+
+        $datadetailmutasi = $this->DetailMutasiModel->getFullDetailMutasiByMutasiId($idmutasi);
+        $datalengkapmutasi = $this->MutasiStokModel->getById($idmutasi);
+        $tanggal_kirim = $datalengkapmutasi->tanggal_kirim;
+        $no_nota_mutasi = $datalengkapmutasi->no_nota_mutasi;
+
+
+        $dataunitkirim = $this->UnitModel->getById($datalengkapmutasi->kirim_idunit);
+        $dataunitterima = $this->UnitModel->getById($datalengkapmutasi->terima_idunit);
+        $kirim_namaunit = $dataunitkirim->NAMA_UNIT;
+        $terima_namaunit = $dataunitterima->NAMA_UNIT;
+
+
+        $namainputer = $this->AuthModel->getById($datalengkapmutasi->input_by);
+        $namanya = $namainputer->NAMA_AKUN;
+
+        $produkData = [];
+
+        foreach ($datadetailmutasi as $detail) {
+            $produkData[] = [
+                'nama'   => $detail->nama_barang,
+                'jumlah_kirim'  => $detail->jumlah_kirim,
+                'jumlah_terima' => $detail->jumlah_terima,
+                'harga_beli'    => $detail->harga_beli,
+                'harga_mutasi'    => $detail->harga_mutasi ?? 0,
+                'satuan'        => $detail->satuan ?? 'pcs',
+                'harga_jual' => $detail->harga_jual
+            ];
+        }
+
+        $notamutasi = array(
+            'tanggal' => $tanggal_kirim,
+            'pengirim' => $kirim_namaunit,
+            'penerima' => $terima_namaunit,
+            'data_produk' => $produkData,
+            'namainputer' => $namanya,
+            'kode_mutasi' => $no_nota_mutasi
+        );
+
+        $html = view('cetak/mutasi_stok', $notamutasi);
+
+        $mpdf = new \Mpdf\Mpdf([
+            'curlAllowUnsafeSslRequests' => true,
+            'curlUserAgent' => 'Mozilla/5.0',
+        ]);
+
+        ob_end_clean();
+        $mpdf->WriteHTML($html);
+        $mpdf->Output('nota_mutasi.pdf', 'I');
+        exit;
     }
 }

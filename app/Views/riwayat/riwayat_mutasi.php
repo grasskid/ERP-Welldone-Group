@@ -89,6 +89,14 @@ foreach ($detail_mutasi as $row) {
                                         </iconify-icon>
                                         Lihat Detail
                                     </button>
+                                    <a href="<?php echo base_url('cetak/invoice_mutasi/' . $row->mutasi_idmutasi) ?>">
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                            style="display: inline-flex; align-items: center;">
+                                            <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
+                                            </iconify-icon>
+                                            Cetak Struk
+                                        </button>
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -151,14 +159,18 @@ foreach ($detail_mutasi as $row) {
 
 <!-- Filter Script -->
 <script>
+    let dataTable; // simpan instance DataTables global
+
     window.onload = function() {
+        // Inisialisasi DataTables
+        dataTable = $('#zero_config').DataTable();
+
         const endDateInput = document.getElementById('endDate');
         const startDateInput = document.getElementById('startDate');
 
         const today = new Date();
         const fifteenDaysAgo = new Date();
         fifteenDaysAgo.setDate(today.getDate() - 15);
-
 
         const toDateInputValue = (date) => {
             const year = date.getFullYear();
@@ -183,34 +195,36 @@ foreach ($detail_mutasi as $row) {
         const end = document.getElementById('endDate').value;
         const selectedUnit = document.getElementById('unitFilter').value.toLowerCase();
 
-        const rows = document.querySelectorAll('#zero_config tbody tr');
-        rows.forEach(row => {
-            const dateCell = row.children[1];
-            const unitCell = row.children[2]; // Unit Asal
-            if (!dateCell || !unitCell) return;
+        $.fn.dataTable.ext.search = []; // reset filter lama
 
-            const dateText = dateCell.textContent.trim();
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            // Kolom ke-1 = tanggal, Kolom ke-2 = unit (index mulai dari 0)
+            const dateText = data[1].trim();
             const parts = dateText.split('-');
             const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
             const startDate = start ? new Date(start) : null;
             const endDate = end ? new Date(end) : null;
 
-            const unitName = unitCell.textContent.trim().toLowerCase();
+            const unitName = data[2].trim().toLowerCase(); // ambil unit dari kolom tabel
             const unitMatch = selectedUnit === "" || unitName === selectedUnit;
 
             let dateMatch = true;
             if (startDate && rowDate < startDate) dateMatch = false;
             if (endDate && rowDate > endDate) dateMatch = false;
 
-            row.style.display = (unitMatch && dateMatch) ? '' : 'none';
+            return (unitMatch && dateMatch);
         });
+
+        dataTable.draw(); // refresh DataTable
     }
 
     function resetFilter() {
         document.getElementById('startDate').value = '';
         document.getElementById('endDate').value = '';
         document.getElementById('unitFilter').value = '';
-        filterData();
+
+        $.fn.dataTable.ext.search = []; // hapus semua filter
+        dataTable.draw();
     }
 </script>

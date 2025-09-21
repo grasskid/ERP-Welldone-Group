@@ -20,7 +20,10 @@ class ModelDetailMutasi extends Model
         'barang_idbarang',
         'kirim_idunit',
         'terima_idunit',
-        'mutasi_idmutasi'
+        'mutasi_idmutasi',
+        'harga_mutasi',
+        'harga_beli',
+        'harga_jual'
     ];
 
     public function getDetailMutasiStok()
@@ -38,6 +41,12 @@ class ModelDetailMutasi extends Model
         return $this->where(['iddetail_mutasi' => $idmutasi])->first();
     }
 
+
+    public function getByIdMutasi($idmutasi)
+    {
+        return $this->where(['mutasi_idmutasi' => $idmutasi])->findAll();
+    }
+
     public function getFullDetailMutasi()
     {
         return $this->select('
@@ -53,6 +62,28 @@ class ModelDetailMutasi extends Model
             ->join('unit as unit_terima', 'unit_terima.idunit = mutasi.terima_idunit')
             ->findAll();
     }
+
+
+    public function getFullDetailMutasiByMutasiId($mutasiId)
+    {
+        return $this->select('
+            detail_mutasi.*,
+            barang.nama_barang,
+            mutasi.no_nota_mutasi, 
+            mutasi.tanggal_kirim as mutasi_tanggal_kirim, 
+            mutasi.tanggal_terima as mutasi_tanggal_terima, 
+            mutasi.status,
+            unit_kirim.NAMA_UNIT as nama_unit_kirim,
+            unit_terima.NAMA_UNIT as nama_unit_terima
+        ')
+            ->join('mutasi', 'mutasi.idmutasi = detail_mutasi.mutasi_idmutasi')
+            ->join('barang', 'barang.idbarang = detail_mutasi.barang_idbarang')
+            ->join('unit as unit_kirim', 'unit_kirim.idunit = mutasi.kirim_idunit')
+            ->join('unit as unit_terima', 'unit_terima.idunit = mutasi.terima_idunit')
+            ->where('detail_mutasi.mutasi_idmutasi', $mutasiId)
+            ->findAll();
+    }
+
 
     public function exportfilter($tanggalAwal = null, $tanggalAkhir = null, $unitAsal = null)
     {
