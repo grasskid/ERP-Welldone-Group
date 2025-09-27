@@ -69,30 +69,30 @@
             </thead>
             <tbody>
                 <?php if (!empty($service)): ?>
-                    <?php foreach ($service as $row): ?>
-                        <tr>
-                            <td><?= esc($row->no_service) ?></td>
-                            <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
-                            <td><?= esc($row->nama_pelanggan) ?></td>
-                            <td><?= esc($row->no_hp) ?></td>
-                            <td><?= esc($row->alamat) ?></td>
-                            <td>
-                                <?php if ($row->status_service == 1) : ?>
-                                    Menunggu Service
-                                <?php elseif ($row->status_service == 2) : ?>
-                                    Dalam Pengerjaan
-                                <?php elseif ($row->status_service == 3) : ?>
-                                    Menunggu Pengambilan
-                                <?php elseif ($row->status_service == 4) : ?>
-                                    Sudah Diambil
-                                <?php elseif ($row->status_service == 9) : ?>
-                                    Dibatalkan
-                                <?php else : ?>
-                                    Data Tidak Valid
-                                <?php endif ?>
-                            </td>
-                            <td>
-                                <!-- <?php if ($row->status_service == 4): ?>
+                <?php foreach ($service as $row): ?>
+                <tr>
+                    <td><?= esc($row->no_service) ?></td>
+                    <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
+                    <td><?= esc($row->nama_pelanggan) ?></td>
+                    <td><?= esc($row->no_hp) ?></td>
+                    <td><?= esc($row->alamat) ?></td>
+                    <td>
+                        <?php if ($row->status_service == 1) : ?>
+                        Menunggu Service
+                        <?php elseif ($row->status_service == 2) : ?>
+                        Dalam Pengerjaan
+                        <?php elseif ($row->status_service == 3) : ?>
+                        Menunggu Pengambilan
+                        <?php elseif ($row->status_service == 4) : ?>
+                        Sudah Diambil
+                        <?php elseif ($row->status_service == 9) : ?>
+                        Dibatalkan
+                        <?php else : ?>
+                        Data Tidak Valid
+                        <?php endif ?>
+                    </td>
+                    <td>
+                        <!-- <?php if ($row->status_service == 4): ?>
                                     <button type="button" class="btn btn-warning edit-button" disabled>
                                         <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
                                     </button>
@@ -104,21 +104,21 @@
                                         </button>
                                     <?php endif; ?>
                                     </a> -->
-                                <a href="<?php echo base_url('cetak/invoice_service/' . $row->idservice) ?>">
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                        style="display: inline-flex; align-items: center;">
-                                        <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
-                                        </iconify-icon>
-                                        Cetak Struk
-                                    </button>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                        <a href="<?php echo base_url('cetak/invoice_service/' . $row->idservice) ?>">
+                            <button type="button" class="btn btn-sm btn-danger"
+                                style="display: inline-flex; align-items: center;">
+                                <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
+                                </iconify-icon>
+                                Cetak Struk
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="3" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="3" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -126,60 +126,60 @@
 </div>
 
 <script>
-    let dataTable;
+let dataTable;
 
-    window.onload = function() {
-        // Inisialisasi DataTable
-        dataTable = $('#zero_config').DataTable();
+window.onload = function() {
+    // Inisialisasi DataTable
+    dataTable = $('#zero_config').DataTable();
 
-        const endDateInput = document.getElementById('endDate');
-        const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const startDateInput = document.getElementById('startDate');
 
-        const today = new Date();
-        const fifteenDaysAgo = new Date();
-        fifteenDaysAgo.setDate(today.getDate() - 15);
+    const today = new Date();
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(today.getDate() - 15);
 
-        const toDateInputValue = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-
-        startDateInput.value = toDateInputValue(fifteenDaysAgo);
-        endDateInput.value = toDateInputValue(today);
-
-        // Jalankan filter pertama kali
-        filterData();
+    const toDateInputValue = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
-    function filterData() {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
+    startDateInput.value = toDateInputValue(fifteenDaysAgo);
+    endDateInput.value = toDateInputValue(today);
 
-        const startDate = start ? new Date(start) : null;
-        const endDate = end ? new Date(end) : null;
+    // Jalankan filter pertama kali
+    filterData();
+};
 
-        // Custom filter DataTable
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            // Ambil tanggal dari kolom ke-2 (index 1)
-            const dateText = data[1].trim(); // data[1] = kolom tanggal
-            const parts = dateText.split('-'); // Asumsi format dd-mm-yyyy
-            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+function filterData() {
+    const start = document.getElementById('startDate').value;
+    const end = document.getElementById('endDate').value;
 
-            if (startDate && rowDate < startDate) return false;
-            if (endDate && rowDate > endDate) return false;
-            return true;
-        });
+    const startDate = start ? new Date(start) : null;
+    const endDate = end ? new Date(end) : null;
 
-        dataTable.draw(); // redraw tabel setelah filter
-        $.fn.dataTable.ext.search.pop(); // hapus filter setelah digunakan
-    }
+    // Custom filter DataTable
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        // Ambil tanggal dari kolom ke-2 (index 1)
+        const dateText = data[1].trim(); // data[1] = kolom tanggal
+        const parts = dateText.split('-'); // Asumsi format dd-mm-yyyy
+        const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
 
-    function resetFilter() {
-        document.getElementById('startDate').value = '';
-        document.getElementById('endDate').value = '';
+        if (startDate && rowDate < startDate) return false;
+        if (endDate && rowDate > endDate) return false;
+        return true;
+    });
 
-        filterData();
-    }
+    dataTable.draw(); // redraw tabel setelah filter
+    $.fn.dataTable.ext.search.pop(); // hapus filter setelah digunakan
+}
+
+function resetFilter() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+
+    filterData();
+}
 </script>

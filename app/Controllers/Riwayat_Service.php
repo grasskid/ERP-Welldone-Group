@@ -374,58 +374,62 @@ class Riwayat_Service extends BaseController
         return (int) preg_replace('/[^0-9]/', '', $cleaned);
     }
 
-
-
     public function cetak_invoice($idservice)
     {
-        helper('qr');
+    helper('qr');
 
+    $sparepart  = $this->ServiceModel->getSparepartWithBarang($idservice);
+    $kerusakan  = $this->ServiceModel->getKerusakanWithFungsi($idservice);
+    $human      = $this->ServiceModel->getServiceWithAkunAndPelanggan($idservice);
+    $service    = $this->ServiceModel->getServiceById($idservice);
 
-        $sparepart  = $this->ServiceModel->getSparepartWithBarang($idservice);
-        $kerusakan  = $this->ServiceModel->getKerusakanWithFungsi($idservice);
-        $human      = $this->ServiceModel->getServiceWithAkunAndPelanggan($idservice);
-        $service    = $this->ServiceModel->getServiceById($idservice);
+    $qrData = base_url('status_service/' . $idservice);
+    $uniqueName = 'qr_' . md5($idservice . time()) . '.png';
+    $qrImageUrl = generateQrToFile($qrData, $uniqueName);
 
+    $data = [
+        'sparepart'  => $sparepart,
+        'service'    => $service,
+        'kerusakan'  => $kerusakan,
+        'human'      => $human,
+        'qrImageUrl' => $qrImageUrl,
+        'dataunit'   => $this->UnitModel->getById(session('ID_UNIT'))
+    ];
 
-        $qrData = base_url('status_service/' . $idservice);
-        $uniqueName = 'qr_' . md5($idservice . time()) . '.png';
-        $qrImageUrl = generateQrToFile($qrData, $uniqueName);
+    $mode = $this->request->getGet('mode');
 
+    if ($mode === 'thermal') {
+        $html = view('cetak/invoice_service_thermal', $data);
 
-        $data = [
-            'sparepart'    => $sparepart,
-            'service'      => $service,
-            'kerusakan'    => $kerusakan,
-            'human'        => $human,
-            'qrImageUrl'   => $qrImageUrl,
-            'dataunit' => $this->UnitModel->getById(session('ID_UNIT'))
-        ];
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => [80, 200],
+            'margin_left'   => 2,
+            'margin_right'  => 2,
+            'margin_top'    => 2,
+            'margin_bottom' => 2,
+        ]);
 
-
-
+    } else {
         $html = view('cetak/invoice_service', $data);
 
-
-        error_reporting(0);
         $mpdf = new \Mpdf\Mpdf([
             'curlUserAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0) Gecko/20100101 Firefox/108.0'
         ]);
-
-        ob_end_clean();
-        $mpdf->curlAllowUnsafeSslRequests = true;
-
-
-        $this->response->setHeader('Content-Type', 'application/pdf');
-        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
-        $this->response->setHeader('Accept-Ranges', 'bytes');
-
-
-        $mpdf->WriteHTML($html);
-        $mpdf->Output();
-        exit;
     }
 
+    error_reporting(0);
+    ob_end_clean();
+    $mpdf->curlAllowUnsafeSslRequests = true;
 
+    $this->response->setHeader('Content-Type', 'application/pdf');
+    $this->response->setHeader('Content-Transfer-Encoding', 'binary');
+    $this->response->setHeader('Accept-Ranges', 'bytes');
+
+    $mpdf->WriteHTML($html);
+    $mpdf->Output();
+    exit;
+    }
 
     public function export()
     {
