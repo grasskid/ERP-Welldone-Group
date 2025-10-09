@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-bs-theme="dark" data-color-theme="Blue_Theme" data-layout="vertical">
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical" data-boxed-layout="full" data-card="shadow">
 
 <head>
     <!-- Required meta tags -->
@@ -398,35 +398,35 @@
 
                                                     <div class="message-body" data-simplebar>
                                                         <?php if (!empty($stokMinimum)) : ?>
-                                                        <?php foreach ($stokMinimum as $item) : ?>
-                                                        <a href="javascript:void(0)"
-                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                            <span class="flex-shrink-0">
-                                                                <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
-                                                                    alt="user" width="45" class="rounded-circle" />
-                                                            </span>
-                                                            <div class="w-100 d-inline-block v-middle ps-3">
-                                                                <div
-                                                                    class="d-flex align-items-center justify-content-between">
-                                                                    <h5 class="mb-0 fs-3 fw-normal">
-                                                                        <?= esc($item->nama_barang) ?>
-                                                                    </h5>
-                                                                </div>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
-                                                                    Unit: <?= esc($item->nama_unit) ?>
-                                                                </span>
-                                                                <span
-                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
-                                                                    Sisa <?= esc($item->stok_akhir) ?> (Min:
-                                                                    <?= esc($item->stok_minimum) ?>)
-                                                                </span>
-                                                            </div>
-                                                        </a>
-                                                        <?php endforeach; ?>
+                                                            <?php foreach ($stokMinimum as $item) : ?>
+                                                                <a href="javascript:void(0)"
+                                                                    class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                                    <span class="flex-shrink-0">
+                                                                        <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
+                                                                            alt="user" width="45" class="rounded-circle" />
+                                                                    </span>
+                                                                    <div class="w-100 d-inline-block v-middle ps-3">
+                                                                        <div
+                                                                            class="d-flex align-items-center justify-content-between">
+                                                                            <h5 class="mb-0 fs-3 fw-normal">
+                                                                                <?= esc($item->nama_barang) ?>
+                                                                            </h5>
+                                                                        </div>
+                                                                        <span
+                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
+                                                                            Unit: <?= esc($item->nama_unit) ?>
+                                                                        </span>
+                                                                        <span
+                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
+                                                                            Sisa <?= esc($item->stok_akhir) ?> (Min:
+                                                                            <?= esc($item->stok_minimum) ?>)
+                                                                        </span>
+                                                                    </div>
+                                                                </a>
+                                                            <?php endforeach; ?>
                                                         <?php else : ?>
-                                                        <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
-                                                            minimum</div>
+                                                            <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
+                                                                minimum</div>
                                                         <?php endif; ?>
                                                     </div>
 
@@ -579,14 +579,14 @@
 
                                             <!-- Minimal JS to prevent dropdown from closing -->
                                             <script>
-                                            document.querySelectorAll(
-                                                    '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
-                                                )
-                                                .forEach(el => {
-                                                    el.addEventListener('click', function(e) {
-                                                        e.stopPropagation();
+                                                document.querySelectorAll(
+                                                        '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
+                                                    )
+                                                    .forEach(el => {
+                                                        el.addEventListener('click', function(e) {
+                                                            e.stopPropagation();
+                                                        });
                                                     });
-                                                });
                                             </script>
 
                                             </li>
@@ -1492,10 +1492,10 @@
                 </div>
             </div>
             <script>
-            function handleColorTheme(e) {
-                $("html").attr("data-color-theme", e);
-                $(e).prop("checked", !0);
-            }
+                function handleColorTheme(e) {
+                    $("html").attr("data-color-theme", e);
+                    $(e).prop("checked", !0);
+                }
             </script>
             <button
                 class="btn btn-primary p-3 rounded-circle d-flex align-items-center justify-content-center customizer-btn"
@@ -1688,11 +1688,11 @@
                     $uri = str_replace('/index.php/', '', $uri);
                     $manualbook = db_connect()->table('menu')->where(array("url" => $uri))->get()->getFirstRow();
                     if (!empty($manualbook) && $manualbook->manualbook != null): ?>
-                    <h4><?= $manualbook->nama_menu ?></h4>
-                    <embed type="application/pdf" src="<?= base_url()."/manualbook/".$manualbook->manualbook ?>" width="100%"
-                        height="800"></embed>
+                        <h4><?= $manualbook->nama_menu ?></h4>
+                        <embed type="application/pdf" src="<?= base_url() . "/manualbook/" . $manualbook->manualbook ?>" width="100%"
+                            height="800"></embed>
                     <?php else: ?>
-                    <h4>Manual Book Tidak Tersedia</h4>
+                        <h4>Manual Book Tidak Tersedia</h4>
                     <?php endif; ?>
                 </div>
                 <div class="modal-footer">
@@ -1733,35 +1733,35 @@
 
     <!-- js alert -->
     <?php if (session()->getFlashdata('sukses')) : ?>
-    <script>
-    $(document).ready(function() {
-        toastr.success(
-            "<?= session()->getFlashdata('sukses'); ?>",
-            "Berhasil!", {
-                showMethod: "slideDown",
-                hideMethod: "slideUp",
-                progressBar: true,
-                timeOut: 2000
-            }
-        );
-    });
-    </script>
+        <script>
+            $(document).ready(function() {
+                toastr.success(
+                    "<?= session()->getFlashdata('sukses'); ?>",
+                    "Berhasil!", {
+                        showMethod: "slideDown",
+                        hideMethod: "slideUp",
+                        progressBar: true,
+                        timeOut: 2000
+                    }
+                );
+            });
+        </script>
     <?php endif; ?>
     <!-- js alert Ends -->
     <?php if (session()->getFlashdata('gagal')) : ?>
-    <script>
-    $(document).ready(function() {
-        toastr.warning(
-            <?= json_encode(session()->getFlashdata('gagal')) ?>,
-            "Gagal!", {
-                showMethod: "slideDown",
-                hideMethod: "slideUp",
-                progressBar: true,
-                timeOut: 2000
-            }
-        );
-    });
-    </script>
+        <script>
+            $(document).ready(function() {
+                toastr.warning(
+                    <?= json_encode(session()->getFlashdata('gagal')) ?>,
+                    "Gagal!", {
+                        showMethod: "slideDown",
+                        hideMethod: "slideUp",
+                        progressBar: true,
+                        timeOut: 2000
+                    }
+                );
+            });
+        </script>
     <?php endif ?>
 
 
