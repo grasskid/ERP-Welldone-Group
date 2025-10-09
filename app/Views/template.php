@@ -1781,5 +1781,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
 
 
+<script>
+    document.documentElement.setAttribute("data-boxed-layout", "full");
+</script>
 
 </html>
