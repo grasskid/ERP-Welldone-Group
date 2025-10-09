@@ -56,7 +56,7 @@
             <?php echo view('inc/left_horizontal'); ?>
 
             <div class="body-wrapper">
-                <div class="container-fluid">
+                <div class="container-fluid mw-100">
                     <!--  Header Start -->
                     <header class="topbar sticky-top">
                         <div class="with-vertical">
