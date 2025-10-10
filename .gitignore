@@ -28,6 +28,10 @@ public/foto_presensi/*
 !public/foto_presensi/.gitkeep
 public/foto_tugas/*
 !public/foto_tugas/.gitkeep
+public/foto_kk/*
+!public/foto_kk/.gitkeep
+public/foto_ktp/*
+!public/foto_ktp.gitkeep
 public/error_log
 
 # Composer
