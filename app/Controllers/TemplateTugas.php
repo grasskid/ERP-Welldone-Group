@@ -5,16 +5,21 @@ namespace App\Controllers;
 use App\Models\ModelTugasTemplate;
 use App\Models\ModelAuth;
 use App\Models\ModelJabatan;
+use App\Models\ModelTemplatePenilaian;
 
 class TemplateTugas extends BaseController
 {
     protected $AuthModel;
     protected $TugasTemplateModel;
+    protected $JabatanModel;
+    protected $PenilaianTemplateModel;
 
     public function __construct()
     {
-        $this->AuthModel = new ModelAuth();
-        $this->TugasTemplateModel = new ModelTugasTemplate();
+        $this->AuthModel              = new ModelAuth();
+        $this->TugasTemplateModel     = new ModelTugasTemplate();
+        $this->JabatanModel           = new ModelJabatan();
+        $this->PenilaianTemplateModel = new ModelTemplatePenilaian();
     }
 
     public function index()
@@ -32,12 +37,21 @@ class TemplateTugas extends BaseController
 
     public function insert()
     {
+        $jabatanId = $this->request->getPost('ID_JABATAN');
+        $namaTugas = $this->request->getPost('nama_tugas');
+
+        $templatePenilaian = $this->PenilaianTemplateModel
+            ->where('jabatan_idjabatan', $jabatanId)
+            ->where('aspek_penilaian', $namaTugas)
+            ->first();
+
         $data = [
-            'nama_tugas'  => $this->request->getPost('nama_tugas'),
+            'nama_tugas'  => $namaTugas,
             'deskripsi'   => $this->request->getPost('deskripsi'),
             'start_date'  => $this->request->getPost('start_date'),
             'end_date'    => $this->request->getPost('end_date'),
-            'ID_JABATAN'  => $this->request->getPost('ID_JABATAN') // From form input, not session
+            'ID_JABATAN'  => $jabatanId,
+            'template_penilaian_idtemplate_penilaian' => $templatePenilaian ? $templatePenilaian->idtemplate_penilaian : null
         ];
 
         $this->TugasTemplateModel->insertTugasTemplate($data);

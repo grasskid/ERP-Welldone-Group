@@ -14,6 +14,9 @@ use App\Controllers\StokAwal;
 use App\Models\ModelBarang;
 use App\Models\ModelStokBarang;
 use App\Models\ModelHppBarang;
+use App\Models\ModelUnit;
+
+
 
 class StokOpname extends BaseController
 
@@ -27,6 +30,7 @@ class StokOpname extends BaseController
     protected $BarangModel;
     protected $StokBarangModel;
     protected $HppBarangModel;
+    protected $UnitModel;
 
     public function __construct()
     {
@@ -38,6 +42,7 @@ class StokOpname extends BaseController
         $this->BarangModel = new ModelBarang();
         $this->StokBarangModel = new ModelStokBarang();
         $this->HppBarangModel = new ModelHppBarang();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -48,6 +53,7 @@ class StokOpname extends BaseController
             'stok' => $this->KartuStokModel->getKartuStok(),
             'stokopname' => $this->StokOpnameDraftModel->getStokOpnameDraft(),
             'stokopnamedraft' => $this->StokOpnameDraftModel->getStokOpname(),
+            'unit' => $this->UnitModel->getUnit(),
             'body'  => 'stok/stok_opname'
         );
         return view('template', $data);

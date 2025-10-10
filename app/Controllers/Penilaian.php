@@ -17,6 +17,7 @@ use App\Models\ModelAuth;
 use App\Models\ModelTemplatePenilaian;
 use App\Models\ModelPenilaian;
 use App\Models\ModelTemplateKpi;
+use App\Models\ModelPenilaianDetail;
 
 class Penilaian extends BaseController
 
@@ -27,6 +28,7 @@ class Penilaian extends BaseController
     protected $AuthModel;
     protected $TemplatePenilaianModel;
     protected $PenilaianModel;
+    protected $PenilaianDetailModel;
     protected $TemplateKpiModel;
 
     public function __construct()
@@ -36,6 +38,7 @@ class Penilaian extends BaseController
         $this->AuthModel = new ModelAuth();
         $this->TemplatePenilaianModel = new ModelTemplatePenilaian();
         $this->PenilaianModel = new ModelPenilaian();
+        $this->PenilaianDetailModel = new ModelPenilaianDetail();
         $this->TemplateKpiModel = new ModelTemplateKpi();
     }
 
@@ -77,106 +80,166 @@ public function index()
         return $this->response->setJSON($template);
     }
 
+public function insert_penilaian()
+{
+    $pegawai_idpegawai = $this->request->getPost('pegawai_idpegawai');
+    $tanggal_penilaian = $this->request->getPost('tanggal_penilaian');
 
+    $idTempKpi2 = $this->request->getPost('idtempkpi2');
+    $skor2      = $this->request->getPost('skor2');
 
+    // Ambil nama KPI dari template
+    $kpi2 = $this->TemplateKpiModel->getById($idTempKpi2[0] ?? null);
+    $aspek2 = $kpi2 ? $kpi2->template_kpi : 'Aspek KPI';
 
-
-
-
-    public function insert_penilaian()
-    {
-
-        $pegawai_idpegawai = $this->request->getPost('pegawai_idpegawai');
-        $tanggal_penilaian = $this->request->getPost('tanggal_penilaian');
-        $idTempKpi1  = $this->request->getPost('idtempkpi1[1]');
-        $kpi1 = $this->TemplateKpiModel->getById($idTempKpi1);
-        $aspek1 = $kpi1->template_kpi;
-        $skor1       = $this->request->getPost('skor1');
-        $totalSkor1 = array_sum($skor1);
-        $keterangan1 = '';
-
-        if ($totalSkor1 >= 1 && $totalSkor1 <= 10) {
-            $keterangan1 = 'Skor Kinerja buruk';
-        } elseif ($totalSkor1 >= 11 && $totalSkor1 <= 20) {
-            $keterangan1 = 'Skor Kinerja cukup baik';
-        } elseif ($totalSkor1 >= 21 && $totalSkor1 <= 25) {
-            $keterangan1 = 'Skor Kinerja baik';
+    // Hitung total skor
+    $totalSkorAkhir2 = 0;
+    if (is_array($skor2)) {
+        foreach ($skor2 as $val) {
+            $totalSkorAkhir2 += isset($val) ? (float) $val : 0;
         }
-
-
-
-
-        $idTempKpi2  = $this->request->getPost('idtempkpi2[1]');
-        $templateIds2 = $this->request->getPost('template_ids2');
-        $skor2       = $this->request->getPost('skor2');
-        $kpi2 = $this->TemplateKpiModel->getById($idTempKpi2);
-        $aspek2 = $kpi2->template_kpi;
-
-        $totalSkorAkhir2 = 0;
-        $semuaSkorAkhir2 = [];
-
-        foreach ($templateIds2 as $i => $id) {
-            $datatemplatepenilaian = $this->TemplatePenilaianModel->getById($id);
-
-            if (!$datatemplatepenilaian) {
-                continue;
-            }
-
-            $target = (float) $datatemplatepenilaian->target;
-            $realisasi = isset($skor2[$i]) ? (float) $skor2[$i] : 0;
-
-            if ($target > 0) {
-                $skorAkhir2 = $realisasi / $target;
-
-
-                if ($skorAkhir2 > 1) {
-                    $skorAkhir2 = 1;
-                }
-            } else {
-                $skorAkhir2 = 0;
-            }
-
-            $semuaSkorAkhir2[] = $skorAkhir2;
-        }
-
-        $totalSkorAkhir2 = array_sum($semuaSkorAkhir2);
-
-        $keterangan2 = '';
-
-        if ($totalSkorAkhir2 >= 0 && $totalSkorAkhir2 <= 1.5) {
-            $keterangan2 = 'Skor Kinerja buruk';
-        } elseif ($totalSkorAkhir2 >= 1.6 && $totalSkorAkhir2 <= 4.0) {
-            $keterangan2 = 'Skor Kinerja cukup baik';
-        } elseif ($totalSkorAkhir2 >= 4.0 && $totalSkorAkhir2 <= 5.0) {
-            $keterangan2 = 'Skor Kinerja baik';
-        }
-
-
-        $data = array(
-            'aspek' => $aspek1,
-            'keterangan' => $keterangan1,
-            'skor' => $totalSkor1,
-            'pegawai_idpegawai' => $pegawai_idpegawai,
-            'tanggal_penilaian' => $tanggal_penilaian
-
-        );
-
-
-        $data2 = array(
-
-            'aspek' => $aspek2,
-            'keterangan' => $keterangan2,
-            'skor' => $totalSkorAkhir2,
-            'pegawai_idpegawai' => $pegawai_idpegawai,
-            'tanggal_penilaian' => $tanggal_penilaian
-        );
-
-
-        $this->PenilaianModel->insertPenilaian($data);
-        $this->PenilaianModel->insertPenilaian($data2);
-        session()->setFlashData('sukses', 'Data Berhasil Ditambahkan');
-        return redirect()->to(base_url('penilaian'));
     }
+
+    // Tentukan keterangan
+    if ($totalSkorAkhir2 <= 10) {
+        $keterangan2 = 'Skor Kinerja buruk';
+    } elseif ($totalSkorAkhir2 <= 20) {
+        $keterangan2 = 'Skor Kinerja cukup baik';
+    } elseif ($totalSkorAkhir2 <= 25) {
+        $keterangan2 = 'Skor Kinerja baik';
+    } else {
+        $keterangan2 = 'Skor Kinerja sangat baik';
+    }
+
+    // Simpan ke tabel penilaian (utama)
+    $data2 = [
+        'aspek'             => $aspek2,
+        'keterangan'        => $keterangan2,
+        'skor'              => $totalSkorAkhir2,
+        'pegawai_idpegawai' => $pegawai_idpegawai,
+        'tanggal_penilaian' => $tanggal_penilaian
+    ];
+    $idPenilaian = $this->PenilaianModel->insertPenilaian($data2); // <-- dapatkan ID insert
+
+    // Simpan ke tabel penilaian_detail
+    $template_ids2 = $this->request->getPost('template_ids2');
+    $detailData = [];
+
+    if (is_array($template_ids2) && is_array($skor2)) {
+        foreach ($template_ids2 as $index => $templateId) {
+            $detailData[] = [
+                'template_penilaian_idtemplate_penilaian' => $templateId,
+                'skor'              => $skor2[$index] ?? 0,
+                'pegawai_idpegawai' => $pegawai_idpegawai,
+                'tanggal_penilaian' => $tanggal_penilaian,
+                'penilaian_idpenilaian' => $idPenilaian, // <-- link ke penilaian utama
+                'created_on'        => date('Y-m-d H:i:s')
+            ];
+        }
+    }
+
+    if (!empty($detailData)) {
+        $this->PenilaianDetailModel->insertBatch($detailData);
+    }
+
+    session()->setFlashData('sukses', 'Data Berhasil Ditambahkan');
+    return redirect()->to(base_url('penilaian'));
+}
+
+    // public function insert_penilaian()
+    // {
+
+    //     $pegawai_idpegawai = $this->request->getPost('pegawai_idpegawai');
+    //     $tanggal_penilaian = $this->request->getPost('tanggal_penilaian');
+    //     $idTempKpi1  = $this->request->getPost('idtempkpi1[1]');
+    //     $kpi1 = $this->TemplateKpiModel->getById($idTempKpi1);
+    //     $aspek1 = $kpi1->template_kpi;
+    //     $skor1       = $this->request->getPost('skor1');
+    //     $totalSkor1 = array_sum($skor1);
+    //     $keterangan1 = '';
+
+    //     if ($totalSkor1 >= 1 && $totalSkor1 <= 10) {
+    //         $keterangan1 = 'Skor Kinerja buruk';
+    //     } elseif ($totalSkor1 >= 11 && $totalSkor1 <= 20) {
+    //         $keterangan1 = 'Skor Kinerja cukup baik';
+    //     } elseif ($totalSkor1 >= 21 && $totalSkor1 <= 25) {
+    //         $keterangan1 = 'Skor Kinerja baik';
+    //     }
+
+
+
+
+    //     $idTempKpi2  = $this->request->getPost('idtempkpi2[1]');
+    //     $templateIds2 = $this->request->getPost('template_ids2');
+    //     $skor2       = $this->request->getPost('skor2');
+    //     $kpi2 = $this->TemplateKpiModel->getById($idTempKpi2);
+    //     $aspek2 = $kpi2->template_kpi;
+
+    //     $totalSkorAkhir2 = 0;
+    //     $semuaSkorAkhir2 = [];
+
+    //     foreach ($templateIds2 as $i => $id) {
+    //         $datatemplatepenilaian = $this->TemplatePenilaianModel->getById($id);
+
+    //         if (!$datatemplatepenilaian) {
+    //             continue;
+    //         }
+
+    //         $target = (float) $datatemplatepenilaian->target;
+    //         $realisasi = isset($skor2[$i]) ? (float) $skor2[$i] : 0;
+
+    //         if ($target > 0) {
+    //             $skorAkhir2 = $realisasi / $target;
+
+
+    //             if ($skorAkhir2 > 1) {
+    //                 $skorAkhir2 = 1;
+    //             }
+    //         } else {
+    //             $skorAkhir2 = 0;
+    //         }
+
+    //         $semuaSkorAkhir2[] = $skorAkhir2;
+    //     }
+
+    //     $totalSkorAkhir2 = array_sum($semuaSkorAkhir2);
+
+    //     $keterangan2 = '';
+
+    //     if ($totalSkorAkhir2 >= 0 && $totalSkorAkhir2 <= 1.5) {
+    //         $keterangan2 = 'Skor Kinerja buruk';
+    //     } elseif ($totalSkorAkhir2 >= 1.6 && $totalSkorAkhir2 <= 4.0) {
+    //         $keterangan2 = 'Skor Kinerja cukup baik';
+    //     } elseif ($totalSkorAkhir2 >= 4.0 && $totalSkorAkhir2 <= 5.0) {
+    //         $keterangan2 = 'Skor Kinerja baik';
+    //     }
+
+
+    //     $data = array(
+    //         'aspek' => $aspek1,
+    //         'keterangan' => $keterangan1,
+    //         'skor' => $totalSkor1,
+    //         'pegawai_idpegawai' => $pegawai_idpegawai,
+    //         'tanggal_penilaian' => $tanggal_penilaian
+
+    //     );
+
+
+    //     $data2 = array(
+
+    //         'aspek' => $aspek2,
+    //         'keterangan' => $keterangan2,
+    //         'skor' => $totalSkorAkhir2,
+    //         'pegawai_idpegawai' => $pegawai_idpegawai,
+    //         'tanggal_penilaian' => $tanggal_penilaian
+    //     );
+
+
+    //     $this->PenilaianModel->insertPenilaian($data);
+    //     $this->PenilaianModel->insertPenilaian($data2);
+    //     session()->setFlashData('sukses', 'Data Berhasil Ditambahkan');
+    //     return redirect()->to(base_url('penilaian'));
+    // }
 
 
     // public function update_penilaian()

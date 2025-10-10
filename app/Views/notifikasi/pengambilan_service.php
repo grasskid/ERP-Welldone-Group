@@ -32,27 +32,26 @@
             </thead>
             <tbody>
                 <?php if (!empty($pelanggan)): ?>
-                    <?php foreach ($pelanggan as $row): ?>
-                        <tr>
-                            <td><?= esc($row->no_service) ?></td>
-                            <td><?= esc($row->nama) ?></td>
-                            <td><?= esc($row->alamat) ?></td>
-                            <td><?= esc($row->no_hp) ?></td>
-                            <td>
-                                <button type="button" class="btn btn-wa"
-                                    data-nohp="<?= esc($row->no_hp) ?>"
-                                    data-nama="<?= esc($row->nama) ?>"
-                                    style="width: 100px; height: 40px; background-color: greenyellow;">
-                                    <iconify-icon icon="solar:phone-bold" width="24" height="24"></iconify-icon>
-                                </button>
-                            </td>
+                <?php foreach ($pelanggan as $row): ?>
+                <tr>
+                    <td><?= esc($row->no_service) ?></td>
+                    <td><?= esc($row->nama) ?></td>
+                    <td><?= esc($row->alamat) ?></td>
+                    <td><?= esc($row->no_hp) ?></td>
+                    <td>
+                        <button type="button" class="btn btn-wa" data-nohp="<?= esc($row->no_hp) ?>"
+                            data-nama="<?= esc($row->nama) ?>"
+                            style="width: 100px; height: 40px; background-color: greenyellow;">
+                            <iconify-icon icon="solar:phone-bold" width="24" height="24"></iconify-icon>
+                        </button>
+                    </td>
 
-                        </tr>
-                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="5" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="5" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -60,26 +59,29 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.btn-wa');
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.btn-wa');
 
-        buttons.forEach(button => {
-            button.addEventListener('click', function() {
-                let nomor = this.dataset.nohp.trim();
-                let nama = this.dataset.nama.trim();
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            let nomor = this.dataset.nohp.trim();
+            let nama = this.dataset.nama.trim();
 
-                // Normalisasi nomor HP
-                if (nomor.startsWith('0')) {
-                    nomor = '62' + nomor.substring(1);
-                } else if (nomor.startsWith('+62')) {
-                    nomor = nomor.substring(1); // hapus +
-                }
+            if (nomor.startsWith('0')) {
+                nomor = '62' + nomor.substring(1);
+            } else if (nomor.startsWith('+62')) {
+                nomor = nomor.substring(1);
+            }
 
-                const waUrl = 'https://wa.me/' + nomor + '?text=' + encodeURIComponent("Halo, Kami dari welldone group ingin menginformasikan bahwa service handphone atas nama " + nama + " telah selesai, silahkan melakukan pengambilan di urban yaa");
+            const unit = "<?= session()->get('NAMA_UNIT'); ?>";
+            const waUrl = 'https://wa.me/' + nomor + '?text=' + encodeURIComponent(
+                "Halo, Kami dari " + unit +
+                " ingin menginformasikan bahwa service handphone atas nama " + nama +
+                " telah selesai, silahkan melakukan pengambilan di urban yaa"
+            );
 
-                // Buka WhatsApp
-                window.open(waUrl, '_blank');
-            });
+            window.open(waUrl, '_blank');
         });
     });
+});
 </script>

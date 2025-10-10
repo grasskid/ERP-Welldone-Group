@@ -10,6 +10,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use App\Models\ModelUnit;
 
 class Kartu_Stok extends BaseController
 
@@ -17,11 +18,13 @@ class Kartu_Stok extends BaseController
 
     protected $AuthModel;
     protected $KartuStokModel;
+    protected $UnitModel;
 
     public function __construct()
     {
         $this->AuthModel = new ModelAuth();
         $this->KartuStokModel = new ModelKartuStok();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -30,7 +33,8 @@ class Kartu_Stok extends BaseController
         $data =  array(
             'akun' => $akun,
             'stok' => $this->KartuStokModel->getKartuStokWithKategori(),
-            'body'  => 'stok/kartu_stok'
+            'body'  => 'stok/kartu_stok',
+            'unit' => $this->UnitModel->getUnit()
         );
         return view('template', $data);
     }

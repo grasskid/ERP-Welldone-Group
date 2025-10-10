@@ -23,13 +23,14 @@ class ModelBarang extends Model
 
     public function semuaBarang()
     {
-        return $this->where('deleted', 0)->findAll();
+        return $this
+            ->where('barang.deleted', 0)
+            ->findAll();
     }
 
     public function getAllBarang()
     {
         $id_unit = session('ID_UNIT');
-
         return $this->select('barang.*, kategori.nama_kategori, stok_barang.stok_akhir')
             ->join('kategori', 'kategori.id = barang.idkategori')
             ->join('stok_barang', 'stok_barang.idbarang = barang.idbarang AND stok_barang.id_unit = ' . (int)$id_unit, 'left')
@@ -39,17 +40,16 @@ class ModelBarang extends Model
     }
 
 
+
     public function getAllBarang2()
     {
         $id_unit = session('ID_UNIT');
-
-        return $this->select('barang.*, kategori.nama_kategori, stok_barang.stok_akhir')
+        return $this
+            ->select('barang.*, kategori.nama_kategori, stok_barang.stok_akhir')
             ->join('kategori', 'kategori.id = barang.idkategori')
             ->join('stok_barang', 'stok_barang.idbarang = barang.idbarang AND stok_barang.id_unit = ' . (int)$id_unit, 'left')
             ->where('barang.deleted', 0)
-            ->where('kategori.delete', 0)
-            ->where('stok_barang.stok_akhir >', 0)
-            ->findAll();
+            ->where('kategori.delete', 0)->where('stok_barang.stok_akhir >', 0)->findAll();
     }
 
 
@@ -59,14 +59,18 @@ class ModelBarang extends Model
     }
 
 
-    public function getById($idbarang)
+    public function getById($id)
     {
-        return $this->where(['idbarang' => $idbarang])->first();
+        return $this
+            ->where('barang.idbarang', $id)
+            ->first();
     }
 
     public function getBykode($kodeBarang)
     {
-        return $this->where(['kode_barang' => $kodeBarang])->first();
+        return $this
+            ->where(['kode_barang' => $kodeBarang])
+            ->first();
     }
 
     public function getLastBarangByKategori($idkategori)
@@ -82,7 +86,6 @@ class ModelBarang extends Model
     {
         return $this->select('barang.*, kategori.nama_kategori')
             ->join('kategori', 'kategori.id = barang.idkategori')
-            ->where('barang.idkategori', 3)
-            ->findAll();
+            ->where('barang.idkategori', 3)->findAll();
     }
 }

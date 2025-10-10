@@ -362,10 +362,13 @@ $routes->get('penilaian/get_template_by_jabatan/(:num)', 'Penilaian::get_templat
 
 //penilaian kpi
 $routes->get('penilaian_kpi', 'PenilaianKPI::index', ['filter' => 'auth']);
-$routes->post('insert_penilaian', 'PenilaianKPI::insert_penilaian', ['filter' => 'auth']);
-$routes->post('update_penilaian', 'PenilaianKPI::update_penilaian', ['filter' => 'auth']);
-$routes->post('delete_penilaian', 'PenilaianKPI::delete_penilaian', ['filter' => 'auth']);
-$routes->post('export_penilaian', 'PenilaianKPI::export_penilaian', ['filter' => 'auth']);
+$routes->post('insert_penilaian_KPI', 'PenilaianKPI::insert_penilaian', ['filter' => 'auth']);
+$routes->post('update_penilaian_KPI', 'PenilaianKPI::update_penilaian', ['filter' => 'auth']);
+$routes->post('delete_penilaian_KPI', 'PenilaianKPI::delete_penilaian', ['filter' => 'auth']);
+$routes->post('export_penilaian_KPI', 'PenilaianKPI::export_penilaian', ['filter' => 'auth']);
+$routes->post('export_riwayat_garding', 'PenilaianKPI::export_penilaian_detail', ['filter' => 'auth']);
+$routes->get('riwayat_penilaian_KPI', 'PenilaianKPI::index_riwayat', ['filter' => 'auth']);
+
 
 
 //riwayat penyusutan asset

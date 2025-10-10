@@ -178,16 +178,22 @@
                     <div class="mb-3">
                         <label for="jadwal-select" class="form-label">Pilih Jadwal Masuk</label>
                         <select id="jadwal-select" class="form-select">
-                            <option value="" disabled selected>-- Pilih Jadwal --</option>
-                            <?php foreach ($jadwalmasuk as $jadwal): ?>
-                                <option value="<?= $jadwal->idjadwal_masuk ?>" data-jammasuk="<?= $jadwal->jam_masuk ?>"
-                                    data-jampulang="<?= $jadwal->jam_pulang ?>"
-                                    data-jamtoleransi="<?= $jadwal->toleransi ?>">
-                                    <?= $jadwal->nama_jadwal ?>
-                                </option>
-                            <?php endforeach; ?>
+                            <?php if (!empty($jadwalmasuk)): ?>
+                                <option value="" disabled selected>-- Pilih Jadwal --</option>
+                                <?php foreach ($jadwalmasuk as $jadwal): ?>
+                                    <option value="<?= esc($jadwal->idjadwal_masuk) ?>"
+                                        data-jammasuk="<?= esc($jadwal->jam_masuk) ?>"
+                                        data-jampulang="<?= esc($jadwal->jam_pulang) ?>"
+                                        data-jamtoleransi="<?= esc($jadwal->toleransi) ?>">
+                                        <?= esc($jadwal->nama_jadwal) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled selected>Tidak ada jadwal</option>
+                            <?php endif; ?>
                         </select>
                     </div>
+
 
                     <div class="mb-3">
                         <label for="foto" class="form-label">Ambil Foto Kehadiran</label>

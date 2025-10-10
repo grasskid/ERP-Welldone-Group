@@ -58,7 +58,7 @@ class Absensi extends BaseController
 
         $data = [
             'body' => 'absensi/absensi',
-            'jadwalmasuk' => $this->JadwalMasukModel->getAll(),
+            'jadwalmasuk' => $this->JadwalMasukModel->getAllbyunit(),
             'presensiHariIni' => $this->PresensiModel->getPresensiHariIni(session('ID_AKUN'), $tanggalHariIni),
             'dataunit' => $dataunit,
             'data_latlong' => $this->AuthModel->getLatLongByAkun($akunId)

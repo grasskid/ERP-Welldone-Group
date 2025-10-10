@@ -6,14 +6,14 @@
 </div>
 
 <!-- Form -->
-<form method="post" action="insert_penilaian">
+<form method="post" action="<?= site_url('insert_penilaian_KPI') ?>">
     <div class="card shadow-none position-relative overflow-hidden">
         <div class="card-body">
             <!-- Pegawai & Tanggal -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label class="form-label">Pegawai</label>
-                    <select class="form-select" name="pegawai_idpegawai" id="pegawaiSelect" required>
+                    <select class="form-select select2" name="pegawai_idpegawai" id="pegawaiSelect" required>
                         <option value="">-- Pilih Pegawai --</option>
                         <?php foreach ($akun as $a): ?>
                         <option value="<?= $a->ID_AKUN ?>" data-jabatan="<?= $a->ID_JABATAN ?? '' ?>"
@@ -23,11 +23,11 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Tanggal Penilaian</label>
                     <input type="date" class="form-control" name="tanggal_penilaian_kpi" id="tanggalInput"
                         value="<?= date('Y-m-d') ?>" required>
-
                 </div>
             </div>
 
@@ -55,12 +55,10 @@
                             <label class="form-label">Realisasi</label>
                             <input type="text" name="realisasi[]" class="form-control"
                                 value="<?= esc($skorMap[$tpl->template_kpi]['realisasi'] ?? '') ?>" required>
-
                         </div>
-
                         <div class="col-md-2">
                             <label class="form-label">Score</label>
-                            <input type="number" name="score[]" class="form-control" required>
+                            <input type="number" name="score[]" step="0.01" class="form-control score-input" required>
                         </div>
                     </div>
                 </div>
@@ -74,6 +72,7 @@
                 <h5>Total Score: <span id="totalScore">0</span></h5>
                 <h5>Rank: <span id="rank">-</span></h5>
             </div>
+
             <!-- Submit -->
             <div class="text-end mt-4">
                 <button type="submit" class="btn btn-primary">Simpan Penilaian</button>
@@ -82,98 +81,89 @@
     </div>
 </form>
 
-<!-- JS: Auto Submit on Pegawai Change -->
-<!-- <script>
-document.getElementById('pegawaiSelect').addEventListener('change', function() {
-    const selectedId = this.value;
-    if (selectedId) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('pegawai_idpegawai', selectedId);
-        window.location.href = url.toString();
-    }
-});
-</script> -->
+<!-- Select2 CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<!-- JS -->
 <script>
-document.getElementById('pegawaiSelect').addEventListener('change', function() {
-    const selectedId = this.value;
-    const tanggal = document.getElementById('tanggalInput').value;
-    if (selectedId) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('pegawai_idpegawai', selectedId);
-        if (tanggal) {
-            url.searchParams.set('tanggal_penilaian_kpi', tanggal);
+$(document).ready(function() {
+    // Initialize Select2
+    $('#pegawaiSelect').select2({
+        placeholder: "-- Pilih Pegawai --",
+        allowClear: true,
+        width: '100%'
+    });
+
+    // Convert comma to dot for decimal input
+    $(document).on('input', '.score-input', function() {
+        this.value = this.value.replace(',', '.');
+    });
+
+    // When Pegawai changes
+    $('#pegawaiSelect').on('change', function() {
+        const selectedId = $(this).val();
+        const tanggal = $('#tanggalInput').val();
+
+        if (selectedId) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('pegawai_idpegawai', selectedId);
+            if (tanggal) {
+                url.searchParams.set('tanggal_penilaian_kpi', tanggal);
+            }
+            window.location.href = url.toString();
         }
-        window.location.href = url.toString();
-    }
-});
+    });
 
-document.getElementById('tanggalInput').addEventListener('change', function() {
-    const tanggal = this.value;
-    const pegawai = document.getElementById('pegawaiSelect').value;
-    if (pegawai) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('tanggal_penilaian_kpi', tanggal);
-        url.searchParams.set('pegawai_idpegawai', pegawai);
-        window.location.href = url.toString();
-    }
-});
-</script>
+    // When Tanggal changes
+    $('#tanggalInput').on('change', function() {
+        const tanggal = $(this).val();
+        const pegawai = $('#pegawaiSelect').val();
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const rows = document.querySelectorAll("#templateKpiContainer .card");
-    const totalScoreEl = document.getElementById("totalScore");
-    const rankEl = document.getElementById("rank");
+        if (pegawai) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tanggal_penilaian_kpi', tanggal);
+            url.searchParams.set('pegawai_idpegawai', pegawai);
+            window.location.href = url.toString();
+        }
+    });
 
+    // Auto calculate scores
     function calculateAll() {
         let total = 0;
+        const rows = $("#templateKpiContainer .card");
 
-        rows.forEach(row => {
-            const bobotInput = row.querySelector('input[name="bobot[]"]');
-            const targetInput = row.querySelector('input[name="target[]"]');
-            const realisasiInput = row.querySelector('input[name="realisasi[]"]');
-            const scoreInput = row.querySelector('input[name="score[]"]');
-
-            let bobot = parseFloat(bobotInput.value) || 0;
-            let target = parseFloat(targetInput.value) || 0;
-            let realisasi = parseFloat(realisasiInput.value) || 0;
+        rows.each(function() {
+            const bobot = parseFloat($(this).find('input[name="bobot[]"]').val()) || 0;
+            const target = parseFloat($(this).find('input[name="target[]"]').val()) || 0;
+            const realisasi = parseFloat($(this).find('input[name="realisasi[]"]').val()) || 0;
 
             let score = 0;
             if (target > 0) {
                 score = (realisasi / target) * bobot;
             }
 
-            scoreInput.value = score.toFixed(2);
+            $(this).find('input[name="score[]"]').val(score.toFixed(2));
             total += score;
         });
 
-        // Update total score
-        totalScoreEl.textContent = total.toFixed(2);
+        $('#totalScore').text(total.toFixed(2));
 
-        // Determine rank
         let rank = "-";
-        if (total >= 90) {
-            rank = "Platinum";
-        } else if (total >= 80) {
-            rank = "Gold";
-        } else if (total >= 70) {
-            rank = "Silver";
-        } else {
-            rank = "Bronze";
-        }
+        if (total >= 90) rank = "Platinum";
+        else if (total >= 80) rank = "Gold";
+        else if (total >= 70) rank = "Silver";
+        else rank = "Bronze";
 
-        rankEl.textContent = rank;
+        $('#rank').text(rank);
     }
 
-    // Initial calculation
+    // Run on load
     calculateAll();
 
     // Recalculate when inputs change
-    rows.forEach(row => {
-        row.querySelectorAll('input').forEach(input => {
-            input.addEventListener("input", calculateAll);
-        });
-    });
+    $(document).on('input', 'input[name="realisasi[]"], input[name="target[]"], input[name="bobot[]"]',
+        calculateAll);
 });
 </script>

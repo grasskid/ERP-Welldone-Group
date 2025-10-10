@@ -48,6 +48,8 @@ class ModelPresensi extends Model
 
 
 
+
+
     public function getPresensiHariIni($akunId, $tanggalHariIni)
     {
         return $this->select('presensi.*, 
@@ -132,49 +134,57 @@ class ModelPresensi extends Model
         return $this->where(['status_absensi' => 1])->findAll();
     }
 
-//     public function countAbsensiPerBulan($akunId, $tanggalPenilaian)
-// {
-//     // Convert given date into start and end of month
-//     $startDate = date('Y-m-01 00:00:00', strtotime($tanggalPenilaian));
-//     $endDate   = date('Y-m-t 23:59:59', strtotime($tanggalPenilaian));
+    //     public function countAbsensiPerBulan($akunId, $tanggalPenilaian)
+    // {
+    //     // Convert given date into start and end of month
+    //     $startDate = date('Y-m-01 00:00:00', strtotime($tanggalPenilaian));
+    //     $endDate   = date('Y-m-t 23:59:59', strtotime($tanggalPenilaian));
 
-//     return $this->selectCount('idpresensi', 'total_absensi')
-//         ->where('akun_idakun', $akunId)
-//         ->where('waktu_masuk >=', $startDate)
-//         ->where('waktu_masuk <=', $endDate)
-//         ->first();
-// }
-
-
-
-//     public function countOnTimeAbsensiPerBulan($akunId, $startDate, $endDate)
-//     {
-//         return $this->selectCount('idpresensi', 'total_ontime')
-//             ->where('akun_idakun', $akunId)
-//             ->where('waktu_masuk >=', $startDate)
-//             ->where('waktu_masuk <=', $endDate)
-//             ->where('waktu_masuk <= ADDTIME(jam_jadwal_masuk, jam_toleransi)')
-//             ->first();
-//     }
-
-public function countAbsensiPerBulan($akunId, $startDate, $endDate)
-{
-    return $this->selectCount('idpresensi', 'total_absensi')
-        ->where('akun_idakun', $akunId)
-        ->where('waktu_masuk >=', $startDate)
-        ->where('waktu_masuk <=', $endDate)
-        ->first();
-}
-
-public function countOnTimeAbsensiPerBulan($akunId, $startDate, $endDate)
-{
-    return $this->selectCount('idpresensi', 'total_ontime')
-        ->where('akun_idakun', $akunId)
-        ->where('waktu_masuk >=', $startDate)
-        ->where('waktu_masuk <=', $endDate)
-        ->where('waktu_masuk <= ADDTIME(jam_jadwal_masuk, jam_toleransi)')
-        ->first();
-}
+    //     return $this->selectCount('idpresensi', 'total_absensi')
+    //         ->where('akun_idakun', $akunId)
+    //         ->where('waktu_masuk >=', $startDate)
+    //         ->where('waktu_masuk <=', $endDate)
+    //         ->first();
+    // }
 
 
+
+    //     public function countOnTimeAbsensiPerBulan($akunId, $startDate, $endDate)
+    //     {
+    //         return $this->selectCount('idpresensi', 'total_ontime')
+    //             ->where('akun_idakun', $akunId)
+    //             ->where('waktu_masuk >=', $startDate)
+    //             ->where('waktu_masuk <=', $endDate)
+    //             ->where('waktu_masuk <= ADDTIME(jam_jadwal_masuk, jam_toleransi)')
+    //             ->first();
+    //     }
+
+    public function countAbsensiPerBulan($akunId, $startDate, $endDate)
+    {
+        return $this->selectCount('idpresensi', 'total_absensi')
+            ->where('akun_idakun', $akunId)
+            ->where('waktu_masuk >=', $startDate)
+            ->where('waktu_masuk <=', $endDate)
+            ->first();
+    }
+
+    public function countOnTimeAbsensiPerBulan($akunId, $startDate, $endDate)
+    {
+        return $this->selectCount('idpresensi', 'total_ontime')
+            ->where('akun_idakun', $akunId)
+            ->where('waktu_masuk >=', $startDate)
+            ->where('waktu_masuk <=', $endDate)
+            ->where('waktu_masuk <= ADDTIME(jam_jadwal_masuk, jam_toleransi)')
+            ->first();
+    }
+
+    public function countGrooming($akunId, $startDate, $endDate)
+    {
+        return $this->selectCount('idpresensi', 'total_grooming')
+            ->where('akun_idakun', $akunId)
+            ->where('waktu_masuk >=', $startDate)
+            ->where('waktu_masuk <=', $endDate)
+            ->where('status_absensi', 1)
+            ->first();
+    }
 }

@@ -106,21 +106,43 @@ class Pegawai extends BaseController
 
     public function insert()
     {
+        $foto_ktp = $this->request->getFile('foto_ktp');
+        $foto_kk = $this->request->getFile('foto_kk');
+
+        $nama_foto_ktp = null;
+        $nama_foto_kk  = null;
+
+        // Proses upload foto KTP
+        if ($foto_ktp && $foto_ktp->isValid() && !$foto_ktp->hasMoved()) {
+            $nama_foto_ktp = 'ktp_' . date('Ymd') . '_' . rand(1000, 9999) . '.' . $foto_ktp->getExtension();
+            $foto_ktp->move(ROOTPATH . 'public/foto_ktp/', $nama_foto_ktp);
+        }
+
+        // Proses upload foto KK
+        if ($foto_kk && $foto_kk->isValid() && !$foto_kk->hasMoved()) {
+            $nama_foto_kk = 'kk_' . date('Ymd') . '_' . rand(1000, 9999) . '.' . $foto_kk->getExtension();
+            $foto_kk->move(ROOTPATH . 'public/foto_kk/', $nama_foto_kk);
+        }
+
         $data = array(
-            'NOID'              => $this->request->getPost('noid'),
-            'KTP'               => $this->request->getPost('no_ktp'),
-            'EMAIL'             => $this->request->getPost('email'),
-            'NAMA_AKUN'         => $this->request->getPost('nama'),
-            'ALAMAT'            => $this->request->getPost('alamat'),
-            'JENIS_KELAMIN'     => $this->request->getPost('jenis_kelamin'),
-            'HP'                => $this->request->getPost('hp'),
-            'ROLES'             => json_encode($this->request->getPost('roles')),
-            'ID_UNIT'           => $this->request->getPost('unit'),
-            'ID_JABATAN'        => $this->request->getPost('jabatan'),
-            'PASSWORD'          => password_hash($this->request->getPost('noid'), PASSWORD_DEFAULT, array("cost" => 10)),
+            'NOID'          => $this->request->getPost('noid'),
+            'KTP'           => $this->request->getPost('no_ktp'),
+            'EMAIL'         => $this->request->getPost('email'),
+            'NAMA_AKUN'     => $this->request->getPost('nama'),
+            'ALAMAT'        => $this->request->getPost('alamat'),
+            'JENIS_KELAMIN' => $this->request->getPost('jenis_kelamin'),
+            'HP'            => $this->request->getPost('hp'),
+            'ROLES'         => json_encode($this->request->getPost('roles')),
+            'ID_UNIT'       => $this->request->getPost('unit'),
+            'ID_JABATAN'    => $this->request->getPost('jabatan'),
+            'PASSWORD'      => password_hash($this->request->getPost('noid'), PASSWORD_DEFAULT, array("cost" => 10)),
+            'FOTO_KTP'      => $nama_foto_ktp,
+            'FOTO_KK'       => $nama_foto_kk,
+            'JENIS_PEGAWAI' => $this->request->getPost('jenis_pegawai')
         );
 
-        $result = db_connect()->table('akun')->insert($data);
+
+        $result = $this->AuthModel->insert_akun($data);
         if ($result) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
         } else {
@@ -131,32 +153,64 @@ class Pegawai extends BaseController
 
     public function update()
     {
-        $data = array(
-            'KTP'               => $this->request->getPost('no_ktp'),
-            'EMAIL'             => $this->request->getPost('email'),
-            'NAMA_AKUN'         => $this->request->getPost('nama'),
-            'ALAMAT'            => $this->request->getPost('alamat'),
-            'JENIS_KELAMIN'     => $this->request->getPost('jenis_kelamin'),
-            'HP'                => $this->request->getPost('hp'),
-            'ROLES'             => json_encode($this->request->getPost('roles')),
-            'ID_UNIT'           => $this->request->getPost('unit'),
-            'ID_JABATAN'        => $this->request->getPost('jabatan'),
-        );
 
-        $result = db_connect()->table('akun')->where('ID_AKUN', $this->request->getPost('ID_AKUN'))->update($data);
-        if ($result) {
-            session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-        } else {
-            session()->setFlashdata('gagal', 'Data Gagal Di Simpan');
+        $ID_AKUN = $this->request->getPost('ID_AKUN');
+        $jenis_pegawai = $this->request->getPost('jenis_pegawai');
+
+        $foto_ktp = $this->request->getFile('foto_ktp');
+        $foto_kk = $this->request->getFile('foto_kk');
+
+
+        $nama_foto_ktp = $this->request->getPost('foto_ktp_lama');
+        $nama_foto_kk  = $this->request->getPost('foto_kk_lama');
+
+
+        if ($foto_ktp && $foto_ktp->isValid() && !$foto_ktp->hasMoved()) {
+            $nama_foto_ktp = 'ktp_' . date('Ymd') . '_' . rand(1000, 9999) . '.' . $foto_ktp->getExtension();
+            $foto_ktp->move(ROOTPATH . 'public/foto_ktp/', $nama_foto_ktp);
         }
+
+
+        if ($foto_kk && $foto_kk->isValid() && !$foto_kk->hasMoved()) {
+            $nama_foto_kk = 'kk_' . date('Ymd') . '_' . rand(1000, 9999) . '.' . $foto_kk->getExtension();
+            $foto_kk->move(ROOTPATH . 'public/foto_kk/', $nama_foto_kk);
+        }
+
+        $data = array(
+            'KTP'           => $this->request->getPost('no_ktp'),
+            'EMAIL'         => $this->request->getPost('email'),
+            'NAMA_AKUN'     => $this->request->getPost('nama'),
+            'ALAMAT'        => $this->request->getPost('alamat'),
+            'JENIS_KELAMIN' => $this->request->getPost('jenis_kelamin'),
+            'HP'            => $this->request->getPost('hp'),
+            'ROLES'         => json_encode($this->request->getPost('roles')),
+            'ID_UNIT'       => $this->request->getPost('unit'),
+            'ID_JABATAN'    => $this->request->getPost('jabatan'),
+            'FOTO_KTP'      => $nama_foto_ktp,
+            'FOTO_KK'       => $nama_foto_kk,
+            'JENIS_PEGAWAI' => $jenis_pegawai
+        );
+        $this->AuthModel->update($ID_AKUN, $data);
+        $data2 = array(
+            'STATUS_PEGAWAI' => 0
+        );
+        if ($jenis_pegawai == 100) {
+            $THIS->AuthModel->update($ID_AKUN, $data2);
+        }
+
+
+        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+
         return redirect()->to(base_url('/pegawai'));
     }
+
 
     public function delete()
     {
         $id = $this->request->getPost('ID_AKUN');
         $data = array(
-            'STATUS_PEGAWAI' => '0'
+            'STATUS_PEGAWAI' => '0',
+            'JENIS_PEGAWAI' => 100
         );
         $result = $this->AuthModel->update($id, $data);
         if ($result) {

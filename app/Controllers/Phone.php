@@ -9,7 +9,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Config\Database;
 use App\Models\ModelBarang;
 use App\Models\ModelAuth;
-
+use App\Models\ModelUnit;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -23,6 +23,7 @@ class Phone extends BaseController
     protected $BarangModel;
     protected $AuthModel;
     protected $NamaHandphoneModel;
+    protected $UnitModel;
 
     public function __construct()
     {
@@ -30,6 +31,7 @@ class Phone extends BaseController
         $this->BarangModel = new ModelBarang();
         $this->AuthModel = new ModelAuth();
         $this->NamaHandphoneModel = new ModelNamaHandphone();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -39,7 +41,8 @@ class Phone extends BaseController
             'akun' => $akun,
             'phone' => $this->PhoneModel->getPhoneActive(),
             'nama_handphone' => $this->NamaHandphoneModel->getNamaHandphone(),
-            'body'  => 'datamaster/phone'
+            'body'  => 'datamaster/phone',
+            'unit' => $this->UnitModel->getUnit()
         );
 
         return view('template', $data);
@@ -89,6 +92,7 @@ class Phone extends BaseController
             'status_barang' => $this->request->getPost('kondisi'),
             'status'     => '0',
             'input'      => $namaakun,
+
             'idkategori' => '1',
             'status_ppn' => $status_ppn,
             'deleted'    => '0'

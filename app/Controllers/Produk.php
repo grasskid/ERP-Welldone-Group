@@ -12,6 +12,7 @@ use App\Models\ModelAuth;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use App\Models\ModelUnit;
 
 class Produk extends BaseController
 
@@ -20,12 +21,14 @@ class Produk extends BaseController
     protected $BarangModel;
     protected $KategoriModel;
     protected $AuthModel;
+    protected $UnitModel;
 
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
         $this->KategoriModel = new ModelKategori();
         $this->AuthModel = new ModelAuth();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -35,7 +38,8 @@ class Produk extends BaseController
             'akun' => $akun,
             'produk' => $this->BarangModel->getBarang(),
             'kategori' => $this->KategoriModel->getKategoriTanpaId7(),
-            'body'  => 'datamaster/produk'
+            'body'  => 'datamaster/produk',
+            'unit' => $this->UnitModel->getUnit()
         );
         return view('template', $data);
     }
@@ -47,7 +51,11 @@ class Produk extends BaseController
         $nama_barang = $this->request->getPost('nama_barang');
         $harga      = str_replace('.', '', $this->request->getPost('harga'));
         $harga_beli      = str_replace('.', '', $this->request->getPost('harga_beli'));
-        $input = $this->request->getPost('input_by');
+
+        $dataakun = $this->AuthModel->getById(session('ID_AKUN'));
+        $input_by = $dataakun->NAMA_AKUN;
+
+
         $stok_minimum = $this->request->getPost('stok_minimum');
         $kategori = $this->request->getPost('kategori');
         $data_kategori = $this->KategoriModel->getByName($kategori);
@@ -76,13 +84,14 @@ class Produk extends BaseController
             'nama_barang' => $nama_barang,
             'harga' => $harga,
             'harga_beli' => $harga_beli,
-            'input' => $input,
+            'input' => $input_by,
             'stok_minimum' => $stok_minimum,
             'idkategori' => $idkategori,
             'warna' => $warna,
             'status' => "1",
             'status_ppn' => $status_ppn,
-            'deleted' => '0'
+            'deleted' => '0',
+
 
         );
 
@@ -145,7 +154,7 @@ class Produk extends BaseController
             'status_ppn' => $status_ppn,
             'warna' => $warna,
             'deleted' => '0',
-            'input_by' => $input,
+
             'stok_minimum' => $stok_minimum,
         );
 

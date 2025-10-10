@@ -18,13 +18,25 @@ class ModelJadwalMasuk extends Model
         'jml_wfh',
         'jml_wfo',
         'jenis',
-        'toleransi'
+        'toleransi',
+        'unit_idunit'
     ];
 
     public function getAll()
     {
-        return $this->findAll();
+        return $this->select('jadwal_masuk.*, unit.NAMA_UNIT')
+            ->join('unit', 'unit.idunit = jadwal_masuk.unit_idunit', 'left')
+            ->findAll();
     }
+
+    public function getAllbyunit()
+    {
+        return $this->select('jadwal_masuk.*, unit.NAMA_UNIT')
+            ->join('unit', 'unit.idunit = jadwal_masuk.unit_idunit', 'left')
+            ->where('unit.idunit', session('ID_UNIT'))
+            ->findAll();
+    }
+
 
     public function getById($id)
     {

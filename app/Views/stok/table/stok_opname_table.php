@@ -1,9 +1,26 @@
-<div class="mb-3" style="margin-left: 20px;">
-    <label for="filterUnit2">Filter Unit:</label>
-    <select style="margin-right: 10px;" id="filterUnit2" class="form-control d-inline-block w-auto">
+<div hidden class="mb-3" style="margin-left: 20px;">
+    <label hidden for="filterUnit2"> Unit:</label>
+    <select hidden style="margin-right: 10px;" id="filterUnit2" class="form-control d-inline-block w-auto">
         <option value="">Semua Unit</option>
+        <?php foreach ($unit as $u): ?>
+            <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
+                <?= esc($u->NAMA_UNIT) ?>
+            </option>
+        <?php endforeach; ?>
     </select>
-    <button id="resetFilter2" class="btn btn-secondary">Reset</button>
+    <button hidden id="resetFilter2" class="btn btn-secondary">Reset</button>
+</div>
+
+<div class="mb-3" style="margin-left: 20px; display: flex; justify-content: right; gap: 20px;">
+
+    <select disabled style="margin-right: 10px;" id="filterUnitxyzcc" class="form-control d-inline-block w-auto">
+        <option value="">Semua Unit</option>
+        <?php foreach ($unit as $u): ?>
+            <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
+                <?= esc($u->NAMA_UNIT) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
 </div>
 
 
@@ -14,27 +31,13 @@
             <thead class="text-dark fs-4">
                 <tr>
                     <th><input type="checkbox" id="select_all2"></th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Kode Barang</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Nama Barang</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Nama Unit</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Tanggal Stok Dasar</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Jumlah Komputer</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Jumlah Real</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Jumlah Selisih</h6>
-                    </th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Nama Unit</th>
+                    <th>Tanggal Stok Dasar</th>
+                    <th>Jumlah Komputer</th>
+                    <th>Jumlah Real</th>
+                    <th>Jumlah Selisih</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,8 +51,6 @@
                         <td><?= esc($row->NAMA_UNIT) ?></td>
                         <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
 
-
-                        <!-- Input fields -->
                         <td>
                             <input type="number" name="data[<?= $index ?>][jumlah_komp]" class="form-control jumlah-komp"
                                 value="<?= esc($row->jumlah_komp) ?>">
@@ -62,7 +63,6 @@
                             <input readonly class="form-control jumlah_selisih jumlah-selisih" name="data[<?= $index ?>][jumlah_selisih]">
                         </td>
 
-                        <!-- Hidden fields -->
                         <input type="hidden" name="data[<?= $index ?>][barang_idbarang]" value="<?= esc($row->barang_idbarang) ?>">
                         <input type="hidden" name="data[<?= $index ?>][unit_idunit]" value="<?= esc($row->unit_idunit) ?>">
                     </tr>
@@ -106,7 +106,7 @@
                 }
             });
 
-            // Event input untuk menghitung selisih, hanya jika checkbox dicentang
+            // Event input untuk menghitung selisih
             realInput.addEventListener('input', function() {
                 if (checkbox.checked) {
                     const komp = parseFloat(kompInput.value) || 0;
@@ -128,12 +128,12 @@
             });
         });
 
-        // Select All untuk tab 2
+        // Select All untuk tabel kedua
         document.getElementById('select_all2').addEventListener('change', function() {
             const checkboxes = document.querySelectorAll('#zero_config2 .row-check');
             checkboxes.forEach(cb => {
                 cb.checked = this.checked;
-                cb.dispatchEvent(new Event('change')); // trigger enable/disable input
+                cb.dispatchEvent(new Event('change'));
             });
         });
     });
@@ -143,17 +143,24 @@
     $(document).ready(function() {
         var table = $('#zero_config2').DataTable();
 
+        // Fungsi untuk filter berdasarkan teks nama unit (kolom ke-3)
+        function applyFilter2() {
+            var selectedId = $('#filterUnit2').val();
 
-        table.column(3).data().unique().sort().each(function(d) {
-            if (d) {
-                $('#filterUnit2').append('<option value="' + d + '">' + d + '</option>');
+            if (selectedId) {
+                var selectedText = $('#filterUnit2 option:selected').text();
+                table.column(3).search('^' + selectedText + '$', true, false).draw();
+            } else {
+                table.column(3).search('', true, false).draw();
             }
-        });
+        }
 
+        // Jalankan filter otomatis saat halaman pertama kali dimuat
+        applyFilter2();
 
+        // Jalankan filter ketika dropdown berubah
         $('#filterUnit2').on('change', function() {
-            var val = $.fn.dataTable.util.escapeRegex($(this).val());
-            table.column(3).search(val ? '^' + val + '$' : '', true, false).draw();
+            applyFilter2();
         });
 
         // Tombol Reset Filter

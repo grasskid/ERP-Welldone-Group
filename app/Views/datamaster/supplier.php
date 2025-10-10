@@ -28,6 +28,35 @@
         </button>
     </div>
 
+    <div hidden class="mb-3" style="margin-left: 20px;">
+        <label for="filterUnit">Filter Unit:</label>
+        <select id="filterUnit" class="form-control d-inline-block w-auto" style="margin-right: 10px;">
+            <option value="">Semua Unit</option>
+            <?php foreach ($unit as $u): ?>
+                <option value="<?= esc($u->NAMA_UNIT) ?>"
+                    <?= ($u->idunit == session('ID_UNIT')) ? 'selected' : '' ?>>
+                    <?= esc($u->NAMA_UNIT) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <button id="resetFilter" class="btn btn-secondary">Reset</button>
+    </div>
+
+    <div class="mb-3" style="margin-left: 20px;">
+        <label for="filterUnitxx"> Unit:</label>
+        <select disabled id="filterUnitxx" class="form-control d-inline-block w-auto" style="margin-right: 10px;">
+            <option value="">Semua Unit</option>
+            <?php foreach ($unit as $u): ?>
+                <option value="<?= esc($u->NAMA_UNIT) ?>"
+                    <?= ($u->idunit == session('ID_UNIT')) ? 'selected' : '' ?>>
+                    <?= esc($u->NAMA_UNIT) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+    </div>
+
+
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
@@ -41,6 +70,7 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nomer HP</h6>
                     </th>
+                    <th>Unit</th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Action</h6>
                     </th>
@@ -53,6 +83,7 @@
                             <td><?= esc($row->nama_suplier) ?></td>
                             <td><?= esc($row->alamat) ?></td>
                             <td><?= esc($row->no_hp) ?></td>
+                            <td><?= $row->nama_unit ?></td>
                             <td>
                                 <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
                                     data-bs-target="#edit-produk-modal" data-id_suplier="<?= esc($row->id_suplier) ?>"
@@ -207,5 +238,45 @@
                 document.getElementById('delete_id_suplier').value = button.getAttribute('data-id_suplier');
             }
         });
+    });
+</script>
+
+<script>
+    let table;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cegah reinitialisasi
+        if (!$.fn.DataTable.isDataTable('#zero_config')) {
+            table = $('#zero_config').DataTable({
+                pageLength: 10,
+            });
+        } else {
+            table = $('#zero_config').DataTable();
+        }
+
+        // Tambahkan custom filter berdasarkan nama_unit
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const selectedUnit = $('#filterUnit').val().toLowerCase();
+            const namaUnit = (data[3] || '').toLowerCase(); // kolom ke-4 (index 3)
+
+            return selectedUnit === '' || namaUnit === selectedUnit;
+        });
+
+        // Trigger filter saat dropdown berubah
+        $('#filterUnit').on('change', function() {
+            table.draw();
+        });
+
+        // Tombol reset filter
+        $('#resetFilter').on('click', function() {
+            $('#filterUnit').val('');
+            table.draw();
+        });
+
+        // Jalankan filter default sesuai session
+        const defaultUnit = $('#filterUnit').val();
+        if (defaultUnit) {
+            table.draw();
+        }
     });
 </script>

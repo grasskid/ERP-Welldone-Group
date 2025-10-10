@@ -13,22 +13,25 @@ class ModelPhone extends Model
 
     public function getPhoneActive()
     {
-        return $this->where('idkategori', 1)
-            ->where('status', '1')
-            ->where('deleted', '0')
+        return $this
+            ->where('barang.idkategori', 1)
+            ->where('barang.status', '1')
+            ->where('barang.deleted', '0')
             ->findAll();
     }
     public function getPhoneWaiting()
     {
-        return $this->where('idkategori', 1)
-            ->where('status', '0')
-            ->where('deleted', '0')
+        return $this
+            ->where('barang.idkategori', 1)
+            ->where('barang.status', '0')
+            ->where('barang.deleted', '0')
             ->findAll();
     }
     public function getPhone()
     {
-        return $this->where('idkategori', 1)
-            ->where('deleted', '0')
+        return $this
+            ->where('barang.idkategori', 1)
+            ->where('barang.deleted', '0')
             ->findAll();
     }
 
@@ -40,6 +43,8 @@ class ModelPhone extends Model
 
     public function getById($id)
     {
-        return $this->where(['id_phone' => $id])->first();
+        return $this
+            ->where('barang.idbarang', $id)
+            ->first();
     }
 }

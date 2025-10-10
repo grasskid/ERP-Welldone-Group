@@ -9,11 +9,14 @@ class ModelSuplier extends Model
     protected $table = 'suplier';
     protected $primaryKey = 'id_suplier';
     protected $returnType = 'object';
-    protected $allowedFields = ['id_suplier', 'nama_suplier', 'alamat', 'no_hp', 'deleted'];
+    protected $allowedFields = ['id_suplier', 'nama_suplier', 'alamat', 'no_hp', 'deleted', 'unit_idunit'];
 
     public function getSuplier()
     {
-        return $this->where('deleted', '0')->findAll();
+        return $this->select('suplier.*, unit.NAMA_UNIT as nama_unit')
+            ->join('unit', 'unit.idunit = suplier.unit_idunit', 'left')
+            ->where('suplier.deleted', '0')
+            ->findAll();
     }
 
 

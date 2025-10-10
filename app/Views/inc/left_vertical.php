@@ -9,7 +9,17 @@
             use App\Models\ModelUnit;
             $ModelUnit = new ModelUnit();
             $unit = $ModelUnit->getById($id_unit);
-            echo base_url('template/assets/images/').$unit->LOGO;
+            if ($id_unit == 1) {
+                echo base_url('template/assets/images/logo_welldone.png');
+            } elseif (in_array($id_unit, [2, 4])) {
+                echo base_url('template/assets/images/logo_urban.png');
+            } elseif ($id_unit == 3) {
+                echo base_url('template/assets/images/logo_iprove.png');
+            } elseif (in_array($id_unit, [5, 6, 8])) {
+                echo base_url('template/assets/images/logo_wildan.png');
+            } else {
+                echo base_url('template/assets/images/logo_urban.png'); // default
+            }
         ?>" alt="Logo" class="dark-logo w-100 h-auto" style="max-width: 200px;" />
         </a>
         <h2 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h2>

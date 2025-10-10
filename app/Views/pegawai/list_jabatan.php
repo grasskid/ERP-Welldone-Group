@@ -96,7 +96,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url('pegawai/update_jabatan') ?>" method="post">
-                <input type="text" name="idjabatan" id="idjabatan">
+                <input hidden type="text" name="idjabatan" id="idjabatan">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="nama_jabatan" class="form-label">Nama Jabatan</label>
@@ -162,26 +162,32 @@
 
 <script>
     $(document).ready(function() {
+        // Inisialisasi Select2
         $('#roles-select').select2({
             dropdownParent: $('#input-jabatan-modal'),
             width: '100%',
             dropdownAutoWidth: true,
         });
+
         $('#roles-update').select2({
             dropdownParent: $('#edit-jabatan-modal'),
             width: '100%',
             dropdownAutoWidth: true,
         });
 
-        $('.edit-button').on('click', function() {
+        // Gunakan event delegation untuk DataTables
+        $('#zero_config').on('click', '.edit-button', function() {
             const id = $(this).data('id');
             const namaJabatan = $(this).data('nama_jabatan');
             const roles = $(this).data('roles');
+
             console.log(roles);
 
+            // Isi modal edit
             $('#edit-jabatan-modal #idjabatan').val(id);
             $('#edit-jabatan-modal #nama_jabatan').val(namaJabatan);
 
+            // Reset select2 dan set value baru
             $('#roles-update').val(null).trigger('change');
             if (roles && roles.length > 0) {
                 $('#roles-update').val(roles).trigger('change');

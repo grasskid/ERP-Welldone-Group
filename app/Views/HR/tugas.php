@@ -471,9 +471,11 @@
                                                             data-kpi="<?= $t->template_kpi_idtemplate_kpi ?>"
                                                             data-status="<?= $t->status ?>"
                                                             data-template="<?= $t->status_template ?>"
-                                                            **data-bs-toggle="modal" data-bs-target="#editTaskModal" **>
+                                                            data-bs-toggle="modal" data-bs-target="#edit-task-modal">
+                                                            <!-- FIXED -->
                                                             <i class="ti ti-pencil fs-5"></i>Edit
                                                         </a>
+
 
 
 
@@ -629,7 +631,7 @@
 
                         <div class="mb-3">
                             <label for="jumlah" class="form-label">Jumlah</label>
-                            <input type="text" class="form-control" id="jumlah" name="jumlah" required>
+                            <input type="text" class="form-control" id="edit-jumlah" name="jumlah" required>
                         </div>
 
                         <div class="mb-3">
@@ -796,8 +798,14 @@
                 document.getElementById('edit-nama_tugas').value = editBtn.getAttribute(
                     'data-nama_tugas');
                 document.getElementById('edit-deskripsi').value = editBtn.getAttribute(
-                'data-deskripsi');
+                    'data-deskripsi');
+                document.getElementById('edit-jumlah').value = editBtn.getAttribute('data-jumlah');
                 document.getElementById('edit-status').value = editBtn.getAttribute('data-status');
+                document.getElementById('edit-status_template').value = editBtn.getAttribute(
+                    'data-template');
+                document.getElementById('edit-penilaian').value = editBtn.getAttribute(
+                    'data-penilaian');
+
 
                 // Show the modal
                 const modaledit = new bootstrap.Modal(document.getElementById('edit-task-modal'));

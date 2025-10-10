@@ -9,7 +9,7 @@ class ModelAuth extends Model
     protected $table = 'akun';
     protected $primaryKey = 'ID_AKUN';
     protected $returnType = 'object';
-    protected $allowedFields = ['ID_AKUN', 'ID,UNIT', 'ID_PANGKAT', 'ID_JABATAN', 'ID_GEDUNG', 'NOID', 'KTP', 'EMAIL', 'PASSWORD', 'ROLES', 'IS_DOKTER', 'NAMA_AKUN', 'ALAMAT', 'JENIS_KELAMIN', 'TELEPON', 'HP', 'AGAMA', 'STATUS_PEGAWAI'];
+    protected $allowedFields = ['ID_AKUN', 'ID,UNIT', 'ID_PANGKAT', 'ID_JABATAN', 'ID_GEDUNG', 'NOID', 'KTP', 'EMAIL', 'PASSWORD', 'ROLES', 'IS_DOKTER', 'NAMA_AKUN', 'ALAMAT', 'JENIS_KELAMIN', 'TELEPON', 'HP', 'AGAMA', 'STATUS_PEGAWAI', 'FOTO_KTP', 'FOTO_KK', 'JENIS_PEGAWAI'];
 
     function get_allakun()
     {
@@ -29,7 +29,6 @@ class ModelAuth extends Model
         return $this->select('akun.*, jabatan.NAMA_JABATAN, unit.NAMA_UNIT')
             ->join('jabatan', 'jabatan.ID_JABATAN = akun.ID_JABATAN', 'left')
             ->join('unit', 'unit.idunit = akun.ID_UNIT', 'left')
-            ->where('akun.STATUS_PEGAWAI', 1)
             ->findAll();
     }
 

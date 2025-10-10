@@ -32,6 +32,15 @@
                 }
                 ?>
             </select>
+
+            <label for="filter-status" class="form-label" style="width: 150px; display: flex; align-items: center;">Filter Status</label>
+            <select id="filter-status" class="form-control" style="width: 200px;">
+                <option value="">-- Semua Status --</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Tidak Aktif">Tidak Aktif</option>
+            </select>
+
+
             <button type="button" id="reset-filter" class="btn btn-secondary">Reset</button>
         </div>
 
@@ -56,6 +65,9 @@
                 <thead class="text-dark fs-4">
                     <tr>
                         <th>
+                            Status Pegawai
+                        </th>
+                        <th>
                             <h6 class="fs-4 fw-semibold mb-0">No. ID</h6>
                         </th>
 
@@ -76,6 +88,15 @@
                             <h6 class="fs-4 fw-semibold mb-0">Unit</h6>
                         </th>
                         <th>
+                            Jenis Pegawai
+                        </th>
+                        <th>
+                            Foto KTP
+                        </th>
+                        <th>
+                            Foto KK
+                        </th>
+                        <th>
                             <h6 class="fs-4 fw-semibold mb-0">Action</h6>
                         </th>
 
@@ -84,12 +105,54 @@
                 <tbody>
                     <?php foreach ($akun as $row) : ?>
                         <tr>
+                            <?php if ($row->STATUS_PEGAWAI == 1): ?>
+                                <td>
+                                    <button class="btn btn-success" type="button">Aktif</button>
+                                </td>
+                            <?php else: ?>
+                                <td>
+                                    <button class="btn btn-success" type="button">Tidak Aktif</button>
+                                </td>
+                            <?php endif ?>
                             <td><?= esc($row->NOID) ?></td>
                             <td><?= esc($row->KTP) ?></td>
                             <td><?= esc($row->EMAIL) ?></td>
                             <td><?= esc($row->NAMA_AKUN) ?></td>
                             <td><?= esc($row->NAMA_JABATAN) ?></td>
                             <td><?= esc($row->NAMA_UNIT) ?></td>
+                            <?php if ($row->JENIS_PEGAWAI === '0' || $row->JENIS_PEGAWAI === 0): ?>
+                                <td>Pegawai Tetap</td>
+                            <?php elseif ($row->JENIS_PEGAWAI === '1' || $row->JENIS_PEGAWAI === 1): ?>
+                                <td>Pegawai Kontrak</td>
+                            <?php elseif ($row->JENIS_PEGAWAI === '2' || $row->JENIS_PEGAWAI === 2): ?>
+                                <td>Pegawai Probation</td>
+                            <?php else: ?>
+                                <td>Belum Ditetapkan</td>
+                            <?php endif; ?>
+
+
+                            <td>
+                                <?php if (!empty($row->FOTO_KTP)) : ?>
+                                    <button type="button" class="btn btn-sm btn-primary preview-btn"
+                                        data-img="<?php echo base_url('foto_ktp/' . $row->FOTO_KTP) ?>">
+                                        Preview KTP
+                                    </button>
+                                <?php else: ?>
+                                    <span class="text-gray-500">Tidak ada</span>
+                                <?php endif; ?>
+                            </td>
+
+                            <td>
+                                <?php if (!empty($row->FOTO_KK)) : ?>
+                                    <button type="button" class="btn btn-sm btn-primary preview-btn"
+                                        data-img="<?php echo base_url('foto_kk/' . $row->FOTO_KK) ?>">
+                                        Preview KK
+                                    </button>
+                                <?php else: ?>
+                                    <span class="text-gray-500">Tidak ada</span>
+                                <?php endif; ?>
+                            </td>
+
                             <td>
                                 <button type="button" class="btn btn-warning edit-button"
                                     data-id="<?= $row->ID_AKUN ?>"
@@ -100,9 +163,12 @@
                                     data-unit="<?= $row->ID_UNIT ?>"
                                     data-jabatan="<?= $row->ID_JABATAN ?>"
                                     data-hp="<?= $row->HP ?>"
+                                    data-jenis_pegawai="<?= $row->JENIS_PEGAWAI ?>"
                                     data-jenis="<?= $row->JENIS_KELAMIN ?>"
                                     data-alamat="<?= $row->ALAMAT ?>"
                                     data-roles="<?= $row->ROLES ?>"
+                                    data-foto_ktp_lama="<?= $row->FOTO_KTP ?>"
+                                    data-foto_kk_lama="<?= $row->FOTO_KK ?>"
                                     data-bs-toggle="modal"
                                     data-bs-target="#edit-pegawai-modal">
                                     <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
@@ -128,102 +194,141 @@
 
 
                         <!-- Modal Edit Pegawai -->
-                        <div class="modal fade" id="edit-pegawai-modal" tabindex="-1" aria-labelledby="inputPeagawaiModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header d-flex align-items-center">
-                                        <h4 class="modal-title" id="inputPegawaiModalLabel">Update Data Pegawai</h4>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="<?= base_url('pegawai/update') ?>" method="post">
-                                        <input type="hidden" name="ID_AKUN" id="id">
 
-                                        <div class="modal-body row">
-                                            <div class="mb-3 col-md-6">
-                                                <label for="noid" class="form-label">No ID Pegawai</label> <span
-                                                    class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="noid" name="noid" required>
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="no_ktp" class="form-label">No KTP</label> <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="no_ktp" name="no_ktp">
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="email" class="form-label">Email</label> <span class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" id="email" name="email" required>
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="nama" class="form-label">Nama Pegawai</label> <span
-                                                    class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="nama" name="nama" required>
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="unit" class="form-label">Unit<span class="text-danger">*</span></label>
-                                                <select class="select-unit form-control" name="unit" id="unit-update">
-                                                    <option value="">-- Pilih Unit --</option>
-                                                    <?php foreach ($unit as $val) : ?>
-                                                        <option value="<?= $val->idunit; ?>"><?= $val->NAMA_UNIT; ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="jabatan" class="form-label">Jabatan<span class="text-danger">*</span> </label>
-                                                <select class="select-jabatan form-control" name="jabatan" id="jabatan-update">
-                                                    <option value="">-- Pilih Jabatan --</option>
-                                                    <?php foreach ($jabatan as $val) : ?>
-                                                        <option value="<?= $val->ID_JABATAN; ?>"><?= $val->NAMA_JABATAN; ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="hp" class="form-label">No.HP</label></label>
-                                                <input type="number" class="form-control" id="hp" name="hp">
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="hp" class="form-label">Jenis Kelamin</label></label>
-                                                <div class="custom-control py-2 custom-radio">
-                                                    <input type="radio" id="laki-update" name="jenis_kelamin" value="Laki-Laki"
-                                                        class="form-check-input" />
-                                                    <label class="form-check-label" for="laki-update">Laki - Laki</label>
-                                                </div>
-                                                <div class="custom-control py-2 custom-radio">
-                                                    <input type="radio" id="perempuan-update" name="jenis_kelamin" value="Perempuan"
-                                                        class="form-check-input" />
-                                                    <label class="form-check-label" for="perempuan-update">Perempuan</label>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="alamat" class="form-label">Alamat</label></label>
-                                                <input type="text" class="form-control" id="alamat" name="alamat">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="roles-select" class="form-label">Roles Tambahan (optional)</label>
-                                                <select class="select2 form-control" multiple="multiple" name="roles[]" id="roles-update">
-                                                    <?php foreach ($roles as $r) : ?>
-                                                        <option value="<?= $r->idmenu; ?>"><?= $r->nama_menu; ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn bg-danger-subtle text-danger"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                    <?php endforeach ?>
-
-                </tbody>
-            </table>
         </div>
+
+    <?php endforeach ?>
+
+    </tbody>
+    </table>
     </div>
 </div>
+</div>
+
+
+<form action="<?= base_url('pegawai/update') ?>" method="post" enctype="multipart/form-data">
+    <div class="modal fade" id="edit-pegawai-modal" tabindex="-1" aria-labelledby="inputPeagawaiModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-flex align-items-center">
+                    <h4 class="modal-title" id="inputPegawaiModalLabel">Update Data Pegawai</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <input type="hidden" name="ID_AKUN" id="id">
+
+                <div class="modal-body row">
+                    <div class="mb-3 col-md-6">
+                        <label for="noid" class="form-label">No ID Pegawai</label> <span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="noid" name="noid" required>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="no_ktp" class="form-label">No KTP</label> <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="no_ktp" name="no_ktp">
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="email" class="form-label">Email</label> <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="nama" class="form-label">Nama Pegawai</label> <span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nama" name="nama" required>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="unit" class="form-label">Unit<span class="text-danger">*</span></label>
+                        <select class="select-unit form-control" name="unit" id="unit-update">
+                            <option value="">-- Pilih Unit --</option>
+                            <?php foreach ($unit as $val) : ?>
+                                <option value="<?= $val->idunit; ?>"><?= $val->NAMA_UNIT; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="jabatan" class="form-label">Jabatan<span class="text-danger">*</span> </label>
+                        <select class="select-jabatan form-control" name="jabatan" id="jabatan-update">
+                            <option value="">-- Pilih Jabatan --</option>
+                            <?php foreach ($jabatan as $val) : ?>
+                                <option value="<?= $val->ID_JABATAN; ?>"><?= $val->NAMA_JABATAN; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3 col-md-6">
+                        <label for="jenis_pegawai" class="form-label">jenis Pegawai<span class="text-danger">*</span> </label>
+                        <select class="select-jenis_pegawai form-control" name="jenis_pegawai" id="jenis_pegawai">
+                            <option value="0">-- Pegawai Tetap --</option>
+                            <option value="1">-- Pegawai Kontrak --</option>
+                            <option value="2">-- Pegawai Probation --</option>
+                            <option value="100">-- Resign --</option>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3 col-md-6">
+                        <label for="hp" class="form-label">No.HP</label></label>
+                        <input type="number" class="form-control" id="hp" name="hp">
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="hp" class="form-label">Jenis Kelamin</label></label>
+                        <div class="custom-control py-2 custom-radio">
+                            <input type="radio" id="laki-update" name="jenis_kelamin" value="Laki-Laki"
+                                class="form-check-input" />
+                            <label class="form-check-label" for="laki-update">Laki - Laki</label>
+                        </div>
+                        <div class="custom-control py-2 custom-radio">
+                            <input type="radio" id="perempuan-update" name="jenis_kelamin" value="Perempuan"
+                                class="form-check-input" />
+                            <label class="form-check-label" for="perempuan-update">Perempuan</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label">Alamat</label></label>
+                        <input type="text" class="form-control" id="alamat" name="alamat">
+                    </div>
+                    <div class="mb-3">
+                        <label for="roles-select" class="form-label">Roles Tambahan (optional)</label>
+                        <select class="select2 form-control" multiple="multiple" name="roles[]" id="roles-update">
+                            <?php foreach ($roles as $r) : ?>
+                                <option value="<?= $r->idmenu; ?>"><?= $r->nama_menu; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label for="foto_ktp" class="form-label">Foto KTP</label></label>
+                    <input type="file" class="form-control" id="foto_ktp" name="foto_ktp">
+                </div>
+                <div class="mb-3">
+                    <label for="foto_kk" class="form-label">Foto KK</label></label>
+                    <input type="file" class="form-control" id="foto_kk" name="foto_kk">
+                </div>
+
+                <div class="mb-3">
+                    <label hidden for="foto_ktp_lama" class="form-label">Foto KTP</label></label>
+                    <input hidden type="text" class="form-control" id="foto_ktp_lama" name="foto_ktp_lama">
+                </div>
+                <div class="mb-3">
+                    <label hidden for="foto_kk_lama" class="form-label">Foto KK</label></label>
+                    <input hidden type="text" class="form-control" id="foto_kk_lama" name="foto_kk_lama">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-danger-subtle text-danger"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</form>
 
 
 <!-- Modal Input Pegawai -->
@@ -235,7 +340,7 @@
                 <h4 class="modal-title" id="inputPegawaiModalLabel">Input Data Pegawai</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('pegawai/insert') ?>" method="post">
+            <form action="<?= base_url('pegawai/insert') ?>" method="post" enctype="multipart/form-data">
                 <div class="modal-body row">
                     <div class="mb-3 col-md-6">
                         <label for="noid" class="form-label">No ID Pegawai</label> <span
@@ -273,6 +378,17 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
+
+                    <div class="mb-3 col-md-6">
+                        <label for="jenis_pegawai" class="form-label">jenis Pegawai<span class="text-danger">*</span> </label>
+                        <select class="select-jenis_pegawai form-control" name="jenis_pegawai" id="jenis_pegawai">
+                            <option value="0">-- Pegawai Tetap --</option>
+                            <option value="1">-- Pegawai Kontrak --</option>
+                            <option value="2">-- Pegawai Probation --</option>
+
+                        </select>
+                    </div>
+
                     <div class="mb-3 col-md-6">
                         <label for="hp" class="form-label">No.HP</label></label>
                         <input type="number" class="form-control" id="hp" name="hp">
@@ -302,6 +418,15 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="foto_ktp" class="form-label">Foto KTP</label></label>
+                        <input type="file" class="form-control" id="foto_ktp" name="foto_ktp">
+                    </div>
+                    <div class="mb-3">
+                        <label for="foto_kk" class="form-label">Foto KK</label></label>
+                        <input type="file" class="form-control" id="foto_kk" name="foto_kk">
+                    </div>
+
 
                 </div>
                 <div class="modal-footer">
@@ -365,6 +490,22 @@
 </div>
 
 
+<!-- Modal Preview -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Preview Gambar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="previewImage" src="" alt="Preview" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 
@@ -385,7 +526,9 @@
         const jenis = button.data('jenis');
         const alamat = button.data('alamat');
         const roles = button.data('roles');
-
+        const foto_ktp_lama = button.data('foto_ktp_lama');
+        const foto_kk_lama = button.data('foto_kk_lama');
+        const jenis_pegawai = button.data('jenis_pegawai');
 
         $('#id').val(id);
         $('#noid').val(noid);
@@ -396,6 +539,9 @@
         $('#jabatan-update').val(jabatan);
         $('#hp').val(hp);
         $('#alamat').val(alamat);
+        $('#foto_kk_lama').val(foto_kk_lama);
+        $('#foto_ktp_lama').val(foto_ktp_lama);
+        $('#jenis_pegawai').val(jenis_pegawai).trigger('change');
 
 
         if (jenis === 'Laki-Laki') {
@@ -425,28 +571,54 @@
 
 <script>
     $(document).ready(function() {
-
         var table = $('#zero_config').DataTable();
-
 
         function escapeRegex(text) {
             return text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         }
 
+        function applyFilters() {
+            var selectedUnit = $('#filter-unit').val();
+            var selectedStatus = $('#filter-status').val();
 
-        $('#filter-unit').on('change', function() {
-            var selectedUnit = $(this).val();
+            // Filter kolom Unit (kolom ke-6)
             if (selectedUnit) {
-                var escapedValue = '^' + escapeRegex(selectedUnit) + '$';
-                table.column(5).search(escapedValue, true, false).draw();
+                var escapedUnit = '^' + escapeRegex(selectedUnit) + '$';
+                table.column(6).search(escapedUnit, true, false);
             } else {
-                table.column(5).search('').draw();
+                table.column(6).search('');
             }
-        });
+
+            // Filter kolom Status (kolom ke-0)
+            if (selectedStatus) {
+                var escapedStatus = '^' + escapeRegex(selectedStatus) + '$';
+                table.column(0).search(escapedStatus, true, false);
+            } else {
+                table.column(0).search('');
+            }
+
+            table.draw();
+        }
+
+        $('#filter-unit').on('change', applyFilters);
+        $('#filter-status').on('change', applyFilters);
 
         $('#reset-filter').on('click', function() {
             $('#filter-unit').val('');
-            table.column(5).search('').draw();
+            $('#filter-status').val('');
+            table.columns().search('').draw();
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        // Event delegation untuk tombol preview
+        $('#zero_config').on('click', '.preview-btn', function() {
+            const imgUrl = $(this).data('img');
+            $('#previewImage').attr('src', imgUrl);
+            $('#previewModal').modal('show');
         });
     });
 </script>

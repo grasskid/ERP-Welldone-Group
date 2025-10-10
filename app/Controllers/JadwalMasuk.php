@@ -4,16 +4,19 @@ namespace App\Controllers;
 
 use App\Models\ModelJadwalMasuk;
 use App\Models\ModelAuth;
+use App\Models\ModelUnit;
 
 class JadwalMasuk extends BaseController
 {
     protected $JadwalMasukModel;
     protected $AuthModel;
+    protected $UnitModel;
 
     public function __construct()
     {
         $this->JadwalMasukModel = new ModelJadwalMasuk();
         $this->AuthModel = new ModelAuth();
+        $this->UnitModel = new ModelUnit();
     }
 
     public function index()
@@ -22,7 +25,8 @@ class JadwalMasuk extends BaseController
         $data = [
             'akun' => $akun,
             'body' => 'absensi/jadwal_masuk',
-            'jadwal' => $this->JadwalMasukModel->getAll()
+            'jadwal' => $this->JadwalMasukModel->getAll(),
+            'unit' => $this->UnitModel->getUnit()
         ];
         return view('template', $data);
     }
@@ -37,7 +41,8 @@ class JadwalMasuk extends BaseController
             'jml_wfh',
             'jml_wfo',
             'jenis',
-            'toleransi'
+            'toleransi',
+            'unit_idunit'
         ]);
 
         if ($this->JadwalMasukModel->insert($data)) {
@@ -59,7 +64,8 @@ class JadwalMasuk extends BaseController
             'jml_wfh',
             'jml_wfo',
             'jenis',
-            'toleransi'
+            'toleransi',
+            'unit_idunit'
         ]);
 
         if ($this->JadwalMasukModel->update($id, $data)) {

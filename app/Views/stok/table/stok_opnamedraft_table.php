@@ -1,9 +1,28 @@
-<div class="mb-3" style="margin-left: 20px;">
-    <label for="filterUnit">Filter Unit:</label>
-    <select style="margin-right: 10px;" id="filterUnit" class="form-control d-inline-block w-auto">
+<div hidden class="mb-3" style="margin-left: 20px;">
+    <label hidden for="filterUnit"> Unit:</label>
+    <select hidden style="margin-right: 10px;" id="filterUnit" class="form-control d-inline-block w-auto">
         <option value="">Semua Unit</option>
+        <?php foreach ($unit as $u): ?>
+            <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
+                <?= esc($u->NAMA_UNIT) ?>
+            </option>
+        <?php endforeach; ?>
     </select>
-    <button id="resetFilter" class="btn btn-secondary">Reset</button>
+    <button hidden id="resetFilter" class="btn btn-secondary">Reset</button>
+
+
+</div>
+
+<div class="mb-3" style="margin-left: 20px; display: flex; justify-content: right; gap: 20px;">
+
+    <select disabled style="margin-right: 10px;" id="filterUnitxyz" class="form-control d-inline-block w-auto">
+        <option value="">Semua Unit</option>
+        <?php foreach ($unit as $u): ?>
+            <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
+                <?= esc($u->NAMA_UNIT) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
 </div>
 
 
@@ -12,9 +31,7 @@
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
-                    <th>
-                        <input type="checkbox" id="select_all">
-                    </th>
+                    <th><input type="checkbox" id="select_all"></th>
                     <th>Kode Barang</th>
                     <th>Nama Barang</th>
                     <th>Nama Unit</th>
@@ -40,17 +57,9 @@
                         <td><?= esc($row->nama_unit) ?></td>
                         <td><?= esc($row->stok_dasar) ?></td>
                         <td><?= esc(date('d-m-Y', strtotime($row->tanggal_stok_dasar))) ?></td>
-
-                        <td>
-                            <input class="form-control jumlah-komp" name="data[<?= $index ?>][jumlah_komp]" value="<?= $row->stok_akhir ?>">
-                        </td>
-                        <td>
-                            <input type="number" class="form-control jumlah-real" name="data[<?= $index ?>][jumlah_real]">
-
-                        </td>
-                        <td>
-                            <input readonly class="form-control jumlah_selisih" name="data[<?= $index ?>][jumlah_selisih]">
-                        </td>
+                        <td><input class="form-control jumlah-komp" name="data[<?= $index ?>][jumlah_komp]" value="<?= $row->stok_akhir ?>"></td>
+                        <td><input type="number" class="form-control jumlah-real" name="data[<?= $index ?>][jumlah_real]"></td>
+                        <td><input readonly class="form-control jumlah_selisih" name="data[<?= $index ?>][jumlah_selisih]"></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -78,28 +87,35 @@
                 tr.querySelector('input[name$="[jumlah_selisih]"]').value = real - komp;
             } else {
                 alert("Silakan centang kotak ceklis terlebih dahulu sebelum mengisi jumlah real.");
-                realInput.value = ''; // Kosongkan input
+                realInput.value = '';
                 realInput.focus();
             }
         });
     });
-</script>
 
-<script>
+    // DataTable + Filter Unit
     $(document).ready(function() {
         var table = $('#zero_config').DataTable();
 
+        // Fungsi filter berdasarkan teks nama_unit (kolom ke-3)
+        function applyFilter() {
+            var selectedId = $('#filterUnit').val();
 
-        table.column(3).data().unique().sort().each(function(d) {
-            if (d) {
-                $('#filterUnit').append('<option value="' + d + '">' + d + '</option>');
+            if (selectedId) {
+                // Ambil nama unit dari option terpilih
+                var selectedText = $('#filterUnit option:selected').text();
+                table.column(3).search('^' + selectedText + '$', true, false).draw();
+            } else {
+                table.column(3).search('', true, false).draw();
             }
-        });
+        }
 
+        // Jalankan filter otomatis saat halaman load
+        applyFilter();
 
+        // Jalankan filter ketika dropdown berubah
         $('#filterUnit').on('change', function() {
-            var val = $.fn.dataTable.util.escapeRegex($(this).val());
-            table.column(3).search(val ? '^' + val + '$' : '', true, false).draw();
+            applyFilter();
         });
 
         // Tombol Reset Filter

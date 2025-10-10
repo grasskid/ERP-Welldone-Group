@@ -19,25 +19,46 @@ class ModelPenilaianKPI extends Model
         'pegawai_idpegawai',
         'tanggal_penilaian_kpi',
         'created_on',
-        'updated_on'
+        'updated_on',
+        'penilaian_idpenilaian'
     ];
 
-    public function insertKPI($kpi_utama, $bobot, $target, $ar_target, $score, $pegawai_idpegawai, $tanggal_penilaian_kpi)
-    {
-        $data = [
-            'kpi_utama'             => $kpi_utama,
-            'bobot'                 => $bobot,
-            'target'                => $target,
-            'realisasi'             => $ar_target[0] ?? 0,
-            'score'                 => $score[0] ?? 0,
-            'pegawai_idpegawai'     => $pegawai_idpegawai,
-            'tanggal_penilaian_kpi' => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
-            'created_on'            => date('Y-m-d H:i:s'),
-            'updated_on'            => date('Y-m-d H:i:s'),
-        ];
+    public function insertKPI($kpi_utama, $bobot, $target, $ar_target, $score, $pegawai_idpegawai, $tanggal_penilaian_kpi, $penilaian_id)
+{
+    $data = [
+        'kpi_utama'             => $kpi_utama,                          // keep this column
+        'bobot'                 => $bobot,
+        'target'                => $target,
+        'realisasi'             => $ar_target[0] ?? 0,
+        'score'                 => $score[0] ?? 0,
+        'pegawai_idpegawai'     => $pegawai_idpegawai,
+        'tanggal_penilaian_kpi' => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
+        'penilaian_idpenilaian' => $penilaian_id,                        // ← this is the critical fix
+        'created_on'            => date('Y-m-d H:i:s'),
+        'updated_on'            => date('Y-m-d H:i:s'),
+    ];
 
-        return $this->insert($data);
-    }
+    return $this->insert($data);
+}
+
+
+
+    // public function insertKPI($kpi_utama, $bobot, $target, $ar_target, $score, $pegawai_idpegawai, $tanggal_penilaian_kpi)
+    // {
+    //     $data = [
+    //         'kpi_utama'             => $kpi_utama,
+    //         'bobot'                 => $bobot,
+    //         'target'                => $target,
+    //         'realisasi'             => $ar_target[0] ?? 0,
+    //         'score'                 => $score[0] ?? 0,
+    //         'pegawai_idpegawai'     => $pegawai_idpegawai,
+    //         'tanggal_penilaian_kpi' => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
+    //         'created_on'            => date('Y-m-d H:i:s'),
+    //         'updated_on'            => date('Y-m-d H:i:s'),
+    //     ];
+
+    //     return $this->insert($data);
+    // }
 
     public function getAllKPI()
     {

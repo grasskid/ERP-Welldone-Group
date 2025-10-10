@@ -42,18 +42,23 @@
 
 
             <label class="me-2 ms-4">Nama Unit:</label>
-            <select name="unit" id="unitFilter" class="form-select d-inline" style="width: auto; display: inline-block;" onchange="filterKategori()">
+            <select
+                name="unit"
+                id="unitFilter"
+                class="form-select d-inline"
+                style="width: auto; display: inline-block;"
+                onchange="filterKategori()">
                 <option value="">Semua Unit</option>
                 <?php
-                $unitList = [];
-                foreach ($stok as $row) {
-                    if (!in_array($row->nama_unit, $unitList)) {
-                        $unitList[] = $row->nama_unit;
-                        echo '<option value="' . esc($row->nama_unit) . '">' . esc($row->nama_unit) . '</option>';
-                    }
+                $selectedUnit = session('ID_UNIT'); // Ambil ID unit dari session
+                foreach ($unit as $row) {
+                    $selected = ($row->idunit == $selectedUnit) ? 'selected' : '';
+                    echo '<option value="' . esc($row->idunit) . '" ' . $selected . '>' . esc($row->NAMA_UNIT) . '</option>';
                 }
                 ?>
             </select>
+
+
 
             <label class="me-2 ms-4">Tanggal Awal:</label>
             <input name="tanggal_awal" type="date" id="startDate" class="form-control d-inline" style="width: auto; display: inline-block;" onchange="filterKategori()">
@@ -117,12 +122,13 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Stok Akhir</h6>
                     </th>
+                    <th hidden>idunit</th>
                 </tr>
             </thead>
             <tbody id="produkTableBody">
                 <?php if (!empty($stok)): ?>
                     <?php foreach ($stok as $row): ?>
-                        <tr>
+                        <tr data-idunit="<?= esc($row->id_unit) ?>">
                             <td><?= esc($row->kode_barang) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
                             <td><?= esc($row->nama_unit) ?></td>
@@ -137,6 +143,7 @@
                             <td><?= esc($row->total_mutasi_masuk) ?></td>
                             <td><?= esc($row->total_mutasi_keluar) ?></td>
                             <td><b><?= esc($row->stok_akhir) ?></b></td>
+                            <td hidden><?= $row->id_unit ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -157,27 +164,26 @@
 
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             const ppnFilter = $('#ppnFilter').val().toLowerCase();
-            const unitFilter = $('#unitFilter').val().toLowerCase();
+            const unitFilter = $('#unitFilter').val().toLowerCase(); // Sekarang value = ID unit
             const start = $('#startDate').val();
             const end = $('#endDate').val();
 
-            const unit = data[2]?.toLowerCase() || ""; // Kolom unit
-            const ppn = data[4]?.toLowerCase() || ""; // Kolom ppn
-            const tanggalText = data[5]?.trim(); // Kolom tanggal (dd-mm-yyyy)
-
+            const unitIdInTable = data[14]?.trim();
+            const ppn = data[4]?.toLowerCase() || "";
+            const tanggalText = data[5]?.trim();
 
             let rowDate = null;
             if (tanggalText && tanggalText.includes('-')) {
                 const parts = tanggalText.split('-');
                 if (parts.length === 3) {
-                    rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // yyyy-mm-dd
+                    rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
                 }
             }
 
             const startDate = start ? new Date(start) : null;
             const endDate = end ? new Date(end) : null;
 
-            const matchUnit = !unitFilter || unit === unitFilter;
+            const matchUnit = !unitFilter || unitIdInTable == unitFilter;
             const matchPPN = !ppnFilter || ppn === ppnFilter;
 
             let matchDate = true;
@@ -203,39 +209,60 @@
     }
 </script>
 
+
 <script>
-    window.onload = function() {
-        const today = new Date();
-        const fifteenDaysAgo = new Date();
-        fifteenDaysAgo.setDate(today.getDate() - 15);
+    let table;
 
-        const toDateInputValue = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
+    $(document).ready(function() {
+        table = $('#zero_config').DataTable();
 
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            const ppnFilter = $('#ppnFilter').val().toLowerCase();
+            const unitFilter = $('#unitFilter').val(); // Sekarang value = ID unit
+            const start = $('#startDate').val();
+            const end = $('#endDate').val();
 
-        $('#startDate').val(toDateInputValue(fifteenDaysAgo));
-        $('#endDate').val(toDateInputValue(today));
+            const unitIdInTable = $(table.row(dataIndex).node()).data('idunit'); // ambil ID unit dari atribut data-idunit (lihat catatan di bawah)
+            const ppn = data[4]?.toLowerCase() || "";
+            const tanggalText = data[5]?.trim();
 
+            let rowDate = null;
+            if (tanggalText && tanggalText.includes('-')) {
+                const parts = tanggalText.split('-');
+                if (parts.length === 3) {
+                    rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                }
+            }
 
-        const ppnSelect = document.getElementById('ppnFilter');
-        if (ppnSelect.options.length > 1) {
-            ppnSelect.selectedIndex = 1;
-        }
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
 
+            const matchUnit = !unitFilter || unitIdInTable == unitFilter;
+            const matchPPN = !ppnFilter || ppn === ppnFilter;
 
-        const unitSelect = document.getElementById('unitFilter');
-        if (unitSelect.options.length > 1) {
-            unitSelect.selectedIndex = 1;
-        }
+            let matchDate = true;
+            if (rowDate instanceof Date && !isNaN(rowDate)) {
+                if (startDate && rowDate < startDate) matchDate = false;
+                if (endDate && rowDate > endDate) matchDate = false;
+            }
 
+            return matchUnit && matchPPN && matchDate;
+        });
+    });
 
+    function filterKategori() {
         table.draw();
-    };
+    }
+
+    function resetKategoriFilter() {
+        $('#ppnFilter').val('');
+        $('#startDate').val('');
+        $('#endDate').val('');
+        $('#unitFilter').val('');
+        table.draw();
+    }
 </script>
+
 
 
 
