@@ -7,9 +7,10 @@
                         <option value="">-- Semua Unit --</option>
                         <?php foreach ($units as $unit): ?>
                         <option value="<?= $unit->idunit ?>" <?= ($unit_id == $unit->idunit ? 'selected' : '') ?>>
-                            <?= $unit->idunit == session()->get('ID_UNIT') ? session()->get('NAMA_UNIT') : 'Unit #' . $unit->idunit ?>
+                            <?= $unit->NAMA_UNIT ?>
                         </option>
                         <?php endforeach; ?>
+
                     </select>
                 </div>
             </div>
