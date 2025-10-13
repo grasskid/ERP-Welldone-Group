@@ -31,7 +31,9 @@ public/foto_tugas/*
 public/foto_kk/*
 !public/foto_kk/.gitkeep
 public/foto_ktp/*
-!public/foto_ktp.gitkeep
+!public/foto_ktp/.gitkeep
+public/assets/*
+!public/assets/.gitkeep
 public/error_log
 
 # Composer
