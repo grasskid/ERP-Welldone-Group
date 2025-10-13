@@ -9,7 +9,7 @@
 
     <!-- Favicon icon-->
     <link rel="shortcut icon" type="image/png"
-        href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo_urban.png') ?>" />
+        href="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -79,9 +79,9 @@
 
 
                                 <div class="d-block d-lg-none">
-                                    <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png"
+                                    <img src="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>"
                                         class="dark-logo" alt="Logo-Dark" style="width: 30px; height: auto;" />
-                                    <img src="<?php echo base_url('template/') ?>assets/images/logo_urban.png"
+                                    <img src="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>"
                                         class="light-logo" alt="Logo-light" style="width: 30px; height: auto;" />
                                 </div>
 
