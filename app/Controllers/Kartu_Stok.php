@@ -59,55 +59,76 @@ class Kartu_Stok extends BaseController
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set Header Titles
-        $headers = ['Kode Barang', 'Nama Barang', 'Status PPN', 'Unit', 'Stok Dasar', 'Tanggal Stok Dasar', 'Total Pembelian', 'Total Penjualan', 'Total Retur Pelanggan', 'Total Retur Supplier', 'Stok Akhir'];
+        // Header titles
+        $headers = [
+            'Kode Barang',
+            'Nama Barang',
+            'Imei',
+            'Status PPN',
+            'Unit',
+            'Stok Dasar',
+            'Tanggal Stok Dasar',
+            'Total Pembelian',
+            'Total Penjualan',
+            'Total Retur Pelanggan',
+            'Total Retur Supplier',
+            'Stok Akhir'
+        ];
+
         $col = 'A';
         foreach ($headers as $header) {
             $sheet->setCellValue($col . '1', $header);
             $col++;
         }
 
-        // Apply bold & center to header row
-        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:K1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
+        // Header styling
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:L1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:L1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFDCE6F1');
 
-        // Data Rows
+        // Data rows
         $row = 2;
         foreach ($stok as $item) {
             $sheet->setCellValue('A' . $row, $item->kode_barang);
             $sheet->setCellValue('B' . $row, $item->nama_barang);
-            $sheet->setCellValue('C' . $row, ((int)$item->status_ppn === 1) ? 'PPN' : 'NON PPN');
-            $sheet->setCellValue('D' . $row, $item->nama_unit);
-            $sheet->setCellValue('E' . $row, $item->stok_dasar);
-            $sheet->setCellValue('F' . $row, $item->tanggal_stok_dasar);
-            $sheet->setCellValue('G' . $row, $item->total_pembelian);
-            $sheet->setCellValue('H' . $row, $item->total_penjualan);
-            $sheet->setCellValue('I' . $row, $item->total_retur_pelanggan);
-            $sheet->setCellValue('J' . $row, $item->total_retur_supplier);
-            $sheet->setCellValue('K' . $row, $item->stok_akhir);
+
+            // Jika imei kosong → tampilkan "Tidak ada IMEI"
+            $imeiText = !empty($item->imei) ? $item->imei : 'Tidak ada IMEI';
+            $sheet->setCellValue('C' . $row, $imeiText);
+
+            $sheet->setCellValue('D' . $row, ((int)$item->status_ppn === 1) ? 'PPN' : 'NON PPN');
+            $sheet->setCellValue('E' . $row, $item->nama_unit);
+            $sheet->setCellValue('F' . $row, $item->stok_dasar);
+            $sheet->setCellValue('G' . $row, $item->tanggal_stok_dasar);
+            $sheet->setCellValue('H' . $row, $item->total_pembelian);
+            $sheet->setCellValue('I' . $row, $item->total_penjualan);
+            $sheet->setCellValue('J' . $row, $item->total_retur_pelanggan);
+            $sheet->setCellValue('K' . $row, $item->total_retur_supplier);
+            $sheet->setCellValue('L' . $row, $item->stok_akhir);
             $row++;
         }
 
-        // Auto-width for all columns A to K
-        foreach (range('A', 'K') as $col) {
+        // Auto width
+        foreach (range('A', 'L') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // Apply border to all data (including header)
-        $sheet->getStyle('A1:K' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        // Borders
+        $sheet->getStyle('A1:L' . ($row - 1))
+            ->getBorders()->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
 
-        // Freeze header row
+        // Freeze header
         $sheet->freezePane('A2');
 
-        // File name logic
+        // File name
         $unitLabel = $unit ?: 'all_unit';
         $ppnLabel = $statusPpn ?: 'all_ppn';
         $tglAwalFormatted = date('Ymd', strtotime($tanggalAwal));
         $tglAkhirFormatted = date('Ymd', strtotime($tanggalAkhir));
         $filename = 'kartu_stok_' . $unitLabel . '_' . $ppnLabel . '_' . $tglAwalFormatted . '-' . $tglAkhirFormatted . '.xlsx';
 
-        // Output headers
+        // Output
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
