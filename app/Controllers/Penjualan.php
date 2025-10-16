@@ -59,6 +59,7 @@ class Penjualan extends BaseController
     protected $DetailBundelModel;
     protected $PembayaranBankModel;
 
+    //ini perubahan baru
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
