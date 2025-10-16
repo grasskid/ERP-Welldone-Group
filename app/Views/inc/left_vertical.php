@@ -9,11 +9,11 @@
             $ModelUnit = new ModelUnit();
             $unit = $ModelUnit->getById($id_unit);
         ?>
-        <a href="<?= base_url('template/dark/index.html') ?>" class="text-nowrap logo-img mb-2">
+        <a href="<?= base_url() ?>" class="text-nowrap logo-img mb-2">
             <img src="<?= base_url('template/assets/images/' . $unit->LOGO) ?>" alt="Logo"
                 class="dark-logo w-100 h-auto" style="max-width: 200px;" />
         </a>
-        <h2 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h2>
+        <h4 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h4>
         <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
             <i class="ti ti-x"></i>
         </a>
