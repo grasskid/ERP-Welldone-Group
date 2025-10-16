@@ -92,7 +92,7 @@ foreach ($detail_penjualan as $row) {
                                 </iconify-icon>
                                 Lihat Detail
                             </button>
-                            <a href="<?php echo base_url('riwayat_penjualan/struk/' . $kode_invoice) ?>">
+                            <a href="<?= base_url('riwayat_penjualan/struk/' . $kode_invoice) ?>" target="_blank">
                                 <button type="button" class="btn btn-sm btn-danger"
                                     style="display: inline-flex; align-items: center;">
                                     <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
@@ -100,6 +100,17 @@ foreach ($detail_penjualan as $row) {
                                     Cetak Struk
                                 </button>
                             </a>
+
+                            <a href="<?= base_url('riwayat_penjualan/struk/' . $kode_invoice . '?mode=thermal') ?>"
+                                target="_blank">
+                                <button type="button" class="btn btn-sm btn-danger"
+                                    style="display: inline-flex; align-items: center;">
+                                    <iconify-icon icon="solar:folder-favourite-bookmark-broken" width="24" height="24">
+                                    </iconify-icon>
+                                    Cetak Struk (Thermal)
+                                </button>
+                            </a>
+
                         </td>
                     </tr>
                     <?php endforeach; ?>

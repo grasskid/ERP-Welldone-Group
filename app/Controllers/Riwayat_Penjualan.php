@@ -131,79 +131,89 @@ class Riwayat_Penjualan extends BaseController
     }
 
 
-    public function cetak_struk($kode_invoice)
-    {
-        $datapenjualan = $this->DetailPenjualanModel->getDetailPenjualanByInvoice($kode_invoice);
+public function cetak_struk($kode_invoice)
+{
+    // Ambil detail penjualan per invoice
+    $datapenjualan = $this->DetailPenjualanModel->getDetailPenjualanByInvoice($kode_invoice);
 
-        $produkData = [];
-        foreach ($datapenjualan as $item) {
-            $produkData[] = [
-                'nama' => $item->nama_barang,
-                'jumlah' => $item->jumlah,
-                'harga' => $item->harga_penjualan
-            ];
-        }
-
-        $datapenjualan2 = $this->PenjualanModel->getByKodeInvoice($kode_invoice);
-        $tanggal = $datapenjualan2->tanggal;
-        $userdata = $this->AuthModel->getById($datapenjualan2->input_by);
-        $namauser = $userdata->NAMA_AKUN;
-        $no_invoice = $kode_invoice;
-        $total_ppn = $datapenjualan2->total_ppn;
-        $sub_total_cetak = $datapenjualan2->total_penjualan + $datapenjualan2->diskon - $total_ppn;
-        $nilaidiskon = $datapenjualan2->diskon;
-        $total_penjualan = $datapenjualan2->total_penjualan;
-        $bayar = $datapenjualan2->bayar;
-        $kembalian_cetak = max(0, $bayar - $total_penjualan);
-
-        $idPelanggan = $datapenjualan2->id_pelanggan;
-        $dataCustomer = $this->PelangganModel->getById($idPelanggan);
-
-        if ($dataCustomer !== null) {
-            $namaCustomer = $dataCustomer->nama;
-        } else {
-            $namaCustomer = 'Pelanggan Umum';
-        }
-
-
-
-        $data = array(
-
-            'produk' => $produkData,
-            'tanggal' => $tanggal,
-            'kasir'  => $namauser,
-            'no_invoice' => $no_invoice,
-            'sub_total' => $sub_total_cetak,
-            'diskon' => $nilaidiskon,
-            'total_ppn' => $total_ppn,
-            'customer' => $namaCustomer,
-            'total' => $total_penjualan,
-            'bayar' => $bayar,
-            'kembalian' => $kembalian_cetak,
-            'dataunit' => $this->UnitModel->getById(session('ID_UNIT'))
-
-        );
-
-        $html = view('cetak/cetak_penjualan', $data);
-
-        error_reporting(0);
-
-        $mpdf = new \Mpdf\Mpdf(['curlUserAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:108.0) Gecko/20100101 Firefox/108.0']);
-
-        ob_end_clean();
-
-        $mpdf->curlAllowUnsafeSslRequests = true;
-
-        $this->response->setHeader('Content-Type', 'application/pdf');
-
-        $this->response->setHeader('Content-Transfer-Encoding', 'binary');
-
-        $this->response->setHeader('Accept-Ranges', 'bytes');
-
-        $mpdf->WriteHTML($html);
-
-        return redirect()->to($mpdf->Output());
+    $produkData = [];
+    foreach ($datapenjualan as $item) {
+        $produkData[] = [
+            'nama'   => $item->nama_barang,
+            'jumlah' => $item->jumlah,
+            'harga'  => $item->harga_penjualan,
+            'diskon' => $item->diskon_penjualan,
+            'ppn'    => $item->ppn ?? 0
+        ];
     }
+
+    $datapenjualan2 = $this->PenjualanModel->getByKodeInvoice($kode_invoice);
+    $tanggal          = $datapenjualan2->tanggal;
+    $userdata         = $this->AuthModel->getById($datapenjualan2->input_by);
+    $namauser         = $userdata->NAMA_AKUN;
+    $no_invoice       = $kode_invoice;
+    $total_ppn        = $datapenjualan2->total_ppn;
+    $sub_total_cetak  = $datapenjualan2->total_penjualan + $datapenjualan2->diskon - $total_ppn;
+    $nilaidiskon      = $datapenjualan2->diskon;
+    $total_penjualan  = $datapenjualan2->total_penjualan;
+    $bayar            = $datapenjualan2->bayar;
+    $kembalian_cetak  = max(0, $bayar - $total_penjualan);
+
+    $idPelanggan   = $datapenjualan2->id_pelanggan;
+    $dataCustomer  = $this->PelangganModel->getById($idPelanggan);
+    $namaCustomer  = $dataCustomer ? $dataCustomer->nama : 'Pelanggan Umum';
+
+    $dataunit = $this->UnitModel->getById(session('ID_UNIT'));
+
+    $data = [
+        'produk'           => $produkData,
+        'tanggal'          => $tanggal,
+        'kasir'            => $namauser,
+        'no_invoice'       => $no_invoice,
+        'sub_total'        => $sub_total_cetak,
+        'total_ppn'        => $total_ppn,
+        'diskon_penjualan' => $nilaidiskon,
+        'customer'         => $namaCustomer,
+        'total'            => $total_penjualan,
+        'bayar'            => $bayar,
+        'kembalian'        => $kembalian_cetak,
+        'dataunit'         => $dataunit
+    ];
+
+    // 🧾 Detect mode (normal or thermal)
+    $mode = $this->request->getGet('mode');
+    if ($mode === 'thermal') {
+        $html = view('cetak/cetak_penjualan_thermal', $data);
+        $mpdf = new \Mpdf\Mpdf([
+            'format' => [80, 200], // 80mm width thermal
+            'margin_left' => 2,
+            'margin_right' => 2,
+            'margin_top' => 2,
+            'margin_bottom' => 2,
+            'curlUserAgent' => 'Mozilla/5.0'
+        ]);
+    } else {
+        $html = view('cetak/cetak_penjualan', $data);
+        $mpdf = new \Mpdf\Mpdf([
+            'format' => 'A4',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'curlUserAgent' => 'Mozilla/5.0'
+        ]);
+    }
+
+    error_reporting(0);
+    ob_end_clean();
+    $mpdf->curlAllowUnsafeSslRequests = true;
+    $mpdf->WriteHTML($html);
+
+    return $this->response
+        ->setHeader('Content-Type', 'application/pdf')
+        ->setBody($mpdf->Output('Struk_' . $kode_invoice . '.pdf', 'I'));
+}
+
 }
     
 
