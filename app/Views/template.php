@@ -77,11 +77,18 @@
                                 </ul>
 
 
+                                <?php
+                                $id_unit = session()->get('ID_UNIT');
 
+                                use App\Models\ModelUnit;
+
+                                $ModelUnit = new ModelUnit();
+                                $unit = $ModelUnit->getById($id_unit);
+                                ?>
                                 <div class="d-block d-lg-none">
-                                    <img src="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>"
+                                    <img src="<?= base_url('template/assets/images/' . $unit->LOGO) ?>"
                                         class="dark-logo" alt="Logo-Dark" style="width: 30px; height: auto;" />
-                                    <img src="<?php echo base_url('template/') ?><?= env('app.logo', 'assets/images/logo.png') ?>"
+                                    <img src="<?= base_url('template/assets/images/' . $unit->LOGO) ?>"
                                         class="light-logo" alt="Logo-light" style="width: 30px; height: auto;" />
                                 </div>
 
