@@ -177,7 +177,7 @@ class Core extends Model
 
     function get_menu()
     {
-        $kategori = db_connect()->table("menu")->where(array("categories" => 1))->get()->getResult();
+        $kategori = db_connect()->table("menu")->where(array("categories" => 1))->orderBy("urutan")->get()->getResult();
         $response = array();
         // die(json_encode($kategori));
         $no_kat = 0;
@@ -208,7 +208,7 @@ class Core extends Model
                 array_push($response[$no_kat]['menu'], $res_menu);
                 $sub_menu = db_connect()->table("menu")
                     ->where(array("parent" => $mymenu->idmenu))
-                    ->orderBy("nama_menu")->get()->getResult();
+                    ->orderBy("urutan")->get()->getResult();
                 foreach ($sub_menu as $sub) {
                     $res_sub = array(
                         'id' => $sub->idmenu,
@@ -227,7 +227,7 @@ class Core extends Model
 
     function get_menu_show()
     {
-        $kategori = db_connect()->table("menu")->where(array("categories" => 1, "show_menu" => 1))->get()->getResult();
+        $kategori = db_connect()->table("menu")->where(array("categories" => 1, "show_menu" => 1))->orderBy("urutan")->get()->getResult();
         $response = array();
         // die(json_encode($kategori));
         $no_kat = 0;
@@ -262,7 +262,7 @@ class Core extends Model
                 array_push($response[$no_kat]['menu'], $res_menu);
                 $sub_menu = db_connect()->table("menu")
                     ->where(array("parent" => $mymenu->idmenu, "show_menu" => 1))
-                    ->orderBy("nama_menu")->get()->getResult();
+                    ->orderBy("urutan")->get()->getResult();
                 foreach ($sub_menu as $sub) {
                     $res_sub = array(
                         'id' => $sub->idmenu,

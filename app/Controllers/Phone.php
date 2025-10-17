@@ -50,7 +50,13 @@ class Phone extends BaseController
 
     public function insert_phone()
     {
-        $nama_barang =  $this->request->getPost('nama_barang');
+        //ini id nama hanpdhone
+        $id_nama_handphone =  $this->request->getPost('nama_barang');
+
+        $data_nama_handphone = $this->NamaHandphoneModel->getNamaHandphoneById($id_nama_handphone);
+        $nama_barang = $data_nama_handphone->nama;
+
+
         $imei       = $this->request->getPost('imei');
         $jenis_hp   = $this->request->getPost('jenis_hp');
         $harga      = str_replace(',', '', $this->request->getPost('harga'));
@@ -95,7 +101,8 @@ class Phone extends BaseController
 
             'idkategori' => '1',
             'status_ppn' => $status_ppn,
-            'deleted'    => '0'
+            'deleted'    => '0',
+            'nama_barang_id' => $id_nama_handphone
         ];
 
         $result = $this->PhoneModel->insert($data);
@@ -108,7 +115,12 @@ class Phone extends BaseController
     public function update_phone()
     {
         $id_phone = $this->request->getPost('id');
-        $nama_barang = $this->request->getPost('nama_barang');
+
+        $id_nama_handphone =  $this->request->getPost('nama_barang');
+
+        $data_nama_handphone = $this->NamaHandphoneModel->getNamaHandphoneById($id_nama_handphone);
+        $nama_barang = $data_nama_handphone->nama;
+
         $imei = $this->request->getPost('imei');
         $jenis_hp = $this->request->getPost('jenis_hp');
         $harga      = str_replace(',', '', $this->request->getPost('harga'));
@@ -142,7 +154,8 @@ class Phone extends BaseController
             'status_barang' => $this->request->getPost('kondisi'),
             'idkategori' => '1',
             'status_ppn' => $status_ppn,
-            'deleted'    => '0'
+            'deleted'    => '0',
+            'nama_barang_id' => $id_nama_handphone
         ];
         if ($this->PhoneModel->update($id_phone, $data)) {
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
@@ -300,7 +313,10 @@ class Phone extends BaseController
     public function insertnamahandphone()
     {
         $nama = $this->request->getPost('nama_handphone');
+        $size = $this->request->getPost('size_handphone');
+        $type = $this->request->getPost('type_handphone');
 
+        // Validasi input wajib
         if (!$nama) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -308,23 +324,51 @@ class Phone extends BaseController
             ]);
         }
 
-        $model = new \App\Models\ModelNamaHandphone();
-
-        // Cek apakah sudah ada
-        $cek = $model->where('nama', $nama)->first();
-        if ($cek) {
+        if (!$size) {
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'Nama handphone sudah ada'
+                'message' => 'Size handphone wajib diisi'
             ]);
         }
 
-        // Simpan
-        $model->insert(['nama' => $nama]);
+        if (!$type) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Type handphone wajib diisi'
+            ]);
+        }
+
+        $model = new \App\Models\ModelNamaHandphone();
+
+        // Cek apakah kombinasi nama + size + type sudah ada
+        $cek = $model->where([
+            'nama' => $nama,
+            'size' => $size,
+            'type' => $type
+        ])->first();
+
+        if ($cek) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Data handphone dengan kombinasi nama, size, dan type tersebut sudah ada'
+            ]);
+        }
+
+        // Simpan data baru
+        $model->insert([
+            'nama' => $nama,
+            'size' => $size,
+            'type' => $type
+        ]);
 
         return $this->response->setJSON([
             'status' => 'success',
-            'nama' => $nama
+            'message' => 'Data handphone berhasil ditambahkan',
+            'data' => [
+                'nama' => $nama,
+                'size' => $size,
+                'type' => $type
+            ]
         ]);
     }
 }

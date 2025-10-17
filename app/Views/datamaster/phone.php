@@ -189,7 +189,7 @@
                                 style="width: 100%;">
                                 <option disabled selected>Select</option>
                                 <?php foreach ($nama_handphone as $p): ?>
-                                    <option value="<?= htmlspecialchars($p->nama) ?>">
+                                    <option value="<?= htmlspecialchars($p->id) ?>">
                                         <?= htmlspecialchars($p->nama)  ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -297,7 +297,7 @@
                                 <select id="edit-nama_barang" name="nama_barang" class="form-control select2" style="width: 100%;" required>
                                     <option disabled selected>Select</option>
                                     <?php foreach ($nama_handphone as $p): ?>
-                                        <option value="<?= htmlspecialchars($p->nama) ?>">
+                                        <option value="<?= htmlspecialchars($p->id) ?>">
                                             <?= htmlspecialchars($p->nama)  ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -458,6 +458,20 @@
                         <input type="text" name="nama_handphone" id="input-nama-handphone" class="form-control" required>
                     </div>
                 </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="input-size-handphone">Size Internal</label>
+                        <input type="text" name="size_handphone" id="input-size-handphone" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="input-type-handphone">Type Handphone</label>
+                        <input type="text" name="type_handphone" id="input-type-handphone" class="form-control" required>
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                         onclick="$('#input-produk-modal').modal('show')">Kembali</button>
@@ -600,11 +614,16 @@
 
             const nama_handphone = $('#input-nama-handphone').val();
 
+            const size_handphone = $('#input-size-handphone').val();
+            const type_handphone = $('#input-type-handphone').val();
+
             $.ajax({
                 url: '<?= base_url('insert-phone-ajax') ?>',
                 method: 'POST',
                 data: {
-                    nama_handphone: nama_handphone
+                    nama_handphone: nama_handphone,
+                    type_handphone: type_handphone,
+                    size_handphone: size_handphone
                 },
                 dataType: 'json',
                 success: function(res) {

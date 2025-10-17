@@ -59,6 +59,7 @@ class Penjualan extends BaseController
     protected $DetailBundelModel;
     protected $PembayaranBankModel;
 
+    //ini perubahan baru
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
@@ -127,6 +128,9 @@ class Penjualan extends BaseController
             ->where('unit_idunit', $useridunit)
             ->orderBy('kode_invoice', 'DESC')
             ->first();
+
+
+
         if ($lastInvoice) {
             // Ambil 4 digit terakhir (urutan)
             $lastNumber = (int) substr($lastInvoice->kode_invoice, -4);
@@ -134,6 +138,7 @@ class Penjualan extends BaseController
         } else {
             $urutan = '0001';
         }
+
 
         $no_invoice = 'SLL' . $useridunit . $ymd . $urutan;
         //end invoice otomatis
@@ -177,7 +182,7 @@ class Penjualan extends BaseController
         $created_on = $tanggal_waktu;
         $total_ppn = $this->sanitizeCurrency($this->request->getPost('total-ppn'));
 
-        $unit_idunit = 1;
+        $unit_idunit = $useridunit;
         $hutang = $this->sanitizeCurrency($this->request->getPost('hutang'));
         $keterangan = '';
         if ($hutang == 0) {
