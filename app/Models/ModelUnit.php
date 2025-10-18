@@ -22,7 +22,7 @@ class ModelUnit extends Model
         'LONGTITUDE'
     ];
 
-    public function getUnit()
+   public function getUnit(): array
     {
         return $this->findAll();
     }
