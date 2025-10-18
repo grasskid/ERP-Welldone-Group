@@ -64,7 +64,6 @@ class StokAwal extends BaseController
             'suplier' => $this->SuplierModel->getSuplier(),
             'body' => 'stok/stok_awal'
         );
-        // die(json_encode($data));
         return view('template', $data);
     }
 

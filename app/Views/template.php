@@ -83,12 +83,12 @@
                                 use App\Models\ModelUnit;
 
                                 $ModelUnit = new ModelUnit();
-                                $unit = $ModelUnit->getById($id_unit);
+                                $unitLogo = $ModelUnit->getById($id_unit);
                                 ?>
                                 <div class="d-block d-lg-none">
-                                    <img src="<?= base_url('template/assets/images/' . $unit->LOGO) ?>"
+                                    <img src="<?= base_url('template/assets/images/' . $unitLogo->LOGO) ?>"
                                         class="dark-logo" alt="Logo-Dark" style="width: 30px; height: auto;" />
-                                    <img src="<?= base_url('template/assets/images/' . $unit->LOGO) ?>"
+                                    <img src="<?= base_url('template/assets/images/' . $unitLogo->LOGO) ?>"
                                         class="light-logo" alt="Logo-light" style="width: 30px; height: auto;" />
                                 </div>
 
