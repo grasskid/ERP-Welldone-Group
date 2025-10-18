@@ -416,3 +416,16 @@ $routes->post('export_riwayat_ciputang', 'Piutang::export_riwayat_piutang',  ['f
 $routes->post('export_daftar_piutang', 'Piutang::export_daftar_piutang',  ['filter => auth']);
 $routes->get('umur_piutang', 'Piutang::umur_piutang',  ['filter => auth']);
 $routes->post('export_aging_piutang', 'Piutang::export_aging_piutang',  ['filter => auth']);
+
+//nama handphone
+$routes->get('namahandphone', 'NamaHandphone::index', ['filter' => 'auth']);
+$routes->post('insert_namahandphone', 'NamaHandphone::insertNamaHandphone', ['filter' => 'auth']);
+$routes->post('update_namahandphone', 'NamaHandphone::udpateNamaHandphone', ['filter' => 'auth']);
+$routes->post('delete_namahandphone', 'NamaHandphone::deleteNamaHandphone', ['filter' => 'auth']);
+
+
+//Barang Rusak
+$routes->get('barang_rusak', 'BarangRusak::index', ['filter' => 'auth']);
+$routes->get('input_barang_rusak', 'BarangRusak::input', ['filter' => 'auth']);
+
+$routes->post('insert_barang_rusak', 'BarangRusak::insert_barang_rusak', ['filter' => 'auth']);

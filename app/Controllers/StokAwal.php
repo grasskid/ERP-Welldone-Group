@@ -52,16 +52,18 @@ class StokAwal extends BaseController
 
         $barangTersedia = $allBarang;
 
+        $unitData = $this->UnitModel->getUnit();
+        
+
         $data = array(
             'akun' => $akun,
             'stok' => $stok,
             'barang' => $barangTersedia,
-            'unit' => $this->UnitModel->getUnit(),
+            'unit' => $unitData,
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'suplier' => $this->SuplierModel->getSuplier(),
             'body' => 'stok/stok_awal'
         );
-
         return view('template', $data);
     }
 
