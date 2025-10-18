@@ -27,6 +27,12 @@ class ModelUnit extends Model
         return $this->findAll();
     }
 
+    public function getUnit2()
+    {
+        return $this->db->table('unit')
+            ->get()->getResult();
+    }
+
 
     public function insert_Unit($data)
     {
