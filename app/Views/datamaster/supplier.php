@@ -33,10 +33,9 @@
         <select id="filterUnit" class="form-control d-inline-block w-auto" style="margin-right: 10px;">
             <option value="">Semua Unit</option>
             <?php foreach ($unit as $u): ?>
-                <option value="<?= esc($u->NAMA_UNIT) ?>"
-                    <?= ($u->idunit == session('ID_UNIT')) ? 'selected' : '' ?>>
-                    <?= esc($u->NAMA_UNIT) ?>
-                </option>
+            <option value="<?= esc($u->NAMA_UNIT) ?>" <?= ($u->idunit == session('ID_UNIT')) ? 'selected' : '' ?>>
+                <?= esc($u->NAMA_UNIT) ?>
+            </option>
             <?php endforeach; ?>
         </select>
         <button id="resetFilter" class="btn btn-secondary">Reset</button>
@@ -47,10 +46,9 @@
         <select disabled id="filterUnitxx" class="form-control d-inline-block w-auto" style="margin-right: 10px;">
             <option value="">Semua Unit</option>
             <?php foreach ($unit as $u): ?>
-                <option value="<?= esc($u->NAMA_UNIT) ?>"
-                    <?= ($u->idunit == session('ID_UNIT')) ? 'selected' : '' ?>>
-                    <?= esc($u->NAMA_UNIT) ?>
-                </option>
+            <option value="<?= esc($u->NAMA_UNIT) ?>" <?= ($u->idunit == session('ID_UNIT')) ? 'selected' : '' ?>>
+                <?= esc($u->NAMA_UNIT) ?>
+            </option>
             <?php endforeach; ?>
         </select>
 
@@ -78,30 +76,30 @@
             </thead>
             <tbody>
                 <?php if (!empty($suplier)): ?>
-                    <?php foreach ($suplier as $row): ?>
-                        <tr>
-                            <td><?= esc($row->nama_suplier) ?></td>
-                            <td><?= esc($row->alamat) ?></td>
-                            <td><?= esc($row->no_hp) ?></td>
-                            <td><?= $row->nama_unit ?></td>
-                            <td>
-                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-produk-modal" data-id_suplier="<?= esc($row->id_suplier) ?>"
-                                    data-nama_suplier="<?= esc($row->nama_suplier) ?>">
-                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                </button>
-                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                    data-bs-target="#delete-produk-modal" data-id_suplier="<?= esc($row->id_suplier) ?>">
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                                    </iconify-icon>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                <?php foreach ($suplier as $row): ?>
+                <tr>
+                    <td><?= esc($row->nama_suplier) ?></td>
+                    <td><?= esc($row->alamat) ?></td>
+                    <td><?= esc($row->no_hp) ?></td>
+                    <td><?= $row->nama_unit ?></td>
+                    <td>
+                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                            data-bs-target="#edit-produk-modal" data-id_suplier="<?= esc($row->id_suplier) ?>"
+                            data-nama_suplier="<?= esc($row->nama_suplier) ?>">
+                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                        </button>
+                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                            data-bs-target="#delete-produk-modal" data-id_suplier="<?= esc($row->id_suplier) ?>">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                            </iconify-icon>
+                        </button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="4" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="4" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -123,18 +121,15 @@
                     <input type="hidden" id="edit_id_suplier" name="id_suplier">
                     <div class="mb-3">
                         <label for="edit_nama_suplier" class="form-label">Nama Suplier</label>
-                        <input type="text" class="form-control" id="edit_nama_suplier" name="nama_suplier"
-                            value="<?= esc($row->nama_suplier) ?>" required>
+                        <input type="text" class="form-control" id="edit_nama_suplier" name="nama_suplier" required>
                     </div>
                     <div class="mb-3">
                         <label for="edit_alamat_suplier" class="form-label">Alamat</label>
-                        <input type="text" class="form-control" id="edit_alamat_suplier" name="alamat"
-                            value="<?= esc($row->alamat) ?>" required>
+                        <input type="text" class="form-control" id="edit_alamat_suplier" name="alamat" required>
                     </div>
                     <div class="mb-3">
                         <label for="edit_hp_suplier" class="form-label">Nomer HP</label>
-                        <input type="text" class="form-control" id="edit_hp_suplier" name="no_hp"
-                            value="<?= esc($row->no_hp) ?>" required>
+                        <input type="text" class="form-control" id="edit_hp_suplier" name="no_hp" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -146,6 +141,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal Input Produk -->
 <div class="modal fade" id="input-produk-modal" tabindex="-1" aria-labelledby="inputProdukModalLabel"
@@ -217,66 +213,66 @@
 
 <!-- Script for handling theme -->
 <script>
-    function handleColorTheme(e) {
-        $("html").attr("data-color-theme", e);
-        $(e).prop("checked", true);
-    }
+function handleColorTheme(e) {
+    $("html").attr("data-color-theme", e);
+    $(e).prop("checked", true);
+}
 </script>
 
 <!-- Script for handling modal data -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('#zero_config').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const button = e.target.closest('.edit-button');
-                document.getElementById('edit_id_suplier').value = button.getAttribute('data-id_suplier');
-                document.getElementById('edit_nama_suplier').value = button.getAttribute(
-                    'data-nama_suplier');
-            }
-            if (e.target.closest('.delete-button')) {
-                const button = e.target.closest('.delete-button');
-                document.getElementById('delete_id_suplier').value = button.getAttribute('data-id_suplier');
-            }
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#zero_config').addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const button = e.target.closest('.edit-button');
+            document.getElementById('edit_id_suplier').value = button.getAttribute('data-id_suplier');
+            document.getElementById('edit_nama_suplier').value = button.getAttribute(
+                'data-nama_suplier');
+        }
+        if (e.target.closest('.delete-button')) {
+            const button = e.target.closest('.delete-button');
+            document.getElementById('delete_id_suplier').value = button.getAttribute('data-id_suplier');
+        }
     });
+});
 </script>
 
 <script>
-    let table;
+let table;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Cegah reinitialisasi
-        if (!$.fn.DataTable.isDataTable('#zero_config')) {
-            table = $('#zero_config').DataTable({
-                pageLength: 10,
-            });
-        } else {
-            table = $('#zero_config').DataTable();
-        }
-
-        // Tambahkan custom filter berdasarkan nama_unit
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            const selectedUnit = $('#filterUnit').val().toLowerCase();
-            const namaUnit = (data[3] || '').toLowerCase(); // kolom ke-4 (index 3)
-
-            return selectedUnit === '' || namaUnit === selectedUnit;
+document.addEventListener('DOMContentLoaded', function() {
+    // Cegah reinitialisasi
+    if (!$.fn.DataTable.isDataTable('#zero_config')) {
+        table = $('#zero_config').DataTable({
+            pageLength: 10,
         });
+    } else {
+        table = $('#zero_config').DataTable();
+    }
 
-        // Trigger filter saat dropdown berubah
-        $('#filterUnit').on('change', function() {
-            table.draw();
-        });
+    // Tambahkan custom filter berdasarkan nama_unit
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        const selectedUnit = $('#filterUnit').val().toLowerCase();
+        const namaUnit = (data[3] || '').toLowerCase(); // kolom ke-4 (index 3)
 
-        // Tombol reset filter
-        $('#resetFilter').on('click', function() {
-            $('#filterUnit').val('');
-            table.draw();
-        });
-
-        // Jalankan filter default sesuai session
-        const defaultUnit = $('#filterUnit').val();
-        if (defaultUnit) {
-            table.draw();
-        }
+        return selectedUnit === '' || namaUnit === selectedUnit;
     });
+
+    // Trigger filter saat dropdown berubah
+    $('#filterUnit').on('change', function() {
+        table.draw();
+    });
+
+    // Tombol reset filter
+    $('#resetFilter').on('click', function() {
+        $('#filterUnit').val('');
+        table.draw();
+    });
+
+    // Jalankan filter default sesuai session
+    const defaultUnit = $('#filterUnit').val();
+    if (defaultUnit) {
+        table.draw();
+    }
+});
 </script>
