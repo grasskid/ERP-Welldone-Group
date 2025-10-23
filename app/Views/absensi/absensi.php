@@ -29,17 +29,22 @@
             </div>
         </div>
         <div style="display: flex; justify-content: space-between;">
-            <h5 style="display: flex; padding-left: 20px; padding-top: 20px; padding-bottom: 20px;">Absensi Masuk Tanggal
+            <h5 style="display: flex; padding-left: 20px; padding-top: 20px; padding-bottom: 20px;">Absensi Masuk
+                Tanggal
                 : <?= date('d-m-Y') ?></h2>
-                <div style="display: flex; gap: 20px;">
-                    <button type="button"
-                        style="width: 100px; height: 30px; color: black; background-color: antiquewhite; outline: none; border: none; border-radius: 10px;"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-lokasi-saya">
+                <div class="d-flex flex-wrap justify-content-center gap-2 gap-md-3">
+                    <button type="button" class="btn btn-sm btn-danger"
+                        style="display: inline-flex; align-items: center; justify-content: center; width: 140px; height: 35px;"
+                        data-bs-toggle="modal" data-bs-target="#modal-lokasi-saya">
                         Cek Lokasi Saya
                     </button>
-                    <button type="button" id="btn-absen-masuk" style="width: 100px; height: 30px; color: white; background-color: cornflowerblue; outline: none; border: none; border-radius: 10px;">Absen </button>
+
+                    <button type="button" class="btn btn-sm btn-primary" id="btn-absen-masuk"
+                        style="display: inline-flex; align-items: center; justify-content: center; width: 140px; height: 35px;">
+                        Absen
+                    </button>
                 </div>
+
         </div>
         <div class="table-responsive mb-4 px-4">
             <table class="table border text-nowrap mb-0 align-middle">
@@ -70,21 +75,13 @@
                             <td>
 
 
-                                <button
-                                    type="button"
-                                    class="btn-detail-lokasi  btn btn-success"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-peta-lokasi"
-                                    data-lat="<?= $row->lat ?>"
-                                    data-waktumasuk="<?= $row->waktu_masuk ?>"
-                                    data-waktupulang="<?= $row->waktu_pulang ?>"
+                                <button type="button" class="btn-detail-lokasi  btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#modal-peta-lokasi" data-lat="<?= $row->lat ?>"
+                                    data-waktumasuk="<?= $row->waktu_masuk ?>" data-waktupulang="<?= $row->waktu_pulang ?>"
                                     data-jadwalmasuk="<?= $row->jam_jadwal_masuk ?>"
-                                    data-jadwalpulang="<?= $row->jam_jadwal_pulang ?>"
-                                    data-ip="<?= $row->ip ?>"
-                                    data-nama="<?= $row->NAMA_AKUN ?>"
-                                    data-foto="<?= $row->foto ?>"
-                                    data-long="<?= $row->long ?>"
-                                    data-jarak="<?= $row->jarak ?>">
+                                    data-jadwalpulang="<?= $row->jam_jadwal_pulang ?>" data-ip="<?= $row->ip ?>"
+                                    data-nama="<?= $row->NAMA_AKUN ?>" data-foto="<?= $row->foto ?>"
+                                    data-long="<?= $row->long ?>" data-jarak="<?= $row->jarak ?>">
                                     Detail
                                 </button>
 
@@ -132,18 +129,16 @@
                                     <?php if (empty($row->waktu_pulang) || $row->waktu_pulang === '00:00:00'): ?>
 
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#modal-konfirmasi-absen-pulang" data-idabsenpulang="<?= $row->idpresensi ?>">
+                                            data-bs-target="#modal-konfirmasi-absen-pulang"
+                                            data-idabsenpulang="<?= $row->idpresensi ?>">
                                             Submit
                                         </button>
 
                                     <?php else: ?>
-                                        <button type="button" class="btn btn-success"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-detail-absen-pulang"
-                                            data-jammasuk="<?= $row->waktu_masuk ?>"
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#modal-detail-absen-pulang" data-jammasuk="<?= $row->waktu_masuk ?>"
                                             data-jampulang="<?= $row->waktu_pulang ?>"
-                                            data-detailabsenpulang="<?= $row->idpresensi ?>"
-                                            data-jarak="<?= $row->jarak ?>"
+                                            data-detailabsenpulang="<?= $row->idpresensi ?>" data-jarak="<?= $row->jarak ?>"
                                             data-fotopulang="<?= $row->foto_pulang ?>">
                                             Detail
                                         </button>
@@ -257,7 +252,8 @@
                             capture="environment" required>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn bg-danger-subtle text-danger"
+                            data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Ya, Absen Pulang</button>
                     </div>
                 </form>
@@ -398,7 +394,8 @@
     </div>
 
     <!-- modal lokasi -->
-    <div class="modal fade" id="modal-lokasi-saya" tabindex="-1" aria-labelledby="modalLokasiSayaLabel" aria-hidden="true">
+    <div class="modal fade" id="modal-lokasi-saya" tabindex="-1" aria-labelledby="modalLokasiSayaLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">

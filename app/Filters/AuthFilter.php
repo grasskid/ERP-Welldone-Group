@@ -8,6 +8,7 @@ use CodeIgniter\Filters\FilterInterface;
 
 class AuthFilter implements FilterInterface
 {
+    //
     public function before(RequestInterface $request, $arguments = null)
     {
         // return redirect()->to(base_url('/maintenance/page'));
