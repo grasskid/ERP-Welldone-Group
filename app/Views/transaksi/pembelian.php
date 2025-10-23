@@ -206,6 +206,8 @@
                             <th>Harga</th>
                             <th>Harga Beli</th>
                             <th>Jumlah</th>
+                            <th>Biaya tambahan</th>
+                            <th>Keterangan</th>
                             <th>Diskon (Rp)</th>
                             <th>
                                 <input type="checkbox" id="select-all-ppn"> PPN 11%
@@ -237,6 +239,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                <!-- , -->
 
                 <!-- Bayar and Hutang Form -->
                 <div class="row mb-3 tunai-section">
@@ -396,6 +399,19 @@
                         <td>
                             <input type="number" name="produk[${id}][jumlah]" class="form-control jumlah-input" data-id="${id}" value="1" min="1">
                         </td>
+                        
+                        
+                         <td>
+                             <input class="form-control biaya-tambahan-input" data-id="${id}" value="Rp 0">
+                             <input type="hidden" name="produk[${id}][biaya_tambahan]" id="biaya-tambahan-hidden-${id}" value="0">
+                         </td>
+
+    
+                         <td>
+                              <input type="text" name="produk[${id}][keterangan]" class="form-control keterangan-input" data-id="${id}" placeholder="Keterangan...">
+                        </td>
+
+
                         <td>
                             <input class="form-control diskon-input" data-id="${id}" value="Rp 0">
                             <input type="hidden" name="produk[${id}][diskon]" id="diskon-hidden-${id}" value="0">
@@ -432,6 +448,17 @@
                                         .value = numeric;
                                     updateTotals();
                                 });
+
+                                // 🔹 Event listener untuk biaya tambahan
+                                const biayaTambahanInput = row.querySelector('.biaya-tambahan-input');
+                                biayaTambahanInput.addEventListener('input', function() {
+                                    const id = this.getAttribute('data-id');
+                                    const numeric = this.value.replace(/[^\d]/g, '');
+                                    this.value = formatToRupiah(numeric);
+                                    document.getElementById(`biaya-tambahan-hidden-${id}`).value = numeric;
+                                    updateTotals();
+                                });
+
 
                                 const diskonInput = row.querySelector('.diskon-input');
                                 diskonInput.addEventListener('input', function() {
@@ -494,16 +521,18 @@
                         const hargaBeliHiddenInput = row.querySelector('input[id^="harga-beli-hidden-"]');
                         const jumlahInput = row.querySelector('.jumlah-input');
                         const diskonHiddenInput = row.querySelector('input[id^="diskon-hidden-"]');
+                        const biayaTambahanHiddenInput = row.querySelector('input[id^="biaya-tambahan-hidden-"]');
                         const ppnCheckbox = row.querySelector('.ppn-checkbox');
 
                         if (hargaBeliHiddenInput && jumlahInput && diskonHiddenInput) {
                             const hargaBeli = parseInt(hargaBeliHiddenInput.value) || 0;
                             const jumlah = parseInt(jumlahInput.value) || 0;
                             const diskon = parseInt(diskonHiddenInput.value) || 0;
+                            const biayaTambahan = parseInt(biayaTambahanHiddenInput?.value) || 0;
                             const isPpn = ppnCheckbox?.checked;
 
                             let subtotal = hargaBeli * jumlah;
-                            let setelahDiskon = subtotal - diskon;
+                            let setelahDiskon = subtotal - diskon + biayaTambahan;
                             let ppnAmount = isPpn ? setelahDiskon * 0.11 : 0;
 
                             totalDiskon += diskon;

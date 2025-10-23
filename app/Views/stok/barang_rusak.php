@@ -28,6 +28,35 @@
         </a>
     </div>
 
+    <div hidden class="mb-3">
+        <label for="filter-unit" class="form-label fw-semibold">Unit:</label>
+        <select id="filter-unit" class="form-select w-auto d-inline-block">
+            <?php foreach ($unit as $u): ?>
+                <option value="<?= esc($u->NAMA_UNIT) ?>"
+                    <?= session('ID_UNIT') == $u->idunit ? 'selected' : '' ?>>
+                    <?= esc($u->NAMA_UNIT) ?>
+                </option>
+            <?php endforeach; ?>
+            <option value="">Semua Unit</option>
+        </select>
+
+
+
+    </div>
+    <div class="mb-3" style="padding-left: 20px;">
+
+        <select disabled id="filter-unit2" class="form-select w-auto d-inline-block">
+            <?php foreach ($unit as $u): ?>
+                <option value="<?= esc($u->NAMA_UNIT) ?>"
+                    <?= session('ID_UNIT') == $u->idunit ? 'selected' : '' ?>>
+                    <?= esc($u->NAMA_UNIT) ?>
+                </option>
+            <?php endforeach; ?>
+            <option value="">Semua Unit</option>
+        </select>
+
+    </div>
+
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
@@ -44,6 +73,9 @@
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Imei</h6>
+                    </th>
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Jumlah Rusak</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Tanggal Rusak</h6>
@@ -69,9 +101,10 @@
                             <td><?= esc($row->kode_barang) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
                             <td><?= !empty($row->imei) ? esc($row->imei) : 'Tidak ada IMEI' ?></td>
+                            <td><?= esc($row->jumlah) ?></td>
                             <td><?= esc($row->tanggal_rusak) ?></td>
-                            <td><?= esc($row->unit_idunit) ?></td>
-                            <td><?= esc($row->input_by) ?></td>
+                            <td><?= esc($row->nama_unit) ?></td>
+                            <td><?= esc($row->nama_input) ?></td>
                             <td><?= esc($row->created_at) ?></td>
 
                         </tr>
@@ -192,5 +225,34 @@
                 document.getElementById('delete_id').value = id;
             }
         });
+    });
+</script>
+
+<!-- // -->
+<script>
+    $(document).ready(function() {
+        // Hanya inisialisasi kalau belum diinisialisasi
+        var table;
+        if (!$.fn.dataTable.isDataTable('#zero_config')) {
+            table = $('#zero_config').DataTable({
+                responsive: true
+            });
+        } else {
+            table = $('#zero_config').DataTable(); // ambil instance yang sudah ada
+        }
+
+        // Filter dropdown
+        $('#filter-unit').on('change', function() {
+            var selectedUnit = $(this).val();
+            table.column(6) // sesuaikan index kolom jika berubah
+                .search(selectedUnit)
+                .draw();
+        });
+
+        // Terapkan default (session) jika ada
+        var defaultUnit = $('#filter-unit').find('option:selected').val();
+        if (defaultUnit) {
+            table.column(6).search(defaultUnit).draw();
+        }
     });
 </script>

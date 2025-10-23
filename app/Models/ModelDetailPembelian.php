@@ -22,9 +22,11 @@ class ModelDetailPembelian extends Model
         'satuan_beli',
         'barang_idbarang',
         'pembelian_idpembelian',
-        'unit_idunit'
+        'unit_idunit',
+        'biaya_tambahan',
+        'keterangan_tambahan'
     ];
-
+    //
     public function getDetail()
     {
         return $this->findAll();

@@ -270,7 +270,7 @@ class Pembelian extends BaseController
 
             $produktotalharga = $subtotalSetelahDiskon + $nilaiPPN;
             $satuan_beli = $datastokawal ? $datastokawal->satuan_terkecil : 'pcs';
-
+            //
             $datahpp = $this->HppBarangModel->getById($produk['id']);
             $hitung_hpp  = $datahpp->hpp ?? 0;
 
@@ -285,6 +285,8 @@ class Pembelian extends BaseController
                 'total_harga' => $produktotalharga,
                 'satuan_beli' => $satuan_beli,
                 'barang_idbarang' => $produk['id'],
+                'biaya_tambahan' => $produk['biaya_tambahan'],
+                'keterangan_tambahan' => $produk['keterangan'],
                 'unit_idunit' => $useridunit,
                 'pembelian_idpembelian' => $idPembelian,
 

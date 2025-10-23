@@ -14,12 +14,14 @@ class ModelBarangRusak extends Model
         'idpembelian',
         'no_nota_sup',
         'barang_idbarang',
+        'jumlah',
         'tanggal_rusak',
         'unit_idunit',
         'input_by',
         'created_at',
         'keterangan'
     ];
+    //
 
     public function getBarangRusak()
     {
@@ -27,9 +29,13 @@ class ModelBarangRusak extends Model
                 barang_rusak.*, 
                 barang.kode_barang, 
                 barang.nama_barang, 
-                barang.imei
+                barang.imei,
+                unit.NAMA_UNIT AS nama_unit,
+                akun.NAMA_AKUN AS nama_input
             ')
             ->join('barang', 'barang.idbarang = barang_rusak.barang_idbarang', 'left')
+            ->join('unit', 'unit.idunit = barang_rusak.unit_idunit', 'left')
+            ->join('akun', 'akun.ID_AKUN = barang_rusak.input_by', 'left')
             ->orderBy('barang_rusak.idbarang_rusak', 'DESC')
             ->findAll();
     }

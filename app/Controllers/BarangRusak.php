@@ -37,13 +37,13 @@ class BarangRusak extends BaseController
         $this->DetailPembelianModel = new ModelDetailPembelian();
         $this->UnitModel = new ModelUnit();
     }
-
+    //
     public function index()
     {
 
         $data =  array(
             'barang_rusak' => $this->BarangRusakModel->getBarangRusak(),
-
+            'unit' => $this->UnitModel->getUnit(),
             'body'  => 'stok/barang_rusak'
         );
         return view('template', $data);
@@ -90,10 +90,10 @@ class BarangRusak extends BaseController
                 'idpembelian'    => $idpembelian[$i],
                 'no_nota_sup'       => $no_batch[$i],
                 'barang_idbarang'       => $idbarang[$i],
-                'jumlah_rusak'   => $jumlah_rusak[$i],
+                'jumlah'   => $jumlah_rusak[$i],
                 'tanggal_rusak'  => $tanggal_rusak[$i],
                 'unit_idunit' => $this->request->getPost('unit_idunit'),
-                'input_by' => session('ID_UNIT'),
+                'input_by' => session('ID_AKUN'),
                 'keterangan'     => $keterangan[$i],
             ];
 

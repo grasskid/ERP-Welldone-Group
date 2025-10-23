@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class ModelUnit extends Model
 {
+    //
     protected $table = 'unit';
     protected $primaryKey = 'idunit';
     protected $returnType = 'object';

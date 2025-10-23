@@ -424,7 +424,7 @@ $routes->post('update_namahandphone', 'NamaHandphone::udpateNamaHandphone', ['fi
 $routes->post('delete_namahandphone', 'NamaHandphone::deleteNamaHandphone', ['filter' => 'auth']);
 
 
-//Barang Rusak
+//Barang Rusak1
 $routes->get('barang_rusak', 'BarangRusak::index', ['filter' => 'auth']);
 $routes->get('input_barang_rusak', 'BarangRusak::input', ['filter' => 'auth']);
 
