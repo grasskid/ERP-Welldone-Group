@@ -578,9 +578,9 @@
 
                                                     <!-- Tombol Lihat Semua -->
                                                     <div class="py-6 px-7 mb-1 border-top">
-                                                        <a href="<?= base_url('service/notifikasi') ?>">
-                                                            <button class="btn btn-primary w-100">Lihat Semua Notifikasi</button>
-                                                        </a>
+
+                                                        <button hidden class="btn btn-primary w-100">Lihat Semua Notifikasi</button>
+
                                                     </div>
                                                 </div>
                                             </li>
