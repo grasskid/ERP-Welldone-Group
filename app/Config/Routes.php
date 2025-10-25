@@ -40,6 +40,7 @@ $routes->group('produk', ['filter' => 'auth'], function ($routes) {
     $routes->post('insert_produk', 'Produk::insert_produk');
     $routes->post('update_produk', 'Produk::update_produk');
     $routes->post('delete_produk', 'Produk::delete_produk');
+    $routes->get('get_sub_kategori/(:any)', 'Produk::get_sub_kategori/$1');
 });
 
 $routes->post('pegawai/reset', 'Pegawai::reset_password', ['filter' => 'auth']);
