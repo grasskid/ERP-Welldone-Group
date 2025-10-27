@@ -10,7 +10,11 @@ class ModelBarang extends Model
     protected $primaryKey = 'idbarang';
     protected $returnType = 'object';
     protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'id_sub_kategori', 'imei', 'stok_minimum', 'jenis_hp', 'internal', 'warna', 'status', 'deleted', 'status_ppn', 'nama_barang_id'];
+<<<<<<< HEAD
     // 
+=======
+
+>>>>>>> 991fc15cd495b8ffe4d5673847f07a6325d608bc
     public function getBarang()
     {
         return $this->select('barang.*, kategori.nama_kategori, sub_kategori.nama_sub_kategori')

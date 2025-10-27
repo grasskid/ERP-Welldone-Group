@@ -40,6 +40,7 @@ $routes->group('produk', ['filter' => 'auth'], function ($routes) {
     $routes->post('insert_produk', 'Produk::insert_produk');
     $routes->post('update_produk', 'Produk::update_produk');
     $routes->post('delete_produk', 'Produk::delete_produk');
+    $routes->get('get_sub_kategori/(:any)', 'Produk::get_sub_kategori/$1');
 });
 
 $routes->post('pegawai/reset', 'Pegawai::reset_password', ['filter' => 'auth']);
@@ -51,11 +52,16 @@ $routes->post('insert_suplier', 'Supplier::insert_suplier', ['filter' => 'auth']
 $routes->post('delete_suplier', 'Supplier::delete_suplier', ['filter' => 'auth']);
 
 //kategori
-$routes->get('/kategori', 'Kategori::index');
-$routes->post('insert_kategori', 'Kategori::insert_kategori', ['filter' => 'auth']);
-$routes->post('update_kategori', 'Kategori::update_kategori', ['filter' => 'auth']);
-$routes->post('delete_kategori', 'Kategori::delete_kategori', ['filter' => 'auth']);
+$routes->group('kategori',['filter' => 'auth'],function ($routes) {
+$routes->get('/', 'Kategori::index');
+    // $routes->post('insert_kategori', 'Kategori::insert_kategori', ['filter' => 'auth']);
+    // $routes->post('update_kategori', 'Kategori::update_kategori', ['filter' => 'auth']);
+    // $routes->post('delete_kategori', 'Kategori::delete_kategori', ['filter' => 'auth']);
+    $routes->post('insert_sub_kategori', 'Kategori::insert_sub_kategori', ['filter' => 'auth']);
+    $routes->post('update_sub_kategori', 'Kategori::update_sub_kategori', ['filter' => 'auth']);
+    $routes->post('delete_sub_kategori', 'Kategori::delete_sub_kategori', ['filter' => 'auth']);
 
+});
 //phone
 $routes->get('/phone', 'Phone::index', ['filter' => 'auth']);
 $routes->post('insert_phone', 'Phone::insert_phone', ['filter' => 'auth']);

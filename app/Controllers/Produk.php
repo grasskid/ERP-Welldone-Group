@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\ModelBarang;
 use App\Models\ModelKategori;
+use App\Models\ModelSubKategori;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -20,6 +21,7 @@ class Produk extends BaseController
 
     protected $BarangModel;
     protected $KategoriModel;
+    protected $SubKategoriModel;
     protected $AuthModel;
     protected $UnitModel;
 
@@ -27,6 +29,7 @@ class Produk extends BaseController
     {
         $this->BarangModel = new ModelBarang();
         $this->KategoriModel = new ModelKategori();
+        $this->SubKategoriModel = new ModelSubKategori();
         $this->AuthModel = new ModelAuth();
         $this->UnitModel = new ModelUnit();
     }
@@ -38,6 +41,7 @@ class Produk extends BaseController
             'akun' => $akun,
             'produk' => $this->BarangModel->getBarang(),
             'kategori' => $this->KategoriModel->getKategoriTanpaId7(),
+            'sub_kategori' => $this->SubKategoriModel->getSubKategori(),
             'body'  => 'datamaster/produk',
             'unit' => $this->UnitModel->getUnit()
         );
@@ -58,6 +62,7 @@ class Produk extends BaseController
 
         $stok_minimum = $this->request->getPost('stok_minimum');
         $kategori = $this->request->getPost('kategori');
+        $sub_kategori = $this->request->getPost('sub_kategori');
         $data_kategori = $this->KategoriModel->getByName($kategori);
 
         $idkategori = $data_kategori->id;
@@ -87,6 +92,7 @@ class Produk extends BaseController
             'input' => $input_by,
             'stok_minimum' => $stok_minimum,
             'idkategori' => $idkategori,
+            'id_sub_kategori' => $sub_kategori ?: null,
             'warna' => $warna,
             'status' => "1",
             'status_ppn' => $status_ppn,
@@ -112,6 +118,7 @@ class Produk extends BaseController
 
         $input = $this->request->getPost('input_by');
         $kategori = $this->request->getPost('kategori');
+        $sub_kategori = $this->request->getPost('sub_kategori');
         $stok_minimum = $this->request->getPost('stok_minimum');
 
 
@@ -152,6 +159,7 @@ class Produk extends BaseController
             'harga' => $harga,
             'harga_beli' => $harga_beli,
             'idkategori' => $idkategori,
+            'id_sub_kategori' => $sub_kategori ?: null,
             'kode_barang' => $kode_barang,
             'status_ppn' => $status_ppn,
             'warna' => $warna,
@@ -306,5 +314,19 @@ class Produk extends BaseController
             session()->setFlashdata('sukses', 'Data Berhasil Di Hapus');
             return redirect()->to(base_url('/produk'));
         }
+    }
+
+    public function get_sub_kategori($kategoriNama)
+    {
+        // Get category by name
+        $kategori = $this->KategoriModel->getByName($kategoriNama);
+        if (!$kategori) {
+            return $this->response->setJSON([]);
+        }
+
+        // Get sub-categories for this category
+        $subKategori = $this->SubKategoriModel->getSubKategoriByParent($kategori->id);
+        
+        return $this->response->setJSON($subKategori);
     }
 }

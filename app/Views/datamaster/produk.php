@@ -62,7 +62,20 @@
             }
             ?>
         </select>
-
+        <label class="me-2 ms-4">Filter Sub Kategori:</label>
+        <select id="subKategoriFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterKategori()">
+            <option value="">Semua Sub Kategori</option>
+            <?php
+            $subKategoriList = [];
+            foreach ($produk as $row) {
+                if (!empty($row->nama_sub_kategori) && !in_array($row->nama_sub_kategori, $subKategoriList)) {
+                    $subKategoriList[] = $row->nama_sub_kategori;
+                    echo '<option value="' . esc($row->nama_sub_kategori) . '">' . esc($row->nama_sub_kategori) . '</option>';
+                }
+            }
+            ?>
+        </select>
         <label class="me-2 ms-4">Filter PPN:</label>
         <select id="ppnFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
             onchange="filterKategori()">
@@ -70,8 +83,6 @@
             <option value="PPN">PPN</option>
             <option value="Non PPN">Non PPN</option>
         </select>
-
-
         <button onclick="resetKategoriFilter()" class="btn btn-sm btn-secondary ms-2">Reset</button>
     </div>
 
@@ -102,6 +113,9 @@
                         <h6 class="fs-4 fw-semibold mb-0">Kategori</h6>
                     </th>
                     <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Sub Kategori</h6>
+                    </th>
+                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Stok Minim</h6>
                     </th>
                     <th>
@@ -126,6 +140,7 @@
                             <td><?= 'Rp ' . number_format($row->harga_beli, 0, ',', '.') ?></td>
                             <td><?= esc($row->warna) ?? 'tidak ada' ?></td>
                             <td><?= esc($row->nama_kategori) ?></td>
+                            <td><?= esc($row->nama_sub_kategori) ?? '-' ?></td>
                             <td><?= esc($row->stok_minimum) ?></td>
                             <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
 
@@ -137,7 +152,7 @@
                                     data-kode_barang="<?= esc($row->kode_barang) ?>"
                                     data-nama_barang="<?= esc($row->nama_barang) ?>" data-harga="<?= esc($row->harga) ?>"
                                     data-harga_beli="<?= esc($row->harga_beli) ?>"
-                                    data-kategori="<?= esc($row->nama_kategori) ?>" data-ppn="<?= esc($row->status_ppn) ?>"
+                                    data-kategori="<?= esc($row->nama_kategori) ?>" data-sub-kategori="<?= esc($row->nama_sub_kategori) ?>" data-ppn="<?= esc($row->status_ppn) ?>"
                                     data-input_by="<?= esc($row->input) ?>"
                                     data-stok_minim="<?= esc($row->stok_minimum) ?>"
                                     data-warna="<?= esc($row->warna) ?>">
@@ -216,11 +231,18 @@
 
                     <div class="mb-3">
                         <label for="id_kategori" class="form-label">Kategori</label>
-                        <select class="form-control" id="id_kategori" name="kategori" required>
+                        <select class="form-control" id="id_kategori" name="kategori" required onchange="loadSubKategori(this.value)">
                             <option value="">-- Pilih Kategori --</option>
                             <?php foreach ($kategori as $k) : ?>
                                 <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
                             <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_id_sub_kategori" class="form-label">Sub Kategori</label>
+                        <select class="form-control id_sub_kategori" id="edit_id_sub_kategori" name="sub_kategori">
+                            <option value="">-- Pilih Sub Kategori --</option>
                         </select>
                     </div>
 
@@ -292,11 +314,18 @@
 
                     <div class="mb-3">
                         <label for="id_kategori" class="form-label">Kategori</label>
-                        <select class="form-control" id="id_kategori" name="kategori" required>
+                        <select class="form-control" id="id_kategori" name="kategori" required onchange="loadSubKategori(this.value)">
                             <option value="">-- Pilih Kategori --</option>
                             <?php foreach ($kategori as $k) : ?>
                                 <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
                             <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_sub_kategori" class="form-label">Sub Kategori</label>
+                        <select class="form-control id_sub_kategori" id="id_sub_kategori" name="sub_kategori">
+                            <option value="">-- Pilih Sub Kategori --</option>
                         </select>
                     </div>
 
@@ -396,14 +425,17 @@
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
             const ppnFilter = $('#ppnFilter').val().toLowerCase();
+            const subKategoriFilter = $('#subKategoriFilter').val().toLowerCase();
 
             const kategori = data[5].toLowerCase();
-            const ppn = data[7].toLowerCase();
+            const subKategori = data[6].toLowerCase();
+            const ppn = data[8].toLowerCase();
 
             const matchKategori = !kategoriFilter || kategori === kategoriFilter;
+            const matchSubKategori = !subKategoriFilter || subKategori === subKategoriFilter;
             const matchPPN = !ppnFilter || ppn === ppnFilter;
 
-            return matchKategori && matchPPN;
+            return matchKategori && matchSubKategori && matchPPN;
         });
 
 
@@ -428,7 +460,34 @@
     function resetKategoriFilter() {
         $('#kategoriFilter').val('');
         $('#ppnFilter').val('');
+        $('#subKategoriFilter').val('');
         table.draw();
+    }
+
+    // Function to load sub-categories based on selected category
+    function loadSubKategori(kategoriNama) {
+        const subKategoriSelect = $(".id_sub_kategori");
+        if (!subKategoriSelect.length) return; // Check if element exists
+
+        // Clear existing options using jQuery
+        subKategoriSelect.html('<option value="">-- Pilih Sub Kategori --</option>');
+
+        if (!kategoriNama) return;
+
+        // Get sub-categories for the selected category
+        fetch('<?= base_url('produk/get_sub_kategori') ?>/' + encodeURIComponent(kategoriNama))
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(subKategori => {
+                    // Create option using jQuery
+                    const option = $('<option>', {
+                        value: subKategori.id,
+                        text: subKategori.nama_sub_kategori
+                    });
+                    subKategoriSelect.append(option);
+                });
+            })
+            .catch(error => console.error('Error loading sub-categories:', error));
     }
 </script>
 
@@ -445,6 +504,7 @@
                 const harga_beli = button.getAttribute('data-harga_beli');
                 const warna = button.getAttribute('data-warna');
                 const kategori = button.getAttribute('data-kategori');
+                const subKategori = button.getAttribute('data-sub-kategori');
                 const stok_minimum = button.getAttribute('data-stok_minim');
                 const ppn = button.getAttribute('data-ppn');
 
@@ -458,6 +518,26 @@
                 document.getElementById('edit-harga-beli').value = parseInt(harga_beli.replace(/[^\d]/g, ''));
                 document.getElementById('edit-warna').value = warna;
                 document.getElementById('id_kategori').value = kategori;
+
+                // Load sub-categories for the selected category
+                loadSubKategori(kategori);
+
+                // Set the sub-category after a short delay to ensure options are loaded
+                setTimeout(() => {
+                    if (subKategori && subKategori !== '-') {
+                        const subKategoriSelect = document.getElementById('edit_id_sub_kategori');
+                        if (subKategoriSelect) {
+                            // Find the option with matching text
+                            for (let option of subKategoriSelect.options) {
+                                if (option.textContent === subKategori) {
+                                    option.selected = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }, 500);
+
                 document.getElementById('stok_minimum').value = stok_minimum;
                 document.getElementById('edit-ppn-status').value = ppn;
                 document.getElementById('stok_minim');
