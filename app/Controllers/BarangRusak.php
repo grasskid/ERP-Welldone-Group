@@ -12,6 +12,8 @@ use App\Models\ModelBarang;
 use App\Models\ModelPembelian;
 use App\Models\ModelDetailPembelian;
 use App\Models\ModelUnit;
+use App\Models\ModelKategori;
+use App\Models\ModelSubKategori;
 
 class BarangRusak extends BaseController
 
@@ -26,6 +28,9 @@ class BarangRusak extends BaseController
     protected $DetailPembelianModel;
     protected $UnitModel;
 
+    protected $KategoriModel;
+    protected $SubKategoriModel;
+
 
     public function __construct()
     {
@@ -36,15 +41,19 @@ class BarangRusak extends BaseController
         $this->PembelianModel = new ModelPembelian();
         $this->DetailPembelianModel = new ModelDetailPembelian();
         $this->UnitModel = new ModelUnit();
+        $this->KategoriModel = new ModelKategori();
+        $this->SubKategoriModel = new ModelSubKategori();
     }
-    //
+    ///
     public function index()
     {
 
         $data =  array(
             'barang_rusak' => $this->BarangRusakModel->getBarangRusak(),
             'unit' => $this->UnitModel->getUnit(),
-            'body'  => 'stok/barang_rusak'
+            'body'  => 'stok/barang_rusak',
+            'kategori' => $this->KategoriModel->getKategori(),
+            'sub_kategori' => $this->SubKategoriModel->getSubKategori()
         );
         return view('template', $data);
     }

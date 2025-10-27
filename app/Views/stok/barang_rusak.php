@@ -57,50 +57,70 @@
 
     </div>
 
+    <div style="padding-left: 20px; gap: 20px;" class="mb-4 flex items-center">
+        <!-- Filter Tanggal -->
+        <label for="start-date">Tanggal Awal:</label>
+        <input type="date" id="start-date" class="form-control d-inline-block" style="width: 180px;">
+
+        <label for="end-date">Tanggal Akhir:</label>
+        <input type="date" id="end-date" class="form-control d-inline-block" style="width: 180px;">
+
+        <!-- Filter Kategori -->
+        <label for="filter-kategori">Kategori:</label>
+        <select id="filter-kategori" class="form-select d-inline-block" style="width: 180px;">
+            <option value="">Semua</option>
+            <?php foreach ($kategori as $kat): ?>
+                <option value="<?= esc($kat->nama_kategori) ?>">
+                    <?= esc($kat->nama_kategori) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <!-- Filter Sub Kategori -->
+        <label for="filter-subkategori">Sub Kategori:</label>
+        <select id="filter-subkategori" class="form-select d-inline-block" style="width: 180px;">
+            <option value="">Semua</option>
+            <?php foreach ($sub_kategori as $sub): ?>
+                <option value="<?= esc($sub->nama_sub_kategori) ?>">
+                    <?= esc($sub->nama_sub_kategori) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
 
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">No Nota Supplier</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Kode Barang</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Nama Barang</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Imei</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Jumlah Rusak</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Tanggal Rusak</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">ID Unit</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Input By</h6>
-                    </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Dibuat Pada</h6>
-                    </th>
+                    <th> No Nota Supplier</th>
+                    <th> Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Imei</th>
+                    <th>Kategori</th>
+                    <th>Sub Kategori</th>
+                    <th>Jumlah Rusak</th>
+                    <th>Tanggal Rusak</th>
+                    <th>ID Unit</th>
+                    <th>Input By</th>
+                    <th>Dibuat Pada</th>
 
                 </tr>
             </thead>
+            <!-- / -->
             <tbody>
                 <?php if (!empty($barang_rusak)): ?>
                     <?php foreach ($barang_rusak as $row): ?>
-                        <tr>
+                        <tr data-idkategori="">
 
                             <td><?= esc($row->no_nota_sup) ?></td>
                             <td><?= esc($row->kode_barang) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
                             <td><?= !empty($row->imei) ? esc($row->imei) : 'Tidak ada IMEI' ?></td>
+                            <td><?= !empty($row->nama_kategori) ? esc($row->nama_kategori) : 'Belum disetting' ?></td>
+                            <td><?= !empty($row->nama_sub_kategori) ? esc($row->nama_sub_kategori) : 'Belum disetting' ?></td>
+
                             <td><?= esc($row->jumlah) ?></td>
                             <td><?= esc($row->tanggal_rusak) ?></td>
                             <td><?= esc($row->nama_unit) ?></td>
@@ -231,28 +251,66 @@
 <!-- // -->
 <script>
     $(document).ready(function() {
-        // Hanya inisialisasi kalau belum diinisialisasi
+        // Inisialisasi DataTable (gunakan instance tunggal)
         var table;
         if (!$.fn.dataTable.isDataTable('#zero_config')) {
             table = $('#zero_config').DataTable({
                 responsive: true
             });
         } else {
-            table = $('#zero_config').DataTable(); // ambil instance yang sudah ada
+            table = $('#zero_config').DataTable();
         }
 
-        // Filter dropdown
+        // ==== FILTER UNIT (sudah ada sebelumnya) ====
         $('#filter-unit').on('change', function() {
             var selectedUnit = $(this).val();
-            table.column(6) // sesuaikan index kolom jika berubah
-                .search(selectedUnit)
-                .draw();
+            table.column(8).search(selectedUnit).draw();
         });
 
-        // Terapkan default (session) jika ada
         var defaultUnit = $('#filter-unit').find('option:selected').val();
         if (defaultUnit) {
-            table.column(6).search(defaultUnit).draw();
+            table.column(8).search(defaultUnit).draw();
         }
+
+        // ==== FILTER KATEGORI ====
+        $('#filter-kategori').on('change', function() {
+            var selectedKategori = $(this).val();
+            table.column(4).search(selectedKategori).draw(); // kolom 4 = kategori
+        });
+
+        // ==== FILTER SUB KATEGORI ====
+        $('#filter-subkategori').on('change', function() {
+            var selectedSub = $(this).val();
+            table.column(5).search(selectedSub).draw(); // kolom 5 = sub kategori
+        });
+
+        // ==== FILTER TANGGAL ====
+        // Custom filter untuk rentang tanggal
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                var min = $('#start-date').val();
+                var max = $('#end-date').val();
+                var tanggal = data[7]; // kolom ke-7 (Tanggal Rusak)
+
+                if (!tanggal) return false;
+
+                var tanggalRusak = new Date(tanggal);
+
+                if (
+                    (min === '' && max === '') ||
+                    (min === '' && tanggalRusak <= new Date(max)) ||
+                    (new Date(min) <= tanggalRusak && max === '') ||
+                    (new Date(min) <= tanggalRusak && tanggalRusak <= new Date(max))
+                ) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        // Jalankan filter tanggal setiap kali input berubah
+        $('#start-date, #end-date').on('change', function() {
+            table.draw();
+        });
     });
 </script>

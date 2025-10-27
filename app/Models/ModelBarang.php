@@ -9,12 +9,13 @@ class ModelBarang extends Model
     protected $table = 'barang';
     protected $primaryKey = 'idbarang';
     protected $returnType = 'object';
-    protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'imei', 'stok_minimum', 'jenis_hp', 'internal', 'warna', 'status', 'deleted', 'status_ppn', 'nama_barang_id'];
-
+    protected $allowedFields = ['kode_barang', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'id_sub_kategori', 'imei', 'stok_minimum', 'jenis_hp', 'internal', 'warna', 'status', 'deleted', 'status_ppn', 'nama_barang_id'];
+    // 
     public function getBarang()
     {
-        return $this->select('barang.*, kategori.nama_kategori')
+        return $this->select('barang.*, kategori.nama_kategori, sub_kategori.nama_sub_kategori')
             ->join('kategori', 'kategori.id = barang.idkategori')
+            ->join('sub_kategori', 'sub_kategori.id = barang.id_sub_kategori', 'left')
             ->where('barang.deleted', '0')
             ->where('kategori.delete', '0')
             ->where('barang.idkategori !=', 1)
