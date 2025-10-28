@@ -26,7 +26,7 @@ class ModelDetailPembelian extends Model
         'biaya_tambahan',
         'keterangan_tambahan'
     ];
-    //
+
     public function getDetail()
     {
         return $this->findAll();
@@ -62,7 +62,7 @@ class ModelDetailPembelian extends Model
 
     //     return $builder->get()->getResult();
     // }
-    //
+
     public function getDetailAll()
     {
         return $this->db->table('detail_pembelian')

@@ -21,7 +21,6 @@ class ModelBarangRusak extends Model
         'created_at',
         'keterangan'
     ];
-    //
 
     public function getBarangRusak()
     {
@@ -45,7 +44,7 @@ class ModelBarangRusak extends Model
             ->orderBy('barang_rusak.idbarang_rusak', 'DESC')
             ->findAll();
     }
-    //
+
 
 
 

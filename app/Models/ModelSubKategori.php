@@ -15,21 +15,12 @@ class ModelSubKategori extends Model
     {
         return $this->where('delete', 0)->findAll();
     }
-<<<<<<< HEAD
-    //
+
     public function getSubKategoriByParent($id_kategori_parent)
     {
         return $this->where('delete', 0)
             ->where('id_kategori_parent', $id_kategori_parent)
             ->findAll();
-=======
-
-    public function getSubKategoriByParent($id_kategori_parent)
-    {
-        return $this->where('delete', 0)
-                    ->where('id_kategori_parent', $id_kategori_parent)
-                    ->findAll();
->>>>>>> 991fc15cd495b8ffe4d5673847f07a6325d608bc
     }
 
     public function insert_SubKategori($data)
