@@ -184,6 +184,8 @@
                 <div class="modal-body">
                     <p style="font-style: italic;">Apakah anda yakin ingin approve presensi ini?</p>
                     <input hidden name="idpresensi" id="input-idpresensi">
+                    <label for="">keterangan</label>
+                    <textarea name="keterangan" id="" cols="30" rows="10" style="width: 100%;"></textarea>
 
 
                 </div>
@@ -390,6 +392,10 @@
                     <div class="mb-2">
                         <label>Jam toleransi</label>
                         <input type="text" id="jam_toleransi" name="jam_toleransi" class="form-control" readonly>
+                    </div>
+                    <div class="mb-2">
+                        <label for="">keterangan</label>
+                        <textarea name="keterangan" style="width: 100%;" id="" cols="30" rows="10"></textarea>
                     </div>
             </div>
 
