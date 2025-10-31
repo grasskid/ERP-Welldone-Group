@@ -267,7 +267,7 @@ class RiwayatPresensi extends BaseController
             'akun_idakun' => $idakun,
             'unit_idunit' => $idunit,
             'created_at' => date('Y-m-d H:i:s'),
-            'jarak' => $jarakmeter,
+            'jarak' => 10,
             'status_kehadiran' => $statusKehadiran,
             'keterangan' => $this->request->getPost('keterangan')
         ];
