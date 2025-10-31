@@ -261,6 +261,7 @@
         </div>
     </div>
 </div>
+<!-- testing bug foto -->
 
 <!-- Modal Detail Absen Pulang -->
 <div class="modal fade" id="modal-detail-absen-pulang" tabindex="-1" aria-labelledby="modalDetailAbsenPulangLabel"
