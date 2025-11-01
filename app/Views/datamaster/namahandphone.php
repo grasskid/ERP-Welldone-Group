@@ -36,7 +36,7 @@
                             <h6 class="fs-4 fw-semibold mb-0">Type</h6>
                         </th>
                         <th>
-                            <h6 class="fs-4 fw-semibold mb-0">Size</h6>
+                            <h6 class="fs-4 fw-semibold mb-0">Spesifikasi</h6>
                         </th>
                         <th>
                             <h6 class="fs-4 fw-semibold mb-0">Action</h6>
@@ -102,7 +102,7 @@
                         <input type="text" class="form-control" id="type" name="type" required>
                     </div>
                     <div class="mb-3">
-                        <label for="size" class="form-label">Size</label>
+                        <label for="size" class="form-label">Spesifikasi</label>
                         <input type="text" class="form-control" id="size" name="size" required>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                         <input type="text" class="form-control" id="edit_type" name="type" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_size" class="form-label">Size</label>
+                        <label for="edit_size" class="form-label">Spesifikasi</label>
                         <input type="text" class="form-control" id="edit_size" name="size" required>
                     </div>
                 </div>
