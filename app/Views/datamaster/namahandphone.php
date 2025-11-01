@@ -20,7 +20,7 @@
                 style="margin-right: 8px;"></iconify-icon>Input
         </button>
     </div>
-    <!-- testing -->
+
     <div class="card-body px-4 pt-4 pb-2">
         <div class="table-responsive mb-4">
             <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
@@ -87,12 +87,12 @@
                 <h4 class="modal-title" id="inputHandphoneModalLabel">Input Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('insert_handphone') ?>" method="post">
+            <form action="<?= base_url('insert_namahandphone') ?>" enctype="multipart/form-data" method="post">
                 <div class="modal-body">
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="id" class="form-label">ID Handphone</label>
                         <input type="text" class="form-control" id="id" name="id" required>
-                    </div>
+                    </div> -->
                     <div class="mb-3">
                         <label for="nama" class="form-label">Nama Handphone</label>
                         <input type="text" class="form-control" id="nama" name="nama" required>
@@ -125,7 +125,7 @@
                 <h4 class="modal-title" id="editHandphoneModalLabel">Edit Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('update_handphone') ?>" method="post">
+            <form action="<?= base_url('update_namahandphone') ?>" enctype="multipart/form-data" method="post">
                 <div class="modal-body">
                     <input type="hidden" id="edit_id" name="id">
                     <div class="mb-3">
@@ -160,7 +160,7 @@
                 <h4 class="modal-title" id="deleteHandphoneModalLabel">Delete Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('delete_handphone') ?>" method="post">
+            <form action="<?= base_url('delete_namahandphone') ?>" enctype="" method="post">
                 <div class="modal-body">
                     <input type="hidden" id="delete_id" name="id">
                     <p style="font-style: italic;">Apa anda yakin ingin menghapus data ini?</p>

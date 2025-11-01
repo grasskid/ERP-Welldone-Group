@@ -36,7 +36,6 @@ class NamaHandphone extends BaseController
 
     public function index()
     {
-        //testing aman
         $akun =   $this->AuthModel->getById(session('ID_AKUN'));
         $data =  array(
             'akun' => $akun,
