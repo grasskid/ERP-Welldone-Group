@@ -10,6 +10,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ModelStokBarang;
 use Psr\Log\LoggerInterface;
 use App\Models\ModelService;
+use App\Models\ModelAuth;
 
 /**
  * Class BaseController
@@ -37,6 +38,9 @@ abstract class BaseController extends Controller
 
     protected $expired_service;
 
+    protected $AuthModel;
+
+    protected $Akun_Service;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -100,6 +104,10 @@ abstract class BaseController extends Controller
         // end notifikasi expired service
 
 
+        $this->AuthModel = new ModelAuth();
+
+        $this->Akun_Service = $this->AuthModel->getByIdWithJabatan(session('ID_AKUN'));
+        \Config\Services::renderer()->setVar('akun_service', $this->Akun_Service);
 
         // Preload any models, libraries, etc, here.
 

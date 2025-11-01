@@ -123,4 +123,34 @@ class ModelAuth extends Model
             ->where('akun.ID_AKUN', $idAkun)
             ->first();
     }
+
+
+
+    public function getByIdWithJabatan($id)
+    {
+        // Join ke tabel jabatan
+        $result = $this->select('akun.*, jabatan.NAMA_JABATAN, jabatan.ROLES_JABATAN')
+            ->join('jabatan', 'jabatan.ID_JABATAN = akun.ID_JABATAN', 'left')
+            ->where('akun.ID_AKUN', $id)
+            ->first();
+
+        if (!$result) {
+            return null; // kalau data akun tidak ditemukan
+        }
+
+        // Default
+        $result->apakah_service = 'service_tidak';
+
+        // Pastikan roles_jabatan ada dan dalam format JSON
+        if (!empty($result->ROLES_JABATAN)) {
+            $roles = json_decode($result->ROLES_JABATAN, true);
+
+            // Jika 72 ada di dalam array roles_jabatan
+            if (is_array($roles) && in_array("72", $roles)) {
+                $result->apakah_service = 'service_oke';
+            }
+        }
+
+        return $result;
+    }
 }
