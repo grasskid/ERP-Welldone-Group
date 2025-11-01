@@ -27,7 +27,7 @@
     </div> -->
 
     <div class="table-responsive mb-4 px-4">
-        <table class="table border text-nowrap mb-0 align-middle">
+        <table class="table border text-nowrap mb-0 align-middle" id="ketegori_induk_table">
             <thead class="text-dark fs-4">
                 <tr>
                     <th>
@@ -87,7 +87,7 @@
                                         <iconify-icon icon="solar:folder-open-broken" width="20" height="20"></iconify-icon>
                                         Sub Kategori untuk "<?= esc($row->nama_kategori) ?>"
                                     </h6>
-                                    
+
                                     <?php if (!empty($row->sub_kategori)): ?>
                                         <div class="row">
                                             <?php foreach ($row->sub_kategori as $sub): ?>
@@ -266,7 +266,7 @@
                 <h4 class="modal-title" id="editSubKategoriModalLabel">Edit Sub Kategori</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('kategori/update_sub_kategori') ?>" method="post">
+            <form action="<?= base_url('kategori/update_sub_kategori') ?>" enctype="multipart/form-data" method="post">
                 <div class="modal-body">
                     <input hidden type="text" class="form-control" id="edit_sub_id" name="idnya" required>
                     <div class="mb-3">
@@ -372,6 +372,49 @@
                 const id = button.getAttribute('data-id');
                 document.getElementById('delete_sub_id').value = id;
             }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Event listener untuk semua tombol dengan class .add-sub-kategori
+        const buttons = document.querySelectorAll('.add-sub-kategori');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Ambil data dari atribut data-*
+                const categoryId = this.getAttribute('data-category-id');
+                const categoryName = this.getAttribute('data-category-name');
+
+                // Masukkan data ke input dalam modal
+                document.getElementById('sub_kategori_parent_id').value = categoryId;
+                document.getElementById('parent_category_name').value = categoryName;
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Event ketika tombol edit diklik
+        $(document).on('click', '.edit-sub-button', function() {
+            // Ambil data dari atribut data-*
+            const id = $(this).data('id');
+            const namaSub = $(this).data('nama_sub_kategori');
+
+            // Masukkan ke field di dalam modal
+            $('#edit_sub_id').val(id);
+            $('#edit_nama_sub_kategori').val(namaSub);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.delete-sub-button', function() {
+            const id = $(this).data('id');
+            $('#delete_sub_id').val(id);
         });
     });
 </script>
