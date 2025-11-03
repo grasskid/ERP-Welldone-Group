@@ -43,6 +43,13 @@ $routes->group('produk', ['filter' => 'auth'], function ($routes) {
     $routes->get('get_sub_kategori/(:any)', 'Produk::get_sub_kategori/$1');
 });
 
+//Summary KPI Grading
+$routes->group('SummaryPerformance', ['filter' => 'auth'], function ($routes) {
+    $routes->get('summary_kpi', 'SummaryKPI::summary_kpi');
+    $routes->get('summary_grading', 'SummaryKPI::summary_grading');
+    $routes->post('summary_detail', 'SummaryKPI::summary_detail');
+});
+
 $routes->post('pegawai/reset', 'Pegawai::reset_password', ['filter' => 'auth']);
 
 //supplier
@@ -52,14 +59,15 @@ $routes->post('insert_suplier', 'Supplier::insert_suplier', ['filter' => 'auth']
 $routes->post('delete_suplier', 'Supplier::delete_suplier', ['filter' => 'auth']);
 
 //kategori
-$routes->group('kategori', ['filter' => 'auth'], function ($routes) {
-    $routes->get('/', 'Kategori::index');
+$routes->group('kategori',['filter' => 'auth'],function ($routes) {
+$routes->get('/', 'Kategori::index');
     // $routes->post('insert_kategori', 'Kategori::insert_kategori', ['filter' => 'auth']);
     // $routes->post('update_kategori', 'Kategori::update_kategori', ['filter' => 'auth']);
     // $routes->post('delete_kategori', 'Kategori::delete_kategori', ['filter' => 'auth']);
     $routes->post('insert_sub_kategori', 'Kategori::insert_sub_kategori', ['filter' => 'auth']);
     $routes->post('update_sub_kategori', 'Kategori::update_sub_kategori', ['filter' => 'auth']);
     $routes->post('delete_sub_kategori', 'Kategori::delete_sub_kategori', ['filter' => 'auth']);
+
 });
 //phone
 $routes->get('/phone', 'Phone::index', ['filter' => 'auth']);
@@ -424,9 +432,9 @@ $routes->post('export_aging_piutang', 'Piutang::export_aging_piutang',  ['filter
 
 //nama handphone
 $routes->get('namahandphone', 'NamaHandphone::index', ['filter' => 'auth']);
-$routes->post('insert_namahandphone', 'NamaHandphone::insert_namaphone', ['filter' => 'auth']);
-$routes->post('update_namahandphone', 'NamaHandphone::update_namaphone', ['filter' => 'auth']);
-$routes->post('delete_namahandphone', 'NamaHandphone::delete_namaphone', ['filter' => 'auth']);
+$routes->post('insert_namahandphone', 'NamaHandphone::insertNamaHandphone', ['filter' => 'auth']);
+$routes->post('update_namahandphone', 'NamaHandphone::udpateNamaHandphone', ['filter' => 'auth']);
+$routes->post('delete_namahandphone', 'NamaHandphone::deleteNamaHandphone', ['filter' => 'auth']);
 
 
 //Barang Rusak1
@@ -437,9 +445,6 @@ $routes->post('insert_barang_rusak', 'BarangRusak::insert_barang_rusak', ['filte
 
 //penilaian kpi
 $routes->get('key_performance', 'KeyPerformance::index', ['filter' => 'auth']);
-$routes->post('insert_penilaian_KPI', 'PenilaianKPI::insert_penilaian', ['filter' => 'auth']);
-$routes->post('update_penilaian_KPI', 'PenilaianKPI::update_penilaian', ['filter' => 'auth']);
-$routes->post('delete_penilaian_KPI', 'PenilaianKPI::delete_penilaian', ['filter' => 'auth']);
-$routes->post('export_penilaian_KPI', 'PenilaianKPI::export_penilaian', ['filter' => 'auth']);
-$routes->post('export_riwayat_garding', 'PenilaianKPI::export_penilaian_detail', ['filter' => 'auth']);
-$routes->get('riwayat_penilaian_KPI', 'PenilaianKPI::index_riwayat', ['filter' => 'auth']);
+$routes->post('insert_penilaian_Key', 'KeyPerformance::insert_penilaian', ['filter' => 'auth']);
+$routes->post('update_penilaian_Key', 'KeyPerformance::update_penilaian', ['filter' => 'auth']);
+$routes->post('delete_penilaian_KPI', 'KeyPerformance::delete_penilaian', ['filter' => 'auth']);
