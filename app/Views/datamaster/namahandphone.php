@@ -36,7 +36,7 @@
                             <h6 class="fs-4 fw-semibold mb-0">Type</h6>
                         </th>
                         <th>
-                            <h6 class="fs-4 fw-semibold mb-0">Size</h6>
+                            <h6 class="fs-4 fw-semibold mb-0">Spesifikasi</h6>
                         </th>
                         <th>
                             <h6 class="fs-4 fw-semibold mb-0">Action</h6>
@@ -45,32 +45,32 @@
                 </thead>
                 <tbody>
                     <?php if (!empty($namahandphone)): ?>
-                    <?php foreach ($namahandphone as $row): ?>
-                    <tr>
-                        <td><?= esc($row->id) ?></td>
-                        <td><?= esc($row->nama) ?></td>
-                        <td><?= esc($row->type) ?></td>
-                        <td><?= esc($row->size) ?></td>
-                        <td>
-                            <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                data-bs-target="#edit-handphone-modal" data-id="<?= esc($row->id) ?>"
-                                data-nama="<?= esc($row->nama) ?>" data-type="<?= esc($row->type) ?>"
-                                data-size="<?= esc($row->size) ?>">
-                                <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24">
-                                </iconify-icon>
-                            </button>
-                            <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                data-bs-target="#delete-handphone-modal" data-id="<?= esc($row->id) ?>">
-                                <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                                </iconify-icon>
-                            </button>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                        <?php foreach ($namahandphone as $row): ?>
+                            <tr>
+                                <td><?= esc($row->id) ?></td>
+                                <td><?= esc($row->nama) ?></td>
+                                <td><?= esc($row->type) ?></td>
+                                <td><?= esc($row->size) ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                                        data-bs-target="#edit-handphone-modal" data-id="<?= esc($row->id) ?>"
+                                        data-nama="<?= esc($row->nama) ?>" data-type="<?= esc($row->type) ?>"
+                                        data-size="<?= esc($row->size) ?>">
+                                        <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24">
+                                        </iconify-icon>
+                                    </button>
+                                    <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                                        data-bs-target="#delete-handphone-modal" data-id="<?= esc($row->id) ?>">
+                                        <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                                        </iconify-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php else: ?>
-                    <tr>
-                        <td colspan="5" class="text-center">Tidak ada data</td>
-                    </tr>
+                        <tr>
+                            <td colspan="5" class="text-center">Tidak ada data</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -87,12 +87,12 @@
                 <h4 class="modal-title" id="inputHandphoneModalLabel">Input Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('insert_handphone') ?>" method="post">
+            <form action="<?= base_url('insert_namahandphone') ?>" enctype="multipart/form-data" method="post">
                 <div class="modal-body">
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="id" class="form-label">ID Handphone</label>
                         <input type="text" class="form-control" id="id" name="id" required>
-                    </div>
+                    </div> -->
                     <div class="mb-3">
                         <label for="nama" class="form-label">Nama Handphone</label>
                         <input type="text" class="form-control" id="nama" name="nama" required>
@@ -102,7 +102,7 @@
                         <input type="text" class="form-control" id="type" name="type" required>
                     </div>
                     <div class="mb-3">
-                        <label for="size" class="form-label">Size</label>
+                        <label for="size" class="form-label">Spesifikasi</label>
                         <input type="text" class="form-control" id="size" name="size" required>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                 <h4 class="modal-title" id="editHandphoneModalLabel">Edit Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('update_handphone') ?>" method="post">
+            <form action="<?= base_url('update_namahandphone') ?>" enctype="multipart/form-data" method="post">
                 <div class="modal-body">
                     <input type="hidden" id="edit_id" name="id">
                     <div class="mb-3">
@@ -137,7 +137,7 @@
                         <input type="text" class="form-control" id="edit_type" name="type" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_size" class="form-label">Size</label>
+                        <label for="edit_size" class="form-label">Spesifikasi</label>
                         <input type="text" class="form-control" id="edit_size" name="size" required>
                     </div>
                 </div>
@@ -160,7 +160,7 @@
                 <h4 class="modal-title" id="deleteHandphoneModalLabel">Delete Data Handphone</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('delete_handphone') ?>" method="post">
+            <form action="<?= base_url('delete_namahandphone') ?>" enctype="" method="post">
                 <div class="modal-body">
                     <input type="hidden" id="delete_id" name="id">
                     <p style="font-style: italic;">Apa anda yakin ingin menghapus data ini?</p>
@@ -176,20 +176,20 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#zero_config').addEventListener('click', function(e) {
-        if (e.target.closest('.edit-button')) {
-            const button = e.target.closest('.edit-button');
-            document.getElementById('edit_id').value = button.getAttribute('data-id');
-            document.getElementById('edit_nama').value = button.getAttribute('data-nama');
-            document.getElementById('edit_type').value = button.getAttribute('data-type');
-            document.getElementById('edit_size').value = button.getAttribute('data-size');
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#zero_config').addEventListener('click', function(e) {
+            if (e.target.closest('.edit-button')) {
+                const button = e.target.closest('.edit-button');
+                document.getElementById('edit_id').value = button.getAttribute('data-id');
+                document.getElementById('edit_nama').value = button.getAttribute('data-nama');
+                document.getElementById('edit_type').value = button.getAttribute('data-type');
+                document.getElementById('edit_size').value = button.getAttribute('data-size');
+            }
 
-        if (e.target.closest('.delete-button')) {
-            const button = e.target.closest('.delete-button');
-            document.getElementById('delete_id').value = button.getAttribute('data-id');
-        }
+            if (e.target.closest('.delete-button')) {
+                const button = e.target.closest('.delete-button');
+                document.getElementById('delete_id').value = button.getAttribute('data-id');
+            }
+        });
     });
-});
 </script>

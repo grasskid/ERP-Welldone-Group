@@ -7,10 +7,15 @@
             $id_unit = session()->get('ID_UNIT');
             use App\Models\ModelUnit;
             $ModelUnit = new ModelUnit();
-            $unit = $ModelUnit->getById($id_unit);
+            $unitLogo = $ModelUnit->getById($id_unit);
         ?>
+<<<<<<< HEAD
         <a href="<?= base_url('/') ?>" class="text-nowrap logo-img mb-2">
             <img src="<?= base_url('template/assets/images/' . $unit->LOGO) ?>" alt="Logo"
+=======
+        <a href="<?= base_url() ?>" class="text-nowrap logo-img mb-2">
+            <img src="<?= base_url('template/assets/images/' . $unitLogo->LOGO) ?>" alt="Logo"
+>>>>>>> main
                 class="dark-logo w-100 h-auto" style="max-width: 200px;" />
         </a>
         <h4 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h4>

@@ -194,10 +194,10 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <div style="display: flex; align-items: center;">
+                            <!-- <div style="display: flex; align-items: center;">
                                 <button type="button" style="width: 30px; height: 35px;" data-bs-toggle="modal" data-bs-target="#nama-phone-modal">+</button>
 
-                            </div>
+                            </div> -->
                         </div>
                     </div>
 
@@ -302,7 +302,7 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <button type="button" style="width: 30px; height: 35px;" id="btn-tambah-nama-edit" style="height: 38px;">+</button>
+                                <!-- <button type="button" style="width: 30px; height: 35px;" id="btn-tambah-nama-edit" style="height: 38px;">+</button> -->
                             </div>
                         </div>
 

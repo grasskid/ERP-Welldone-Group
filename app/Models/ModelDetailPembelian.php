@@ -22,7 +22,9 @@ class ModelDetailPembelian extends Model
         'satuan_beli',
         'barang_idbarang',
         'pembelian_idpembelian',
-        'unit_idunit'
+        'unit_idunit',
+        'biaya_tambahan',
+        'keterangan_tambahan'
     ];
 
     public function getDetail()
@@ -68,11 +70,15 @@ class ModelDetailPembelian extends Model
                 detail_pembelian.*,
                 detail_pembelian.tanggal,
                 barang.nama_barang,
+                barang.kode_barang,
+                barang.imei,
                 pembelian.suplier_id_suplier,
                 pembelian.pelanggan_id_pelanggan,
+                suplier.nama_suplier,
                 unit.NAMA_UNIT')
             ->join('pembelian', 'pembelian.idpembelian = detail_pembelian.pembelian_idpembelian')
             ->join('barang', 'barang.idbarang = detail_pembelian.barang_idbarang')
+            ->join('suplier', 'suplier.id_suplier =  pembelian.suplier_id_suplier')
             ->join('unit', 'unit.idunit = detail_pembelian.unit_idunit')
             ->orderBy('detail_pembelian.tanggal', 'DESC')
             ->get()

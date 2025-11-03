@@ -39,7 +39,7 @@
                         Cek Lokasi Saya
                     </button>
 
-                    <button type="button" class="btn btn-sm btn-primary"
+                    <button type="button" class="btn btn-sm btn-primary" id="btn-absen-masuk"
                         style="display: inline-flex; align-items: center; justify-content: center; width: 140px; height: 35px;">
                         Absen
                     </button>
@@ -75,15 +75,15 @@
                         <td>
 
 
-                            <button type="button" class="btn-detail-lokasi  btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modal-peta-lokasi" data-lat="<?= $row->lat ?>"
-                                data-waktumasuk="<?= $row->waktu_masuk ?>" data-waktupulang="<?= $row->waktu_pulang ?>"
-                                data-jadwalmasuk="<?= $row->jam_jadwal_masuk ?>"
-                                data-jadwalpulang="<?= $row->jam_jadwal_pulang ?>" data-ip="<?= $row->ip ?>"
-                                data-nama="<?= $row->NAMA_AKUN ?>" data-foto="<?= $row->foto ?>"
-                                data-long="<?= $row->long ?>" data-jarak="<?= $row->jarak ?>">
-                                Detail
-                            </button>
+                                <button type="button" class="btn-detail-lokasi  btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#modal-peta-lokasi" data-lat="<?= $row->lat ?>"
+                                    data-waktumasuk="<?= $row->waktu_masuk ?>" data-waktupulang="<?= $row->waktu_pulang ?>"
+                                    data-jadwalmasuk="<?= $row->jam_jadwal_masuk ?>"
+                                    data-jadwalpulang="<?= $row->jam_jadwal_pulang ?>" data-ip="<?= $row->ip ?>"
+                                    data-nama="<?= $row->NAMA_AKUN ?>" data-foto="<?= $row->foto ?>"
+                                    data-long="<?= $row->long ?>" data-jarak="<?= $row->jarak ?>">
+                                    Detail
+                                </button>
 
 
 
@@ -128,20 +128,20 @@
                             <td style="display: flex; justify-content: center;">
                                 <?php if (empty($row->waktu_pulang) || $row->waktu_pulang === '00:00:00'): ?>
 
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modal-konfirmasi-absen-pulang"
-                                    data-idabsenpulang="<?= $row->idpresensi ?>">
-                                    Submit
-                                </button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#modal-konfirmasi-absen-pulang"
+                                            data-idabsenpulang="<?= $row->idpresensi ?>">
+                                            Submit
+                                        </button>
 
-                                <?php else: ?>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#modal-detail-absen-pulang" data-jammasuk="<?= $row->waktu_masuk ?>"
-                                    data-jampulang="<?= $row->waktu_pulang ?>"
-                                    data-detailabsenpulang="<?= $row->idpresensi ?>" data-jarak="<?= $row->jarak ?>"
-                                    data-fotopulang="<?= $row->foto_pulang ?>">
-                                    Detail
-                                </button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#modal-detail-absen-pulang" data-jammasuk="<?= $row->waktu_masuk ?>"
+                                            data-jampulang="<?= $row->waktu_pulang ?>"
+                                            data-detailabsenpulang="<?= $row->idpresensi ?>" data-jarak="<?= $row->jarak ?>"
+                                            data-fotopulang="<?= $row->foto_pulang ?>">
+                                            Detail
+                                        </button>
 
                                 <?php endif; ?>
 
@@ -261,6 +261,7 @@
         </div>
     </div>
 </div>
+<!-- testing bug foto -->
 
 <!-- Modal Detail Absen Pulang -->
 <div class="modal fade" id="modal-detail-absen-pulang" tabindex="-1" aria-labelledby="modalDetailAbsenPulangLabel"

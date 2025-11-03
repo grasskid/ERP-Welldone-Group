@@ -28,7 +28,8 @@ class ModelPresensi extends Model
         'created_at',
         'updated_at',
         'jarak',
-        'status_kehadiran'
+        'status_kehadiran',
+        'keterangan'
     ];
 
     public function getAll()

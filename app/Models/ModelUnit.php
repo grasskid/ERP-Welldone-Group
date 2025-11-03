@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class ModelUnit extends Model
 {
+    //
     protected $table = 'unit';
     protected $primaryKey = 'idunit';
     protected $returnType = 'object';
@@ -22,9 +23,16 @@ class ModelUnit extends Model
         'LONGTITUDE'
     ];
 
-    public function getUnit()
+    //
+    public function getUnit(): array
     {
         return $this->findAll();
+    }
+
+    public function getUnit2()
+    {
+        return $this->db->table('unit')
+            ->get()->getResult();
     }
 
 

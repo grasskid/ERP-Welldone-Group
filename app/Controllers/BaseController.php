@@ -9,6 +9,8 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ModelStokBarang;
 use Psr\Log\LoggerInterface;
+use App\Models\ModelService;
+use App\Models\ModelAuth;
 
 /**
  * Class BaseController
@@ -30,9 +32,15 @@ abstract class BaseController extends Controller
     protected $request;
     protected $ModelStokBarang;
     protected $stokMinimum;
+    protected $ServiceModel;
+    protected $proses_service;
+    protected $bisa_diambil;
 
+    protected $expired_service;
 
+    protected $AuthModel;
 
+    protected $Akun_Service;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -69,9 +77,37 @@ abstract class BaseController extends Controller
 
         // end notifikasi stok minimum
 
+        //notifikasi proses service
+        $this->ServiceModel = new \App\Models\ModelService();
 
 
+        $this->proses_service = $this->ServiceModel->ProsesServiceAktif();
 
+        \Config\Services::renderer()->setVar('proses_service', $this->proses_service);
+
+        // end notifikasi proses service
+
+        //notifikasi bisa diambil service
+
+        $this->bisa_diambil = $this->ServiceModel->ServiceBisaDiambil();
+
+        \Config\Services::renderer()->setVar('bisa_diambil', $this->bisa_diambil);
+
+        // end notifikasi bisa diambil service
+
+        //notifikasi expired service
+
+        $this->expired_service = $this->ServiceModel->ServiceBisaDiambil();
+
+        \Config\Services::renderer()->setVar('expired_service', $this->expired_service);
+
+        // end notifikasi expired service
+
+
+        $this->AuthModel = new ModelAuth();
+
+        $this->Akun_Service = $this->AuthModel->getByIdWithJabatan(session('ID_AKUN'));
+        \Config\Services::renderer()->setVar('akun_service', $this->Akun_Service);
 
         // Preload any models, libraries, etc, here.
 

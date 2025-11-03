@@ -8,10 +8,11 @@ use CodeIgniter\Filters\FilterInterface;
 
 class AuthFilter implements FilterInterface
 {
+    //
     public function before(RequestInterface $request, $arguments = null)
     {
         // return redirect()->to(base_url('/maintenance/page'));
-        if (!session()->get('logged_in')) {
+        if (!session()->get('logged_in') && session()->get('ID_UNIT') == null) {
             return redirect()->to(base_url('/Login'))->with('error', "Invalid Credential Login");
         } else {
             // $ID_AKUN = session()->get("ID_AKUN");

@@ -161,6 +161,7 @@ class RiwayatPresensi extends BaseController
 
         $data = array(
             'status_absensi' => 1,
+            'keterangan' => $this->request->getPost('keterangan')
 
         );
         $this->PresensiModel->update($idpresensi, $data);
@@ -266,8 +267,9 @@ class RiwayatPresensi extends BaseController
             'akun_idakun' => $idakun,
             'unit_idunit' => $idunit,
             'created_at' => date('Y-m-d H:i:s'),
-            'jarak' => $jarakmeter,
-            'status_kehadiran' => $statusKehadiran
+            'jarak' => 10,
+            'status_kehadiran' => $statusKehadiran,
+            'keterangan' => $this->request->getPost('keterangan')
         ];
 
         $this->PresensiModel->insertPresensi($data);

@@ -218,24 +218,37 @@ class Absensi extends BaseController
         date_default_timezone_set('Asia/Jakarta');
         $idpresensi = $this->request->getPost('idpresensi');
 
-        $namaFoto = null;
         $foto_kehadiran = $this->request->getFile('foto_kehadiran');
+        $namaFoto = null;
+
         if ($foto_kehadiran && $foto_kehadiran->isValid() && !$foto_kehadiran->hasMoved()) {
             $ext = $foto_kehadiran->getClientExtension();
             $timestamp = date('Ymd_His');
             $namaFoto = 'absen_' . $idpresensi . '_' . $timestamp . '.' . $ext;
 
-            $foto_kehadiran->move(ROOTPATH . 'public/foto_presensi', $namaFoto);
-        }
+            // Jalankan move() dan pastikan berhasil
+            if ($foto_kehadiran->move(ROOTPATH . 'public/foto_presensi', $namaFoto)) {
+                // Jika upload berhasil, baru jalankan query update
+                $data = [
+                    'foto_pulang'   => $namaFoto,
+                    'waktu_pulang'  => date('Y-m-d H:i:s'),
+                ];
+                $this->PresensiModel->update($idpresensi, $data);
 
-        $data = array(
-            'foto_pulang' => $namaFoto,
-            'waktu_pulang' => date('Y-m-d H:i:s'),
-        );
-        $this->PresensiModel->update($idpresensi, $data);
-        session()->setFlashdata('sukses', 'Absen pulang berhasil!');
-        return redirect()->to(base_url('absensi'));
+                session()->setFlashdata('sukses', 'Absen pulang berhasil!');
+                return redirect()->to(base_url('absensi'));
+            } else {
+                // Jika upload gagal
+                session()->setFlashdata('error', 'Gagal mengupload foto. Silakan coba lagi.');
+                return redirect()->back()->withInput();
+            }
+        } else {
+            // Jika file tidak valid
+            session()->setFlashdata('error', 'File foto tidak valid atau belum dipilih.');
+            return redirect()->back()->withInput();
+        }
     }
+
 
 
     private function hitungJarakKm($lat1, $lon1, $lat2, $lon2)

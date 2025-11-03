@@ -1,3 +1,4 @@
+
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
@@ -140,7 +141,7 @@
                                 <?php
                                 // Cari unit yang sesuai dengan session ID_UNIT
                                 foreach ($unit as $u):
-                                    if ($u->idunit == session('ID_UNIT')): ?>
+                                    if ($u && isset($u->idunit) && $u->idunit == session('ID_UNIT')): ?>
                                         <option value="<?= $u->idunit ?>" selected><?= $u->NAMA_UNIT ?></option>
                                 <?php
                                     endif;
@@ -233,7 +234,9 @@
                                             <select name="id_unit_text[<?= $b->kode_barang ?>]"
                                                 id="id_unit_text_<?= $index ?>" hidden>
                                                 <?php foreach ($unit as $u): ?>
-                                                    <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
+                                                    <?php if ($u && isset($u->idunit)): ?>
+                                                        <option value="<?= $u->idunit ?>"><?= $u->NAMA_UNIT ?></option>
+                                                    <?php endif; ?>
                                                 <?php endforeach; ?>
                                             </select>
 
