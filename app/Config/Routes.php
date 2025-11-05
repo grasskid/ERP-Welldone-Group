@@ -322,6 +322,9 @@ $routes->get('sisi_keuangan', 'SisiKeuangan::index', ['filter' => 'auth']);
 $routes->get('cetak/posisi_keuangan', 'SisiKeuangan::export_pdf', ['filter' => 'auth']);
 
 $routes->get('sisi_keuangan/export_excel', 'SisiKeuangan::export_excel', ['filter' => 'auth']);
+
+//laba rugi
+$routes->get('laba_rugi', 'LabaRugi::index', ['filter' => 'auth']);
 //kategorikas
 $routes->get('/kategori_kas', 'Kategori_Kas::index');
 $routes->post('insert_kategori', 'Kategori_Kas::insert_kategori', ['filter' => 'auth']);

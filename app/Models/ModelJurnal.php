@@ -229,4 +229,99 @@ class ModelJurnal extends Model
 
         return $builder->get()->getRow();
     }
+
+    /**
+     * Mendapatkan data laba rugi dari jurnal
+     * Akun pendapatan biasanya prefix 4, akun biaya prefix 5 atau 6
+     */
+    public function getLabaRugiFromJurnal($tanggal_awal = null, $tanggal_akhir = null, $unit = null)
+    {
+        $db = \Config\Database::connect();
+
+        // 1. Ambil akun pendapatan (prefix 4)
+        $builder_pendapatan = $db->table('no_akun na');
+        $builder_pendapatan->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.kredit), 0) - COALESCE(SUM(j.debet), 0) as saldo
+        ");
+        $builder_pendapatan->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_pendapatan->like('na.no_akun', '4', 'after'); // prefix 4 = pendapatan
+        $builder_pendapatan->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_pendapatan->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if ($unit !== null) {
+            $builder_pendapatan->groupStart();
+            $builder_pendapatan->where('j.id_unit', $unit);
+            $builder_pendapatan->orWhere('j.id_unit IS NULL');
+            $builder_pendapatan->groupEnd();
+        }
+
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_pendapatan->groupStart();
+            $builder_pendapatan->where('j.tanggal >=', $tanggal_awal);
+            $builder_pendapatan->where('j.tanggal <=', $tanggal_akhir);
+            $builder_pendapatan->orWhere('j.tanggal IS NULL');
+            $builder_pendapatan->groupEnd();
+        }
+
+        $builder_pendapatan->groupBy('na.no_akun, na.nama_akun');
+        $builder_pendapatan->having('saldo !=', 0);
+        $builder_pendapatan->orderBy('na.no_akun', 'asc');
+        $pendapatan = $builder_pendapatan->get()->getResult();
+
+        // 2. Ambil akun biaya/beban (prefix 5 atau 6)
+        $builder_biaya = $db->table('no_akun na');
+        $builder_biaya->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
+        ");
+        $builder_biaya->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_biaya->groupStart();
+        $builder_biaya->like('na.no_akun', '5', 'after'); // prefix 5 = biaya
+        $builder_biaya->orLike('na.no_akun', '6', 'after'); // prefix 6 = biaya
+        $builder_biaya->groupEnd();
+        $builder_biaya->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_biaya->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if ($unit !== null) {
+            $builder_biaya->groupStart();
+            $builder_biaya->where('j.id_unit', $unit);
+            $builder_biaya->orWhere('j.id_unit IS NULL');
+            $builder_biaya->groupEnd();
+        }
+
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_biaya->groupStart();
+            $builder_biaya->where('j.tanggal >=', $tanggal_awal);
+            $builder_biaya->where('j.tanggal <=', $tanggal_akhir);
+            $builder_biaya->orWhere('j.tanggal IS NULL');
+            $builder_biaya->groupEnd();
+        }
+
+        $builder_biaya->groupBy('na.no_akun, na.nama_akun');
+        $builder_biaya->having('saldo !=', 0);
+        $builder_biaya->orderBy('na.no_akun', 'asc');
+        $biaya = $builder_biaya->get()->getResult();
+
+        // Hitung total
+        $total_pendapatan = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $pendapatan));
+
+        $total_biaya = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $biaya));
+
+        $laba_rugi = $total_pendapatan - $total_biaya;
+
+        return [
+            'pendapatan' => $pendapatan,
+            'total_pendapatan' => $total_pendapatan,
+            'biaya' => $biaya,
+            'total_biaya' => $total_biaya,
+            'laba_rugi' => $laba_rugi
+        ];
+    }
 }

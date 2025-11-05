@@ -1,0 +1,333 @@
+<!-- Page Header -->
+<div class="card shadow-none position-relative overflow-hidden mb-4">
+    <div class="card-body d-flex align-items-center justify-content-between p-4">
+        <h4 class="fw-semibold mb-0">Laporan Laba Rugi</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Laporan Laba Rugi</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Filter Form -->
+<div class="card w-100 position-relative overflow-hidden mb-4">
+    <div class="card-body">
+        <form method="get" action="<?= base_url('laba_rugi') ?>" id="filterForm">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Jenis Laporan:</label>
+                    <select name="jenis_laporan" id="jenisLaporan" class="form-control" onchange="document.getElementById('filterForm').submit();">
+                        <option value="jurnal" <?= ($jenis_laporan == 'jurnal') ? 'selected' : '' ?>>Berdasarkan Jurnal</option>
+                        <option value="transaksi" <?= ($jenis_laporan == 'transaksi') ? 'selected' : '' ?>>Berdasarkan Transaksi</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tanggal Awal:</label>
+                    <input type="date" name="tanggal_awal" id="tanggalAwal" class="form-control" 
+                           value="<?= $tanggal_awal ?? '' ?>">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tanggal Akhir:</label>
+                    <input type="date" name="tanggal_akhir" id="tanggalAkhir" class="form-control" 
+                           value="<?= $tanggal_akhir ?? '' ?>">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Unit:</label>
+                    <select name="id_unit" id="idUnit" class="form-control">
+                        <option value="">Semua Unit</option>
+                        <?php foreach ($unit as $u): ?>
+                            <option value="<?= $u->idunit ?>" <?= ($id_unit == $u->idunit) ? 'selected' : '' ?>>
+                                <?= esc($u->NAMA_UNIT) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">
+                        <iconify-icon icon="solar:filter-bold" width="20" height="20"></iconify-icon>
+                        Filter
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetFilter()">
+                        <iconify-icon icon="solar:restart-bold" width="20" height="20"></iconify-icon>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php if ($jenis_laporan == 'jurnal' && !empty($data_jurnal)): ?>
+    <!-- Laporan Berdasarkan Jurnal -->
+    <div class="card w-100 position-relative overflow-hidden mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Laporan Laba Rugi Berdasarkan Jurnal</h5>
+            
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-bg-success text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Pendapatan</h6>
+                            <h4 class="mb-0" id="totalPendapatanJurnal">
+                                <?= 'Rp ' . number_format($data_jurnal['total_pendapatan'], 0, ',', '.') ?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-bg-danger text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Biaya</h6>
+                            <h4 class="mb-0" id="totalBiayaJurnal">
+                                <?= 'Rp ' . number_format($data_jurnal['total_biaya'], 0, ',', '.') ?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card <?= $data_jurnal['laba_rugi'] >= 0 ? 'text-bg-primary' : 'text-bg-warning' ?> text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">Laba / Rugi</h6>
+                            <h4 class="mb-0" id="labaRugiJurnal">
+                                <?= 'Rp ' . number_format($data_jurnal['laba_rugi'], 0, ',', '.') ?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Pendapatan -->
+            <div class="mb-4">
+                <h6 class="fw-bold">Pendapatan</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>No Akun</th>
+                                <th>Nama Akun</th>
+                                <th class="text-end">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($data_jurnal['pendapatan'])): ?>
+                                <?php foreach ($data_jurnal['pendapatan'] as $item): ?>
+                                    <tr>
+                                        <td><?= esc($item->no_akun) ?></td>
+                                        <td><?= esc($item->nama_akun) ?></td>
+                                        <td class="text-end"><?= 'Rp ' . number_format($item->saldo, 0, ',', '.') ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada data pendapatan</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="2" class="text-end">Total Pendapatan:</th>
+                                <th class="text-end"><?= 'Rp ' . number_format($data_jurnal['total_pendapatan'], 0, ',', '.') ?></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tabel Biaya -->
+            <div class="mb-4">
+                <h6 class="fw-bold">Biaya</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>No Akun</th>
+                                <th>Nama Akun</th>
+                                <th class="text-end">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($data_jurnal['biaya'])): ?>
+                                <?php foreach ($data_jurnal['biaya'] as $item): ?>
+                                    <tr>
+                                        <td><?= esc($item->no_akun) ?></td>
+                                        <td><?= esc($item->nama_akun) ?></td>
+                                        <td class="text-end"><?= 'Rp ' . number_format($item->saldo, 0, ',', '.') ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada data biaya</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="2" class="text-end">Total Biaya:</th>
+                                <th class="text-end"><?= 'Rp ' . number_format($data_jurnal['total_biaya'], 0, ',', '.') ?></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php elseif ($jenis_laporan == 'transaksi' && !empty($data_transaksi)): ?>
+    <!-- Laporan Berdasarkan Transaksi -->
+    <div class="card w-100 position-relative overflow-hidden mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Laporan Laba Rugi Berdasarkan Transaksi</h5>
+            
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-bg-success text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Pendapatan</h6>
+                            <h4 class="mb-0">
+                                <?= 'Rp ' . number_format($data_transaksi['pendapatan']['total'], 0, ',', '.') ?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-bg-danger text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Biaya</h6>
+                            <h4 class="mb-0">
+                                <?= 'Rp ' . number_format($data_transaksi['biaya']['total'], 0, ',', '.') ?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card <?= $data_transaksi['laba_rugi'] >= 0 ? 'text-bg-primary' : 'text-bg-warning' ?> text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">Laba / Rugi</h6>
+                            <h4 class="mb-0">
+                                <?= 'Rp ' . number_format($data_transaksi['laba_rugi'], 0, ',', '.') ?>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Pendapatan -->
+            <div class="mb-4">
+                <h6 class="fw-bold">Pendapatan</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Jenis Pendapatan</th>
+                                <th class="text-end">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Penjualan (POS)</td>
+                                <td class="text-end"><?= 'Rp ' . number_format($data_transaksi['pendapatan']['penjualan'], 0, ',', '.') ?></td>
+                            </tr>
+                            <tr>
+                                <td>Service</td>
+                                <td class="text-end"><?= 'Rp ' . number_format($data_transaksi['pendapatan']['service'], 0, ',', '.') ?></td>
+                            </tr>
+                            <tr>
+                                <td>Kas Masuk</td>
+                                <td class="text-end"><?= 'Rp ' . number_format($data_transaksi['pendapatan']['kas_masuk'], 0, ',', '.') ?></td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th class="text-end">Total Pendapatan:</th>
+                                <th class="text-end"><?= 'Rp ' . number_format($data_transaksi['pendapatan']['total'], 0, ',', '.') ?></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tabel Biaya -->
+            <div class="mb-4">
+                <h6 class="fw-bold">Biaya</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Jenis Biaya</th>
+                                <th class="text-end">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Kas Keluar</td>
+                                <td class="text-end"><?= 'Rp ' . number_format($data_transaksi['biaya']['kas_keluar'], 0, ',', '.') ?></td>
+                            </tr>
+                            <tr>
+                                <td>HPP Penjualan</td>
+                                <td class="text-end"><?= 'Rp ' . number_format($data_transaksi['biaya']['hpp_penjualan'], 0, ',', '.') ?></td>
+                            </tr>
+                            <tr>
+                                <td>HPP Service</td>
+                                <td class="text-end"><?= 'Rp ' . number_format($data_transaksi['biaya']['hpp_service'], 0, ',', '.') ?></td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th class="text-end">Total Biaya:</th>
+                                <th class="text-end"><?= 'Rp ' . number_format($data_transaksi['biaya']['total'], 0, ',', '.') ?></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php else: ?>
+    <!-- Tidak ada data -->
+    <div class="card w-100 position-relative overflow-hidden mb-4">
+        <div class="card-body text-center">
+            <p class="text-muted">Silakan pilih filter tanggal dan unit untuk menampilkan data.</p>
+        </div>
+    </div>
+<?php endif; ?>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Set default tanggal (15 hari terakhir)
+    const today = new Date();
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(today.getDate() - 15);
+
+    const toDateInputValue = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    // Set default jika belum ada nilai
+    if (!document.getElementById('tanggalAwal').value) {
+        document.getElementById('tanggalAwal').value = toDateInputValue(fifteenDaysAgo);
+    }
+    if (!document.getElementById('tanggalAkhir').value) {
+        document.getElementById('tanggalAkhir').value = toDateInputValue(today);
+    }
+});
+
+function resetFilter() {
+    document.getElementById('tanggalAwal').value = '';
+    document.getElementById('tanggalAkhir').value = '';
+    document.getElementById('idUnit').value = '';
+    document.getElementById('filterForm').submit();
+}
+</script>
+
