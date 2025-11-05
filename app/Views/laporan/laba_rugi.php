@@ -16,7 +16,7 @@
 <!-- Filter Form -->
 <div class="card w-100 position-relative overflow-hidden mb-4">
     <div class="card-body">
-        <form method="get" action="<?= base_url('laba_rugi') ?>" id="filterForm">
+        <form method="get" action="<?= base_url('LaporanKeuangan/laba_rugi') ?>" id="filterForm">
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label class="form-label">Jenis Laporan:</label>
