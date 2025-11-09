@@ -387,7 +387,7 @@
                                                     aria-expanded="false">
 
                                                     <div class="nav-icon-hover-bg rounded-circle">
-                                                        <iconify-icon icon="solar:bell-bing-line-duotone"
+                                                        <iconify-icon icon="solar:danger-square-broken"
                                                             class="fs-7 text-dark"></iconify-icon>
 
                                                         <!-- Badge angka kecil -->
@@ -466,7 +466,7 @@
                                                         aria-expanded="false">
 
                                                         <div class="nav-icon-hover-bg rounded-circle">
-                                                            <iconify-icon icon="solar:bell-bing-line-duotone"
+                                                            <iconify-icon icon="solar:clipboard-add-linear"
                                                                 class="fs-7 text-dark"></iconify-icon>
 
                                                             <!-- Badge angka kecil -->
@@ -537,7 +537,7 @@
                                                         aria-expanded="false">
 
                                                         <div class="nav-icon-hover-bg rounded-circle">
-                                                            <iconify-icon icon="solar:bell-bing-line-duotone"
+                                                            <iconify-icon icon="solar:clipboard-check-linear"
                                                                 class="fs-7 text-dark"></iconify-icon>
 
                                                             <!-- Badge angka kecil -->
@@ -615,7 +615,7 @@
                                                         aria-expanded="false">
 
                                                         <div class="nav-icon-hover-bg rounded-circle">
-                                                            <iconify-icon icon="solar:bell-bing-line-duotone"
+                                                            <iconify-icon icon="solar:clipboard-remove-linear"
                                                                 class="fs-7 text-dark"></iconify-icon>
 
                                                             <!-- Badge angka kecil -->
