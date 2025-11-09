@@ -12,6 +12,13 @@ $routes->post('/proses_login', 'Auth::proses_login');
 $routes->get('/Logout', 'Auth::proses_logout');
 $routes->post('auth/changePassword', 'Auth::changePassword');
 
+//Dashboard
+$routes->get('dashboard/pos', 'DashboardPOS::index', ['filter' => 'auth']);
+$routes->get('dashboard/service', 'DashboardService::index', ['filter' => 'auth']);
+$routes->get('dashboard/keuangan', 'DashboardKeuangan::index', ['filter' => 'auth']);
+$routes->get('dashboard/hrd', 'DashboardHRD::index', ['filter' => 'auth']);
+$routes->get('dashboard/laba-rugi', 'DashboardLabaRugi::index', ['filter' => 'auth']);
+
 
 
 //Datamaster
