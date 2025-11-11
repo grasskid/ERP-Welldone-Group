@@ -44,7 +44,7 @@ class BarangRusak extends BaseController
         $this->KategoriModel = new ModelKategori();
         $this->SubKategoriModel = new ModelSubKategori();
     }
-    ///
+
     public function index()
     {
 

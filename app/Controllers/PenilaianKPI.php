@@ -44,92 +44,478 @@ class PenilaianKPI extends BaseController
         $this->PenilaianDetailModel = new ModelPenilaianDetail();
     }
 
-    public function index()
-    {
-        $pegawai_id = $this->request->getGet('pegawai_idpegawai');
-        $templatekpi = [];
-        $skorMap = [];
+    // public function index()
+    // {
+    //     $pegawai_id = $this->request->getGet('pegawai_idpegawai');
+    //     $templatekpi = [];
+    //     $skorMap = [];
 
-        if ($pegawai_id) {
-            $pegawai = $this->AuthModel->getById($pegawai_id);
+    //     if ($pegawai_id) {
+    //         $pegawai = $this->AuthModel->getById($pegawai_id);
 
-            if ($pegawai && isset($pegawai->ID_JABATAN)) {
-                $templatekpi = $this->TemplateKpiModel->getByJabatan($pegawai->ID_JABATAN);
+    //         if ($pegawai && isset($pegawai->ID_JABATAN)) {
+    //             $templatekpi = $this->TemplateKpiModel->getByJabatan($pegawai->ID_JABATAN);
 
-                // Get penilaian
-                $penilaianList = $this->PenilaianModel
-                    ->where('pegawai_idpegawai', $pegawai_id)
-                    ->findAll();
+    //             // Get penilaian
+    //             $penilaianList = $this->PenilaianModel
+    //                 ->where('pegawai_idpegawai', $pegawai_id)
+    //                 ->findAll();
 
-                foreach ($penilaianList as $p) {
-                    $skorMap[$p->aspek]['realisasi'] = $p->skor;
+    //             foreach ($penilaianList as $p) {
+    //                 $skorMap[$p->aspek]['realisasi'] = $p->skor;
+    //             }
+
+    //             $bulanIni = date('Y-m-01');
+    //             $bulanAkhir = date('Y-m-t');
+
+    //             //Omset
+
+    //             $omsetResult = $this->PenjualanModel
+    //                 ->selectSum('total_penjualan')
+    //                 ->where('sales_by', $pegawai_id)
+    //                 ->where('tanggal >=', $bulanIni)
+    //                 ->where('tanggal <=', $bulanAkhir)
+    //                 ->first();
+
+    //             $omsetValue = $omsetResult->total_penjualan ?? 0;
+
+    //             $skorMap['Penjualan(Omzet)']['realisasi'] = $omsetValue;
+
+    //             $tanggalPenilaian = $this->request->getGet('tanggal_penilaian_kpi') ?? date('Y-m-d');
+
+    //             $bulan = date('m', strtotime($tanggalPenilaian));
+    //             $tahun = date('Y', strtotime($tanggalPenilaian));
+    //             $startDate = date('Y-m-01', strtotime("$tahun-$bulan-01"));
+    //             $endDate = date('Y-m-t', strtotime("$tahun-$bulan-01"));
+
+    //             $onTimeResult = $this->PresensiModel
+    //                 ->countOnTimeAbsensiPerBulan($pegawai_id, $startDate, $endDate);
+    //             $onTimeCount = $onTimeResult->total_ontime ?? 0;
+    //             $skorMap['Kedisiplinan']['realisasi'] = $onTimeCount;
+
+    //             $absensiResult = $this->PresensiModel
+    //                 ->countAbsensiPerBulan($pegawai_id, $startDate, $endDate);
+    //             $jumlahAbsensi = $absensiResult->total_absensi ?? 0;
+    //             $skorMap['Kehadiran']['realisasi'] = $jumlahAbsensi;
+
+    //             $groomingResult = $this->PresensiModel
+    //                 ->countGrooming($pegawai_id, $startDate, $endDate);
+    //             $jumlahGrooming = $groomingResult->total_grooming ?? 0;
+    //             $skorMap['Grooming']['realisasi'] = $jumlahGrooming;
+
+    //             $categoryResult = $this->DetailPenjualanModel
+    //                 ->countByCategory(2, $startDate, $endDate);
+    //             $totalCategory = $categoryResult->total_category ?? 0;
+    //             $skorMap['Up-selling dan Cross-selling']['realisasi'] = $totalCategory;
+
+    //             //media
+    //             $jumlahByTemplate = $this->PenilaianKPIModel->getJumlahByTemplateKPI($pegawai_id);
+
+    //             foreach ($jumlahByTemplate as $row) {
+    //                 $skorMap[$row->template_kpi]['realisasi'] = $row->jumlah;
+    //             }
+
+
+    //         }
+    //     }
+
+    //     $data = [
+    //         'penilaiankpi' => [],
+    //         'akun' => $this->AuthModel->getdataakun(),
+    //         'pegawai_idpegawai' => $pegawai_id,
+    //         'templatekpi' => $templatekpi,
+    //         'skorMap' => $skorMap,
+    //         'body' => 'penilaian/penilaian_kpi',
+    //     ];
+
+    //     return view('template', $data);
+    //     // return $this->response->setJSON($data);
+    // }
+
+public function index()
+{
+    $pegawai_id = $this->request->getGet('pegawai_idpegawai');
+    $templatekpi = [];
+    $skorMap = [];
+    $isUpdate = false;
+
+    // Initialize arrays
+    $levelList = [];
+    $templateIdList = [];
+    $unitId = null;
+
+    $penilaianKPIList = [];
+    $kpiExistingMap = [];    // map template_id => penilaian object
+    $idpenilaianList = [];   // list of existing penilaian ids
+    $prefillList = [];       // per-template prefill data
+
+    if ($pegawai_id) {
+        $pegawai = $this->AuthModel->getById($pegawai_id);
+
+        if ($pegawai && isset($pegawai->ID_JABATAN)) {
+            $unitId = $pegawai->unit_idunit ?? null; // unit comes from pegawai
+
+            // 1️⃣ Get KPI template for this jabatan
+            $templatekpi = $this->TemplateKpiModel->getByJabatan($pegawai->ID_JABATAN);
+
+            // 2️⃣ Populate defaults from template
+            foreach ($templatekpi as $i => $tpl) {
+                $levelList[$i] = $tpl->level;
+                $templateIdList[$i] = $tpl->idtemplate_kpi;
+            }
+
+            $tanggalPenilaian = $this->request->getGet('tanggal_penilaian_kpi') ?? date('Y-m-d');
+            $bulan = date('m', strtotime($tanggalPenilaian));
+            $tahun = date('Y', strtotime($tanggalPenilaian));
+            $startDate = date('Y-m-01', strtotime("$tahun-$bulan-01"));
+            $endDate = date('Y-m-t', strtotime("$tahun-$bulan-01"));
+
+            // 3️⃣ Fetch existing penilaian_kpi rows for this pegawai & month
+            $penilaianKPIList = $this->PenilaianKPIModel
+                ->where('pegawai_idpegawai', $pegawai_id)
+                ->where('tanggal_penilaian_kpi >=', $startDate)
+                ->where('tanggal_penilaian_kpi <=', $endDate)
+                ->findAll();
+
+            // Build map by template_kpi_id for reliable lookup (template_id => penilaian object)
+            foreach ($penilaianKPIList as $p) {
+                $kpiExistingMap[$p->template_kpi_idtemplate_kpi] = $p;
+                $idpenilaianList[] = $p->idpenilaian_kpi;
+
+                // fill skorMap keyed by template or kpi_utama as needed
+                $skorMap[$p->template_kpi_idtemplate_kpi]['realisasi'] = $p->realisasi ?? '';
+                $skorMap[$p->template_kpi_idtemplate_kpi]['score'] = $p->score ?? '';
+
+                // ensure unit override if present
+                $unitId = $p->unit_idunit ?? $unitId;
+            }
+
+            // Prefill data for each template in consistent order
+            foreach ($templatekpi as $tpl) {
+                $templateId = $tpl->idtemplate_kpi;
+                $existing = $kpiExistingMap[$templateId] ?? null;
+
+                $prefillList[$templateId] = [
+                    'idpenilaian_kpi' => $existing->idpenilaian_kpi ?? '',
+                    'realisasi'       => $existing->realisasi ?? '',
+                    'level'           => $existing->level ?? $tpl->level,
+                    'score'           => $existing->score ?? '',
+                ];
+            }
+
+            // ✅ Update button only if ALL displayed templates already have penilaian this month
+            // i.e. every template id must exist as a key in $kpiExistingMap
+            $isUpdate = !empty($templatekpi);
+            foreach ($templatekpi as $tpl) {
+                if (!isset($kpiExistingMap[$tpl->idtemplate_kpi])) {
+                    $isUpdate = false;
+                    break;
                 }
+            }
 
-                $bulanIni = date('Y-m-01');
-                $bulanAkhir = date('Y-m-t');
+            // 4️⃣ Other metrics like Omset, Presensi, Grooming...
+            $bulanIni = date('Y-m-01');
+            $bulanAkhir = date('Y-m-t');
 
-                //Omset
+            $omsetResult = $this->PenjualanModel
+                ->selectSum('total_penjualan')
+                ->where('sales_by', $pegawai_id)
+                ->where('tanggal >=', $bulanIni)
+                ->where('tanggal <=', $bulanAkhir)
+                ->first();
+            $skorMap['Penjualan(Omzet)']['realisasi'] = $omsetResult->total_penjualan ?? 0;
 
-                $omsetResult = $this->PenjualanModel
-                    ->selectSum('total_penjualan')
-                    ->where('sales_by', $pegawai_id)
-                    ->where('tanggal >=', $bulanIni)
-                    ->where('tanggal <=', $bulanAkhir)
-                    ->first();
+            $onTimeResult = $this->PresensiModel
+                ->countOnTimeAbsensiPerBulan($pegawai_id, $startDate, $endDate);
+            $skorMap['Kedisiplinan']['realisasi'] = $onTimeResult->total_ontime ?? 0;
 
-                $omsetValue = $omsetResult->total_penjualan ?? 0;
+            $absensiResult = $this->PresensiModel
+                ->countAbsensiPerBulan($pegawai_id, $startDate, $endDate);
+            $skorMap['Kehadiran']['realisasi'] = $absensiResult->total_absensi ?? 0;
 
-                $skorMap['Penjualan(Omzet)']['realisasi'] = $omsetValue;
+            $groomingResult = $this->PresensiModel
+                ->countGrooming($pegawai_id, $startDate, $endDate);
+            $skorMap['Grooming']['realisasi'] = $groomingResult->total_grooming ?? 0;
 
-                $tanggalPenilaian = $this->request->getGet('tanggal_penilaian_kpi') ?? date('Y-m-d');
+            $categoryResult = $this->DetailPenjualanModel
+                ->countByCategory(2, $startDate, $endDate);
+            $skorMap['Up-selling dan Cross-selling']['realisasi'] = $categoryResult->total_category ?? 0;
 
-                $bulan = date('m', strtotime($tanggalPenilaian));
-                $tahun = date('Y', strtotime($tanggalPenilaian));
-                $startDate = date('Y-m-01', strtotime("$tahun-$bulan-01"));
-                $endDate = date('Y-m-t', strtotime("$tahun-$bulan-01"));
-
-                $onTimeResult = $this->PresensiModel
-                    ->countOnTimeAbsensiPerBulan($pegawai_id, $startDate, $endDate);
-                $onTimeCount = $onTimeResult->total_ontime ?? 0;
-                $skorMap['Kedisiplinan']['realisasi'] = $onTimeCount;
-
-                $absensiResult = $this->PresensiModel
-                    ->countAbsensiPerBulan($pegawai_id, $startDate, $endDate);
-                $jumlahAbsensi = $absensiResult->total_absensi ?? 0;
-                $skorMap['Kehadiran']['realisasi'] = $jumlahAbsensi;
-
-                $groomingResult = $this->PresensiModel
-                    ->countGrooming($pegawai_id, $startDate, $endDate);
-                $jumlahGrooming = $groomingResult->total_grooming ?? 0;
-                $skorMap['Grooming']['realisasi'] = $jumlahGrooming;
-
-                $categoryResult = $this->DetailPenjualanModel
-                    ->countByCategory(2, $startDate, $endDate);
-                $totalCategory = $categoryResult->total_category ?? 0;
-                $skorMap['Up-selling dan Cross-selling']['realisasi'] = $totalCategory;
-
-                //media
-                $jumlahByTemplate = $this->PenilaianKPIModel->getJumlahByTemplateKPI($pegawai_id);
-
-                foreach ($jumlahByTemplate as $row) {
-                    $skorMap[$row->template_kpi]['realisasi'] = $row->jumlah;
-                }
-
-
+            // Additional KPI template-based data
+            $jumlahByTemplate = $this->PenilaianKPIModel->getJumlahByTemplateKPI($pegawai_id);
+            foreach ($jumlahByTemplate as $row) {
+                $skorMap[$row->template_kpi]['realisasi'] = $row->jumlah;
             }
         }
-
-        $data = [
-            'penilaiankpi' => [],
-            'akun' => $this->AuthModel->getdataakun(),
-            'pegawai_idpegawai' => $pegawai_id,
-            'templatekpi' => $templatekpi,
-            'skorMap' => $skorMap,
-            'body' => 'penilaian/penilaian_kpi',
-        ];
-
-        return view('template', $data);
     }
+
+    $data = [
+        'penilaiankpi' => $penilaianKPIList,
+        'akun' => $this->AuthModel->getdataakun(),
+        'pegawai_idpegawai' => $pegawai_id,
+        'unit_idunit' => $unitId,
+        'templatekpi' => $templatekpi,
+        'skorMap' => $skorMap,
+        'isUpdate' => $isUpdate,
+        'levelList' => $levelList,
+        'templateIdList' => $templateIdList,
+        'prefillList' => $prefillList,
+        'idpenilaianList' => $idpenilaianList,
+        'kpiExistingMap' => $kpiExistingMap,
+        'body' => 'penilaian/penilaian_kpi',
+    ];
+
+    return view('template', $data);
+    // return json_encode($data);
+}
+
+
+public function insert_penilaian()
+{
+    $kpiList        = $this->request->getPost('kpi_utama');
+    $bobotList      = $this->request->getPost('bobot');
+    $targetList     = $this->request->getPost('target');
+    $realisasiList  = $this->request->getPost('realisasi');
+    $scoreList      = $this->request->getPost('score');
+    $levelList      = $this->request->getPost('level');
+    $unitIdList     = $this->request->getPost('unit_idunit');
+    $templateIdList = $this->request->getPost('template_kpi_idtemplate_kpi');
+
+    $pegawai_id = $this->request->getPost('pegawai_idpegawai');
+    $tanggal    = $this->request->getPost('tanggal_penilaian_kpi');
+
+    if ($kpiList && is_array($kpiList)) {
+        foreach ($kpiList as $i => $kpi) {
+            $this->PenilaianKPIModel->insert([
+                'kpi_utama'                    => $kpi,
+                'bobot'                        => $bobotList[$i] ?? null,
+                'target'                       => $targetList[$i] ?? null,
+                'realisasi'                    => $realisasiList[$i] ?? 0,
+                'score'                        => $scoreList[$i] ?? 0,
+                'level'                        => $levelList[$i] ?? null,
+                'unit_idunit'                  => $unitIdList[$i] ?? null,
+                'template_kpi_idtemplate_kpi'  => $templateIdList[$i] ?? null,
+                'pegawai_idpegawai'            => $pegawai_id,
+                'tanggal_penilaian_kpi'        => $tanggal,
+                'created_on'                   => date('Y-m-d H:i:s'),
+            ]);
+        }
+    }
+
+    // 3️⃣ Flash message & redirect
+    session()->setFlashdata('sukses', 'Data Berhasil Ditambahkan');
+    return redirect()->to(base_url('penilaian_kpi'));
+}
+
+public function update_penilaian()
+{
+    $ids           = $this->request->getPost('idpenilaian_kpi');
+    $kpiList       = $this->request->getPost('kpi_utama');
+    $bobotList     = $this->request->getPost('bobot');
+    $targetList    = $this->request->getPost('target');
+    $realisasiList = $this->request->getPost('realisasi');
+    $scoreList     = $this->request->getPost('score');
+    $levelList     = $this->request->getPost('level');
+    $pegawai_id    = $this->request->getPost('pegawai_idpegawai');
+    $tanggal       = $this->request->getPost('tanggal_penilaian_kpi');
+
+    if (!$pegawai_id || !$tanggal || !is_array($kpiList)) {
+        session()->setFlashdata('error', 'Data tidak lengkap untuk update.');
+        return redirect()->to(base_url('penilaian_kpi'));
+    }
+
+    // Parse year and month from the given date
+    $bulan = date('m', strtotime($tanggal));
+    $tahun = date('Y', strtotime($tanggal));
+    $startDate = date('Y-m-01', strtotime("$tahun-$bulan-01"));
+    $endDate   = date('Y-m-t', strtotime("$tahun-$bulan-01"));
+
+    // Step 1: Delete all existing records for this pegawai and month
+    $this->PenilaianKPIModel
+        ->where('pegawai_idpegawai', $pegawai_id)
+        ->where('tanggal_penilaian_kpi >=', $startDate)
+        ->where('tanggal_penilaian_kpi <=', $endDate)
+        ->delete();
+
+    // Step 2: Insert the new batch records
+    $batchData = [];
+    foreach ($kpiList as $i => $kpi) {
+        $batchData[] = [
+            'kpi_utama'             => $kpi,
+            'bobot'                 => $bobotList[$i] ?? null,
+            'target'                => $targetList[$i] ?? null,
+            'realisasi'             => $realisasiList[$i] ?? null,
+            'score'                 => $scoreList[$i] ?? null,
+            'level'                 => $levelList[$i] ?? null,
+            'pegawai_idpegawai'     => $pegawai_id,
+            'tanggal_penilaian_kpi' => $tanggal,
+            'created_on'            => date('Y-m-d H:i:s'),
+        ];
+    }
+
+    try {
+        $this->PenilaianKPIModel->insertBatch($batchData);
+        session()->setFlashdata('sukses', 'Data Berhasil Diperbarui.');
+    } catch (\Throwable $e) {
+        session()->setFlashdata('error', 'Terjadi Kesalahan Saat Menyimpan Data: ' . $e->getMessage());
+    }
+
+    return redirect()->to(base_url('penilaian_kpi'));
+}
+
+
+// public function insert_penilaian()
+// {
+//     // 1️⃣ Get POST data
+//     $kpiList          = $this->request->getPost('kpi_utama');
+//     $bobotList        = $this->request->getPost('bobot');
+//     $targetList       = $this->request->getPost('target');
+//     $realisasiList    = $this->request->getPost('realisasi');
+//     $scoreList        = $this->request->getPost('score');
+//     $levelList        = $this->request->getPost('level');
+//     $unitIdList       = $this->request->getPost('unit_idunit');
+//     $templateIdList   = $this->request->getPost('template_kpi_idtemplate_kpi');
+
+//     $pegawai_id = $this->request->getPost('pegawai_idpegawai');
+//     $tanggal    = $this->request->getPost('tanggal_penilaian_kpi');
+
+//     // 2️⃣ Fetch or create parent "Checklist Pekerjaan"
+//     $parent = $this->PenilaianModel
+//         ->where('pegawai_idpegawai', $pegawai_id)
+//         ->where('tanggal_penilaian', $tanggal)
+//         ->where('aspek', 'Checklist Pekerjaan')
+//         ->first();
+
+//     if (!$parent) {
+//         $parent_id = $this->PenilaianModel->insert([
+//             'pegawai_idpegawai' => $pegawai_id,
+//             'tanggal_penilaian' => $tanggal,
+//             'aspek'             => 'Checklist Pekerjaan',
+//             'keterangan'        => 'Penilaian KPI',
+//             'created_on'        => date('Y-m-d H:i:s'),
+//         ]);
+//     } else {
+//         $parent_id = $parent->idpenilaian;
+//     }
+
+//     // 3️⃣ Insert KPI rows linked to parent
+//     if ($kpiList && is_array($kpiList)) {
+//         foreach ($kpiList as $i => $kpi) {
+//             $this->PenilaianKPIModel->insertKPI(
+//                 $kpi,
+//                 $bobotList[$i] ?? null,
+//                 $targetList[$i] ?? null,
+//                 $realisasiList[$i] ?? 0,
+//                 $scoreList[$i] ?? 0,
+//                 $levelList[$i] ?? null,
+//                 $unitIdList[$i] ?? null,
+//                 $templateIdList[$i] ?? null,
+//                 $pegawai_id,
+//                 $tanggal,
+//                 $parent_id
+//             );
+//         }
+//     }
+
+//         session()->setFlashdata('sukses', 'Data Berhasil Ditambahkan');
+//         return redirect()->to(base_url('penilaian_kpi'));
+//     }
+
+
+// public function insert_penilaian()
+// {
+//     $kpiList       = $this->request->getPost('kpi_utama');
+//     $bobotList     = $this->request->getPost('bobot');
+//     $targetList    = $this->request->getPost('target');
+//     $realisasiList = $this->request->getPost('realisasi');
+//     $scoreList     = $this->request->getPost('score');
+
+//     $pegawai_id = $this->request->getPost('pegawai_idpegawai');
+//     $tanggal    = $this->request->getPost('tanggal_penilaian_kpi');
+
+//     // 1️⃣ Fetch or create parent "Checklist Pekerjaan"
+//     $parent = $this->PenilaianModel
+//         ->where('pegawai_idpegawai', $pegawai_id)
+//         ->where('tanggal_penilaian', $tanggal)
+//         ->where('aspek', 'Checklist Pekerjaan')
+//         ->first();
+
+//     if (!$parent) {
+//         $parent_id = $this->PenilaianModel->insert([
+//             'pegawai_idpegawai' => $pegawai_id,
+//             'tanggal_penilaian' => $tanggal,
+//             'aspek'            => 'Checklist Pekerjaan',
+//             'keterangan'       => 'Penilaian KPI',
+//             'created_on'       => date('Y-m-d H:i:s'),
+//         ]);
+//     } else {
+//         $parent_id = $parent->idpenilaian;
+//     }
+
+//     // 2️⃣ Insert KPI rows linked to parent
+//     if ($kpiList && is_array($kpiList)) {
+//        foreach ($kpiList as $i => $kpi) {
+//     $this->PenilaianKPIModel->insertKPI(
+//     $kpi,
+//     $bobotList[$i] ?? null,
+//     $targetList[$i] ?? null,
+//     $realisasiList[$i] ?? 0,
+//     $scoreList[$i] ?? 0,
+//     $pegawai_id,
+//     $tanggal,
+//     $parent_id
+// );
+
+// }
+
+//     }
+
+//     session()->setFlashdata('sukses', 'Data Berhasil Ditambahkan');
+//     return redirect()->to(base_url('penilaian_kpi'));
+// }
+
+
+    //     public function insert_penilaian()
+// {
+//     $kpiList = $this->request->getPost('kpi_utama');
+//     $bobotList = $this->request->getPost('bobot');
+//     $targetList = $this->request->getPost('target');
+//     $realisasiList = $this->request->getPost('realisasi');
+//     $scoreList = $this->request->getPost('score');
+
+    //     $pegawai_id = $this->request->getPost('pegawai_idpegawai');
+//     $tanggal = $this->request->getPost('tanggal_penilaian_kpi');
+
+    //     if ($kpiList && is_array($kpiList)) {
+//         foreach ($kpiList as $i => $kpi) {
+//             $this->PenilaianKPIModel->insertKPI(
+//                 $kpi,
+//                 $bobotList[$i] ?? null,
+//                 $targetList[$i] ?? null,
+//                 [$realisasiList[$i] ?? 0],
+//                 [$scoreList[$i] ?? 0],
+//                 $pegawai_id,
+//                 $tanggal
+//             );
+//         }
+//     }
+
+    //     session()->setFlashdata('sukses', 'Data Berhasil Ditambahkan');
+//     return redirect()->to(base_url('penilaian_kpi'));
+// }
+
+
+
+
+
+    public function delete_penilaian()
+    {
+        $id = $this->request->getPost('idpenilaian_kpi');
+        $this->PenilaianKPIModel->delete($id);
+        session()->setFlashdata('sukses', 'Data Berhasil Dihapus');
+        return redirect()->to(base_url('penilaian'));
+    }
+
 
     public function index_riwayat()
     {
@@ -362,116 +748,6 @@ public function export_penilaian_detail()
 }
 
 
-public function insert_penilaian()
-{
-    $kpiList       = $this->request->getPost('kpi_utama');
-    $bobotList     = $this->request->getPost('bobot');
-    $targetList    = $this->request->getPost('target');
-    $realisasiList = $this->request->getPost('realisasi');
-    $scoreList     = $this->request->getPost('score');
-
-    $pegawai_id = $this->request->getPost('pegawai_idpegawai');
-    $tanggal    = $this->request->getPost('tanggal_penilaian_kpi');
-
-    // 1️⃣ Fetch or create parent "Checklist Pekerjaan"
-    $parent = $this->PenilaianModel
-        ->where('pegawai_idpegawai', $pegawai_id)
-        ->where('tanggal_penilaian', $tanggal)
-        ->where('aspek', 'Checklist Pekerjaan')
-        ->first();
-
-    if (!$parent) {
-        $parent_id = $this->PenilaianModel->insert([
-            'pegawai_idpegawai' => $pegawai_id,
-            'tanggal_penilaian' => $tanggal,
-            'aspek'            => 'Checklist Pekerjaan',
-            'keterangan'       => 'Penilaian KPI',
-            'created_on'       => date('Y-m-d H:i:s'),
-        ]);
-    } else {
-        $parent_id = $parent->idpenilaian;
-    }
-
-    // 2️⃣ Insert KPI rows linked to parent
-    if ($kpiList && is_array($kpiList)) {
-       foreach ($kpiList as $i => $kpi) {
-    $this->PenilaianKPIModel->insertKPI(
-        $kpi,
-        $bobotList[$i] ?? null,
-        $targetList[$i] ?? null,
-        [$realisasiList[$i] ?? 0],
-        [$scoreList[$i] ?? 0],
-        $pegawai_id,
-        $tanggal,
-        $parent_id // pass the parent id so it links
-    );
-}
-
-    }
-
-    session()->setFlashdata('sukses', 'Data Berhasil Ditambahkan');
-    return redirect()->to(base_url('penilaian_kpi'));
-}
-
-
-    //     public function insert_penilaian()
-// {
-//     $kpiList = $this->request->getPost('kpi_utama');
-//     $bobotList = $this->request->getPost('bobot');
-//     $targetList = $this->request->getPost('target');
-//     $realisasiList = $this->request->getPost('realisasi');
-//     $scoreList = $this->request->getPost('score');
-
-    //     $pegawai_id = $this->request->getPost('pegawai_idpegawai');
-//     $tanggal = $this->request->getPost('tanggal_penilaian_kpi');
-
-    //     if ($kpiList && is_array($kpiList)) {
-//         foreach ($kpiList as $i => $kpi) {
-//             $this->PenilaianKPIModel->insertKPI(
-//                 $kpi,
-//                 $bobotList[$i] ?? null,
-//                 $targetList[$i] ?? null,
-//                 [$realisasiList[$i] ?? 0],
-//                 [$scoreList[$i] ?? 0],
-//                 $pegawai_id,
-//                 $tanggal
-//             );
-//         }
-//     }
-
-    //     session()->setFlashdata('sukses', 'Data Berhasil Ditambahkan');
-//     return redirect()->to(base_url('penilaian_kpi'));
-// }
-
-
-
-    public function update_penilaian()
-    {
-        $id = $this->request->getPost('idpenilaian_kpi');
-
-        $data = [
-            'kpi_utama' => $this->request->getPost('kpi_utama'),
-            'bobot' => $this->request->getPost('bobot'),
-            'target' => $this->request->getPost('target'),
-            'realisasi' => $this->request->getPost('realisasi'),
-            'score' => $this->request->getPost('score'),
-            'pegawai_idpegawai' => $this->request->getPost('pegawai_idpegawai'),
-            'tanggal_penilaian_kpi' => $this->request->getPost('tanggal_penilaian_kpi'),
-            'updated_on' => date('Y-m-d H:i:s'),
-        ];
-
-        $this->PenilaianKPIModel->update($id, $data);
-        session()->setFlashdata('sukses', 'Data Berhasil Diupdate');
-        return redirect()->to(base_url('penilaian'));
-    }
-
-    public function delete_penilaian()
-    {
-        $id = $this->request->getPost('idpenilaian_kpi');
-        $this->PenilaianKPIModel->delete($id);
-        session()->setFlashdata('sukses', 'Data Berhasil Dihapus');
-        return redirect()->to(base_url('penilaian'));
-    }
 
     public function export_penilaian()
     {

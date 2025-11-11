@@ -60,19 +60,19 @@
                 </thead>
                 <tbody>
                     <?php foreach ($presensiHariIni as $row) : ?>
-                    <tr>
-                        <td><?= session('NAMA') ?></td>
-                        <td><?= date('d-m-Y') ?></td>
-                        <td>Absen Masuk</td>
-                        <td><?= $row->nama_jadwal ?></td>
-                        <?php if ($row->status_kehadiran == 0) : ?>
-                        <td><span class="btn btn-success btn-sm" style="width: 100px;">Tepat Waktu</span></td>
-                        <?php elseif ($row->status_kehadiran == 1) : ?>
-                        <td><span class="btn btn-warning btn-sm text-dark" style="width: 100px;">Toleransi</span></td>
-                        <?php elseif ($row->status_kehadiran == 2) : ?>
-                        <td><span class="btn btn-danger btn-sm" style="width: 100px;">Telat</span></td>
-                        <?php endif ?>
-                        <td>
+                        <tr>
+                            <td><?= session('NAMA') ?></td>
+                            <td><?= date('d-m-Y') ?></td>
+                            <td>Absen Masuk</td>
+                            <td><?= $row->nama_jadwal ?></td>
+                            <?php if ($row->status_kehadiran == 0) : ?>
+                                <td><span class="btn btn-success btn-sm" style="width: 100px;">Tepat Waktu</span></td>
+                            <?php elseif ($row->status_kehadiran == 1) : ?>
+                                <td><span class="btn btn-warning btn-sm text-dark" style="width: 100px;">Toleransi</span></td>
+                            <?php elseif ($row->status_kehadiran == 2) : ?>
+                                <td><span class="btn btn-danger btn-sm" style="width: 100px;">Telat</span></td>
+                            <?php endif ?>
+                            <td>
 
 
                                 <button type="button" class="btn-detail-lokasi  btn btn-success" data-bs-toggle="modal"
@@ -88,8 +88,8 @@
 
 
 
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     <?php endforeach ?>
                 </tbody>
             </table>
@@ -120,13 +120,13 @@
                     </thead>
                     <tbody>
                         <?php foreach ($presensiHariIni as $row) : ?>
-                        <tr>
-                            <td><?= session('NAMA') ?></td>
-                            <td><?= date('d-m-Y') ?></td>
-                            <td>Absen Pulang</td>
-                            <td><?= $row->nama_jadwal ?></td>
-                            <td style="display: flex; justify-content: center;">
-                                <?php if (empty($row->waktu_pulang) || $row->waktu_pulang === '00:00:00'): ?>
+                            <tr>
+                                <td><?= session('NAMA') ?></td>
+                                <td><?= date('d-m-Y') ?></td>
+                                <td>Absen Pulang</td>
+                                <td><?= $row->nama_jadwal ?></td>
+                                <td style="display: flex; justify-content: center;">
+                                    <?php if (empty($row->waktu_pulang) || $row->waktu_pulang === '00:00:00'): ?>
 
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#modal-konfirmasi-absen-pulang"
@@ -143,10 +143,10 @@
                                             Detail
                                         </button>
 
-                                <?php endif; ?>
+                                    <?php endif; ?>
 
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         <?php endforeach ?>
                     </tbody>
                 </table>
@@ -174,17 +174,17 @@
                         <label for="jadwal-select" class="form-label">Pilih Jadwal Masuk</label>
                         <select id="jadwal-select" class="form-select">
                             <?php if (!empty($jadwalmasuk)): ?>
-                            <option value="" disabled selected>-- Pilih Jadwal --</option>
-                            <?php foreach ($jadwalmasuk as $jadwal): ?>
-                            <option value="<?= esc($jadwal->idjadwal_masuk) ?>"
-                                data-jammasuk="<?= esc($jadwal->jam_masuk) ?>"
-                                data-jampulang="<?= esc($jadwal->jam_pulang) ?>"
-                                data-jamtoleransi="<?= esc($jadwal->toleransi) ?>">
-                                <?= esc($jadwal->nama_jadwal) ?>
-                            </option>
-                            <?php endforeach; ?>
+                                <option value="" disabled selected>-- Pilih Jadwal --</option>
+                                <?php foreach ($jadwalmasuk as $jadwal): ?>
+                                    <option value="<?= esc($jadwal->idjadwal_masuk) ?>"
+                                        data-jammasuk="<?= esc($jadwal->jam_masuk) ?>"
+                                        data-jampulang="<?= esc($jadwal->jam_pulang) ?>"
+                                        data-jamtoleransi="<?= esc($jadwal->toleransi) ?>">
+                                        <?= esc($jadwal->nama_jadwal) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             <?php else: ?>
-                            <option value="" disabled selected>Tidak ada jadwal</option>
+                                <option value="" disabled selected>Tidak ada jadwal</option>
                             <?php endif; ?>
                         </select>
                     </div>
@@ -423,126 +423,126 @@
 
 
     <script>
-    let loadingModal;
-    let konfirmasiModal;
+        let loadingModal;
+        let konfirmasiModal;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const loadingModalEl = document.getElementById('loading-lokasi-modal');
-        loadingModal = bootstrap.Modal.getOrCreateInstance(loadingModalEl);
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingModalEl = document.getElementById('loading-lokasi-modal');
+            loadingModal = bootstrap.Modal.getOrCreateInstance(loadingModalEl);
 
-        const konfirmasiModalEl = document.getElementById('modal-konfirmasi-absen-masuk');
-        konfirmasiModal = bootstrap.Modal.getOrCreateInstance(konfirmasiModalEl);
+            const konfirmasiModalEl = document.getElementById('modal-konfirmasi-absen-masuk');
+            konfirmasiModal = bootstrap.Modal.getOrCreateInstance(konfirmasiModalEl);
 
-        const btnAbsenMasuk = document.getElementById('btn-absen-masuk');
+            const btnAbsenMasuk = document.getElementById('btn-absen-masuk');
 
-        btnAbsenMasuk.addEventListener('click', function() {
-            // Tampilkan loading dulu
-            loadingModal.show();
+            btnAbsenMasuk.addEventListener('click', function() {
+                // Tampilkan loading dulu
+                loadingModal.show();
 
-            // Ambil lokasi
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        // Isi input lat/long di modal konfirmasi
-                        document.getElementById('latitude').value = position.coords.latitude;
-                        document.getElementById('longitude').value = position.coords.longitude;
+                // Ambil lokasi
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            // Isi input lat/long di modal konfirmasi
+                            document.getElementById('latitude').value = position.coords.latitude;
+                            document.getElementById('longitude').value = position.coords.longitude;
 
-                        // Setelah loading, tampilkan modal konfirmasi
-                        setTimeout(() => {
-                            loadingModal.hide();
-                            konfirmasiModal.show();
-                        }, 800);
-                    },
-                    function(error) {
-                        setTimeout(() => {
-                            loadingModal.hide();
-                            alert('Gagal mendapatkan lokasi: ' + error.message);
-                        }, 500);
-                    }
-                );
-            } else {
-                loadingModal.hide();
-                alert('Geolocation tidak didukung oleh browser ini');
-            }
+                            // Setelah loading, tampilkan modal konfirmasi
+                            setTimeout(() => {
+                                loadingModal.hide();
+                                konfirmasiModal.show();
+                            }, 800);
+                        },
+                        function(error) {
+                            setTimeout(() => {
+                                loadingModal.hide();
+                                alert('Gagal mendapatkan lokasi: ' + error.message);
+                            }, 500);
+                        }
+                    );
+                } else {
+                    loadingModal.hide();
+                    alert('Geolocation tidak didukung oleh browser ini');
+                }
+            });
+
+
+            document.getElementById('konfirmasi-absen-masuk').addEventListener('click', function() {
+                const form = document.getElementById('form-masuk');
+
+
+                const idjadwal = document.getElementById('idjadwal_masuk').value;
+                if (!idjadwal) {
+                    alert('Silakan pilih jadwal masuk terlebih dahulu');
+                    return;
+                }
+
+                // Submit form
+                form.submit();
+            });
+        });
+    </script>
+
+    <script>
+        document.getElementById('jadwal-select').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+
+            const id = selectedOption.value;
+            const jamMasuk = selectedOption.getAttribute('data-jammasuk');
+            const jamPulang = selectedOption.getAttribute('data-jampulang');
+            const jamToleransi = selectedOption.getAttribute('data-jamtoleransi');
+
+            document.getElementById('idjadwal_masuk').value = id;
+            document.getElementById('jam_masuk').value = jamMasuk;
+            document.getElementById('jam_pulang').value = jamPulang;
+            document.getElementById('jam_toleransi').value = jamToleransi;
         });
 
-
         document.getElementById('konfirmasi-absen-masuk').addEventListener('click', function() {
-            const form = document.getElementById('form-masuk');
-
-
-            const idjadwal = document.getElementById('idjadwal_masuk').value;
-            if (!idjadwal) {
-                alert('Silakan pilih jadwal masuk terlebih dahulu');
+            l
+            const jadwalId = document.getElementById('idjadwal_masuk').value;
+            if (!jadwalId) {
+                alert('Silakan pilih jadwal terlebih dahulu.');
                 return;
             }
 
             // Submit form
-            form.submit();
+            document.getElementById('form-masuk').submit();
         });
-    });
     </script>
 
     <script>
-    document.getElementById('jadwal-select').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-
-        const id = selectedOption.value;
-        const jamMasuk = selectedOption.getAttribute('data-jammasuk');
-        const jamPulang = selectedOption.getAttribute('data-jampulang');
-        const jamToleransi = selectedOption.getAttribute('data-jamtoleransi');
-
-        document.getElementById('idjadwal_masuk').value = id;
-        document.getElementById('jam_masuk').value = jamMasuk;
-        document.getElementById('jam_pulang').value = jamPulang;
-        document.getElementById('jam_toleransi').value = jamToleransi;
-    });
-
-    document.getElementById('konfirmasi-absen-masuk').addEventListener('click', function() {
-        l
-        const jadwalId = document.getElementById('idjadwal_masuk').value;
-        if (!jadwalId) {
-            alert('Silakan pilih jadwal terlebih dahulu.');
-            return;
-        }
-
-        // Submit form
-        document.getElementById('form-masuk').submit();
-    });
+        const modalAbsenPulang = document.getElementById('modal-konfirmasi-absen-pulang');
+        modalAbsenPulang.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const idpresensi = button.getAttribute('data-idabsenpulang');
+            const input = modalAbsenPulang.querySelector('#input-idpresensi-pulang');
+            input.value = idpresensi;
+        });
     </script>
 
     <script>
-    const modalAbsenPulang = document.getElementById('modal-konfirmasi-absen-pulang');
-    modalAbsenPulang.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const idpresensi = button.getAttribute('data-idabsenpulang');
-        const input = modalAbsenPulang.querySelector('#input-idpresensi-pulang');
-        input.value = idpresensi;
-    });
-    </script>
+        const modalDetailAbsenPulang = document.getElementById('modal-detail-absen-pulang');
+        modalDetailAbsenPulang.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
 
-    <script>
-    const modalDetailAbsenPulang = document.getElementById('modal-detail-absen-pulang');
-    modalDetailAbsenPulang.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
+            const waktuMasuk = button.getAttribute('data-jammasuk');
+            const waktuPulang = button.getAttribute('data-jampulang');
+            const nama = "<?= session('NAMA') ?>";
 
-        const waktuMasuk = button.getAttribute('data-jammasuk');
-        const waktuPulang = button.getAttribute('data-jampulang');
-        const nama = "<?= session('NAMA') ?>";
+            const jamMasuk = new Date(waktuMasuk);
+            const jamPulang = waktuPulang ? new Date(waktuPulang) : null;
 
-        const jamMasuk = new Date(waktuMasuk);
-        const jamPulang = waktuPulang ? new Date(waktuPulang) : null;
+            const fotopulang = button.getAttribute('data-fotopulang');
 
-        const fotopulang = button.getAttribute('data-fotopulang');
+            let konten = '';
 
-        let konten = '';
+            if (jamPulang) {
+                const durasiMs = jamPulang - jamMasuk;
+                const durasiJam = Math.floor(durasiMs / 1000 / 60 / 60);
+                const durasiMenit = Math.floor((durasiMs / 1000 / 60) % 60);
 
-        if (jamPulang) {
-            const durasiMs = jamPulang - jamMasuk;
-            const durasiJam = Math.floor(durasiMs / 1000 / 60 / 60);
-            const durasiMenit = Math.floor((durasiMs / 1000 / 60) % 60);
-
-            konten = `
+                konten = `
                 <ul class="list-group">
                     <li class="list-group-item"><strong>Nama:</strong> ${nama}</li>
                     <li class="list-group-item"><strong>Tanggal:</strong> ${jamMasuk.toLocaleDateString('id-ID')}</li>
@@ -550,62 +550,62 @@
                     <li class="list-group-item"><strong>Jam Pulang:</strong> ${jamPulang.toLocaleTimeString('id-ID')}</li>
                     <li class="list-group-item"><strong>Durasi Kerja:</strong> ${durasiJam} jam ${durasiMenit} menit</li>
                     <li class="list-group-item"><strong>Foto:</strong><br>`;
-            if (fotopulang) {
-                const imgSrc = "<?= base_url('foto_presensi/') ?>" + fotopulang;
-                konten += `
+                if (fotopulang) {
+                    const imgSrc = "<?= base_url('foto_presensi/') ?>" + fotopulang;
+                    konten += `
                     <center>
                         <img src="${imgSrc}" alt="Foto Absen"
                             style="max-width: 200px; max-height: 150px; cursor: pointer;"
                             onclick="tampilkanModalGambar('${imgSrc}')">
                     </center>`;
+                } else {
+                    konten += `<em>Tidak ada foto</em>`;
+                }
+                konten += `</li></ul>`;
             } else {
-                konten += `<em>Tidak ada foto</em>`;
+                konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
             }
-            konten += `</li></ul>`;
-        } else {
-            konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
-        }
 
-        modalDetailAbsenPulang.querySelector('#body-detail-absen-pulang').innerHTML = konten;
-    });
+            modalDetailAbsenPulang.querySelector('#body-detail-absen-pulang').innerHTML = konten;
+        });
     </script>
 
     <?php foreach ($presensiHariIni as $p): ?>
-    <script>
-    const latitudeKantor = <?= json_encode($p->LATITUDE ?? null) ?>;
-    const longitudeKantor = <?= json_encode($p->LONGTITUDE ?? null) ?>;
+        <script>
+            const latitudeKantor = <?= json_encode($p->LATITUDE ?? null) ?>;
+            const longitudeKantor = <?= json_encode($p->LONGTITUDE ?? null) ?>;
 
 
-    let jarakPegawaiKantor = null;
-    let map = null;
+            let jarakPegawaiKantor = null;
+            let map = null;
 
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn-detail-lokasi')) {
-            latitudePegawai = parseFloat(e.target.getAttribute('data-lat'));
-            longitudePegawai = parseFloat(e.target.getAttribute('data-long'));
-            const waktuMasuk = e.target.getAttribute('data-waktumasuk');
-            const waktuPulang = e.target.getAttribute('data-waktupulang');
-            const ip = e.target.getAttribute('data-ip') || '-';
-            const lat = e.target.getAttribute('data-lat') || '-';
-            const long = e.target.getAttribute('data-long') || '-';
-            const foto = e.target.getAttribute('data-foto');
-            const jarak = e.target.getAttribute('data-jarak') || '-';
-            const nama = e.target.getAttribute('data-nama') || '-';
-            const jadwalmasuk = e.target.getAttribute('data-jadwalmasuk') || '-';
-            const jadwalpulang = e.target.getAttribute('data-jadwalpulang') || '-';
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-detail-lokasi')) {
+                    latitudePegawai = parseFloat(e.target.getAttribute('data-lat'));
+                    longitudePegawai = parseFloat(e.target.getAttribute('data-long'));
+                    const waktuMasuk = e.target.getAttribute('data-waktumasuk');
+                    const waktuPulang = e.target.getAttribute('data-waktupulang');
+                    const ip = e.target.getAttribute('data-ip') || '-';
+                    const lat = e.target.getAttribute('data-lat') || '-';
+                    const long = e.target.getAttribute('data-long') || '-';
+                    const foto = e.target.getAttribute('data-foto');
+                    const jarak = e.target.getAttribute('data-jarak') || '-';
+                    const nama = e.target.getAttribute('data-nama') || '-';
+                    const jadwalmasuk = e.target.getAttribute('data-jadwalmasuk') || '-';
+                    const jadwalpulang = e.target.getAttribute('data-jadwalpulang') || '-';
 
-            const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
-            const waktuPulangDate = waktuPulang ? new Date(waktuPulang) : null;
+                    const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
+                    const waktuPulangDate = waktuPulang ? new Date(waktuPulang) : null;
 
-            document.getElementById('detail_nama_map').textContent = nama;
-            document.getElementById('detail_jarak_map').textContent = jarak + ' meter';
-            document.getElementById('detail-jamjadwal-pulang').textContent = jadwalpulang;
-            document.getElementById('detail-jamjadwal-masuk').textContent = jadwalmasuk;
+                    document.getElementById('detail_nama_map').textContent = nama;
+                    document.getElementById('detail_jarak_map').textContent = jarak + ' meter';
+                    document.getElementById('detail-jamjadwal-pulang').textContent = jadwalpulang;
+                    document.getElementById('detail-jamjadwal-masuk').textContent = jadwalmasuk;
 
-            let konten = '';
+                    let konten = '';
 
-            if (waktuMasukDate) {
-                konten += `
+                    if (waktuMasukDate) {
+                        konten += `
                 <div class="card">
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
@@ -615,89 +615,89 @@
                             <li class="list-group-item"><strong>IP:</strong> ${ip}</li>
                             <li class="list-group-item"><strong>Lokasi:</strong> ${lat}, ${long}</li>
                             <li class="list-group-item"><strong>Foto:</strong><br>`;
-                if (foto) {
-                    const imgSrc = "<?= base_url('foto_presensi/') ?>" + foto;
-                    konten += `
+                        if (foto) {
+                            const imgSrc = "<?= base_url('foto_presensi/') ?>" + foto;
+                            konten += `
                     <center>
                         <img src="${imgSrc}" alt="Foto Absen"
                              style="max-width: 200px; max-height: 150px; cursor: pointer;"
                              onclick="tampilkanModalGambar('${imgSrc}')">
                     </center>`;
-                } else {
-                    konten += `<em>Tidak ada foto</em>`;
+                        } else {
+                            konten += `<em>Tidak ada foto</em>`;
+                        }
+                        konten += `</li></ul></div></div>`;
+                    } else {
+                        konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
+                    }
+
+                    document.getElementById('detail-absen-map').innerHTML = konten;
                 }
-                konten += `</li></ul></div></div>`;
-            } else {
-                konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
+            });
+
+
+            function hitungJarak(lat1, lon1, lat2, lon2) {
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) ** 2 +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) ** 2;
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
             }
 
-            document.getElementById('detail-absen-map').innerHTML = konten;
-        }
-    });
+            document.getElementById('modal-peta-lokasi').addEventListener('shown.bs.modal', function() {
+
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
 
 
-    function hitungJarak(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) ** 2 +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
+                map = L.map('map').setView([latitudeKantor, longitudeKantor], 15);
 
-    document.getElementById('modal-peta-lokasi').addEventListener('shown.bs.modal', function() {
-
-        if (map) {
-            map.remove();
-            map = null;
-        }
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
 
 
-        map = L.map('map').setView([latitudeKantor, longitudeKantor], 15);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+                L.marker([latitudeKantor, longitudeKantor])
+                    .addTo(map)
+                    .bindPopup('Lokasi Kantor')
+                    .openPopup();
 
 
-        L.marker([latitudeKantor, longitudeKantor])
-            .addTo(map)
-            .bindPopup('Lokasi Kantor')
-            .openPopup();
+                L.marker([latitudePegawai, longitudePegawai])
+                    .addTo(map)
+                    .bindPopup('Lokasi Pegawai');
 
 
-        L.marker([latitudePegawai, longitudePegawai])
-            .addTo(map)
-            .bindPopup('Lokasi Pegawai');
+                const latlngs = [
+                    [latitudeKantor, longitudeKantor],
+                    [latitudePegawai, longitudePegawai]
+                ];
 
+                const polyline = L.polyline(latlngs, {
+                    color: 'blue'
+                }).addTo(map);
 
-        const latlngs = [
-            [latitudeKantor, longitudeKantor],
-            [latitudePegawai, longitudePegawai]
-        ];
+                // Tooltip Jarak
+                const jarak = hitungJarak(latitudeKantor, longitudeKantor, latitudePegawai, longitudePegawai);
+                const midLat = (latitudeKantor + latitudePegawai) / 2;
+                const midLng = (longitudeKantor + longitudePegawai) / 2;
 
-        const polyline = L.polyline(latlngs, {
-            color: 'blue'
-        }).addTo(map);
-
-        // Tooltip Jarak
-        const jarak = hitungJarak(latitudeKantor, longitudeKantor, latitudePegawai, longitudePegawai);
-        const midLat = (latitudeKantor + latitudePegawai) / 2;
-        const midLng = (longitudeKantor + longitudePegawai) / 2;
-
-        L.tooltip({
-                permanent: true,
-                direction: 'top',
-                className: 'leaflet-distance-label'
-            })
-            .setContent(`${jarak.toFixed(2)} km`)
-            .setLatLng([midLat, midLng])
-            .addTo(map);
-    });
-    </script>
+                L.tooltip({
+                        permanent: true,
+                        direction: 'top',
+                        className: 'leaflet-distance-label'
+                    })
+                    .setContent(`${jarak.toFixed(2)} km`)
+                    .setLatLng([midLat, midLng])
+                    .addTo(map);
+            });
+        </script>
     <?php endforeach; ?>
 
 
@@ -706,53 +706,53 @@
 
 
     <style>
-    .leaflet-distance-label {
-        background-color: white;
-        border: 1px solid #999;
-        border-radius: 4px;
-        padding: 4px 8px;
-        font-size: 13px;
-        font-weight: bold;
-        color: #333;
-        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-    }
+        .leaflet-distance-label {
+            background-color: white;
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
     </style>
 
     <script>
-    let zoomLevel = 1;
-    let translateX = 0;
-    let translateY = 0;
-    const zoomImage = document.getElementById('zoom-image');
+        let zoomLevel = 1;
+        let translateX = 0;
+        let translateY = 0;
+        const zoomImage = document.getElementById('zoom-image');
 
-    function updateTransform() {
-        zoomImage.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
-    }
+        function updateTransform() {
+            zoomImage.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+        }
 
-    function tampilkanModalGambar(src) {
-        zoomLevel = 1;
-        translateX = 0;
-        translateY = 0;
-        zoomImage.src = src;
-        updateTransform();
-        const modal = new bootstrap.Modal(document.getElementById('fotoModal'));
-        modal.show();
-    }
+        function tampilkanModalGambar(src) {
+            zoomLevel = 1;
+            translateX = 0;
+            translateY = 0;
+            zoomImage.src = src;
+            updateTransform();
+            const modal = new bootstrap.Modal(document.getElementById('fotoModal'));
+            modal.show();
+        }
 
-    function zoomIn() {
-        zoomLevel += 0.1;
-        updateTransform();
-    }
+        function zoomIn() {
+            zoomLevel += 0.1;
+            updateTransform();
+        }
 
-    function zoomOut() {
-        zoomLevel = Math.max(0.1, zoomLevel - 0.1);
-        updateTransform();
-    }
+        function zoomOut() {
+            zoomLevel = Math.max(0.1, zoomLevel - 0.1);
+            updateTransform();
+        }
 
-    function panImage(x, y) {
-        translateX += x;
-        translateY += y;
-        updateTransform();
-    }
+        function panImage(x, y) {
+            translateX += x;
+            translateY += y;
+            updateTransform();
+        }
     </script>
 
     <!-- Tambahkan CDN SweetAlert2 di head -->
@@ -761,162 +761,162 @@
 
 
     <script>
-    const latitudeUnit = parseFloat(<?= json_encode($data_latlong->LATITUDE ?? 0) ?>);
-    const longitudeUnit = parseFloat(<?= json_encode($data_latlong->LONGTITUDE ?? 0) ?>);
+        const latitudeUnit = parseFloat(<?= json_encode($data_latlong->LATITUDE ?? 0) ?>);
+        const longitudeUnit = parseFloat(<?= json_encode($data_latlong->LONGTITUDE ?? 0) ?>);
 
-    console.log("Lat Unit:", latitudeUnit, "Long Unit:", longitudeUnit);
+        console.log("Lat Unit:", latitudeUnit, "Long Unit:", longitudeUnit);
 
-    let map = null;
-    let latitudeUser = null;
-    let longitudeUser = null;
+        let map = null;
+        let latitudeUser = null;
+        let longitudeUser = null;
 
-    function hitungJarak(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) ** 2 +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // KM
-    }
-
-    // Reset status setiap kali modal dibuka
-    document.getElementById('modal-lokasi-saya').addEventListener('shown.bs.modal', function() {
-        document.getElementById('status-lokasi').textContent = "Klik tombol untuk mengambil lokasi.";
-    });
-
-    document.getElementById('btn-ambil-lokasi').addEventListener('click', function() {
-        if (!navigator.geolocation) {
-            Swal.fire("Error", "Browser kamu tidak mendukung Geolocation.", "error");
-            return;
+        function hitungJarak(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // KM
         }
 
-        // Jika browser support API permissions, cek status izin
-        if (navigator.permissions) {
-            navigator.permissions.query({
-                name: 'geolocation'
-            }).then(function(result) {
-                console.log("Status izin lokasi:", result.state);
-                if (result.state === "denied") {
-                    Swal.fire("Izin Lokasi Ditolak",
-                        "Silakan aktifkan izin lokasi untuk browser ini di pengaturan HP Anda.",
-                        "warning"
-                    );
-                    return;
-                }
-                ambilLokasiUser();
-            }).catch(() => {
-                ambilLokasiUser(); // fallback jika tidak bisa cek izin
-            });
-        } else {
-            ambilLokasiUser();
-        }
-    });
-
-    function ambilLokasiUser() {
-        document.getElementById('status-lokasi').textContent = "Mengambil lokasi...";
-        navigator.geolocation.getCurrentPosition(function(pos) {
-            latitudeUser = pos.coords.latitude;
-            longitudeUser = pos.coords.longitude;
-            console.log("Lokasi User:", latitudeUser, longitudeUser);
-            document.getElementById('status-lokasi').textContent = "Lokasi berhasil diambil ✅";
-            tampilkanMap();
-        }, function(err) {
-            console.error("Geolocation Error:", err);
-            switch (err.code) {
-                case err.PERMISSION_DENIED:
-                    Swal.fire("Izin Lokasi Ditolak", "Silakan izinkan akses lokasi di browser.", "error");
-                    break;
-                case err.POSITION_UNAVAILABLE:
-                    Swal.fire("Lokasi Tidak Tersedia", "Pastikan GPS/Location Service aktif.", "warning");
-                    break;
-                case err.TIMEOUT:
-                    Swal.fire("Timeout", "Gagal mendapatkan lokasi. Coba lagi.", "error");
-                    break;
-                default:
-                    Swal.fire("Error", "Terjadi kesalahan saat mengambil lokasi.", "error");
-            }
-        }, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+        // Reset status setiap kali modal dibuka
+        document.getElementById('modal-lokasi-saya').addEventListener('shown.bs.modal', function() {
+            document.getElementById('status-lokasi').textContent = "Klik tombol untuk mengambil lokasi.";
         });
-    }
 
-    function tampilkanMap() {
-        if (map) {
-            map.remove();
-            map = null;
+        document.getElementById('btn-ambil-lokasi').addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                Swal.fire("Error", "Browser kamu tidak mendukung Geolocation.", "error");
+                return;
+            }
+
+            // Jika browser support API permissions, cek status izin
+            if (navigator.permissions) {
+                navigator.permissions.query({
+                    name: 'geolocation'
+                }).then(function(result) {
+                    console.log("Status izin lokasi:", result.state);
+                    if (result.state === "denied") {
+                        Swal.fire("Izin Lokasi Ditolak",
+                            "Silakan aktifkan izin lokasi untuk browser ini di pengaturan HP Anda.",
+                            "warning"
+                        );
+                        return;
+                    }
+                    ambilLokasiUser();
+                }).catch(() => {
+                    ambilLokasiUser(); // fallback jika tidak bisa cek izin
+                });
+            } else {
+                ambilLokasiUser();
+            }
+        });
+
+        function ambilLokasiUser() {
+            document.getElementById('status-lokasi').textContent = "Mengambil lokasi...";
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                latitudeUser = pos.coords.latitude;
+                longitudeUser = pos.coords.longitude;
+                console.log("Lokasi User:", latitudeUser, longitudeUser);
+                document.getElementById('status-lokasi').textContent = "Lokasi berhasil diambil ✅";
+                tampilkanMap();
+            }, function(err) {
+                console.error("Geolocation Error:", err);
+                switch (err.code) {
+                    case err.PERMISSION_DENIED:
+                        Swal.fire("Izin Lokasi Ditolak", "Silakan izinkan akses lokasi di browser.", "error");
+                        break;
+                    case err.POSITION_UNAVAILABLE:
+                        Swal.fire("Lokasi Tidak Tersedia", "Pastikan GPS/Location Service aktif.", "warning");
+                        break;
+                    case err.TIMEOUT:
+                        Swal.fire("Timeout", "Gagal mendapatkan lokasi. Coba lagi.", "error");
+                        break;
+                    default:
+                        Swal.fire("Error", "Terjadi kesalahan saat mengambil lokasi.", "error");
+                }
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
         }
 
-        map = L.map('map2').setView([latitudeUnit, longitudeUnit], 15);
+        function tampilkanMap() {
+            if (map) {
+                map.remove();
+                map = null;
+            }
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+            map = L.map('map2').setView([latitudeUnit, longitudeUnit], 15);
 
-        // Marker Unit
-        L.marker([latitudeUnit, longitudeUnit])
-            .addTo(map)
-            .bindPopup('Lokasi Unit')
-            .openPopup();
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
 
-        // Marker User
-        L.marker([latitudeUser, longitudeUser])
-            .addTo(map)
-            .bindPopup('Lokasi Anda');
+            // Marker Unit
+            L.marker([latitudeUnit, longitudeUnit])
+                .addTo(map)
+                .bindPopup('Lokasi Unit')
+                .openPopup();
 
-        // Polyline
-        const latlngs = [
-            [latitudeUnit, longitudeUnit],
-            [latitudeUser, longitudeUser]
-        ];
-        const polyline = L.polyline(latlngs, {
-            color: 'blue'
-        }).addTo(map);
+            // Marker User
+            L.marker([latitudeUser, longitudeUser])
+                .addTo(map)
+                .bindPopup('Lokasi Anda');
 
-        // Hitung jarak
-        const jarakKM = hitungJarak(latitudeUnit, longitudeUnit, latitudeUser, longitudeUser);
-        const jarakMeter = jarakKM * 1000;
+            // Polyline
+            const latlngs = [
+                [latitudeUnit, longitudeUnit],
+                [latitudeUser, longitudeUser]
+            ];
+            const polyline = L.polyline(latlngs, {
+                color: 'blue'
+            }).addTo(map);
 
-        // Mid point untuk tooltip
-        const midLat = (latitudeUnit + latitudeUser) / 2;
-        const midLng = (longitudeUnit + longitudeUser) / 2;
+            // Hitung jarak
+            const jarakKM = hitungJarak(latitudeUnit, longitudeUnit, latitudeUser, longitudeUser);
+            const jarakMeter = jarakKM * 1000;
 
-        L.tooltip({
-                permanent: true,
-                direction: 'top',
-                className: 'leaflet-distance-label'
-            })
-            .setContent(`${jarakMeter.toFixed(0)} meter`)
-            .setLatLng([midLat, midLng])
-            .addTo(map);
+            // Mid point untuk tooltip
+            const midLat = (latitudeUnit + latitudeUser) / 2;
+            const midLng = (longitudeUnit + longitudeUser) / 2;
 
-        // Hapus pesan lama jika ada
-        const modalBody = document.querySelector('#modal-lokasi-saya .modal-body');
-        const oldInfoDiv = modalBody.querySelector('.info-jarak');
-        if (oldInfoDiv) oldInfoDiv.remove();
+            L.tooltip({
+                    permanent: true,
+                    direction: 'top',
+                    className: 'leaflet-distance-label'
+                })
+                .setContent(`${jarakMeter.toFixed(0)} meter`)
+                .setLatLng([midLat, midLng])
+                .addTo(map);
 
-        // Tambahkan pesan jarak
-        const infoDiv = document.createElement('div');
-        infoDiv.classList.add('info-jarak');
-        infoDiv.style.padding = '10px';
-        infoDiv.style.textAlign = 'center';
-        infoDiv.style.fontWeight = 'bold';
+            // Hapus pesan lama jika ada
+            const modalBody = document.querySelector('#modal-lokasi-saya .modal-body');
+            const oldInfoDiv = modalBody.querySelector('.info-jarak');
+            if (oldInfoDiv) oldInfoDiv.remove();
 
-        if (jarakMeter > 200) {
-            infoDiv.style.color = 'red';
-            infoDiv.textContent = "Anda harus berada kurang dari 200 meter dari jarak ke unit";
-        } else {
-            infoDiv.style.color = 'green';
-            infoDiv.textContent = "✅ Selamat anda bisa absen disini";
+            // Tambahkan pesan jarak
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('info-jarak');
+            infoDiv.style.padding = '10px';
+            infoDiv.style.textAlign = 'center';
+            infoDiv.style.fontWeight = 'bold';
+
+            if (jarakMeter > 200) {
+                infoDiv.style.color = 'red';
+                infoDiv.textContent = "Anda harus berada kurang dari 200 meter dari jarak ke unit";
+            } else {
+                infoDiv.style.color = 'green';
+                infoDiv.textContent = "✅ Selamat anda bisa absen disini";
+            }
+
+            modalBody.appendChild(infoDiv);
+
+            // Auto fit view
+            map.fitBounds(latlngs);
         }
-
-        modalBody.appendChild(infoDiv);
-
-        // Auto fit view
-        map.fitBounds(latlngs);
-    }
     </script>

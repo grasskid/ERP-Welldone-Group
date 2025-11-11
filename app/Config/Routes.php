@@ -12,6 +12,13 @@ $routes->post('/proses_login', 'Auth::proses_login');
 $routes->get('/Logout', 'Auth::proses_logout');
 $routes->post('auth/changePassword', 'Auth::changePassword');
 
+//Dashboard
+$routes->get('dashboard/pos', 'DashboardPOS::index', ['filter' => 'auth']);
+$routes->get('dashboard/service', 'DashboardService::index', ['filter' => 'auth']);
+$routes->get('dashboard/keuangan', 'DashboardKeuangan::index', ['filter' => 'auth']);
+$routes->get('dashboard/hrd', 'DashboardHRD::index', ['filter' => 'auth']);
+$routes->get('dashboard/laba-rugi', 'DashboardLabaRugi::index', ['filter' => 'auth']);
+
 
 
 //Datamaster
@@ -322,6 +329,11 @@ $routes->get('sisi_keuangan', 'SisiKeuangan::index', ['filter' => 'auth']);
 $routes->get('cetak/posisi_keuangan', 'SisiKeuangan::export_pdf', ['filter' => 'auth']);
 
 $routes->get('sisi_keuangan/export_excel', 'SisiKeuangan::export_excel', ['filter' => 'auth']);
+
+//laba rugi
+$routes->group('LaporanKeuangan', ['filter' => 'auth'], function ($routes) {
+    $routes->get('laba_rugi', 'LabaRugi::index', ['filter' => 'auth']);
+});
 //kategorikas
 $routes->get('/kategori_kas', 'Kategori_Kas::index');
 $routes->post('insert_kategori', 'Kategori_Kas::insert_kategori', ['filter' => 'auth']);

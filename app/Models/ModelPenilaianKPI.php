@@ -10,36 +10,62 @@ class ModelPenilaianKPI extends Model
     protected $primaryKey = 'idpenilaian_kpi';
     protected $returnType = 'object';
     protected $allowedFields = [
-        'idpenilaian_kpi',
-        'kpi_utama',
-        'bobot',
-        'target',
-        'realisasi',
-        'score',
-        'pegawai_idpegawai',
-        'tanggal_penilaian_kpi',
-        'created_on',
-        'updated_on',
-        'penilaian_idpenilaian'
+    'idpenilaian_kpi',    
+    'kpi_utama',
+    'bobot',
+    'target',
+    'realisasi',
+    'score',
+    'level',
+    'unit_idunit',
+    'template_kpi_idtemplate_kpi',
+    'pegawai_idpegawai',
+    'tanggal_penilaian_kpi',
+    'created_on',
+    'updated_on',
+    'penilaian_idpenilaian'
     ];
 
-    public function insertKPI($kpi_utama, $bobot, $target, $ar_target, $score, $pegawai_idpegawai, $tanggal_penilaian_kpi, $penilaian_id)
+
+    public function insertKPI($kpi_utama, $bobot, $target, $realisasi, $score, $level, $unit_idunit, $template_id, $pegawai_idpegawai, $tanggal_penilaian_kpi, $penilaian_id)
 {
     $data = [
-        'kpi_utama'             => $kpi_utama,                          // keep this column
-        'bobot'                 => $bobot,
-        'target'                => $target,
-        'realisasi'             => $ar_target[0] ?? 0,
-        'score'                 => $score[0] ?? 0,
-        'pegawai_idpegawai'     => $pegawai_idpegawai,
-        'tanggal_penilaian_kpi' => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
-        'penilaian_idpenilaian' => $penilaian_id,                        // ← this is the critical fix
-        'created_on'            => date('Y-m-d H:i:s'),
-        'updated_on'            => date('Y-m-d H:i:s'),
+        'kpi_utama'                  => $kpi_utama,
+        'bobot'                      => $bobot,
+        'target'                     => $target,
+        'realisasi'                  => $realisasi ?? 0,
+        'score'                      => $score ?? 0,
+        'level'                      => $level,
+        'unit_idunit'                => $unit_idunit,
+        'template_kpi_idtemplate_kpi'=> $template_id,
+        'pegawai_idpegawai'          => $pegawai_idpegawai,
+        'tanggal_penilaian_kpi'      => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
+        'penilaian_idpenilaian'      => $penilaian_id,
+        'created_on'                 => date('Y-m-d H:i:s'),
+        'updated_on'                 => date('Y-m-d H:i:s'),
     ];
 
     return $this->insert($data);
 }
+
+//     public function insertKPI($kpi_utama, $bobot, $target, $ar_target, $score, $pegawai_idpegawai, $tanggal_penilaian_kpi, $penilaian_id)
+// {
+//     $data = [
+//         'kpi_utama'             => $kpi_utama,                          // keep this column
+//         'bobot'                 => $bobot,
+//         'target'                => $target,
+//         'realisasi'             => $ar_target[0] ?? 0,
+//         'score'                 => $score[0] ?? 0,
+//         'pegawai_idpegawai'     => $pegawai_idpegawai,
+//         'tanggal_penilaian_kpi' => date('Y-m-d', strtotime($tanggal_penilaian_kpi)),
+//         'penilaian_idpenilaian' => $penilaian_id,                        // ← this is the critical fix
+//         'created_on'            => date('Y-m-d H:i:s'),
+//         'updated_on'            => date('Y-m-d H:i:s'),
+//     ];
+
+//     return $this->insert($data);
+// }
+
 
 
 

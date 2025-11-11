@@ -83,7 +83,7 @@
             </div>
 
             <!-- Chart Area -->
-            <div class="col-lg-12 mt-4">
+            <!-- <div class="col-lg-12 mt-4">
                 <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37 || session('ID_JABATAN') == 36): ?>
                 <div class="card shadow-none position-relative overflow-hidden">
                     <div class="card-body">
@@ -136,156 +136,156 @@
 
         </div>
     </div>
-</div>
+</div> -->
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37 || session('ID_JABATAN') == 36): ?>
-<script>
-const ctx = document.getElementById('pendapatanChart').getContext('2d');
-const pendapatanChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: <?= json_encode($months) ?>,
-        datasets: [
-            <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37): ?> {
-                label: 'Pendapatan POS',
-                data: <?= json_encode($pendapatan_chart) ?>,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)'
-            },
-            <?php endif; ?>
-            <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 36): ?> {
-                label: 'Pendapatan Service',
-                data: <?= json_encode($pendapatan_service_chart) ?>,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)'
-            }
-            <?php endif; ?>
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return 'Rp ' + context.raw.toLocaleString('id-ID');
-                    }
-                }
-            }
-        },
-        scales: {
-            y: {
-                ticks: {
-                    callback: function(value) {
-                        return 'Rp ' + value.toLocaleString('id-ID');
-                    }
+            <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37 || session('ID_JABATAN') == 36): ?>
+            <script>
+            const ctx = document.getElementById('pendapatanChart').getContext('2d');
+            const pendapatanChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: <?= json_encode($months) ?>,
+                    datasets: [
+                        <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37): ?> {
+                            label: 'Pendapatan POS',
+                            data: <?= json_encode($pendapatan_chart) ?>,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                        },
+                        <?php endif; ?>
+                        <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 36): ?> {
+                            label: 'Pendapatan Service',
+                            data: <?= json_encode($pendapatan_service_chart) ?>,
+                            backgroundColor: 'rgba(255, 206, 86, 0.6)'
+                        }
+                        <?php endif; ?>
+                    ]
                 },
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
-<?php endif; ?>
-
-<?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37): ?>
-<script>
-const barangLabels = <?= json_encode($barang_labels) ?>;
-const barangData = <?= json_encode($barang_data) ?>;
-
-new Chart(document.getElementById('barangTerlarisChart'), {
-    type: 'bar',
-    data: {
-        labels: barangLabels,
-        datasets: [{
-            label: 'Total Penjualan',
-            data: barangData,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-            borderRadius: 5
-        }]
-    },
-    options: {
-        responsive: true,
-        indexAxis: 'y',
-        scales: {
-            x: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Jumlah Penjualan'
-                }
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Barang'
-                }
-            }
-        }
-    }
-});
-</script>
-<?php endif; ?>
-
-<?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37 || session('ID_JABATAN') == 36): ?>
-<script>
-const hutangLabels = <?= json_encode($hutang_labels) ?>;
-const hutangBayar = <?= json_encode($hutang_bayar) ?>;
-const hutangSisa = <?= json_encode($hutang_sisa) ?>;
-
-new Chart(document.getElementById('hutangChart'), {
-    type: 'line',
-    data: {
-        labels: hutangLabels,
-        datasets: [{
-                label: 'Total Bayar',
-                data: hutangBayar,
-                borderColor: 'green',
-                backgroundColor: 'rgba(0,128,0,0.2)',
-                tension: 0.3,
-                fill: true
-            },
-            {
-                label: 'Sisa Hutang',
-                data: hutangSisa,
-                borderColor: 'red',
-                backgroundColor: 'rgba(255,0,0,0.2)',
-                tension: 0.3,
-                fill: true
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return 'Rp ' + context.raw.toLocaleString('id-ID');
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
+                            },
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return 'Rp ' + value.toLocaleString('id-ID');
+            });
+            </script>
+            <?php endif; ?>
+
+            <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37): ?>
+            <script>
+            const barangLabels = <?= json_encode($barang_labels) ?>;
+            const barangData = <?= json_encode($barang_data) ?>;
+
+            new Chart(document.getElementById('barangTerlarisChart'), {
+                type: 'bar',
+                data: {
+                    labels: barangLabels,
+                    datasets: [{
+                        label: 'Total Penjualan',
+                        data: barangData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Penjualan'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Barang'
+                            }
+                        }
                     }
                 }
-            }
-        }
-    }
-});
-</script>
-<?php endif; ?>
+            });
+            </script>
+            <?php endif; ?>
+
+            <?php if (session('ID_JABATAN') == 1 || session('ID_JABATAN') == 37 || session('ID_JABATAN') == 36): ?>
+            <script>
+            const hutangLabels = <?= json_encode($hutang_labels) ?>;
+            const hutangBayar = <?= json_encode($hutang_bayar) ?>;
+            const hutangSisa = <?= json_encode($hutang_sisa) ?>;
+
+            new Chart(document.getElementById('hutangChart'), {
+                type: 'line',
+                data: {
+                    labels: hutangLabels,
+                    datasets: [{
+                            label: 'Total Bayar',
+                            data: hutangBayar,
+                            borderColor: 'green',
+                            backgroundColor: 'rgba(0,128,0,0.2)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Sisa Hutang',
+                            data: hutangSisa,
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255,0,0,0.2)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            </script>
+            <?php endif; ?>

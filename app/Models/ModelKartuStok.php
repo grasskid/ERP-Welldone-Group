@@ -67,39 +67,63 @@ class ModelKartuStok extends Model
 
 
 
-    public function exportfilter($tanggalAwal = null, $tanggalAkhir = null, $namaUnit = null, $statusPpn = null)
-    {
-        $builder = $this->select('stok_barang.*, barang.imei ,barang.status_ppn, kategori.nama_kategori')
-            ->join('barang', 'barang.kode_barang = stok_barang.kode_barang', 'left')
-            ->join('kategori', 'kategori.id = barang.idkategori', 'left')
-            ->where('barang.deleted', '0')
-            ->where('kategori.delete', '0');
+    // public function exportfilter($tanggalAwal = null, $tanggalAkhir = null, $namaUnit = null, $statusPpn = null)
+    // {
+    //     $builder = $this->select('stok_barang.*, barang.imei ,barang.status_ppn, kategori.nama_kategori')
+    //         ->join('barang', 'barang.kode_barang = stok_barang.kode_barang', 'left')
+    //         ->join('kategori', 'kategori.id = barang.idkategori', 'left')
+    //         ->where('barang.deleted', '0')
+    //         ->where('kategori.delete', '0');
 
-        // Filter tanggal stok_dasar
-        if (!empty($tanggalAwal)) {
-            $tanggalAwal = date('Y-m-d', strtotime($tanggalAwal));
-            $builder->where('tanggal_stok_dasar >=', $tanggalAwal);
-        }
+    //     // Filter tanggal stok_dasar
+    //     if (!empty($tanggalAwal)) {
+    //         $tanggalAwal = date('Y-m-d', strtotime($tanggalAwal));
+    //         $builder->where('tanggal_stok_dasar >=', $tanggalAwal);
+    //     }
 
-        if (!empty($tanggalAkhir)) {
-            $tanggalAkhir = date('Y-m-d', strtotime($tanggalAkhir));
-            $builder->where('tanggal_stok_dasar <=', $tanggalAkhir);
-        }
+    //     if (!empty($tanggalAkhir)) {
+    //         $tanggalAkhir = date('Y-m-d', strtotime($tanggalAkhir));
+    //         $builder->where('tanggal_stok_dasar <=', $tanggalAkhir);
+    //     }
 
-        // Filter nama_unit
-        if (!empty($namaUnit)) {
-            $builder->where('stok_barang.id_unit', $namaUnit);
-        }
+    //     // Filter nama_unit
+    //     if (!empty($namaUnit)) {
+    //         $builder->where('stok_barang.id_unit', $namaUnit);
+    //     }
 
-        // Filter status_ppn
-        if ($statusPpn === 'PPN') {
-            $builder->where('barang.status_ppn', '1');
-        } elseif ($statusPpn === 'Non PPN') {
-            $builder->where('barang.status_ppn', '0');
-        }
+    //     // Filter status_ppn
+    //     if ($statusPpn === 'PPN') {
+    //         $builder->where('barang.status_ppn', '1');
+    //     } elseif ($statusPpn === 'Non PPN') {
+    //         $builder->where('barang.status_ppn', '0');
+    //     }
 
-        return $builder->get()->getResult();
+    //     return $builder->get()->getResult();
+    // }
+
+    public function exportfilter($namaUnit = null, $statusPpn = null)
+{
+    $builder = $this->select('stok_barang.*, barang.imei, barang.status_ppn, kategori.nama_kategori')
+        ->join('barang', 'barang.kode_barang = stok_barang.kode_barang', 'left')
+        ->join('kategori', 'kategori.id = barang.idkategori', 'left')
+        ->where('barang.deleted', '0')
+        ->where('kategori.delete', '0');
+
+    // Filter nama_unit
+    if (!empty($namaUnit)) {
+        $builder->where('stok_barang.id_unit', $namaUnit);
     }
+
+    // Filter status_ppn
+    if ($statusPpn === 'PPN') {
+        $builder->where('barang.status_ppn', '1');
+    } elseif ($statusPpn === 'Non PPN') {
+        $builder->where('barang.status_ppn', '0');
+    }
+
+    return $builder->get()->getResult();
+}
+
 
     public function getMinTanggalStok()
     {

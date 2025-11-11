@@ -15,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Models\ModelUnit;
+use App\Models\ModelBarang;
 
 
 
@@ -29,6 +30,7 @@ class Riwayat_Penjualan extends BaseController
     protected $AuthModel;
     protected $PelangganModel;
     protected $UnitModel;
+    protected $BarangModel;
 
     public function __construct()
     {
@@ -39,6 +41,7 @@ class Riwayat_Penjualan extends BaseController
         $this->AuthModel = new ModelAuth();
         $this->PelangganModel = new ModelPelanggan();
         $this->UnitModel = new ModelUnit();
+        $this->BarangModel = new ModelBarang(); 
     }
 
     public function index()
@@ -138,38 +141,42 @@ public function cetak_struk($kode_invoice)
 
     $produkData = [];
     foreach ($datapenjualan as $item) {
+        // Ambil data barang tambahan (kategori & imei) berdasarkan barang_idbarang
+        $barang = $this->BarangModel->find($item->barang_idbarang ?? null);
+
         $produkData[] = [
-            'nama'   => $item->nama_barang,
-            'jumlah' => $item->jumlah,
-            'harga'  => $item->harga_penjualan,
-            'diskon' => $item->diskon_penjualan,
-            'ppn'    => $item->ppn ?? 0
+            'nama'        => $item->nama_barang,
+            'jumlah'      => $item->jumlah,
+            'harga'       => $item->harga_penjualan,
+            'diskon'      => $item->diskon_penjualan,
+            'ppn'         => $item->ppn ?? 0,
+            'imei'        => !empty($item->imei) ? $item->imei : ($barang->imei ?? ''),
+            'id_kategori' => $barang->idkategori ?? null
         ];
     }
 
     $datapenjualan2 = $this->PenjualanModel->getByKodeInvoice($kode_invoice);
-    $tanggal          = $datapenjualan2->tanggal;
-    $userdata         = $this->AuthModel->getById($datapenjualan2->input_by);
-    $namauser         = $userdata->NAMA_AKUN;
-    $no_invoice       = $kode_invoice;
-    $total_ppn        = $datapenjualan2->total_ppn;
-    $sub_total_cetak  = $datapenjualan2->total_penjualan + $datapenjualan2->diskon - $total_ppn;
-    $nilaidiskon      = $datapenjualan2->diskon;
-    $total_penjualan  = $datapenjualan2->total_penjualan;
-    $bayar            = $datapenjualan2->bayar;
-    $kembalian_cetak  = max(0, $bayar - $total_penjualan);
+    $tanggal         = $datapenjualan2->tanggal;
+    $userdata        = $this->AuthModel->getById($datapenjualan2->input_by);
+    $namauser        = $userdata->NAMA_AKUN;
+    $total_ppn       = $datapenjualan2->total_ppn;
+    $nilaidiskon     = $datapenjualan2->diskon;
+    $total_penjualan = $datapenjualan2->total_penjualan;
+    $bayar           = $datapenjualan2->bayar;
 
-    $idPelanggan   = $datapenjualan2->id_pelanggan;
-    $dataCustomer  = $this->PelangganModel->getById($idPelanggan);
-    $namaCustomer  = $dataCustomer ? $dataCustomer->nama : 'Pelanggan Umum';
+    $sub_total_cetak = $total_penjualan - $total_ppn + $nilaidiskon;
+    $kembalian_cetak = max(0, $bayar - $total_penjualan);
 
-    $dataunit = $this->UnitModel->getById(session('ID_UNIT'));
+    $idPelanggan  = $datapenjualan2->id_pelanggan;
+    $dataCustomer = $this->PelangganModel->getById($idPelanggan);
+    $namaCustomer = $dataCustomer ? $dataCustomer->nama : 'Pelanggan Umum';
+    $dataunit     = $this->UnitModel->getById(session('ID_UNIT') ?? 1);
 
     $data = [
         'produk'           => $produkData,
         'tanggal'          => $tanggal,
         'kasir'            => $namauser,
-        'no_invoice'       => $no_invoice,
+        'no_invoice'       => $kode_invoice,
         'sub_total'        => $sub_total_cetak,
         'total_ppn'        => $total_ppn,
         'diskon_penjualan' => $nilaidiskon,
@@ -180,12 +187,11 @@ public function cetak_struk($kode_invoice)
         'dataunit'         => $dataunit
     ];
 
-    // 🧾 Detect mode (normal or thermal)
     $mode = $this->request->getGet('mode');
     if ($mode === 'thermal') {
         $html = view('cetak/cetak_penjualan_thermal', $data);
         $mpdf = new \Mpdf\Mpdf([
-            'format' => [80, 200], // 80mm width thermal
+            'format' => [80, 200],
             'margin_left' => 2,
             'margin_right' => 2,
             'margin_top' => 2,
@@ -204,8 +210,7 @@ public function cetak_struk($kode_invoice)
         ]);
     }
 
-    error_reporting(0);
-    ob_end_clean();
+    if (ob_get_length()) ob_end_clean();
     $mpdf->curlAllowUnsafeSslRequests = true;
     $mpdf->WriteHTML($html);
 

@@ -16,12 +16,15 @@ class ModelTemplateKpi extends Model
         'formula',
         'jabatan_idjabatan',
         'created_on',
-        'updated_on'
+        'updated_on',
+        'status',
+        'level',
     ];
 
     public function getByJabatan($jabatan_id)
     {
         return $this->where('jabatan_idjabatan', $jabatan_id)
+                    ->where('level', 1)
                     ->findAll();
     }
 
@@ -29,8 +32,16 @@ class ModelTemplateKpi extends Model
     {
         return $this->where('jabatan_idjabatan', $jabatan_id)
                     ->where('template_kpi', $template_kpi)
+                    ->where('level', 1)
                     ->first();
     }
+
+    public function getByJabatanLevel2($jabatan_id)
+{
+    return $this->where('jabatan_idjabatan', $jabatan_id)
+                ->where('level', 2)
+                ->findAll();
+}
 
     public function getTemplateKPI()
     {
