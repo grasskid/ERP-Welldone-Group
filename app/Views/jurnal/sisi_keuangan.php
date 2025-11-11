@@ -1,12 +1,12 @@
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
-        <h4 class="fw-semibold mb-0">Sisi Keuangan</h4>
+        <h4 class="fw-semibold mb-0">Posisi Keuangan</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
                     <a class="text-muted text-decoration-none" href="<?= base_url('/') ?>">Keuangan</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Sisi Keuangan</li>
+                <li class="breadcrumb-item active" aria-current="page">Posisi Keuangan</li>
             </ol>
         </nav>
     </div>
@@ -14,11 +14,12 @@
 
 <div class="card w-100 position-relative overflow-hidden">
     <div class="px-4 py-3 border-bottom">
-        <h5 class="mb-0">Ringkasan Sisi Keuangan per Parent Akun</h5>
+        <h5 class="mb-0">Ringkasan Posisi Keuangan per Parent Akun</h5>
     </div>
     <div style="display: flex; justify-content: left;">
 
-        <a href="#" onclick="cetakPDF()" class="btn btn-danger ml-2" style="width: 150px;  margin-right: 20px; margin-left: 20px;">Cetak PDF</a>
+        <a href="#" onclick="cetakPDF()" class="btn btn-danger ml-2"
+            style="width: 150px;  margin-right: 20px; margin-left: 20px;">Cetak PDF</a>
 
         <form action="<?= base_url('sisi_keuangan/export_excel') ?>" method="get" target="_blank">
             <input type="hidden" name="startDate" value="<?= esc($tanggal_awal) ?>">
@@ -48,14 +49,15 @@
                 <select name="filterUnit" class="form-control">
                     <option value="">Semua Unit</option>
                     <?php foreach ($data_unit as $u): ?>
-                        <option value="<?= $u->idunit ?>" <?= ($id_unit == $u->idunit) ? 'selected' : '' ?>>
-                            <?= $u->NAMA_UNIT ?>
-                        </option>
+                    <option value="<?= $u->idunit ?>" <?= ($id_unit == $u->idunit) ? 'selected' : '' ?>>
+                        <?= $u->NAMA_UNIT ?>
+                    </option>
                     <?php endforeach ?>
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 150px; height:60px; margin-top: 20px;">Tampilkan</button>
+            <button type="submit" class="btn btn-primary"
+                style="width: 150px; height:60px; margin-top: 20px;">Tampilkan</button>
         </div>
         <div style="display: flex; justify-content: left; padding-left: 20px; margin-top: 20px;">
             <div class="form-check form-switch ms-4 mb-3">
@@ -97,44 +99,44 @@
                     $grandSaldoDisplay = number_format(abs($grandSaldo), 0, ',', '.');
                     $grandSaldoClass = $grandSaldo < 0 ? 'text-danger' : '';
                 ?>
-                    <tr class="table-dark fw-bold <?= ($grandSaldo == 0 ? 'saldo-zero' : '') ?>">
-                        <td><?= esc($data_grand_parent->no_akun) ?></td>
-                        <td><?= esc($data_grand_parent->nama_akun) ?></td>
-                        <td class="text-end <?= $grandSaldoClass ?>"><?= $grandSaldoDisplay ?></td>
-                    </tr>
+                <tr class="table-dark fw-bold <?= ($grandSaldo == 0 ? 'saldo-zero' : '') ?>">
+                    <td><?= esc($data_grand_parent->no_akun) ?></td>
+                    <td><?= esc($data_grand_parent->nama_akun) ?></td>
+                    <td class="text-end <?= $grandSaldoClass ?>"><?= $grandSaldoDisplay ?></td>
+                </tr>
                 <?php endif; ?>
 
                 <!-- Parent + Child Rows -->
                 <?php if (!empty($data_parent)): ?>
-                    <?php foreach ($data_parent as $row):
+                <?php foreach ($data_parent as $row):
                         $saldo = $row['total_debet'] - $row['total_kredit'];
                         $saldoDisplay = number_format(abs($saldo), 0, ',', '.');
                         $saldoClass = $saldo < 0 ? 'text-danger' : '';
                     ?>
-                        <tr class="table-light fw-bold <?= ($saldo == 0 ? 'saldo-zero' : '') ?>">
-                            <td><?= esc($row['parent_no_akun']) ?></td>
-                            <td><?= esc($row['parent_nama_akun']) ?></td>
-                            <td class="text-end <?= $saldoClass ?>"><?= $saldoDisplay ?></td>
-                        </tr>
+                <tr class="table-light fw-bold <?= ($saldo == 0 ? 'saldo-zero' : '') ?>">
+                    <td><?= esc($row['parent_no_akun']) ?></td>
+                    <td><?= esc($row['parent_nama_akun']) ?></td>
+                    <td class="text-end <?= $saldoClass ?>"><?= $saldoDisplay ?></td>
+                </tr>
 
-                        <?php if (!empty($row['children'])): ?>
-                            <?php foreach ($row['children'] as $child):
+                <?php if (!empty($row['children'])): ?>
+                <?php foreach ($row['children'] as $child):
                                 $childSaldo = $child->total_debet - $child->total_kredit;
                                 $childDisplay = number_format(abs($childSaldo), 0, ',', '.');
                                 $childClass = $childSaldo < 0 ? 'text-danger' : '';
                             ?>
-                                <tr class="<?= ($childSaldo == 0 ? 'saldo-zero' : '') ?> child-row">
-                                    <td><?= esc($child->no_akun) ?></td>
-                                    <td class="ps-4">↳ <?= esc($child->nama_akun) ?></td>
-                                    <td class="text-end <?= $childClass ?>"><?= $childDisplay ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                <tr class="<?= ($childSaldo == 0 ? 'saldo-zero' : '') ?> child-row">
+                    <td><?= esc($child->no_akun) ?></td>
+                    <td class="ps-4">↳ <?= esc($child->nama_akun) ?></td>
+                    <td class="text-end <?= $childClass ?>"><?= $childDisplay ?></td>
+                </tr>
+                <?php endforeach; ?>
+                <?php endif; ?>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="3" class="text-center">Tidak ada data keuangan.</td>
-                    </tr>
+                <tr>
+                    <td colspan="3" class="text-center">Tidak ada data keuangan.</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
 
@@ -144,12 +146,12 @@
                 $grandSaldoDisplay = number_format(abs($grandSaldo), 0, ',', '.');
                 $grandSaldoClass = $grandSaldo < 0 ? 'text-danger' : '';
             ?>
-                <tfoot>
-                    <tr class="fw-bold text-dark">
-                        <td colspan="2" class="text-end">Total Grandparent (<?= esc($data_grand_parent->nama_akun) ?>)</td>
-                        <td class="text-end fw-semibold <?= $grandSaldoClass ?>"><?= $grandSaldoDisplay ?></td>
-                    </tr>
-                </tfoot>
+            <tfoot>
+                <tr class="fw-bold text-dark">
+                    <td colspan="2" class="text-end">Total Grandparent (<?= esc($data_grand_parent->nama_akun) ?>)</td>
+                    <td class="text-end fw-semibold <?= $grandSaldoClass ?>"><?= $grandSaldoDisplay ?></td>
+                </tr>
+            </tfoot>
             <?php endif; ?>
         </table>
     </div>
@@ -157,60 +159,60 @@
 
 <!-- Script Toggle -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleSaldo = document.getElementById('toggleZeroSaldo');
-        const toggleChildren = document.getElementById('toggleChildren');
-        const inputShowZeroSaldo = document.getElementById('inputShowZeroSaldo');
-        const inputShowChildren = document.getElementById('inputShowChildren');
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleSaldo = document.getElementById('toggleZeroSaldo');
+    const toggleChildren = document.getElementById('toggleChildren');
+    const inputShowZeroSaldo = document.getElementById('inputShowZeroSaldo');
+    const inputShowChildren = document.getElementById('inputShowChildren');
 
-        function updateHiddenInputs() {
-            inputShowZeroSaldo.value = toggleSaldo.checked ? '1' : '0';
-            inputShowChildren.value = toggleChildren.checked ? '1' : '0';
-        }
-
-        toggleSaldo.addEventListener('change', updateHiddenInputs);
-        toggleChildren.addEventListener('change', updateHiddenInputs);
-        updateHiddenInputs();
-    });
-</script>
-
-
-
-<script>
-    function cetakPDF() {
-        const startDate = document.querySelector('[name="startDate"]').value;
-        const endDate = document.querySelector('[name="endDate"]').value;
-        const unit = document.querySelector('[name="filterUnit"]').value;
-        const showZero = document.getElementById('toggleZeroSaldo').checked ? 1 : 0;
-        const showChildren = document.getElementById('toggleChildren').checked ? 1 : 0;
-
-        const params = new URLSearchParams({
-            startDate: startDate,
-            endDate: endDate,
-            filterUnit: unit,
-            showZeroSaldo: showZero,
-            showChildren: showChildren
-        });
-
-        const url = '<?= base_url('cetak/posisi_keuangan') ?>?' + params.toString();
-        window.open(url, '_blank');
+    function updateHiddenInputs() {
+        inputShowZeroSaldo.value = toggleSaldo.checked ? '1' : '0';
+        inputShowChildren.value = toggleChildren.checked ? '1' : '0';
     }
+
+    toggleSaldo.addEventListener('change', updateHiddenInputs);
+    toggleChildren.addEventListener('change', updateHiddenInputs);
+    updateHiddenInputs();
+});
+</script>
+
+
+
+<script>
+function cetakPDF() {
+    const startDate = document.querySelector('[name="startDate"]').value;
+    const endDate = document.querySelector('[name="endDate"]').value;
+    const unit = document.querySelector('[name="filterUnit"]').value;
+    const showZero = document.getElementById('toggleZeroSaldo').checked ? 1 : 0;
+    const showChildren = document.getElementById('toggleChildren').checked ? 1 : 0;
+
+    const params = new URLSearchParams({
+        startDate: startDate,
+        endDate: endDate,
+        filterUnit: unit,
+        showZeroSaldo: showZero,
+        showChildren: showChildren
+    });
+
+    const url = '<?= base_url('cetak/posisi_keuangan') ?>?' + params.toString();
+    window.open(url, '_blank');
+}
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleSaldo = document.getElementById('toggleZeroSaldo');
-        const toggleChildren = document.getElementById('toggleChildren');
-        const excelShowZeroSaldo = document.getElementById('excelShowZeroSaldo');
-        const excelShowChildren = document.getElementById('excelShowChildren');
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleSaldo = document.getElementById('toggleZeroSaldo');
+    const toggleChildren = document.getElementById('toggleChildren');
+    const excelShowZeroSaldo = document.getElementById('excelShowZeroSaldo');
+    const excelShowChildren = document.getElementById('excelShowChildren');
 
-        function updateExcelInputs() {
-            excelShowZeroSaldo.value = toggleSaldo.checked ? '1' : '0';
-            excelShowChildren.value = toggleChildren.checked ? '1' : '0';
-        }
+    function updateExcelInputs() {
+        excelShowZeroSaldo.value = toggleSaldo.checked ? '1' : '0';
+        excelShowChildren.value = toggleChildren.checked ? '1' : '0';
+    }
 
-        toggleSaldo.addEventListener('change', updateExcelInputs);
-        toggleChildren.addEventListener('change', updateExcelInputs);
-        updateExcelInputs();
-    });
+    toggleSaldo.addEventListener('change', updateExcelInputs);
+    toggleChildren.addEventListener('change', updateExcelInputs);
+    updateExcelInputs();
+});
 </script>

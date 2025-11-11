@@ -15,7 +15,7 @@
 
     .invoice {
         width: 280px;
-        /* ukuran thermal 58mm, sesuaikan ke 320px kalau 80mm */
+        /* 58mm paper */
         margin: auto;
         padding: 5px;
     }
@@ -83,6 +83,12 @@
         margin-top: 6px;
     }
 
+    .imei {
+        font-size: 10px;
+        font-style: italic;
+        color: #444;
+    }
+
     @media print {
         body {
             margin: 0;
@@ -100,9 +106,11 @@
 
     <div class="invoice">
         <div class="invoice-header">
-            <h2><?php echo @$dataunit->NAMA_UNIT ?></h2>
-            <p><?php echo @$dataunit->JALAN_UNIT . ', ' . @$dataunit->KABUPATEN_UNIT ?><br>Telp:
-                <?php echo @$dataunit->NOTELP ?></p>
+            <h2><?= @$dataunit->NAMA_UNIT ?></h2>
+            <p>
+                <?= @$dataunit->JALAN_UNIT . ', ' . @$dataunit->KABUPATEN_UNIT ?><br>
+                Telp: <?= @$dataunit->NOTELP ?>
+            </p>
         </div>
 
         <table class="invoice-info">
@@ -112,7 +120,7 @@
             </tr>
             <tr>
                 <td>Tanggal</td>
-                <td>: <?= date('d-m-Y H:i:s', strtotime($tanggal)) ?></td>
+                <td>: <?= isset($tanggal) ? date('d-m-Y H:i:s', strtotime($tanggal)) : '-' ?></td>
             </tr>
             <tr>
                 <td>Kasir</td>
@@ -135,25 +143,29 @@
             </thead>
             <tbody>
                 <?php 
-                // tambahan akumulator
                 $total_diskon_semua = 0;
                 $total_ppn_semua    = 0;
 
-                foreach ($produk as $p) : 
-                    $harga  = isset($p['harga']) ? (int)str_replace(['Rp', '.', ' '], '', $p['harga']) : 0;
-                    $jumlah = (int)($p['jumlah'] ?? 0);
-                    $diskon = isset($p['diskon']) ? (int)str_replace(['Rp', '.', ' '], '', $p['diskon']) : 0;
-                    $subtotal = $harga * $jumlah;
-                    $subtotalSetelahDiskon = $subtotal - $diskon;
-                    $ppn = (!empty($p['ppn'])) ? round($subtotalSetelahDiskon * 0.11) : 0;
-                    $totalItem = $subtotalSetelahDiskon + $ppn;
+                if (!empty($produk)) :
+                    foreach ($produk as $p) :
+                        $harga  = isset($p['harga']) ? (int)str_replace(['Rp', '.', ' '], '', $p['harga']) : 0;
+                        $jumlah = (int)($p['jumlah'] ?? 0);
+                        $diskon = isset($p['diskon']) ? (int)str_replace(['Rp', '.', ' '], '', $p['diskon']) : 0;
+                        $subtotal = $harga * $jumlah;
+                        $subtotalSetelahDiskon = $subtotal - $diskon;
+                        $ppn = (!empty($p['ppn'])) ? round($subtotalSetelahDiskon * 0.11) : 0;
+                        $totalItem = $subtotalSetelahDiskon + $ppn;
 
-                    // akumulasi total
-                    $total_diskon_semua += $diskon;
-                    $total_ppn_semua    += $ppn;
+                        $total_diskon_semua += $diskon;
+                        $total_ppn_semua    += $ppn;
                 ?>
                 <tr>
-                    <td><?= $p['nama'] ?></td>
+                    <td>
+                        <?= htmlspecialchars($p['nama'] ?? '') ?>
+                        <?php if (!empty($p['imei'])): ?>
+                        <div class="imei">IMEI: <?= htmlspecialchars($p['imei']) ?></div>
+                        <?php endif; ?>
+                    </td>
                     <td class="text-end"><?= $jumlah ?></td>
                     <td class="text-end"><?= number_format($harga, 0, ',', '.') ?></td>
                     <td class="text-end"><?= number_format($subtotal, 0, ',', '.') ?></td>
@@ -174,7 +186,14 @@
                     <td colspan="3"><strong>Total</strong></td>
                     <td class="text-end"><strong><?= number_format($totalItem, 0, ',', '.') ?></strong></td>
                 </tr>
-                <?php endforeach ?>
+                <?php 
+                    endforeach;
+                else:
+                ?>
+                <tr>
+                    <td colspan="4" class="text-center">Tidak ada produk</td>
+                </tr>
+                <?php endif; ?>
             </tbody>
         </table>
 

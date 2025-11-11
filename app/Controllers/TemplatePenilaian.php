@@ -18,9 +18,7 @@ use App\Models\ModelJabatan;
 use App\Models\ModelTemplateKpi;
 
 class TemplatePenilaian extends BaseController
-
 {
-
     protected $PhoneModel;
     protected $PelangganModel;
     protected $AuthModel;
@@ -40,54 +38,62 @@ class TemplatePenilaian extends BaseController
 
     public function index()
     {
-        $data = array(
+        $data = [
             'penilaian' => $this->TemplatePenilaianModel->getTemplatePenilaian(),
             'body' => 'penilaian/template_penilaian',
             'jabatan' => $this->JabatanModel->getJabatan(),
             'template' => $this->TemplateKpiModel->getTemplateKpi(),
-        );
+        ];
         return view('template', $data);
     }
 
     public function insert()
     {
-        $aspek_penilaian = $this->request->getPost('aspek');
+        $aspek_penilaian = 'Checklist Pekerjaan'; // 🔒 locked value
         $keterangan_penilaian = $this->request->getPost('keterangan');
         $jabatan_idjabatan = $this->request->getPost('jabatan_idjabatan');
         $idtemplate_kpi = $this->request->getPost('aspek_kpi');
+        $target = $this->request->getPost('target');
+        $bobot = $this->request->getPost('bobot');
 
-        $data = array(
+        $data = [
             'aspek_penilaian' => $aspek_penilaian,
             'keterangan_penilaian' => $keterangan_penilaian,
             'jabatan_idjabatan' => $jabatan_idjabatan,
-            'idtemplate_kpi' => $idtemplate_kpi
-        );
+            'idtemplate_kpi' => $idtemplate_kpi,
+            'target' => $target,
+            'bobot' => $bobot,
+        ];
+
         $this->TemplatePenilaianModel->insertTemplatePenilaian($data);
         return redirect()->to(base_url('template_penilaian'))->with('sukses', 'Data Berhasil Disimpan');
     }
 
-
     public function update()
     {
         $idtemplate_penilaian = $this->request->getPost('idtemplate_penilaian');
-        $aspek_penilaian = $this->request->getPost('aspek');
+        $aspek_penilaian = 'Checklist Pekerjaan'; // 🔒 locked value
         $keterangan_penilaian = $this->request->getPost('keterangan');
         $jabatan_idjabatan = $this->request->getPost('jabatan_idjabatan');
         $idtemplate_kpi = $this->request->getPost('aspek_kpi');
+        $target = $this->request->getPost('target');
+        $bobot = $this->request->getPost('bobot');
 
-        $data = array(
+        $data = [
             'aspek_penilaian' => $aspek_penilaian,
             'keterangan_penilaian' => $keterangan_penilaian,
             'jabatan_idjabatan' => $jabatan_idjabatan,
-            'idtemplate_kpi' => $idtemplate_kpi
-        );
-        $this->TemplatePenilaianModel->Update($idtemplate_penilaian, $data);
-        return redirect()->to(base_url('template_penilaian'))->with('sukses', 'Data Berhasil Disimpan');
+            'idtemplate_kpi' => $idtemplate_kpi,
+            'target' => $target,
+            'bobot' => $bobot,
+        ];
+
+        $this->TemplatePenilaianModel->update($idtemplate_penilaian, $data);
+        return redirect()->to(base_url('template_penilaian'))->with('sukses', 'Data Berhasil Diperbarui');
     }
 
     public function delete()
     {
-
         $idtemplate_penilaian = $this->request->getPost('idtemplate_penilaian');
         $this->TemplatePenilaianModel->delete($idtemplate_penilaian);
         return redirect()->to(base_url('template_penilaian'))->with('sukses', 'Data Berhasil Dihapus');
