@@ -61,24 +61,46 @@ public function index()
     return view('template', $data);
 }
 
-    public function get_template_by_jabatan($idjabatan)
-    {
-        $template = $this->TemplatePenilaianModel
-            ->select('
-        template_penilaian.idtemplate_penilaian,
-        template_penilaian.aspek_penilaian,
-        template_penilaian.keterangan_penilaian,
-        template_penilaian.jabatan_idjabatan,
-        template_penilaian.idtemplate_kpi,
-        template_kpi.status,
-        template_kpi.template_kpi AS aspek_kpi,
-        template_kpi.target
-    ')
-            ->join('template_kpi', 'template_kpi.idtemplate_kpi = template_penilaian.idtemplate_kpi')
-            ->where('template_penilaian.jabatan_idjabatan', $idjabatan)
-            ->findAll();
-        return $this->response->setJSON($template);
-    }
+public function get_template_by_jabatan($idjabatan)
+{
+    $template = $this->TemplatePenilaianModel
+        ->select('
+            template_penilaian.idtemplate_penilaian,
+            template_penilaian.aspek_penilaian,
+            template_penilaian.keterangan_penilaian,
+            template_penilaian.jabatan_idjabatan,
+            template_penilaian.idtemplate_kpi,
+            template_penilaian.target,
+            template_penilaian.bobot,
+            template_kpi.status,
+            template_kpi.template_kpi AS aspek_kpi
+        ')
+        ->join('template_kpi', 'template_kpi.idtemplate_kpi = template_penilaian.idtemplate_kpi')
+        ->where('template_penilaian.jabatan_idjabatan', $idjabatan)
+        ->findAll();
+
+    return $this->response->setJSON($template);
+}
+
+
+    // public function get_template_by_jabatan($idjabatan)
+    // {
+    //     $template = $this->TemplatePenilaianModel
+    //         ->select('
+    //     template_penilaian.idtemplate_penilaian,
+    //     template_penilaian.aspek_penilaian,
+    //     template_penilaian.keterangan_penilaian,
+    //     template_penilaian.jabatan_idjabatan,
+    //     template_penilaian.idtemplate_kpi,
+    //     template_kpi.status,
+    //     template_kpi.template_kpi AS aspek_kpi,
+    //     template_kpi.target
+    // ')
+    //         ->join('template_kpi', 'template_kpi.idtemplate_kpi = template_penilaian.idtemplate_kpi')
+    //         ->where('template_penilaian.jabatan_idjabatan', $idjabatan)
+    //         ->findAll();
+    //     return $this->response->setJSON($template);
+    // }
 
 public function insert_penilaian()
 {
@@ -122,25 +144,31 @@ public function insert_penilaian()
     $idPenilaian = $this->PenilaianModel->insertPenilaian($data2); // <-- dapatkan ID insert
 
     // Simpan ke tabel penilaian_detail
-    $template_ids2 = $this->request->getPost('template_ids2');
-    $detailData = [];
+$template_ids2 = $this->request->getPost('template_ids2');
+$bobot2        = $this->request->getPost('bobot2');
+$target2       = $this->request->getPost('target2');
 
-    if (is_array($template_ids2) && is_array($skor2)) {
-        foreach ($template_ids2 as $index => $templateId) {
-            $detailData[] = [
-                'template_penilaian_idtemplate_penilaian' => $templateId,
-                'skor'              => $skor2[$index] ?? 0,
-                'pegawai_idpegawai' => $pegawai_idpegawai,
-                'tanggal_penilaian' => $tanggal_penilaian,
-                'penilaian_idpenilaian' => $idPenilaian, // <-- link ke penilaian utama
-                'created_on'        => date('Y-m-d H:i:s')
-            ];
-        }
-    }
+$detailData = [];
 
-    if (!empty($detailData)) {
-        $this->PenilaianDetailModel->insertBatch($detailData);
+if (is_array($template_ids2) && is_array($skor2)) {
+    foreach ($template_ids2 as $index => $templateId) {
+        $detailData[] = [
+            'template_penilaian_idtemplate_penilaian' => $templateId,
+            'bobot'              => $bobot2[$index] ?? 0,
+            'target'             => $target2[$index] ?? 0,
+            'skor'               => $skor2[$index] ?? 0,
+            'pegawai_idpegawai'  => $pegawai_idpegawai,
+            'tanggal_penilaian'  => $tanggal_penilaian,
+            'penilaian_idpenilaian' => $idPenilaian, // <-- link ke penilaian utama
+            'created_on'         => date('Y-m-d H:i:s')
+        ];
     }
+}
+
+if (!empty($detailData)) {
+    $this->PenilaianDetailModel->insertBatch($detailData);
+}
+
 
     session()->setFlashData('sukses', 'Data Berhasil Ditambahkan');
     return redirect()->to(base_url('penilaian'));

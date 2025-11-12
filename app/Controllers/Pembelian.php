@@ -84,38 +84,22 @@ class Pembelian extends BaseController
         $datauser = $this->AuthModel->getById(session('ID_AKUN'));
         $useridunit = $datauser->ID_UNIT;
         $namauser = $datauser->NAMA_AKUN;
-
-
-
         $suplier = $this->request->getPost('suplier');
         $id_suplier_text = $this->request->getPost('id_suplier_text');
         $id_pelanggan = $this->request->getPost('id_pelanggan');
-
-
-
-
         $nota_file = $this->request->getFile('nota_file');
-
-
         $tanggal_masuk = $this->request->getPost('tanggal_masuk');
         $jam_sekarang = date('H:i:s');
         $tanggal_masuk_full = $tanggal_masuk . ' ' . $jam_sekarang;
-
-
-
-
         $jatuh_tempot = $this->request->getPost('jatuh_tempo');
         $sisa = $this->cleanRupiah($this->request->getPost('hutang'));
         $total_harga = $this->cleanRupiah($this->request->getPost('total-harga'));
         $total_diskon = $this->cleanRupiah($this->request->getPost('total-diskon'));
         $total_ppn = $this->cleanRupiah($this->request->getPost('total-ppn'));
         $bayar_tunai = $this->cleanRupiah($this->request->getPost('bayar')); //ini tunai
-
-
-
         $bankData = $this->request->getPost('bank');
 
-
+        $jurnal = [];
         $bankPembayaran = [];
         $totalBayarBank = 0;
         $kodePembayaran = 'PBL' . date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
@@ -133,8 +117,26 @@ class Pembelian extends BaseController
 
                     $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
                     $totalBayarBank += $jumlah;
+                    $jurnal[] = [
+                        'tanggal' => $tanggal_masuk_full,
+                        'kode_template' => 'pembelian_lunas_bank_' . $b['id'],
+                        'ar_value' => [$jumlah],
+                        'keterangan' => 'Pembayaran Bank - Pembelian',
+                        'id_referensi' => $kodePembayaran,
+                        'tabel_referensi' => 'pembayaran_bank'
+                    ];
                 }
             }
+        }
+        if ($bayar_tunai > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_lunas_tunai',
+                'ar_value' => [$bayar_tunai],
+                'keterangan' => 'Pembayaran Tunai - Pembelian',
+                'id_referensi' => $kodePembayaran,
+                'tabel_referensi' => 'pembayaran_bank'
+            ];
         }
         $total_bayar = $bayar_tunai + $totalBayarBank;
         // dd($id_suplier_text);
@@ -254,6 +256,11 @@ class Pembelian extends BaseController
         );
         $this->PembayaranBankModel->updateByKodePembayaran($kodePembayaran, $pelengkap_pembayaranbank);
 
+        $total_aksesoris = 0;
+        $total_sparepart = 0;
+        $total_hp_ppn = 0;
+        $total_hp_non_ppn = 0;
+
         foreach ($produkData as $produk) {
             $datastokawal = $this->StokAwalModel->getByIdBarang($produk['id']);
             $databarang = $this->BarangModel->getById($produk['id']);
@@ -264,7 +271,7 @@ class Pembelian extends BaseController
             $produkharga  = $this->cleanRupiah($produk['harga']);
             $nilaidiskon = $produkdiskon;
             $produkppn = $produk['ppn'] ?? null;
-            $subtotalAwal = $produkharga * $produkjumlah;
+            $subtotalAwal = $hrg_beli * $produkjumlah;
             $subtotalSetelahDiskon = $subtotalAwal - $nilaidiskon;
             $nilaiPPN = !is_null($produkppn) ? $subtotalSetelahDiskon * 0.11 : 0;
 
@@ -273,6 +280,15 @@ class Pembelian extends BaseController
             //
             $datahpp = $this->HppBarangModel->getById($produk['id']);
             $hitung_hpp  = $datahpp->hpp ?? 0;
+            if ($databarang->idkategori == 1 && $databarang->status_ppn == 0) {
+                $total_hp_non_ppn += $produktotalharga;
+            } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 1) {
+                $total_hp_ppn += $produktotalharga;
+            } elseif ($databarang->idkategori == 2) {
+                $total_aksesoris += $produktotalharga;
+            } elseif ($databarang->idkategori == 3) {
+                $total_sparepart += $produktotalharga;
+            }
 
             $data2 = array(
                 'no_batch' => $no_nota,
@@ -292,9 +308,60 @@ class Pembelian extends BaseController
 
             );
 
-            $result2 = $this->DetailPembelianModel->insert_detail($data2);
+            // $result2 = $this->DetailPembelianModel->insert_detail($data2);
+        }
+        if ($total_aksesoris > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_aksesoris',
+                'ar_value' => [$total_aksesoris],
+                'keterangan' => 'Pembelian Aksesoris',
+                'id_referensi' => $idPembelian,
+                'tabel_referensi' => 'pembelian'
+            ];
+        }
+        if ($total_sparepart > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_sparepart',
+                'ar_value' => [$total_sparepart],
+                'keterangan' => 'Pembelian Sparepart',
+                'id_referensi' => $idPembelian,
+                'tabel_referensi' => 'pembelian'
+            ];
+        }
+        if ($total_hp_ppn > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_lunas_hp_baru_ppn',
+                'ar_value' => [$total_hp_ppn],
+                'keterangan' => 'Pembelian HP PPN',
+                'id_referensi' => $idPembelian,
+                'tabel_referensi' => 'pembelian'
+            ];
+        }
+        if ($total_hp_non_ppn > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_lunas_hp_baru',
+                'ar_value' => [$total_hp_non_ppn],
+                'keterangan' => 'Pembelian HP NON PPN',
+                'id_referensi' => $idPembelian,
+                'tabel_referensi' => 'pembelian'
+            ];
         }
 
+        // insert jurnal pembelian
+        foreach ($jurnal as $j) {
+            $this->JurnalModel->insertJurnal(
+                $j['tanggal'],
+                $j['kode_template'],
+                $j['ar_value'],
+                $j['keterangan'],
+                $j['id_referensi'],
+                $j['tabel_referensi']
+            );
+        }
 
 
         if ($result & $result2) {

@@ -41,20 +41,21 @@ class Kartu_Stok extends BaseController
 
     public function export()
     {
-        $tanggalAwal = $this->request->getPost('tanggal_awal');
-        $tanggalAkhir = $this->request->getPost('tanggal_akhir');
+        // $tanggalAwal = $this->request->getPost('tanggal_awal');
+        // $tanggalAkhir = $this->request->getPost('tanggal_akhir');
         $unit = $this->request->getPost('unit');
         $statusPpn = $this->request->getPost('status_ppn');
 
-        if (empty($tanggalAwal)) {
-            $tanggalAwal = $this->KartuStokModel->getMinTanggalStok();
-        }
+        // if (empty($tanggalAwal)) {
+        //     $tanggalAwal = $this->KartuStokModel->getMinTanggalStok();
+        // }
 
-        if (empty($tanggalAkhir)) {
-            $tanggalAkhir = date('Y-m-d');
-        }
+        // if (empty($tanggalAkhir)) {
+        //     $tanggalAkhir = date('Y-m-d');
+        // }
 
-        $stok = $this->KartuStokModel->exportfilter($tanggalAwal, $tanggalAkhir, $unit, $statusPpn);
+        $stok = $this->KartuStokModel->exportfilter( $unit, $statusPpn);
+        // $stok = $this->KartuStokModel->exportfilter($tanggalAwal, $tanggalAkhir, $unit, $statusPpn);
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -66,8 +67,6 @@ class Kartu_Stok extends BaseController
             'Imei',
             'Status PPN',
             'Unit',
-            'Stok Dasar',
-            'Tanggal Stok Dasar',
             'Total Pembelian',
             'Total Penjualan',
             'Total Retur Pelanggan',
@@ -98,8 +97,8 @@ class Kartu_Stok extends BaseController
 
             $sheet->setCellValue('D' . $row, ((int)$item->status_ppn === 1) ? 'PPN' : 'NON PPN');
             $sheet->setCellValue('E' . $row, $item->nama_unit);
-            $sheet->setCellValue('F' . $row, $item->stok_dasar);
-            $sheet->setCellValue('G' . $row, $item->tanggal_stok_dasar);
+            
+            
             $sheet->setCellValue('H' . $row, $item->total_pembelian);
             $sheet->setCellValue('I' . $row, $item->total_penjualan);
             $sheet->setCellValue('J' . $row, $item->total_retur_pelanggan);
@@ -124,9 +123,10 @@ class Kartu_Stok extends BaseController
         // File name
         $unitLabel = $unit ?: 'all_unit';
         $ppnLabel = $statusPpn ?: 'all_ppn';
-        $tglAwalFormatted = date('Ymd', strtotime($tanggalAwal));
-        $tglAkhirFormatted = date('Ymd', strtotime($tanggalAkhir));
-        $filename = 'kartu_stok_' . $unitLabel . '_' . $ppnLabel . '_' . $tglAwalFormatted . '-' . $tglAkhirFormatted . '.xlsx';
+        // $tglAwalFormatted = date('Ymd', strtotime($tanggalAwal));
+        // $tglAkhirFormatted = date('Ymd', strtotime($tanggalAkhir));
+        $filename = 'kartu_stok_' . $unitLabel . '_' . $ppnLabel . '.xlsx';
+        // $filename = 'kartu_stok_' . $unitLabel . '_' . $ppnLabel . '_' . $tglAwalFormatted . '-' . $tglAkhirFormatted . '.xlsx';
 
         // Output
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

@@ -70,6 +70,13 @@
         text-align: right;
     }
 
+    .imei {
+        font-size: 12px;
+        color: #444;
+        margin-top: -3px;
+        margin-bottom: 3px;
+    }
+
     .thank-you {
         text-align: center;
         font-style: italic;
@@ -93,9 +100,9 @@
 
     <div class="invoice">
         <div class="invoice-header">
-            <h2><?php echo @$dataunit->NAMA_UNIT ?></h2>
-            <p><?php echo @$dataunit->JALAN_UNIT . ', ' . @$dataunit->KABUPATEN_UNIT ?><br>Telp:
-                <?php echo @$dataunit->NOTELP ?></p>
+            <h2><?= @$dataunit->NAMA_UNIT ?></h2>
+            <p><?= @$dataunit->JALAN_UNIT . ', ' . @$dataunit->KABUPATEN_UNIT ?><br>
+                Telp: <?= @$dataunit->NOTELP ?></p>
         </div>
 
         <table class="invoice-info">
@@ -128,11 +135,10 @@
             </thead>
             <tbody>
                 <?php
-                // **Perubahan minimal**: inisialisasi akumulator total (tidak mengubah per-item logic)
                 $total_diskon_semua = 0;
                 $total_ppn_semua = 0;
 
-                foreach ($produk as $p) :
+                foreach ($produk as $p):
                     $harga  = isset($p['harga']) ? (int)str_replace(['Rp', '.', ' '], '', $p['harga']) : 0;
                     $jumlah = (int)($p['jumlah'] ?? 0);
                     $diskon = isset($p['diskon']) ? (int)str_replace(['Rp', '.', ' '], '', $p['diskon']) : 0;
@@ -142,28 +148,35 @@
                     $ppn = (!empty($p['ppn'])) ? round($subtotalSetelahDiskon * 0.11) : 0;
                     $totalItem = $subtotalSetelahDiskon + $ppn;
 
-                    // **akumulasi** tanpa menyentuh variable lain dari controller
                     $total_diskon_semua += $diskon;
                     $total_ppn_semua += $ppn;
                 ?>
                 <tr>
-                    <td><?= $p['nama'] ?></td>
+                    <td>
+                        <?= htmlspecialchars($p['nama']) ?><br>
+                        <?php if (!empty($p['imei']) && $p['imei'] !== '-' && $p['imei'] !== 'null'): ?>
+                        <span class="imei">IMEI: <?= htmlspecialchars($p['imei']) ?></span>
+                        <?php endif; ?>
+                    </td>
                     <td class="text-end"><?= $jumlah ?></td>
                     <td class="text-end"><?= number_format($harga, 0, ',', '.') ?></td>
                     <td class="text-end"><?= number_format($subtotal, 0, ',', '.') ?></td>
                 </tr>
+
                 <?php if ($diskon > 0): ?>
                 <tr>
                     <td colspan="3"><em>Diskon</em></td>
                     <td class="text-end">-<?= number_format($diskon, 0, ',', '.') ?></td>
                 </tr>
                 <?php endif ?>
+
                 <?php if ($ppn > 0): ?>
                 <tr>
                     <td colspan="3"><em>PPN 11%</em></td>
                     <td class="text-end"><?= number_format($ppn, 0, ',', '.') ?></td>
                 </tr>
                 <?php endif ?>
+
                 <tr>
                     <td colspan="3"><strong>Total</strong></td>
                     <td class="text-end"><strong><?= number_format($totalItem, 0, ',', '.') ?></strong></td>
@@ -183,7 +196,6 @@
             </tr>
             <tr>
                 <td><strong>Total PPN</strong></td>
-                <!-- jika controller sudah mengisi @$total_ppn, biarkan; kalau tidak, pakai akumulasi view -->
                 <td class="text-end">
                     <?= number_format((isset($total_ppn) && $total_ppn !== '') ? $total_ppn : $total_ppn_semua, 0, ',', '.') ?>
                 </td>

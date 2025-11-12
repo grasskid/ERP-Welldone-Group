@@ -13,7 +13,9 @@ class ModelTemplatePenilaian extends Model
         'aspek_penilaian',
         'keterangan_penilaian',
         'jabatan_idjabatan',
-        'idtemplate_kpi'
+        'idtemplate_kpi',
+        'target',
+        'bobot'
     ];
 
     public function getTemplatePenilaian()
@@ -39,10 +41,21 @@ class ModelTemplatePenilaian extends Model
 
 
     public function getTemplateByJabatan($idjabatan)
-    {
-        return $this->select('template_penilaian.idtemplate_penilaian, template_penilaian.aspek_penilaian, template_penilaian.keterangan_penilaian, template_penilaian.jabatan_idjabatan, template_penilaian.idtemplate_kpi, template_kpi.status, template_kpi.template_kpi AS aspek_kpi')
-            ->join('template_kpi', 'template_kpi.idtemplate_kpi = template_penilaian.idtemplate_kpi')
-            ->where('template_penilaian.jabatan_idjabatan', $idjabatan)
-            ->findAll();
-    }
+{
+    return $this->select('
+        template_penilaian.idtemplate_penilaian, 
+        template_penilaian.aspek_penilaian, 
+        template_penilaian.keterangan_penilaian, 
+        template_penilaian.jabatan_idjabatan, 
+        template_penilaian.idtemplate_kpi, 
+        template_penilaian.target, 
+        template_penilaian.bobot,
+        template_kpi.status, 
+        template_kpi.template_kpi AS aspek_kpi
+    ')
+    ->join('template_kpi', 'template_kpi.idtemplate_kpi = template_penilaian.idtemplate_kpi')
+    ->where('template_penilaian.jabatan_idjabatan', $idjabatan)
+    ->findAll();
+}
+
 }

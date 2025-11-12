@@ -18,27 +18,16 @@
     <div class="px-4 py-3 border-bottom"></div>
 
     <div class="px-4 py-3 border-bottom d-flex justify-content-between">
-        <div class="d-flex gap-2">
-
-        </div>
-        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-penilaian-modal"
+        <div class="d-flex gap-2"></div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-penilaian-modal"
             style="display: inline-flex; align-items: center; height: 50px;">
             <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
                 style="margin-right: 8px;"></iconify-icon>
             Input
-        </button> -->
-
+        </button>
     </div>
 
     <br>
-    <div class="mb-3 ">
-        <br>
-
-
-
-    </div>
-
-
 
     <div class="table-responsive mb-4 px-4">
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
@@ -48,7 +37,9 @@
                     <th>Keterangan</th>
                     <th>Jabatan</th>
                     <th>Aspek KPI</th>
-                    <!-- <th>Action</th> -->
+                    <th>Target</th>
+                    <th>Bobot</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,25 +50,29 @@
                     <td><?= esc($row->keterangan_penilaian) ?></td>
                     <td><?= esc($row->jabatan) ?></td>
                     <td><?= esc($row->aspek_kpi) ?></td>
-                    <!-- <td>
-                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-penilaian-modal"
-                                    data-idtemplate_penilaian="<?= esc($row->idtemplate_penilaian) ?>"
-                                    data-aspek_penilaian="<?= esc($row->aspek_penilaian) ?>"
-                                    data-keterangan_penilaian="<?= esc($row->keterangan_penilaian) ?>"
-                                    data-jabatan="<?= esc($row->jabatan) ?>"
-                                    data-idtemplate_kpi="<?= esc($row->idtemplate_kpi) ?>"
-                                    data-aspek_kpi="<?= esc($row->aspek_kpi) ?>"
-                                    data-jabatan_idjabatan="<?= esc($row->jabatan_idjabatan) ?>">
-                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                </button>
+                    <td><?= esc($row->target) ?></td>
+                    <td><?= esc($row->bobot) ?></td>
+                    <td>
+                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                            data-bs-target="#edit-penilaian-modal"
+                            data-idtemplate_penilaian="<?= esc($row->idtemplate_penilaian) ?>"
+                            data-aspek_penilaian="<?= esc($row->aspek_penilaian) ?>"
+                            data-keterangan_penilaian="<?= esc($row->keterangan_penilaian) ?>"
+                            data-jabatan="<?= esc($row->jabatan) ?>"
+                            data-idtemplate_kpi="<?= esc($row->idtemplate_kpi) ?>"
+                            data-aspek_kpi="<?= esc($row->aspek_kpi) ?>"
+                            data-jabatan_idjabatan="<?= esc($row->jabatan_idjabatan) ?>"
+                            data-target="<?= esc($row->target) ?>" data-bobot="<?= esc($row->bobot) ?>">
+                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                        </button>
 
-
-                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                    data-bs-target="#delete-penilaian-modal" data-idtemplate_penilaian="<?= esc($row->idtemplate_penilaian) ?>">
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24"></iconify-icon>
-                                </button>
-                            </td> -->
+                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                            data-bs-target="#delete-penilaian-modal"
+                            data-idtemplate_penilaian="<?= esc($row->idtemplate_penilaian) ?>">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                            </iconify-icon>
+                        </button>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php else: ?>
@@ -87,7 +82,6 @@
                 <?php endif; ?>
             </tbody>
         </table>
-
     </div>
 </div>
 
@@ -103,9 +97,11 @@
                 </div>
 
                 <div class="modal-body">
+                    <!-- Aspek Penilaian Locked -->
                     <div class="mb-3">
                         <label for="aspek" class="form-label">Aspek Penilaian</label>
-                        <input type="text" class="form-control" name="aspek" id="aspek" required>
+                        <input type="text" class="form-control" name="aspek" id="aspek" value="Checklist Pekerjaan"
+                            readonly>
                     </div>
 
                     <div class="mb-3">
@@ -116,28 +112,37 @@
                     <div class="mb-3">
                         <label for="jabatan_idjabatan" class="form-label">Jabatan</label>
                         <select class="form-select" name="jabatan_idjabatan" id="input-jabatan_idjabatan" required>
-                            <option value="" disabled>-- Pilih Jabatan --</option>
+                            <option value="" disabled selected>-- Pilih Jabatan --</option>
                             <?php foreach ($jabatan as $row): ?>
                             <option value="<?= esc($row->ID_JABATAN) ?>">
                                 <?= esc($row->NAMA_JABATAN) ?>
                             </option>
                             <?php endforeach; ?>
                         </select>
-
                     </div>
 
+                    <div class="mb-3">
+                        <label for="aspek_kpi" class="form-label">Aspek KPI</label>
+                        <select class="form-select" name="aspek_kpi" id="aspek_kpi" required>
+                            <option value="" disabled selected>-- Pilih Aspek KPI --</option>
+                            <?php foreach ($template as $row): ?>
+                            <option value="<?= esc($row->idtemplate_kpi) ?>"
+                                data-jabatan-id="<?= esc($row->jabatan_idjabatan) ?>">
+                                <?= esc($row->template_kpi) ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-                    <select class="form-select" name="aspek_kpi" id="aspek_kpi" required>
-                        <option value="" disabled selected>-- Pilih Aspek KPI --</option>
-                        <?php foreach ($template as $row): ?>
-                        <option value="<?= esc($row->idtemplate_kpi) ?>"
-                            data-jabatan-id="<?= esc($row->jabatan_idjabatan) ?>">
-                            <?= esc($row->template_kpi) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="mb-3">
+                        <label for="target" class="form-label">Target</label>
+                        <input type="text" class="form-control" name="target" id="target" required>
+                    </div>
 
-
+                    <div class="mb-3">
+                        <label for="bobot" class="form-label">Bobot</label>
+                        <input type="number" class="form-control" name="bobot" id="bobot" required step="0.01" min="0">
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -149,8 +154,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- Modal Edit penilaian -->
 <div class="modal fade" id="edit-penilaian-modal" tabindex="-1" aria-labelledby="editPenilaianModalLabel"
@@ -166,9 +169,11 @@
                 <div class="modal-body">
                     <input hidden name="idtemplate_penilaian" id="edit-idtemplate_penilaian">
 
+                    <!-- Aspek Penilaian Locked -->
                     <div class="mb-3">
                         <label for="edit-aspek" class="form-label">Aspek Penilaian</label>
-                        <input type="text" class="form-control" name="aspek" id="edit-aspek" required>
+                        <input type="text" class="form-control" name="aspek" id="edit-aspek" value="Checklist Pekerjaan"
+                            readonly>
                     </div>
 
                     <div class="mb-3">
@@ -176,9 +181,8 @@
                         <textarea class="form-control" name="keterangan" id="edit-keterangan" rows="3"></textarea>
                     </div>
 
-
                     <div class="mb-3">
-                        <select class=" form-control" name="jabatan_idjabatan" id="edit-jabatan_idjabatan" required>
+                        <select class="form-select" name="jabatan_idjabatan" id="edit-jabatan_idjabatan" required>
                             <option value="" disabled>-- Pilih Jabatan --</option>
                             <?php foreach ($jabatan as $row): ?>
                             <option value="<?= esc($row->ID_JABATAN) ?>">
@@ -198,11 +202,18 @@
                             </option>
                             <?php endforeach; ?>
                         </select>
-
-
                     </div>
 
+                    <div class="mb-3">
+                        <label for="edit-target" class="form-label">Target</label>
+                        <input type="text" class="form-control" name="target" id="edit-target" required>
+                    </div>
 
+                    <div class="mb-3">
+                        <label for="edit-bobot" class="form-label">Bobot</label>
+                        <input type="number" class="form-control" name="bobot" id="edit-bobot" required step="0.01"
+                            min="0">
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -215,8 +226,6 @@
     </div>
 </div>
 
-
-
 <!-- Modal Delete penilaian -->
 <div class="modal fade" id="delete-penilaian-modal" tabindex="-1" aria-labelledby="deletepenilaianModalLabel"
     aria-hidden="true">
@@ -224,7 +233,7 @@
         <div class="modal-content">
             <form action="<?= base_url('delete_template_penilaian') ?>" method="post">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="deletepenilaianModalLabel">Delete Data penilaian</h4>
+                    <h4 class="modal-title" id="deletepenilaianModalLabel">Delete Data Penilaian</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -243,96 +252,55 @@
     </div>
 </div>
 
-<!-- Modal Import -->
-<div class="modal fade" id="samedata-modal" tabindex="-1" aria-labelledby="exampleModalLabel1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header d-flex align-items-center">
-                <h4 class="modal-title" id="exampleModalLabel1">Import File Excell</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="<?= base_url('import/penilaian') ?>" enctype="multipart/form-data" method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="recipient-name" class="control-label">File:</label>
-                        <input type="file" class="form-control" name="file" id="recipient-name1" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger"
-                        data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- JavaScript for Edit/Delete Modal -->
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const editJabatanSelect = document.getElementById('edit-jabatan_idjabatan');
     const editAspekKpiSelect = document.getElementById('edit-aspek_kpi');
-
-
-    const originalAspekKpiOptions = Array.from(editAspekKpiSelect.querySelectorAll('option'))
-        .filter(opt => opt.value);
+    const originalAspekKpiOptions = Array.from(editAspekKpiSelect.querySelectorAll('option')).filter(opt => opt
+        .value);
 
     window.filterEditAspekKpi = function(jabatanId, selectedKpiId = null) {
-
         editAspekKpiSelect.innerHTML = '<option value="" disabled>-- Pilih Aspek KPI --</option>';
-
-
         originalAspekKpiOptions.forEach(opt => {
             if (opt.dataset.jabatanId === jabatanId) {
                 editAspekKpiSelect.appendChild(opt.cloneNode(true));
             }
         });
-
-
         if (selectedKpiId) {
             editAspekKpiSelect.value = selectedKpiId;
         }
-
-
         if ($(editAspekKpiSelect).hasClass('select2')) {
             $(editAspekKpiSelect).trigger('change');
         }
     }
 
-
     editJabatanSelect.addEventListener('change', function() {
         filterEditAspekKpi(this.value);
     });
-
 
     document.querySelector('#zero_config').addEventListener('click', function(e) {
         if (e.target.closest('.edit-button')) {
             const button = e.target.closest('.edit-button');
 
-            const idPenilaian = button.getAttribute('data-idtemplate_penilaian');
-            const aspek = button.getAttribute('data-aspek_penilaian');
-            const keterangan = button.getAttribute('data-keterangan_penilaian');
-            const jabatanId = button.getAttribute('data-jabatan_idjabatan');
-            const aspekKpiId = button.getAttribute('data-idtemplate_kpi');
+            document.getElementById('edit-idtemplate_penilaian').value = button.dataset
+                .idtemplate_penilaian;
+            document.getElementById('edit-aspek').value = 'Checklist Pekerjaan';
+            document.getElementById('edit-keterangan').value = button.dataset.keterangan_penilaian;
+            document.getElementById('edit-target').value = button.dataset.target;
+            document.getElementById('edit-bobot').value = button.dataset.bobot;
 
-            document.getElementById('edit-idtemplate_penilaian').value = idPenilaian;
-            document.getElementById('edit-aspek').value = aspek;
-            document.getElementById('edit-keterangan').value = keterangan;
-
+            const jabatanId = button.dataset.jabatan_idjabatan;
+            const aspekKpiId = button.dataset.idtemplate_kpi;
 
             editJabatanSelect.value = jabatanId;
             $('#edit-jabatan_idjabatan').val(jabatanId).trigger('change');
-
-
             filterEditAspekKpi(jabatanId, aspekKpiId);
         }
 
         if (e.target.closest('.delete-button')) {
-            const button = e.target.closest('.delete-button');
-            document.getElementById('delete-idtemplate_penilaian').value = button.getAttribute(
-                'data-idtemplate_penilaian');
+            document.getElementById('delete-idtemplate_penilaian').value =
+                e.target.closest('.delete-button').dataset.idtemplate_penilaian;
         }
     });
 });
@@ -342,28 +310,22 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const jabatanSelect = document.getElementById('input-jabatan_idjabatan');
     const aspekKpiSelect = document.getElementById('aspek_kpi');
-    const allAspekKpiOptions = Array.from(aspekKpiSelect.options).filter(opt => opt.value); // skip default
+    const allAspekKpiOptions = Array.from(aspekKpiSelect.options).filter(opt => opt.value);
 
     function filterAspekKpi(jabatanId) {
-
         aspekKpiSelect.innerHTML = '<option value="" disabled selected>-- Pilih Aspek KPI --</option>';
-
-
         allAspekKpiOptions.forEach(opt => {
             if (opt.dataset.jabatanId === jabatanId) {
                 aspekKpiSelect.appendChild(opt);
             }
         });
-
-        t2
         if ($(aspekKpiSelect).hasClass("select2")) {
             $(aspekKpiSelect).val(null).trigger('change');
         }
     }
 
     jabatanSelect.addEventListener('change', function() {
-        const selectedJabatanId = this.value;
-        filterAspekKpi(selectedJabatanId);
+        filterAspekKpi(this.value);
     });
 });
 </script>

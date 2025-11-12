@@ -326,7 +326,7 @@ class Produk extends BaseController
 
         // Get sub-categories for this category
         $subKategori = $this->SubKategoriModel->getSubKategoriByParent($kategori->id);
-        
+
         return $this->response->setJSON($subKategori);
     }
 }
