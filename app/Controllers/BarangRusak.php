@@ -44,10 +44,10 @@ class BarangRusak extends BaseController
         $this->KategoriModel = new ModelKategori();
         $this->SubKategoriModel = new ModelSubKategori();
     }
-    ///
+
     public function index()
     {
-
+        //ini perubahan
         $data =  array(
             'barang_rusak' => $this->BarangRusakModel->getBarangRusak(),
             'unit' => $this->UnitModel->getUnit(),
