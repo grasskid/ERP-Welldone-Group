@@ -47,7 +47,7 @@ class NamaHandphone extends BaseController
         return view('template', $data);
     }
 
-    public function insert_namaphone()
+    public function insertNamaHandphone()
     {
         $nama   = $this->request->getPost('nama');
         $type   = $this->request->getPost('type');
@@ -66,7 +66,7 @@ class NamaHandphone extends BaseController
         }
     }
 
-    public function update_namaphone()
+    public function udpateNamaHandphone()
     {
         $id     = $this->request->getPost('id');
         $nama   = $this->request->getPost('nama');
@@ -86,7 +86,7 @@ class NamaHandphone extends BaseController
         return redirect()->to(base_url('/namahandphone'));
     }
 
-    public function delete_namaphone()
+    public function deleteNamaHandphone()
     {
         $id = $this->request->getPost('id');
         $result =  $this->NamaHandphoneModel->delete($id);
