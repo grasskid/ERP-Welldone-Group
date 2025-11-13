@@ -75,98 +75,157 @@ class LabaRugi extends BaseController
     {
         $db = \Config\Database::connect();
 
-        // 1. Pendapatan dari Penjualan (POS)
+        $applyTanggalFilter = function ($builder, string $column) use ($tanggal_awal, $tanggal_akhir) {
+            if ($tanggal_awal && $tanggal_akhir) {
+                $builder->where("DATE({$column}) >=", $tanggal_awal)
+                    ->where("DATE({$column}) <=", $tanggal_akhir);
+            } elseif ($tanggal_awal) {
+                $builder->where("DATE({$column}) >=", $tanggal_awal);
+            } elseif ($tanggal_akhir) {
+                $builder->where("DATE({$column}) <=", $tanggal_akhir);
+            }
+        };
+
+        // Pendapatan: Penjualan
         $builder_penjualan = $db->table('penjualan');
         $builder_penjualan->selectSum('total_penjualan', 'total');
-        if ($tanggal_awal && $tanggal_akhir) {
-            $builder_penjualan->where('DATE(tanggal) >=', $tanggal_awal)
-                ->where('DATE(tanggal) <=', $tanggal_akhir);
-        }
+        $applyTanggalFilter($builder_penjualan, 'penjualan.tanggal');
         if ($id_unit) {
-            $builder_penjualan->where('unit_idunit', $id_unit);
+            $builder_penjualan->where('penjualan.unit_idunit', $id_unit);
         }
         $penjualan = $builder_penjualan->get()->getRow();
         $total_penjualan = $penjualan->total ?? 0;
 
-        // 2. Pendapatan dari Service
-        $builder_service = $db->table('service');
-        $builder_service->selectSum('harus_dibayar', 'total');
-        $builder_service->where('status_service', 4); // hanya service yang sudah selesai
-        if ($tanggal_awal && $tanggal_akhir) {
-            $builder_service->where('DATE(created_at) >=', $tanggal_awal)
-                ->where('DATE(created_at) <=', $tanggal_akhir);
-        }
+        $penjualan_detail_builder = $db->table('penjualan')
+            ->select('penjualan.kode_invoice, penjualan.tanggal, penjualan.total_penjualan, unit.NAMA_UNIT as nama_unit, pelanggan.nama as nama_pelanggan')
+            ->join('unit', 'unit.idunit = penjualan.unit_idunit', 'left')
+            ->join('pelanggan', 'pelanggan.id_pelanggan = penjualan.id_pelanggan', 'left');
+        $applyTanggalFilter($penjualan_detail_builder, 'penjualan.tanggal');
         if ($id_unit) {
-            $builder_service->where('unit_idunit', $id_unit);
+            $penjualan_detail_builder->where('penjualan.unit_idunit', $id_unit);
+        }
+        $penjualan_detail = $penjualan_detail_builder
+            ->orderBy('penjualan.tanggal', 'DESC')
+            ->get()->getResult();
+
+        // Pendapatan: Service
+        $builder_service = $db->table('service');
+        $builder_service->selectSum('harus_dibayar', 'total')
+            ->where('status_service', 4);
+        $applyTanggalFilter($builder_service, 'service.created_at');
+        if ($id_unit) {
+            $builder_service->where('service.unit_idunit', $id_unit);
         }
         $service = $builder_service->get()->getRow();
         $total_service = $service->total ?? 0;
 
-        // 3. Pendapatan dari Kas Masuk (yang jenisnya pendapatan)
-        // Asumsikan kas masuk dengan kategori tertentu adalah pendapatan
+        $service_detail_builder = $db->table('service')
+            ->select('service.no_service, service.created_at, service.harus_dibayar, unit.NAMA_UNIT as nama_unit, pelanggan.nama as nama_pelanggan')
+            ->join('unit', 'unit.idunit = service.unit_idunit', 'left')
+            ->join('pelanggan', 'pelanggan.id_pelanggan = service.pelanggan_id_pelanggan', 'left')
+            ->where('service.status_service', 4);
+        $applyTanggalFilter($service_detail_builder, 'service.created_at');
+        if ($id_unit) {
+            $service_detail_builder->where('service.unit_idunit', $id_unit);
+        }
+        $service_detail = $service_detail_builder
+            ->orderBy('service.created_at', 'DESC')
+            ->get()->getResult();
+
+        // Pendapatan: Kas Masuk
         $builder_kas_masuk = $db->table('kas_masuk');
         $builder_kas_masuk->selectSum('jumlah', 'total');
-        if ($tanggal_awal && $tanggal_akhir) {
-            $builder_kas_masuk->where('tanggal >=', $tanggal_awal)
-                ->where('tanggal <=', $tanggal_akhir);
-        }
+        $applyTanggalFilter($builder_kas_masuk, 'kas_masuk.tanggal');
         if ($id_unit) {
-            $builder_kas_masuk->where('idunit', $id_unit);
+            $builder_kas_masuk->where('kas_masuk.idunit', $id_unit);
         }
-        // Filter berdasarkan jenis akun atau kategori (disesuaikan dengan kebutuhan)
-        // Untuk sementara, kita ambil semua kas masuk sebagai pendapatan tambahan
         $kas_masuk = $builder_kas_masuk->get()->getRow();
         $total_kas_masuk = $kas_masuk->total ?? 0;
 
-        // 4. Biaya dari Kas Keluar
+        $kas_masuk_detail_builder = $db->table('kas_masuk')
+            ->select('kas_masuk.tanggal, kategori_kas.kategori, kas_masuk.deskripsi, kas_masuk.jumlah, unit.NAMA_UNIT as nama_unit')
+            ->join('kategori_kas', 'kategori_kas.idkategori_kas = kas_masuk.kategori_idkategori', 'left')
+            ->join('unit', 'unit.idunit = kas_masuk.idunit', 'left');
+        $applyTanggalFilter($kas_masuk_detail_builder, 'kas_masuk.tanggal');
+        if ($id_unit) {
+            $kas_masuk_detail_builder->where('kas_masuk.idunit', $id_unit);
+        }
+        $kas_masuk_detail = $kas_masuk_detail_builder
+            ->orderBy('kas_masuk.tanggal', 'DESC')
+            ->get()->getResult();
+
+        // Biaya: Kas Keluar
         $builder_kas_keluar = $db->table('kas_keluar');
         $builder_kas_keluar->selectSum('jumlah', 'total');
-        if ($tanggal_awal && $tanggal_akhir) {
-            $builder_kas_keluar->where('tanggal >=', $tanggal_awal)
-                ->where('tanggal <=', $tanggal_akhir);
-        }
+        $applyTanggalFilter($builder_kas_keluar, 'kas_keluar.tanggal');
         if ($id_unit) {
-            $builder_kas_keluar->where('idunit', $id_unit);
+            $builder_kas_keluar->where('kas_keluar.idunit', $id_unit);
         }
         $kas_keluar = $builder_kas_keluar->get()->getRow();
         $total_kas_keluar = $kas_keluar->total ?? 0;
 
-        // 5. HPP Penjualan (dari detail penjualan) - HPP dikalikan dengan jumlah
-        $builder_hpp = $db->table('detail_penjualan');
-        $builder_hpp->select('SUM(hpp_penjualan * jumlah) as total', false);
-        $builder_hpp->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan');
-        
-        if ($tanggal_awal && $tanggal_akhir) {
-            $builder_hpp->where('DATE(penjualan.tanggal) >=', $tanggal_awal)
-                ->where('DATE(penjualan.tanggal) <=', $tanggal_akhir);
+        $kas_keluar_detail_builder = $db->table('kas_keluar')
+            ->select('kas_keluar.tanggal, kategori_kas.kategori, kas_keluar.deskripsi, kas_keluar.jumlah, unit.NAMA_UNIT as nama_unit')
+            ->join('kategori_kas', 'kategori_kas.idkategori_kas = kas_keluar.kategori_idkategori', 'left')
+            ->join('unit', 'unit.idunit = kas_keluar.idunit', 'left');
+        $applyTanggalFilter($kas_keluar_detail_builder, 'kas_keluar.tanggal');
+        if ($id_unit) {
+            $kas_keluar_detail_builder->where('kas_keluar.idunit', $id_unit);
         }
-        
+        $kas_keluar_detail = $kas_keluar_detail_builder
+            ->orderBy('kas_keluar.tanggal', 'DESC')
+            ->get()->getResult();
+
+        // Biaya: HPP Penjualan
+        $builder_hpp = $db->table('detail_penjualan');
+        $builder_hpp->select('SUM(detail_penjualan.hpp_penjualan * detail_penjualan.jumlah) as total', false)
+            ->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan');
+        $applyTanggalFilter($builder_hpp, 'penjualan.tanggal');
         if ($id_unit) {
             $builder_hpp->where('penjualan.unit_idunit', $id_unit);
         }
-        
         $hpp = $builder_hpp->get()->getRow();
         $total_hpp = $hpp->total ?? 0;
 
-        // 6. HPP Service (dari service_sparepart) - HPP dikalikan dengan jumlah
-        $builder_hpp_service = $db->table('service_sparepart');
-        $builder_hpp_service->select('SUM(hpp_penjualan * jumlah) as total', false);
-        $builder_hpp_service->join('service', 'service.idservice = service_sparepart.service_idservice');
-        $builder_hpp_service->where('service.status_service', 4); // hanya service yang sudah selesai
-        
-        if ($tanggal_awal && $tanggal_akhir) {
-            $builder_hpp_service->where('DATE(service.created_at) >=', $tanggal_awal)
-                ->where('DATE(service.created_at) <=', $tanggal_akhir);
+        $hpp_detail_builder = $db->table('detail_penjualan')
+            ->select('penjualan.kode_invoice, penjualan.tanggal, barang.nama_barang, detail_penjualan.jumlah, detail_penjualan.hpp_penjualan, (detail_penjualan.hpp_penjualan * detail_penjualan.jumlah) as total_hpp, unit.NAMA_UNIT as nama_unit')
+            ->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan')
+            ->join('barang', 'barang.idbarang = detail_penjualan.barang_idbarang', 'left')
+            ->join('unit', 'unit.idunit = detail_penjualan.unit_idunit', 'left');
+        $applyTanggalFilter($hpp_detail_builder, 'penjualan.tanggal');
+        if ($id_unit) {
+            $hpp_detail_builder->where('penjualan.unit_idunit', $id_unit);
         }
-        
+        $hpp_detail = $hpp_detail_builder
+            ->orderBy('penjualan.tanggal', 'DESC')
+            ->get()->getResult();
+
+        // Biaya: HPP Service
+        $builder_hpp_service = $db->table('service_sparepart');
+        $builder_hpp_service->select('SUM(service_sparepart.hpp_penjualan * service_sparepart.jumlah) as total', false)
+            ->join('service', 'service.idservice = service_sparepart.service_idservice')
+            ->where('service.status_service', 4);
+        $applyTanggalFilter($builder_hpp_service, 'service.created_at');
         if ($id_unit) {
             $builder_hpp_service->where('service.unit_idunit', $id_unit);
         }
-        
         $hpp_service = $builder_hpp_service->get()->getRow();
         $total_hpp_service = $hpp_service->total ?? 0;
 
-        // Hitung total pendapatan dan biaya
+        $hpp_service_detail_builder = $db->table('service_sparepart')
+            ->select('service.no_service, service.created_at, barang.nama_barang, service_sparepart.jumlah, service_sparepart.hpp_penjualan, (service_sparepart.hpp_penjualan * service_sparepart.jumlah) as total_hpp, unit.NAMA_UNIT as nama_unit')
+            ->join('service', 'service.idservice = service_sparepart.service_idservice')
+            ->join('barang', 'barang.idbarang = service_sparepart.barang_idbarang', 'left')
+            ->join('unit', 'unit.idunit = service_sparepart.unit_idunit', 'left')
+            ->where('service.status_service', 4);
+        $applyTanggalFilter($hpp_service_detail_builder, 'service.created_at');
+        if ($id_unit) {
+            $hpp_service_detail_builder->where('service.unit_idunit', $id_unit);
+        }
+        $hpp_service_detail = $hpp_service_detail_builder
+            ->orderBy('service.created_at', 'DESC')
+            ->get()->getResult();
+
         $total_pendapatan = $total_penjualan + $total_service + $total_kas_masuk;
         $total_biaya = $total_kas_keluar + $total_hpp + $total_hpp_service;
         $laba_rugi = $total_pendapatan - $total_biaya;
@@ -183,6 +242,18 @@ class LabaRugi extends BaseController
                 'hpp_penjualan' => $total_hpp,
                 'hpp_service' => $total_hpp_service,
                 'total' => $total_biaya
+            ],
+            'detail' => [
+                'pendapatan' => [
+                    'penjualan' => $penjualan_detail,
+                    'service' => $service_detail,
+                    'kas_masuk' => $kas_masuk_detail,
+                ],
+                'biaya' => [
+                    'kas_keluar' => $kas_keluar_detail,
+                    'hpp_penjualan' => $hpp_detail,
+                    'hpp_service' => $hpp_service_detail,
+                ],
             ],
             'laba_rugi' => $laba_rugi
         ];

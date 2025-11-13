@@ -37,16 +37,16 @@ class DashboardPOS extends BaseController
 
         // Total Penjualan
         $totalPenjualan = $this->PenjualanModel
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate)
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate)
             ->where($unitCondition)
             ->selectSum('total_penjualan')
             ->first()->total_penjualan ?? 0;
 
         // Total Transaksi
         $totalTransaksi = $this->PenjualanModel
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate)
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate)
             ->where($unitCondition)
             ->countAllResults(false);
 
@@ -61,8 +61,8 @@ class DashboardPOS extends BaseController
         // Chart data - penjualan per hari
         $chartData = $this->PenjualanModel
             ->select("DATE(tanggal) as tanggal, SUM(total_penjualan) as total")
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate)
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate)
             ->where($unitCondition)
             ->groupBy('DATE(tanggal)')
             ->orderBy('tanggal', 'ASC')
@@ -84,8 +84,8 @@ class DashboardPOS extends BaseController
         $topSales = $this->PenjualanModel
             ->select('akun.NAMA_AKUN, SUM(penjualan.total_penjualan) as total')
             ->join('akun', 'akun.ID_AKUN = penjualan.sales_by', 'left')
-            ->where('penjualan.tanggal >=', $startDate)
-            ->where('penjualan.tanggal <=', $endDate)
+            ->where('DATE(penjualan.tanggal) >=', $startDate)
+            ->where('DATE(penjualan.tanggal) <=', $endDate)
             ->where($unitCondition)
             ->groupBy('penjualan.sales_by')
             ->orderBy('total', 'DESC')

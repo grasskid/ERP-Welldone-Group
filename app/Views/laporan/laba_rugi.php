@@ -27,13 +27,13 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Awal:</label>
-                    <input type="date" name="tanggal_awal" id="tanggalAwal" class="form-control" 
-                           value="<?= $tanggal_awal ?? '' ?>">
+                    <input type="date" name="tanggal_awal" id="tanggalAwal" class="form-control"
+                        value="<?= $tanggal_awal ?? '' ?>">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Akhir:</label>
-                    <input type="date" name="tanggal_akhir" id="tanggalAkhir" class="form-control" 
-                           value="<?= $tanggal_akhir ?? '' ?>">
+                    <input type="date" name="tanggal_akhir" id="tanggalAkhir" class="form-control"
+                        value="<?= $tanggal_akhir ?? '' ?>">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Unit:</label>
@@ -68,7 +68,7 @@
     <div class="card w-100 position-relative overflow-hidden mb-4">
         <div class="card-body">
             <h5 class="card-title mb-4">Laporan Laba Rugi Berdasarkan Jurnal</h5>
-            
+
             <!-- Summary Cards -->
             <div class="row mb-4">
                 <div class="col-md-4">
@@ -184,7 +184,7 @@
     <div class="card w-100 position-relative overflow-hidden mb-4">
         <div class="card-body">
             <h5 class="card-title mb-4">Laporan Laba Rugi Berdasarkan Transaksi</h5>
-            
+
             <!-- Summary Cards -->
             <div class="row mb-4">
                 <div class="col-md-4">
@@ -221,7 +221,11 @@
 
             <!-- Tabel Pendapatan -->
             <div class="mb-4">
-                <h6 class="fw-bold">Pendapatan</h6>
+                <h5 class="fw-bold">PENDAPATAN</h5>
+                <button class="btn btn-outline-primary btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#modalDetailPendapatan">
+                    Detail Pendapatan
+                </button>
+                <br>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead class="table-light">
@@ -256,7 +260,10 @@
 
             <!-- Tabel Biaya -->
             <div class="mb-4">
-                <h6 class="fw-bold">Biaya</h6>
+                <h5 class="fw-bold">BIAYA</h5>
+                <button class="btn btn-outline-danger btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#modalDetailBiaya">
+                    Detail Biaya
+                </button>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead class="table-light">
@@ -300,34 +307,293 @@
     </div>
 <?php endif; ?>
 
+<?php if ($jenis_laporan == 'transaksi' && !empty($data_transaksi)): ?>
+    <div class="modal fade" id="modalDetailPendapatan" tabindex="-1" aria-labelledby="modalDetailPendapatanLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetailPendapatanLabel">Detail Pendapatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="pendapatanTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-penjualan" data-bs-toggle="tab" data-bs-target="#tab-pane-penjualan" type="button" role="tab">
+                                Penjualan (POS)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-service" data-bs-toggle="tab" data-bs-target="#tab-pane-service" type="button" role="tab">
+                                Service
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-kas-masuk" data-bs-toggle="tab" data-bs-target="#tab-pane-kas-masuk" type="button" role="tab">
+                                Kas Masuk
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3">
+                        <div class="tab-pane fade show active" id="tab-pane-penjualan" role="tabpanel">
+                            <?php $detailPenjualan = $data_transaksi['detail']['pendapatan']['penjualan'] ?? []; ?>
+                            <?php if (!empty($detailPenjualan)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>No Invoice</th>
+                                                <th>Pelanggan</th>
+                                                <th>Unit</th>
+                                                <th class="text-end">Total Penjualan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($detailPenjualan as $row): ?>
+                                                <tr>
+                                                    <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
+                                                    <td><?= esc($row->kode_invoice) ?></td>
+                                                    <td><?= esc($row->nama_pelanggan ?? '-') ?></td>
+                                                    <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->total_penjualan ?? 0, 0, ',', '.') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted mb-0">Belum ada transaksi penjualan pada rentang ini.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="tab-pane fade" id="tab-pane-service" role="tabpanel">
+                            <?php $detailService = $data_transaksi['detail']['pendapatan']['service'] ?? []; ?>
+                            <?php if (!empty($detailService)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>No Service</th>
+                                                <th>Pelanggan</th>
+                                                <th>Unit</th>
+                                                <th class="text-end">Harus Dibayar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($detailService as $row): ?>
+                                                <tr>
+                                                    <td><?= esc(date('d/m/Y', strtotime($row->created_at))) ?></td>
+                                                    <td><?= esc($row->no_service) ?></td>
+                                                    <td><?= esc($row->nama_pelanggan ?? '-') ?></td>
+                                                    <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->harus_dibayar ?? 0, 0, ',', '.') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted mb-0">Belum ada transaksi service pada rentang ini.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="tab-pane fade" id="tab-pane-kas-masuk" role="tabpanel">
+                            <?php $detailKasMasuk = $data_transaksi['detail']['pendapatan']['kas_masuk'] ?? []; ?>
+                            <?php if (!empty($detailKasMasuk)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>Kategori</th>
+                                                <th>Deskripsi</th>
+                                                <th>Unit</th>
+                                                <th class="text-end">Jumlah</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($detailKasMasuk as $row): ?>
+                                                <tr>
+                                                    <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
+                                                    <td><?= esc($row->kategori ?? '-') ?></td>
+                                                    <td><?= esc($row->deskripsi ?? '-') ?></td>
+                                                    <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->jumlah ?? 0, 0, ',', '.') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted mb-0">Belum ada kas masuk pada rentang ini.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDetailBiaya" tabindex="-1" aria-labelledby="modalDetailBiayaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetailBiayaLabel">Detail Biaya</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="biayaTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-kas-keluar" data-bs-toggle="tab" data-bs-target="#tab-pane-kas-keluar" type="button" role="tab">
+                                Kas Keluar
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-hpp-penjualan" data-bs-toggle="tab" data-bs-target="#tab-pane-hpp-penjualan" type="button" role="tab">
+                                HPP Penjualan
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-hpp-service" data-bs-toggle="tab" data-bs-target="#tab-pane-hpp-service" type="button" role="tab">
+                                HPP Service
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3">
+                        <div class="tab-pane fade show active" id="tab-pane-kas-keluar" role="tabpanel">
+                            <?php $detailKasKeluar = $data_transaksi['detail']['biaya']['kas_keluar'] ?? []; ?>
+                            <?php if (!empty($detailKasKeluar)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>Kategori</th>
+                                                <th>Deskripsi</th>
+                                                <th>Unit</th>
+                                                <th class="text-end">Jumlah</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($detailKasKeluar as $row): ?>
+                                                <tr>
+                                                    <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
+                                                    <td><?= esc($row->kategori ?? '-') ?></td>
+                                                    <td><?= esc($row->deskripsi ?? '-') ?></td>
+                                                    <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->jumlah ?? 0, 0, ',', '.') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted mb-0">Belum ada kas keluar pada rentang ini.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="tab-pane fade" id="tab-pane-hpp-penjualan" role="tabpanel">
+                            <?php $detailHppPenjualan = $data_transaksi['detail']['biaya']['hpp_penjualan'] ?? []; ?>
+                            <?php if (!empty($detailHppPenjualan)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>No Invoice</th>
+                                                <th>Barang</th>
+                                                <th class="text-end">Qty</th>
+                                                <th class="text-end">HPP</th>
+                                                <th class="text-end">Total HPP</th>
+                                                <th>Unit</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($detailHppPenjualan as $row): ?>
+                                                <tr>
+                                                    <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
+                                                    <td><?= esc($row->kode_invoice ?? '-') ?></td>
+                                                    <td><?= esc($row->nama_barang ?? '-') ?></td>
+                                                    <td class="text-end"><?= number_format($row->jumlah ?? 0, 0, ',', '.') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->hpp_penjualan ?? 0, 0, ',', '.') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->total_hpp ?? 0, 0, ',', '.') ?></td>
+                                                    <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted mb-0">Belum ada HPP penjualan pada rentang ini.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="tab-pane fade" id="tab-pane-hpp-service" role="tabpanel">
+                            <?php $detailHppService = $data_transaksi['detail']['biaya']['hpp_service'] ?? []; ?>
+                            <?php if (!empty($detailHppService)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>No Service</th>
+                                                <th>Barang</th>
+                                                <th class="text-end">Qty</th>
+                                                <th class="text-end">HPP</th>
+                                                <th class="text-end">Total HPP</th>
+                                                <th>Unit</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($detailHppService as $row): ?>
+                                                <tr>
+                                                    <td><?= esc(date('d/m/Y', strtotime($row->created_at))) ?></td>
+                                                    <td><?= esc($row->no_service ?? '-') ?></td>
+                                                    <td><?= esc($row->nama_barang ?? '-') ?></td>
+                                                    <td class="text-end"><?= number_format($row->jumlah ?? 0, 0, ',', '.') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->hpp_penjualan ?? 0, 0, ',', '.') ?></td>
+                                                    <td class="text-end"><?= 'Rp ' . number_format($row->total_hpp ?? 0, 0, ',', '.') ?></td>
+                                                    <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted mb-0">Belum ada HPP service pada rentang ini.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Set default tanggal (15 hari terakhir)
-    const today = new Date();
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(today.getDate() - 15);
+    document.addEventListener("DOMContentLoaded", function() {
+        // Set default tanggal (15 hari terakhir)
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
 
-    const toDateInputValue = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+        const toDateInputValue = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
 
-    // Set default jika belum ada nilai
-    if (!document.getElementById('tanggalAwal').value) {
-        document.getElementById('tanggalAwal').value = toDateInputValue(fifteenDaysAgo);
+        // Set default jika belum ada nilai
+        if (!document.getElementById('tanggalAwal').value) {
+            document.getElementById('tanggalAwal').value = toDateInputValue(fifteenDaysAgo);
+        }
+        if (!document.getElementById('tanggalAkhir').value) {
+            document.getElementById('tanggalAkhir').value = toDateInputValue(today);
+        }
+    });
+
+    function resetFilter() {
+        document.getElementById('tanggalAwal').value = '';
+        document.getElementById('tanggalAkhir').value = '';
+        document.getElementById('idUnit').value = '';
+        document.getElementById('filterForm').submit();
     }
-    if (!document.getElementById('tanggalAkhir').value) {
-        document.getElementById('tanggalAkhir').value = toDateInputValue(today);
-    }
-});
-
-function resetFilter() {
-    document.getElementById('tanggalAwal').value = '';
-    document.getElementById('tanggalAkhir').value = '';
-    document.getElementById('idUnit').value = '';
-    document.getElementById('filterForm').submit();
-}
 </script>
-

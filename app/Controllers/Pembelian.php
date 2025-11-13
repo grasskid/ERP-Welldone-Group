@@ -104,6 +104,9 @@ class Pembelian extends BaseController
         $totalBayarBank = 0;
         $kodePembayaran = 'PBL' . date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
 
+        $db = \Config\Database::connect();
+        $db->transStart();
+
         if (!empty($bankData) && is_array($bankData)) {
             foreach ($bankData as $b) {
                 $jumlah = $this->sanitizeCurrency($b['jumlah'] ?? '0');
@@ -363,8 +366,15 @@ class Pembelian extends BaseController
             );
         }
 
+        $db->transComplete(); // Commits if all queries succeeded, rolls back otherwise
 
-        if ($result & $result2) {
+        if ($db->transStatus() === FALSE) {
+            // Transaction failed, handle the error
+            $db->transRollback();
+            session()->setFlashdata('gagal', 'Data Gagal Di Simpan');
+            return redirect()->to(base_url('/pembelian'));
+        } else {
+            $db->transCommit();
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
             return redirect()->to(base_url('/pembelian'));
         }
