@@ -16,9 +16,9 @@
                     <select class="form-select" id="unit_id" name="unit_id">
                         <option value="">-- Semua Unit --</option>
                         <?php foreach ($units as $unit): ?>
-                        <option value="<?= $unit->idunit ?>" <?= ($unit_id == $unit->idunit ? 'selected' : '') ?>>
-                            <?= esc($unit->NAMA_UNIT) ?>
-                        </option>
+                            <option value="<?= $unit->idunit ?>" <?= ($unit_id == $unit->idunit ? 'selected' : '') ?>>
+                                <?= esc($unit->NAMA_UNIT) ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -197,30 +197,30 @@
                             </table>
                         </div>
                         <?php if (!empty($laba_rugi_jurnal['pendapatan'])): ?>
-                        <div class="mt-3">
-                            <h6 class="text-success">Detail Pendapatan:</h6>
-                            <ul class="list-unstyled small">
-                                <?php foreach ($laba_rugi_jurnal['pendapatan'] as $item): ?>
-                                <li class="d-flex justify-content-between">
-                                    <span><?= esc($item->nama_akun ?? $item->no_akun) ?></span>
-                                    <span>Rp <?= number_format($item->saldo ?? 0, 0, ',', '.') ?></span>
-                                </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                            <div class="mt-3">
+                                <h6 class="text-success">Detail Pendapatan:</h6>
+                                <ul class="list-unstyled small">
+                                    <?php foreach ($laba_rugi_jurnal['pendapatan'] as $item): ?>
+                                        <li class="d-flex justify-content-between">
+                                            <span><?= esc($item->nama_akun ?? $item->no_akun) ?></span>
+                                            <span>Rp <?= number_format($item->saldo ?? 0, 0, ',', '.') ?></span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
                         <?php endif; ?>
                         <?php if (!empty($laba_rugi_jurnal['biaya'])): ?>
-                        <div class="mt-3">
-                            <h6 class="text-danger">Detail Biaya:</h6>
-                            <ul class="list-unstyled small">
-                                <?php foreach ($laba_rugi_jurnal['biaya'] as $item): ?>
-                                <li class="d-flex justify-content-between">
-                                    <span><?= esc($item->nama_akun ?? $item->no_akun) ?></span>
-                                    <span>Rp <?= number_format($item->saldo ?? 0, 0, ',', '.') ?></span>
-                                </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                            <div class="mt-3">
+                                <h6 class="text-danger">Detail Biaya:</h6>
+                                <ul class="list-unstyled small">
+                                    <?php foreach ($laba_rugi_jurnal['biaya'] as $item): ?>
+                                        <li class="d-flex justify-content-between">
+                                            <span><?= esc($item->nama_akun ?? $item->no_akun) ?></span>
+                                            <span>Rp <?= number_format($item->saldo ?? 0, 0, ',', '.') ?></span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -291,7 +291,7 @@
         </div>
 
         <!-- Charts -->
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
@@ -309,6 +309,25 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Status Pelunasan Piutang</h5>
+                        <canvas id="pelunasanChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Aging Piutang</h5>
+                        <canvas id="agingChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -316,90 +335,149 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-// Kas Masuk & Keluar Chart
-const ctxKas = document.getElementById('kasChart').getContext('2d');
-new Chart(ctxKas, {
-    type: 'line',
-    data: {
-        labels: <?= json_encode($chart_labels) ?>,
-        datasets: [
-            {
-                label: 'Kas Masuk',
-                data: <?= json_encode($chart_masuk) ?>,
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.3,
-                fill: true
-            },
-            {
-                label: 'Kas Keluar',
-                data: <?= json_encode($chart_keluar) ?>,
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                tension: 0.3,
-                fill: true
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: true
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return context.dataset.label + ': Rp ' + context.raw.toLocaleString('id-ID');
-                    }
+    // Kas Masuk & Keluar Chart
+    const ctxKas = document.getElementById('kasChart').getContext('2d');
+    new Chart(ctxKas, {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($chart_labels) ?>,
+            datasets: [{
+                    label: 'Kas Masuk',
+                    data: <?= json_encode($chart_masuk) ?>,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Kas Keluar',
+                    data: <?= json_encode($chart_keluar) ?>,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.3,
+                    fill: true
                 }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return 'Rp ' + value.toLocaleString('id-ID');
-                    }
-                }
-            }
-        }
-    }
-});
-
-// Kategori Kas Masuk Chart
-const ctxKategori = document.getElementById('kategoriChart').getContext('2d');
-new Chart(ctxKategori, {
-    type: 'doughnut',
-    data: {
-        labels: <?= json_encode($kategori_masuk_labels) ?>,
-        datasets: [{
-            data: <?= json_encode($kategori_masuk_data) ?>,
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)'
             ]
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom'
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': Rp ' + context.raw.toLocaleString('id-ID');
+                        }
+                    }
+                }
             },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return context.label + ': Rp ' + context.raw.toLocaleString('id-ID');
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
                     }
                 }
             }
         }
-    }
-});
-</script>
+    });
 
+    // Kategori Kas Masuk Chart
+    const ctxKategori = document.getElementById('kategoriChart').getContext('2d');
+    new Chart(ctxKategori, {
+        type: 'doughnut',
+        data: {
+            labels: <?= json_encode($kategori_masuk_labels) ?>,
+            datasets: [{
+                data: <?= json_encode($kategori_masuk_data) ?>,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': Rp ' + context.raw.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const pelunasanCtx = document.getElementById('pelunasanChart').getContext('2d');
+    new Chart(pelunasanCtx, {
+        type: 'pie',
+        data: {
+            labels: <?= json_encode($piutang_status_labels) ?>,
+            datasets: [{
+                data: <?= json_encode($piutang_status_data) ?>,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(75, 192, 192, 0.7)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.label}: ${ctx.raw} tagihan`
+                    }
+                }
+            }
+        }
+    });
+
+    const agingCtx = document.getElementById('agingChart').getContext('2d');
+    new Chart(agingCtx, {
+        type: 'doughnut',
+        data: {
+            labels: <?= json_encode($piutang_aging_labels) ?>,
+            datasets: [{
+                data: <?= json_encode($piutang_aging_data) ?>,
+                backgroundColor: [
+                    'rgba(99, 132, 255, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 99, 132, 0.7)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ctx.raw ?
+                            `${ctx.label}: Rp ${Number(ctx.raw).toLocaleString('id-ID')}` :
+                            `${ctx.label}: Rp 0`
+                    }
+                }
+            }
+        }
+    });
+</script>

@@ -49,25 +49,25 @@ class DashboardKeuangan extends BaseController
 
         // Total Kas Masuk
         $totalKasMasuk = $this->KasMasukModel
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate);
-        
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate);
+
         if ($unitId) {
             $totalKasMasuk->where('idunit', $unitId);
         }
-        
+
         $totalKasMasuk = $totalKasMasuk->selectSum('jumlah')
             ->first()->jumlah ?? 0;
 
         // Total Kas Keluar
         $totalKasKeluar = $this->KasKeluarModel
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate);
-        
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate);
+
         if ($unitId) {
             $totalKasKeluar->where('idunit', $unitId);
         }
-        
+
         $totalKasKeluar = $totalKasKeluar->selectSum('jumlah')
             ->first()->jumlah ?? 0;
 
@@ -76,16 +76,16 @@ class DashboardKeuangan extends BaseController
 
         // Total Debet
         $totalDebet = $this->JurnalModel
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate)
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate)
             ->where($unitCondition)
             ->selectSum('debet')
             ->first()->debet ?? 0;
 
         // Total Kredit
         $totalKredit = $this->JurnalModel
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate)
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate)
             ->where($unitCondition)
             ->selectSum('kredit')
             ->first()->kredit ?? 0;
@@ -103,36 +103,36 @@ class DashboardKeuangan extends BaseController
         $piutangQuery = $this->db->table('piutang')
             ->selectSum('sisa_hutang')
             ->where('status', 1); // 1 = aktif
-        
+
         if ($unitId) {
             $piutangQuery->where('unit_idunit', $unitId);
         }
-        
+
         $totalPiutang = $piutangQuery->get()->getRow()->sisa_hutang ?? 0;
 
         // Chart data - Kas Masuk/Keluar per hari
         $kasMasukData = $this->KasMasukModel
             ->select("DATE(tanggal) as tanggal, SUM(jumlah) as total")
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate);
-        
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate);
+
         if ($unitId) {
             $kasMasukData->where('idunit', $unitId);
         }
-        
+
         $kasMasukData = $kasMasukData->groupBy('DATE(tanggal)')
             ->orderBy('tanggal', 'ASC')
             ->findAll();
 
         $kasKeluarData = $this->KasKeluarModel
             ->select("DATE(tanggal) as tanggal, SUM(jumlah) as total")
-            ->where('tanggal >=', $startDate)
-            ->where('tanggal <=', $endDate);
-        
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate);
+
         if ($unitId) {
             $kasKeluarData->where('idunit', $unitId);
         }
-        
+
         $kasKeluarData = $kasKeluarData->groupBy('DATE(tanggal)')
             ->orderBy('tanggal', 'ASC')
             ->findAll();
@@ -164,13 +164,13 @@ class DashboardKeuangan extends BaseController
         $kategoriMasuk = $this->KasMasukModel
             ->select('kategori_kas.kategori, SUM(kas_masuk.jumlah) as total')
             ->join('kategori_kas', 'kategori_kas.idkategori_kas = kas_masuk.kategori_idkategori')
-            ->where('kas_masuk.tanggal >=', $startDate)
-            ->where('kas_masuk.tanggal <=', $endDate);
-        
+            ->where('DATE(kas_masuk.tanggal) >=', $startDate)
+            ->where('DATE(kas_masuk.tanggal) <=', $endDate);
+
         if ($unitId) {
             $kategoriMasuk->where('kas_masuk.idunit', $unitId);
         }
-        
+
         $kategoriMasuk = $kategoriMasuk->groupBy('kategori_kas.kategori')
             ->orderBy('total', 'DESC')
             ->limit(5)
@@ -184,6 +184,52 @@ class DashboardKeuangan extends BaseController
 
         // Laba Rugi berdasarkan Transaksi
         $labaRugiTransaksi = $this->getLabaRugiFromTransaksi($startDate, $endDate, $unitId);
+
+        // Ringkasan status pelunasan piutang
+        $piutangStatusBuilder = $this->db->table('piutang')
+            ->select("CASE 
+        WHEN sisa_hutang <= 0 THEN 'Lunas'
+        WHEN status = 0 THEN 'Belum Lunas'
+        ELSE 'Dalam Proses'
+    END AS status_label, COUNT(*) AS total_tagihan")
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate);
+
+        if ($unitId) {
+            $piutangStatusBuilder->where('unit_idunit', $unitId);
+        }
+
+        $piutangStatusResult = $piutangStatusBuilder
+            ->groupBy('status_label')
+            ->get()->getResult();
+
+        $piutangStatusLabels = array_map(fn($row) => $row->status_label, $piutangStatusResult);
+        $piutangStatusData   = array_map(fn($row) => (int) $row->total_tagihan, $piutangStatusResult);
+
+        // Ringkasan aging piutang (hanya yang masih outstanding)
+        $agingBuilder = $this->db->table('piutang')
+            ->select("
+        SUM(CASE WHEN DATEDIFF(CURDATE(), jatuh_tempo) <= 30 THEN sisa_hutang ELSE 0 END) AS bucket_0_30,
+        SUM(CASE WHEN DATEDIFF(CURDATE(), jatuh_tempo) BETWEEN 31 AND 60 THEN sisa_hutang ELSE 0 END) AS bucket_31_60,
+        SUM(CASE WHEN DATEDIFF(CURDATE(), jatuh_tempo) BETWEEN 61 AND 90 THEN sisa_hutang ELSE 0 END) AS bucket_61_90,
+        SUM(CASE WHEN DATEDIFF(CURDATE(), jatuh_tempo) > 90 THEN sisa_hutang ELSE 0 END) AS bucket_90_plus
+    ")
+            ->where('sisa_hutang >', 0)
+            ->where('DATE(tanggal) >=', $startDate)
+            ->where('DATE(tanggal) <=', $endDate);
+
+        if ($unitId) {
+            $agingBuilder->where('unit_idunit', $unitId);
+        }
+
+        $agingResult = $agingBuilder->get()->getRow();
+        $piutangAgingLabels = ['0-30 Hari', '31-60 Hari', '61-90 Hari', '>90 Hari'];
+        $piutangAgingData = [
+            (float) ($agingResult->bucket_0_30 ?? 0),
+            (float) ($agingResult->bucket_31_60 ?? 0),
+            (float) ($agingResult->bucket_61_90 ?? 0),
+            (float) ($agingResult->bucket_90_plus ?? 0),
+        ];
 
         $data = [
             'title' => 'Dashboard Keuangan',
@@ -206,6 +252,10 @@ class DashboardKeuangan extends BaseController
             'kategori_masuk_data' => $kategoriMasukData,
             'laba_rugi_jurnal' => $labaRugiJurnal,
             'laba_rugi_transaksi' => $labaRugiTransaksi,
+            'piutang_status_labels' => $piutangStatusLabels,
+            'piutang_status_data'   => $piutangStatusData,
+            'piutang_aging_labels'  => $piutangAgingLabels,
+            'piutang_aging_data'    => $piutangAgingData,
         ];
 
         return view('template', $data);
@@ -273,16 +323,16 @@ class DashboardKeuangan extends BaseController
         $builder_hpp = $this->db->table('detail_penjualan');
         $builder_hpp->select('SUM(hpp_penjualan * jumlah) as total', false);
         $builder_hpp->join('penjualan', 'penjualan.idpenjualan = detail_penjualan.penjualan_idpenjualan');
-        
+
         if ($tanggal_awal && $tanggal_akhir) {
             $builder_hpp->where('DATE(penjualan.tanggal) >=', $tanggal_awal)
                 ->where('DATE(penjualan.tanggal) <=', $tanggal_akhir);
         }
-        
+
         if ($id_unit) {
             $builder_hpp->where('penjualan.unit_idunit', $id_unit);
         }
-        
+
         $hpp = $builder_hpp->get()->getRow();
         $total_hpp = $hpp->total ?? 0;
 
@@ -291,16 +341,16 @@ class DashboardKeuangan extends BaseController
         $builder_hpp_service->select('SUM(hpp_penjualan * jumlah) as total', false);
         $builder_hpp_service->join('service', 'service.idservice = service_sparepart.service_idservice');
         $builder_hpp_service->where('service.status_service', 4); // hanya service yang sudah selesai
-        
+
         if ($tanggal_awal && $tanggal_akhir) {
             $builder_hpp_service->where('DATE(service.created_at) >=', $tanggal_awal)
                 ->where('DATE(service.created_at) <=', $tanggal_akhir);
         }
-        
+
         if ($id_unit) {
             $builder_hpp_service->where('service.unit_idunit', $id_unit);
         }
-        
+
         $hpp_service = $builder_hpp_service->get()->getRow();
         $total_hpp_service = $hpp_service->total ?? 0;
 
@@ -326,4 +376,3 @@ class DashboardKeuangan extends BaseController
         ];
     }
 }
-
