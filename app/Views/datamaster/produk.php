@@ -50,32 +50,31 @@
     <div class="mb-3 px-4">
         <label class="me-2">Filter Kategori:</label>
         <select id="kategoriFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
-            onchange="filterKategori()">
+            onchange="filterSubKategori()">
             <option value="">Semua Kategori</option>
-            <?php
-            $kategoriList = [];
-            foreach ($produk as $row) {
-                if (!in_array($row->nama_kategori, $kategoriList)) {
-                    $kategoriList[] = $row->nama_kategori;
-                    echo '<option value="' . esc($row->nama_kategori) . '">' . esc($row->nama_kategori) . '</option>';
-                }
-            }
-            ?>
+            <?php foreach ($kategori as $row): ?>
+                <option data-idkategori="<?= $row->id ?>" value="<?= esc($row->nama_kategori) ?>">
+                    <?= esc($row->nama_kategori) ?>
+                </option>
+            <?php endforeach; ?>
         </select>
+
         <label class="me-2 ms-4">Filter Sub Kategori:</label>
         <select id="subKategoriFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
             onchange="filterKategori()">
             <option value="">Semua Sub Kategori</option>
-            <?php
-            $subKategoriList = [];
-            foreach ($produk as $row) {
-                if (!empty($row->nama_sub_kategori) && !in_array($row->nama_sub_kategori, $subKategoriList)) {
-                    $subKategoriList[] = $row->nama_sub_kategori;
-                    echo '<option value="' . esc($row->nama_sub_kategori) . '">' . esc($row->nama_sub_kategori) . '</option>';
-                }
-            }
-            ?>
+            <?php foreach ($sub_kategori as $row): ?>
+                <?php if (!empty($row->nama_sub_kategori)): ?>
+                    <option data-idparent_kategori="<?= $row->id_kategori_parent ?>" value="<?= esc($row->nama_sub_kategori) ?>">
+                        <?= esc($row->nama_sub_kategori) ?>
+                    </option>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </select>
+
+
+
+
         <label class="me-2 ms-4">Filter PPN:</label>
         <select id="ppnFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
             onchange="filterKategori()">
@@ -559,4 +558,32 @@
             });
         });
     });
+</script>
+
+<script>
+    function filterSubKategori() {
+        const kategoriSelect = document.getElementById('kategoriFilter');
+        const subKategoriSelect = document.getElementById('subKategoriFilter');
+        const selectedKategori = kategoriSelect.options[kategoriSelect.selectedIndex];
+        const idKategori = selectedKategori.getAttribute('data-idkategori');
+
+        // Tampilkan semua dulu
+        for (let option of subKategoriSelect.options) {
+            if (option.value === '') continue; // biarkan "Semua Sub Kategori"
+            option.style.display = '';
+        }
+
+        // Jika ada kategori dipilih, sembunyikan subkategori yang tidak sesuai
+        if (idKategori) {
+            for (let option of subKategoriSelect.options) {
+                const idParent = option.getAttribute('data-idparent_kategori');
+                if (idParent !== idKategori) {
+                    option.style.display = 'none';
+                }
+            }
+        }
+
+        // Reset pilihan sub kategori
+        subKategoriSelect.value = '';
+    }
 </script>

@@ -66,15 +66,14 @@ $routes->post('insert_suplier', 'Supplier::insert_suplier', ['filter' => 'auth']
 $routes->post('delete_suplier', 'Supplier::delete_suplier', ['filter' => 'auth']);
 
 //kategori
-$routes->group('kategori',['filter' => 'auth'],function ($routes) {
-$routes->get('/', 'Kategori::index');
+$routes->group('kategori', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Kategori::index');
     // $routes->post('insert_kategori', 'Kategori::insert_kategori', ['filter' => 'auth']);
     // $routes->post('update_kategori', 'Kategori::update_kategori', ['filter' => 'auth']);
     // $routes->post('delete_kategori', 'Kategori::delete_kategori', ['filter' => 'auth']);
     $routes->post('insert_sub_kategori', 'Kategori::insert_sub_kategori', ['filter' => 'auth']);
     $routes->post('update_sub_kategori', 'Kategori::update_sub_kategori', ['filter' => 'auth']);
     $routes->post('delete_sub_kategori', 'Kategori::delete_sub_kategori', ['filter' => 'auth']);
-
 });
 //phone
 $routes->get('/phone', 'Phone::index', ['filter' => 'auth']);

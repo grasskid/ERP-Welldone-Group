@@ -68,28 +68,39 @@ class DashboardHRD extends BaseController
         
         $totalPresensi = $totalPresensi->countAllResults(false);
 
+        // Reset the model for next query
+        $this->TugasModel->resetQuery();
+
         // Total Tugas
         $totalTugas = $this->TugasModel
-            ->where('created_at >=', $startDate . ' 00:00:00')
-            ->where('created_at <=', $endDate . ' 23:59:59');
+            ->join('akun', 'akun.ID_AKUN = tugas.akun_ID_AKUN')
+            ->where('DATE(tugas.created_at) >=', $startDate)
+            ->where('DATE(tugas.created_at) <=', $endDate);
         
         if ($unitId) {
-            $totalTugas->where('unit_idunit', $unitId);
+            $totalTugas->where('ID_UNIT', $unitId);
         }
         
         $totalTugas = $totalTugas->countAllResults(false);
 
+        // Reset the model for next query
+        $this->TugasModel->resetQuery();
+        
         // Tugas Selesai
         $tugasSelesai = $this->TugasModel
+            ->join('akun', 'akun.ID_AKUN = tugas.akun_ID_AKUN')
             ->where('status', 'selesai')
-            ->where('created_at >=', $startDate . ' 00:00:00')
-            ->where('created_at <=', $endDate . ' 23:59:59');
+            ->where('DATE(created_at) >=', $startDate )
+            ->where('DATE(created_at) <=', $endDate);
         
         if ($unitId) {
-            $tugasSelesai->where('unit_idunit', $unitId);
+            $tugasSelesai->where('ID_UNIT', $unitId);
         }
         
         $tugasSelesai = $tugasSelesai->countAllResults(false);
+
+        // Reset the model for next query
+        $this->TugasModel->resetQuery();
 
         // Chart data - Presensi per hari
         $presensiData = $this->db->table('presensi')
@@ -162,15 +173,19 @@ class DashboardHRD extends BaseController
         // Status Tugas
         $statusTugas = $this->TugasModel
             ->select('status, COUNT(*) as jumlah')
+            ->join('akun', 'akun.ID_AKUN = tugas.akun_ID_AKUN')
             ->where('created_at >=', $startDate . ' 00:00:00')
             ->where('created_at <=', $endDate . ' 23:59:59');
         
         if ($unitId) {
-            $statusTugas->where('unit_idunit', $unitId);
+            $statusTugas->where('akun.ID_UNIT', $unitId);
         }
         
         $statusTugas = $statusTugas->groupBy('status')
             ->findAll();
+
+        // Reset the model for next query
+        $this->TugasModel->resetQuery();
 
         $tugasStatusLabels = [];
         $tugasStatusCounts = [];

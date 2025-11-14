@@ -34,8 +34,8 @@ class DashboardService extends BaseController
 
         // Total Pendapatan Service (status_service = 4 = selesai)
         $totalPendapatan = $this->ServiceModel
-            ->where('tanggal_selesai >=', $startDate)
-            ->where('tanggal_selesai <=', $endDate)
+            ->where('DATE(tanggal_selesai) >=', $startDate)
+            ->where('DATE(tanggal_selesai) <=', $endDate)
             ->where('status_service', 4)
             ->where($unitCondition)
             ->selectSum('harus_dibayar')
@@ -43,14 +43,16 @@ class DashboardService extends BaseController
 
         // Total Service Selesai
         $totalServiceSelesai = $this->ServiceModel
-            ->where('tanggal_selesai >=', $startDate)
-            ->where('tanggal_selesai <=', $endDate)
+            ->where('DATE(tanggal_selesai) >=', $startDate)
+            ->where('DATE(tanggal_selesai) <=', $endDate)
             ->where('status_service', 4)
             ->where($unitCondition)
             ->countAllResults(false);
 
         // Total Service Proses
         $totalServiceProses = $this->ServiceModel
+            ->where('DATE(created_at) >=', $startDate)
+            ->where('DATE(created_at) <=', $endDate)
             ->where('status_service', '!=', 4)
             ->where('status_service', '!=', 5) // 5 = dibatalkan
             ->where($unitCondition)
@@ -58,6 +60,7 @@ class DashboardService extends BaseController
 
         // Total Service Bisa Diambil
         $totalBisaDiambil = $this->ServiceModel
+            ->where('DATE(tanggal_bisa_diambil) <=', $endDate)
             ->where('status_service', 4)
             ->where('bayar >=', 'harus_dibayar', false)
             ->where($unitCondition)
@@ -69,8 +72,8 @@ class DashboardService extends BaseController
         // Chart data - pendapatan per hari
         $chartData = $this->ServiceModel
             ->select("DATE(tanggal_selesai) as tanggal, SUM(harus_dibayar) as total")
-            ->where('tanggal_selesai >=', $startDate)
-            ->where('tanggal_selesai <=', $endDate)
+            ->where('DATE(tanggal_selesai) >=', $startDate)
+            ->where('DATE(tanggal_selesai) <=', $endDate)
             ->where('status_service', 4)
             ->where($unitCondition)
             ->groupBy('DATE(tanggal_selesai)')
@@ -112,8 +115,8 @@ class DashboardService extends BaseController
         $teknisiData = $this->ServiceModel
             ->select('akun.NAMA_AKUN, COUNT(*) as jumlah')
             ->join('akun', 'akun.ID_AKUN = service.service_by', 'left')
-            ->where('service.tanggal_selesai >=', $startDate)
-            ->where('service.tanggal_selesai <=', $endDate)
+            ->where('DATE(service.tanggal_selesai) >=', $startDate)
+            ->where('DATE(service.tanggal_selesai) <=', $endDate)
             ->where('service.status_service', 4)
             ->where($unitCondition)
             ->groupBy('service.service_by')

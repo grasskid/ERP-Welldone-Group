@@ -297,6 +297,7 @@ public function insert_penilaian()
                 'template_kpi_idtemplate_kpi'  => $templateIdList[$i] ?? null,
                 'pegawai_idpegawai'            => $pegawai_id,
                 'tanggal_penilaian_kpi'        => $tanggal,
+                'level'                        => '1',   
                 'created_on'                   => date('Y-m-d H:i:s'),
             ]);
         }
@@ -349,6 +350,7 @@ public function update_penilaian()
             'level'                 => $levelList[$i] ?? null,
             'pegawai_idpegawai'     => $pegawai_id,
             'tanggal_penilaian_kpi' => $tanggal,
+            'level'                 => '1',
             'created_on'            => date('Y-m-d H:i:s'),
         ];
     }
