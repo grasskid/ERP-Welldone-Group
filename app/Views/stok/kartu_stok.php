@@ -112,7 +112,10 @@
                 <?php foreach ($stok as $row): ?>
                 <tr data-idunit="<?= esc($row->id_unit) ?>">
                     <td><?= esc($row->kode_barang) ?></td>
-                    <td><?= esc($row->nama_barang) ?></td>
+                    <td>
+                        <?= esc($row->nama_barang) ?><br>
+                        <small><?= esc($row->imei) ?></small>
+                    </td>
                     <td><?= esc($row->nama_unit) ?></td>
                     <td><?= esc($row->nama_kategori) ?></td>
                     <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>

@@ -12,6 +12,7 @@ class ModelStokBarang extends Model
         'idbarang',
         'kode_barang',
         'nama_barang',
+        'imei',
         'idkategori',
         'id_unit',
         'nama_unit',

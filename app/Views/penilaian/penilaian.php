@@ -243,8 +243,8 @@ $(document).ready(function() {
             <input hidden name="template_ids2[]" value="${row.idtemplate_penilaian}">
             <input hidden name="aspek[]" value="${row.aspek_penilaian}">
             <input hidden name="keterangan[]" value="${row.keterangan_penilaian}">
-            <input hidden name="target[]" value="${row.target}">
-            <input hidden name="bobot[]" value="${row.bobot}">
+            <input hidden name="bobot2[]" value="${row.bobot}">
+            <input hidden name="target2[]" value="${row.target}">
             <input hidden name="idtempkpi2[]" value="${row.idtemplate_kpi}">
             <div class="mb-3 border rounded p-2">
                 <label class="form-label">${row.aspek_penilaian}</label>

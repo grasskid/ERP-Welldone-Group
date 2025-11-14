@@ -49,7 +49,7 @@ class TemplatePenilaian extends BaseController
 
     public function insert()
     {
-        $aspek_penilaian = 'Checklist Pekerjaan'; // 🔒 locked value
+        $aspek_penilaian = $this->request->getPost('aspek');
         $keterangan_penilaian = $this->request->getPost('keterangan');
         $jabatan_idjabatan = $this->request->getPost('jabatan_idjabatan');
         $idtemplate_kpi = $this->request->getPost('aspek_kpi');
@@ -72,7 +72,7 @@ class TemplatePenilaian extends BaseController
     public function update()
     {
         $idtemplate_penilaian = $this->request->getPost('idtemplate_penilaian');
-        $aspek_penilaian = 'Checklist Pekerjaan'; // 🔒 locked value
+        $aspek_penilaian = $this->request->getPost('aspek');
         $keterangan_penilaian = $this->request->getPost('keterangan');
         $jabatan_idjabatan = $this->request->getPost('jabatan_idjabatan');
         $idtemplate_kpi = $this->request->getPost('aspek_kpi');

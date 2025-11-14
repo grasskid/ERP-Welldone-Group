@@ -13,6 +13,8 @@ class ModelPenilaianDetail extends Model
         'template_penilaian_idtemplate_penilaian',
         'skor',
         'pegawai_idpegawai',
+        'bobot',
+        'target',
         'tanggal_penilaian',
         'created_on',
         'updated_on',
