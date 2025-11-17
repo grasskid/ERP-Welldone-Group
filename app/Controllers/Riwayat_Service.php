@@ -790,9 +790,9 @@ class Riwayat_Service extends BaseController
             $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_tunai', [$dataservice->bayar_tunai], "Pembayaran Uang Tunai Jasa Service", $idservice, 'service');
         }
         if ($dataservice->dp_bayar > 0) {
-            $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_penguranganDP', [$dataservice->dp_bayar], "Pembayaran DP Jasa Service", $idservice, 'service');
+            $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_penguranganDP', [$dataservice->dp_bayar], "Pembayaran Jasa Service", $idservice, 'service');
         }
-        $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service', [$dataservice->total_service], "Pembayaran DP Jasa Service", $idservice, 'service');
+        $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service', [$dataservice->total_service], "Pembayaran Jasa Service", $idservice, 'service');
 
         // $datapbgaransi = array(
         //     'tabel_referensi' => 'service_garansi_0'
