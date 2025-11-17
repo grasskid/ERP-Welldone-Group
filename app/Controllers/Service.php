@@ -325,7 +325,7 @@ class Service extends BaseController
 
     public function insert_pembayaran()
     {
-
+        $tanggal = date('Y-m-d');
         //pembayaran
         $service_by = $this->request->getPost('service_by_pembayaran');
         $diskon_pembayaran = $this->rupiahToInt($this->request->getPost('diskon_pembayaran'));
@@ -336,6 +336,7 @@ class Service extends BaseController
         $service_by_pembayaran = $this->request->getPost('service_by_pembayaran');
         $bayar_pembayaran = $this->rupiahToInt($this->request->getPost('bayar_pembayaran')); // ini tunai
         $idservice = $this->request->getPost('idservice_p');
+        $data_service = $this->ServiceModel->getServiceById($idservice);
 
         $kodePembayaran =  'ksr' . date('Ymd') . session('ID_UNIT') . rand(1000, 9999);
         $bankData = $this->request->getPost('bank');
@@ -355,15 +356,18 @@ class Service extends BaseController
                     );
 
                     $this->PembayaranBankModel->insertPembayaranBank($bankPembayaran);
+                    $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_'. $b['id'], $jumlah, "Pembayaran Uang Lunas Jasa Service", $idservice, 'service');
                     $totalBayarBank += $jumlah;
                 }
             }
         }
-
-
+        if ($bayar_pembayaran > 0) {
+            $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_tunai', $bayar_pembayaran, "Pembayaran Uang Tunai Jasa Service", $idservice, 'service');
+        }
+        if ($data_service->db_bayar > 0) {
+            $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_penguranganDP', $data_service->db_bayar, "Pembayaran DP Jasa Service", $idservice, 'service');
+        }
         $total_bayar = $bayar_pembayaran + $totalBayarBank;
-
-
 
         $datap = array(
 
