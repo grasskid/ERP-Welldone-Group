@@ -767,18 +767,32 @@ class Riwayat_Service extends BaseController
         $wibTime = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
 
         $dataservice = $this->ServiceModel->getServiceById($idservice);
+        $bankData = $this->PembayaranBankModel->getByServiceBaru($idservice);
         $harus_dibayar = $dataservice->harus_dibayar;
         $dp_bayar = $dataservice->dp_bayar;
         $created_at = $dataservice->created_at;
         $tanggal_saja = date('Y-m-d', strtotime($created_at));
         $total_service = $dataservice->total_service;
-
+        $tanggal = date('Y-m-d', strtotime($created_at));
         $data = [
             'status_service' => 4,
             'tanggal_selesai' => $wibTime->format('Y-m-d H:i:s'),
         ];
 
-        $this->ServiceModel->updateService($idservice, $data);
+        // $this->ServiceModel->updateService($idservice, $data);
+
+        if (!empty($bankData) && is_array($bankData)) {
+            foreach ($bankData as $b) {
+                    $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_' . $b->bank_idbank, [$b->jumlah], "Pembayaran Uang Lunas Jasa Service", $idservice, 'service');
+            }
+        }
+        if ($dataservice->bayar_tunai > 0) {
+            $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_tunai', [$dataservice->bayar_tunai], "Pembayaran Uang Tunai Jasa Service", $idservice, 'service');
+        }
+        if ($dataservice->dp_bayar > 0) {
+            $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service_penguranganDP', [$dataservice->dp_bayar], "Pembayaran DP Jasa Service", $idservice, 'service');
+        }
+        $this->JurnalModel->insertJurnal($tanggal, 'pembayaran_service', [$dataservice->total_service], "Pembayaran DP Jasa Service", $idservice, 'service');
 
         // $datapbgaransi = array(
         //     'tabel_referensi' => 'service_garansi_0'
