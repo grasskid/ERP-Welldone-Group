@@ -238,6 +238,20 @@ class ModelJurnal extends Model
     {
         $db = \Config\Database::connect();
 
+        $applyFilters = function ($builder) use ($tanggal_awal, $tanggal_akhir, $unit) {
+            if (!empty($unit)) {
+                $builder->where('j.id_unit', $unit);
+            }
+            if (!empty($tanggal_awal) && !empty($tanggal_akhir)) {
+                $builder->where('DATE(j.tanggal) >=', $tanggal_awal)
+                    ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+            } elseif (!empty($tanggal_awal)) {
+                $builder->where('DATE(j.tanggal) >=', $tanggal_awal);
+            } elseif (!empty($tanggal_akhir)) {
+                $builder->where('DATE(j.tanggal) <=', $tanggal_akhir);
+            }
+        };
+
         // 1. Ambil akun pendapatan (prefix 4)
         $builder_pendapatan = $db->table('no_akun na');
         $builder_pendapatan->select("
@@ -305,6 +319,27 @@ class ModelJurnal extends Model
         $builder_biaya->orderBy('na.no_akun', 'asc');
         $biaya = $builder_biaya->get()->getResult();
 
+        // Detail pendapatan
+        $builder_detail_pendapatan = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '4', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_pendapatan);
+        $detail_pendapatan = $builder_detail_pendapatan->get()->getResult();
+
+        // Detail biaya
+        $builder_detail_biaya = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->groupStart()
+            ->like('j.no_akun', '5', 'after')
+            ->orLike('j.no_akun', '6', 'after')
+            ->groupEnd()
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_biaya);
+        $detail_biaya = $builder_detail_biaya->get()->getResult();
+
         // Hitung total
         $total_pendapatan = array_sum(array_map(function($item) {
             return $item->saldo ?? 0;
@@ -321,7 +356,12 @@ class ModelJurnal extends Model
             'total_pendapatan' => $total_pendapatan,
             'biaya' => $biaya,
             'total_biaya' => $total_biaya,
-            'laba_rugi' => $laba_rugi
+            'laba_rugi' => $laba_rugi,
+            'detail' => [
+                'pendapatan' => $detail_pendapatan,
+                'biaya' => $detail_biaya,
+            ],
         ];
     }
+
 }
