@@ -200,6 +200,9 @@ $routes->get('stokopname/loadtable', 'StokOpname::loadTable');
 $routes->get('kartu_stok', 'Kartu_Stok::index', ['filter' => 'auth']);
 $routes->post('export/kartu_stock', 'Kartu_Stok::export', ['filter' => 'auth']);
 
+//stok hp
+$routes->get('stok_hp', 'StokHP::index', ['filter' => 'auth']);
+
 //kartu stok
 $routes->get('produk_terlaris', 'Produk_Terlaris::index', ['filter' => 'auth']);
 
