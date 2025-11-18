@@ -11,9 +11,9 @@
         ?>
         <a href="<?= base_url() ?>" class="text-nowrap logo-img mb-2">
             <img src="<?= base_url('template/assets/images/' . $unitLogo->LOGO) ?>" alt="Logo"
-                class="dark-logo w-100 h-auto" style="max-width: 200px;" />
+                class="dark-logo w-100 h-auto" style="max-width: 100px;" />
         </a>
-        <h4 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h4>
+        <h5 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h5>
         <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
             <i class="ti ti-x"></i>
         </a>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical" data-boxed-layout="full" data-card="shadow">
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical"
+    data-boxed-layout="full" data-card="shadow">
 
 <head>
     <!-- Required meta tags -->
@@ -392,7 +393,7 @@
 
                                                         <!-- Badge angka kecil -->
                                                         <?php if (count($stokMinimum) > 0): ?>
-                                                            <span class="notif-count"><?= count($stokMinimum) ?></span>
+                                                        <span class="notif-count"><?= count($stokMinimum) ?></span>
                                                         <?php endif; ?>
                                                     </div>
 
@@ -401,7 +402,8 @@
                                                 <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
                                                     aria-labelledby="drop3">
                                                     <!--  Messages -->
-                                                    <div style="justify-content: space-around;" class="d-flex align-items-center py-3 px-7">
+                                                    <div style="justify-content: space-around;"
+                                                        class="d-flex align-items-center py-3 px-7">
                                                         <h3 class="mb-0 fs-5">Stok Minimum</h3>
                                                         <span class="badge bg-info ms-3"><?= count($stokMinimum) ?>
                                                             new</span>
@@ -409,35 +411,35 @@
 
                                                     <div class="message-body" data-simplebar>
                                                         <?php if (!empty($stokMinimum)) : ?>
-                                                            <?php foreach ($stokMinimum as $item) : ?>
-                                                                <a href="javascript:void(0)"
-                                                                    class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                    <span class="flex-shrink-0">
-                                                                        <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
-                                                                            alt="user" width="45" class="rounded-circle" />
-                                                                    </span>
-                                                                    <div class="w-100 d-inline-block v-middle ps-3">
-                                                                        <div
-                                                                            class="d-flex align-items-center justify-content-between">
-                                                                            <h5 class="mb-0 fs-3 fw-normal">
-                                                                                <?= esc($item->nama_barang) ?>
-                                                                            </h5>
-                                                                        </div>
-                                                                        <span
-                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
-                                                                            Unit: <?= esc($item->nama_unit) ?>
-                                                                        </span>
-                                                                        <span
-                                                                            class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
-                                                                            Sisa <?= esc($item->stok_akhir) ?> (Min:
-                                                                            <?= esc($item->stok_minimum) ?>)
-                                                                        </span>
-                                                                    </div>
-                                                                </a>
-                                                            <?php endforeach; ?>
+                                                        <?php foreach ($stokMinimum as $item) : ?>
+                                                        <a href="javascript:void(0)"
+                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                            <span class="flex-shrink-0">
+                                                                <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
+                                                                    alt="user" width="45" class="rounded-circle" />
+                                                            </span>
+                                                            <div class="w-100 d-inline-block v-middle ps-3">
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between">
+                                                                    <h5 class="mb-0 fs-3 fw-normal">
+                                                                        <?= esc($item->nama_barang) ?>
+                                                                    </h5>
+                                                                </div>
+                                                                <span
+                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-muted">
+                                                                    Unit: <?= esc($item->nama_unit) ?>
+                                                                </span>
+                                                                <span
+                                                                    class="fs-2 text-nowrap d-block fw-normal mt-1 text-danger">
+                                                                    Sisa <?= esc($item->stok_akhir) ?> (Min:
+                                                                    <?= esc($item->stok_minimum) ?>)
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                        <?php endforeach; ?>
                                                         <?php else : ?>
-                                                            <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
-                                                                minimum</div>
+                                                        <div class="px-7 py-6 text-muted">Tidak ada notifikasi stok
+                                                            minimum</div>
                                                         <?php endif; ?>
                                                     </div>
 
@@ -460,216 +462,240 @@
                                             <!-- start proses Service  Dropdown -->
                                             <!-- ------------------------------- -->
                                             <?php if ($akun_service->apakah_service === "service_oke") : ?>
-                                                <li class="nav-item dropdown">
-                                                    <a class="nav-link position-relative nav-icon-hover"
-                                                        href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link position-relative nav-icon-hover"
+                                                    href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
 
-                                                        <div class="nav-icon-hover-bg rounded-circle">
-                                                            <iconify-icon icon="solar:clipboard-add-linear"
-                                                                class="fs-7 text-dark"></iconify-icon>
+                                                    <div class="nav-icon-hover-bg rounded-circle">
+                                                        <iconify-icon icon="solar:clipboard-add-linear"
+                                                            class="fs-7 text-dark"></iconify-icon>
 
-                                                            <!-- Badge angka kecil -->
-                                                            <?php if (count($proses_service) > 0): ?>
-                                                                <span class="notif-count"><?= count($proses_service) ?></span>
-                                                            <?php endif; ?>
-                                                        </div>
-
-                                                    </a>
-
-
-
-                                                    <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                                        aria-labelledby="drop3">
-
-                                                        <!-- Notifikasi: Proses Service -->
-                                                        <div class=" border-bottom" style=" display: flex; justify-content: space-around; outline: none; outline-color: transparent;">
-                                                            <h3 class="mb-0 fs-5">Proses Service</h3>
-                                                            <span class="badge bg-info ms-3"><?= count($proses_service) ?> new</span>
-
-                                                        </div>
-                                                        <div class="message-body" data-simplebar>
-                                                            <?php if (!empty($proses_service)) : ?>
-                                                                <?php foreach (array_slice($proses_service, 0, 3) as $item) : ?>
-                                                                    <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                        <span class="flex-shrink-0">
-                                                                            <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>" alt="user" width="45" class="rounded-circle" />
-                                                                        </span>
-                                                                        <div class="w-100 d-inline-block v-middle ps-3">
-                                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                                <h5 class="mb-0 fs-3 fw-normal"><?= esc($item->nama_pelanggan ?? '-') ?></h5>
-                                                                            </div>
-                                                                            <span class="fs-2 d-block fw-normal mt-1 text-muted">
-                                                                                Nomor Service: <?= esc($item->no_service ?? '-') ?>
-                                                                            </span>
-                                                                            <span class="fs-2 d-block fw-normal mt-1 text-primary">
-                                                                                Status: <?= esc($item->status ?? 'Proses') ?>
-                                                                            </span>
-                                                                        </div>
-                                                                    </a>
-                                                                <?php endforeach; ?>
-                                                            <?php else : ?>
-                                                                <div class="px-7 py-6 text-muted">Tidak ada service dalam proses</div>
-                                                            <?php endif; ?>
-                                                        </div>
-
-                                                        <!-- Tombol Lihat Semua -->
-                                                        <div class="py-6 px-7 mb-1 border-top">
-
-                                                            <a href="<?php echo base_url('proses_service') ?>">
-                                                                <button class="btn btn-primary w-100">Lihat Semua Notifikasi</button>
-                                                            </a>
-                                                        </div>
+                                                        <!-- Badge angka kecil -->
+                                                        <?php if (count($proses_service) > 0): ?>
+                                                        <span class="notif-count"><?= count($proses_service) ?></span>
+                                                        <?php endif; ?>
                                                     </div>
 
-                                                </li>
-
-                                                <!-- ------------------------------- -->
-                                                <!-- end proses Service  Dropdow -->
-                                                <!-- ------------------------------- -->
-
-                                                <!-- ------------------------------- -->
-                                                <!-- start bisa diambil Service  Dropdown -->
-                                                <!-- ------------------------------- -->
-                                                <li class="nav-item dropdown">
-                                                    <a class="nav-link position-relative nav-icon-hover"
-                                                        href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-
-                                                        <div class="nav-icon-hover-bg rounded-circle">
-                                                            <iconify-icon icon="solar:clipboard-check-linear"
-                                                                class="fs-7 text-dark"></iconify-icon>
-
-                                                            <!-- Badge angka kecil -->
-                                                            <?php if (count($bisa_diambil) > 0): ?>
-                                                                <span class="notif-count"><?= count($bisa_diambil) ?></span>
-                                                            <?php endif; ?>
-                                                        </div>
-
-                                                    </a>
-
-
-                                                    <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                                        aria-labelledby="drop3">
+                                                </a>
 
 
 
-                                                        <!-- Pembatas -->
-                                                        <div class="border-top border-bottom my-1"></div>
+                                                <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
+                                                    aria-labelledby="drop3">
 
-                                                        <!-- Notifikasi: Bisa Diambil -->
-                                                        <div class=" border-bottom" style="display: flex; justify-content: space-around; outline: none; outline-color: transparent;">
-                                                            <h3 class="mb-0 fs-5">Siap Diambil</h3>
-                                                            <span class="badge bg-info ms-3"><?= count($bisa_diambil) ?> new</span>
+                                                    <!-- Notifikasi: Proses Service -->
+                                                    <div class=" border-bottom"
+                                                        style=" display: flex; justify-content: space-around; outline: none; outline-color: transparent;">
+                                                        <h3 class="mb-0 fs-5">Proses Service</h3>
+                                                        <span class="badge bg-info ms-3"><?= count($proses_service) ?>
+                                                            new</span>
 
-                                                        </div>
-                                                        <div class="message-body" data-simplebar>
-                                                            <?php if (!empty($bisa_diambil)) : ?>
-                                                                <?php foreach (array_slice($bisa_diambil, 0, 3) as $item) : ?>
-                                                                    <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                        <span class="flex-shrink-0">
-                                                                            <img src="<?= base_url('template/assets/images/profile/user-3.jpg') ?>" alt="user" width="45" class="rounded-circle" />
-                                                                        </span>
-                                                                        <div class="w-100 d-inline-block v-middle ps-3">
-                                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                                <h5 class="mb-0 fs-3 fw-normal"><?= esc($item->nama_pelanggan ?? '-') ?></h5>
-                                                                            </div>
-                                                                            <span class="fs-2 d-block fw-normal mt-1 text-muted">
-                                                                                Nomor Service: <?= esc($item->no_service ?? '-') ?>
-                                                                            </span>
-                                                                            <span class="fs-2 d-block fw-normal mt-1 text-success">
-                                                                                Siap Diambil
-                                                                            </span>
-                                                                        </div>
-                                                                    </a>
-                                                                <?php endforeach; ?>
-                                                            <?php else : ?>
-                                                                <div class="px-7 py-6 text-muted">Tidak ada service siap diambil</div>
-                                                            <?php endif; ?>
-                                                        </div>
-
-
-
-
-                                                        <!-- Tombol Lihat Semua -->
-                                                        <div class="py-6 px-7 mb-1 border-top">
-
-                                                            <a href="<?php echo base_url('bisa_diambil') ?>">
-                                                                <button class="btn btn-primary w-100">Lihat Semua Notifikasi</button>
-                                                            </a>
-                                                        </div>
                                                     </div>
-                                                </li>
-
-                                                <!-- ------------------------------- -->
-                                                <!-- end bisa diambil Service  Dropdow -->
-                                                <!-- ------------------------------- -->
-
-
-                                                <!-- ------------------------------- -->
-                                                <!-- start expired Service  Dropdown -->
-                                                <!-- ------------------------------- -->
-                                                <li class="nav-item dropdown">
-                                                    <a class="nav-link position-relative nav-icon-hover"
-                                                        href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-
-                                                        <div class="nav-icon-hover-bg rounded-circle">
-                                                            <iconify-icon icon="solar:clipboard-remove-linear"
-                                                                class="fs-7 text-dark"></iconify-icon>
-
-                                                            <!-- Badge angka kecil -->
-                                                            <?php if (count($expired_service) > 0): ?>
-                                                                <span class="notif-count"><?= count($expired_service) ?></span>
-                                                            <?php endif; ?>
+                                                    <div class="message-body" data-simplebar>
+                                                        <?php if (!empty($proses_service)) : ?>
+                                                        <?php foreach (array_slice($proses_service, 0, 3) as $item) : ?>
+                                                        <a href="javascript:void(0)"
+                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                            <span class="flex-shrink-0">
+                                                                <img src="<?= base_url('template/assets/images/profile/user-2.jpg') ?>"
+                                                                    alt="user" width="45" class="rounded-circle" />
+                                                            </span>
+                                                            <div class="w-100 d-inline-block v-middle ps-3">
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between">
+                                                                    <h5 class="mb-0 fs-3 fw-normal">
+                                                                        <?= esc($item->nama_pelanggan ?? '-') ?></h5>
+                                                                </div>
+                                                                <span class="fs-2 d-block fw-normal mt-1 text-muted">
+                                                                    Nomor Service: <?= esc($item->no_service ?? '-') ?>
+                                                                </span>
+                                                                <span class="fs-2 d-block fw-normal mt-1 text-primary">
+                                                                    Status: <?= esc($item->status ?? 'Proses') ?>
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                        <?php endforeach; ?>
+                                                        <?php else : ?>
+                                                        <div class="px-7 py-6 text-muted">Tidak ada service dalam proses
                                                         </div>
-
-                                                    </a>
-
-                                                    <!-- / -->
-                                                    <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                                        aria-labelledby="drop3">
-
-
-                                                        <!-- Notifikasi: Expired Service -->
-                                                        <div class=" border-bottom" style="display: flex; justify-content: space-around; outline: none; outline-color: transparent;">
-                                                            <h3 class="mb-0 fs-5">Expired Service</h3>
-                                                            <span class="badge bg-info ms-3"><?= count($expired_service) ?> new</span>
-
-                                                        </div>
-                                                        <div class="message-body" data-simplebar>
-                                                            <?php if (!empty($expired_service)) : ?>
-                                                                <?php foreach (array_slice($expired_service, 0, 3) as $item) : ?>
-                                                                    <a href="javascript:void(0)" class="dropdown-item px-7 d-flex align-items-center py-6">
-                                                                        <span class="flex-shrink-0">
-                                                                            <img src="<?= base_url('template/assets/images/profile/user-4.jpg') ?>" alt="user" width="45" class="rounded-circle" />
-                                                                        </span>
-                                                                        <div class="w-100 d-inline-block v-middle ps-3">
-                                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                                <h5 class="mb-0 fs-3 fw-normal"><?= esc($item->nama_pelanggan ?? '-') ?></h5>
-                                                                            </div>
-                                                                            <span class="fs-2 d-block fw-normal mt-1 text-muted">
-                                                                                Nomor Service: <?= esc($item->no_service ?? '-') ?>
-                                                                            </span>
-                                                                            <span class="fs-2 d-block fw-normal mt-1 text-danger">
-                                                                                Status: Expired
-                                                                            </span>
-                                                                        </div>
-                                                                    </a>
-                                                                <?php endforeach; ?>
-                                                            <?php else : ?>
-                                                                <div class="px-7 py-6 text-muted">Tidak ada service expired</div>
-                                                            <?php endif; ?>
-                                                        </div>
-
-                                                        <!-- Tombol Lihat Semua -->
-                                                        <div class="py-6 px-7 mb-1 border-top">
-                                                            <a href="<?php echo base_url('expired_service') ?>">
-                                                                <button class="btn btn-primary w-100">Lihat Semua Notifikasi</button>
-                                                            </a>
-                                                        </div>
+                                                        <?php endif; ?>
                                                     </div>
-                                                </li>
+
+                                                    <!-- Tombol Lihat Semua -->
+                                                    <div class="py-6 px-7 mb-1 border-top">
+
+                                                        <a href="<?php echo base_url('proses_service') ?>">
+                                                            <button class="btn btn-primary w-100">Lihat Semua
+                                                                Notifikasi</button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            </li>
+
+                                            <!-- ------------------------------- -->
+                                            <!-- end proses Service  Dropdow -->
+                                            <!-- ------------------------------- -->
+
+                                            <!-- ------------------------------- -->
+                                            <!-- start bisa diambil Service  Dropdown -->
+                                            <!-- ------------------------------- -->
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link position-relative nav-icon-hover"
+                                                    href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+
+                                                    <div class="nav-icon-hover-bg rounded-circle">
+                                                        <iconify-icon icon="solar:clipboard-check-linear"
+                                                            class="fs-7 text-dark"></iconify-icon>
+
+                                                        <!-- Badge angka kecil -->
+                                                        <?php if (count($bisa_diambil) > 0): ?>
+                                                        <span class="notif-count"><?= count($bisa_diambil) ?></span>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                </a>
+
+
+                                                <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
+                                                    aria-labelledby="drop3">
+
+
+
+                                                    <!-- Pembatas -->
+                                                    <div class="border-top border-bottom my-1"></div>
+
+                                                    <!-- Notifikasi: Bisa Diambil -->
+                                                    <div class=" border-bottom"
+                                                        style="display: flex; justify-content: space-around; outline: none; outline-color: transparent;">
+                                                        <h3 class="mb-0 fs-5">Siap Diambil</h3>
+                                                        <span class="badge bg-info ms-3"><?= count($bisa_diambil) ?>
+                                                            new</span>
+
+                                                    </div>
+                                                    <div class="message-body" data-simplebar>
+                                                        <?php if (!empty($bisa_diambil)) : ?>
+                                                        <?php foreach (array_slice($bisa_diambil, 0, 3) as $item) : ?>
+                                                        <a href="javascript:void(0)"
+                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                            <span class="flex-shrink-0">
+                                                                <img src="<?= base_url('template/assets/images/profile/user-3.jpg') ?>"
+                                                                    alt="user" width="45" class="rounded-circle" />
+                                                            </span>
+                                                            <div class="w-100 d-inline-block v-middle ps-3">
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between">
+                                                                    <h5 class="mb-0 fs-3 fw-normal">
+                                                                        <?= esc($item->nama_pelanggan ?? '-') ?></h5>
+                                                                </div>
+                                                                <span class="fs-2 d-block fw-normal mt-1 text-muted">
+                                                                    Nomor Service: <?= esc($item->no_service ?? '-') ?>
+                                                                </span>
+                                                                <span class="fs-2 d-block fw-normal mt-1 text-success">
+                                                                    Siap Diambil
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                        <?php endforeach; ?>
+                                                        <?php else : ?>
+                                                        <div class="px-7 py-6 text-muted">Tidak ada service siap diambil
+                                                        </div>
+                                                        <?php endif; ?>
+                                                    </div>
+
+
+
+
+                                                    <!-- Tombol Lihat Semua -->
+                                                    <div class="py-6 px-7 mb-1 border-top">
+
+                                                        <a href="<?php echo base_url('bisa_diambil') ?>">
+                                                            <button class="btn btn-primary w-100">Lihat Semua
+                                                                Notifikasi</button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <!-- ------------------------------- -->
+                                            <!-- end bisa diambil Service  Dropdow -->
+                                            <!-- ------------------------------- -->
+
+
+                                            <!-- ------------------------------- -->
+                                            <!-- start expired Service  Dropdown -->
+                                            <!-- ------------------------------- -->
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link position-relative nav-icon-hover"
+                                                    href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+
+                                                    <div class="nav-icon-hover-bg rounded-circle">
+                                                        <iconify-icon icon="solar:clipboard-remove-linear"
+                                                            class="fs-7 text-dark"></iconify-icon>
+
+                                                        <!-- Badge angka kecil -->
+                                                        <?php if (count($expired_service) > 0): ?>
+                                                        <span class="notif-count"><?= count($expired_service) ?></span>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                </a>
+
+                                                <!-- / -->
+                                                <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
+                                                    aria-labelledby="drop3">
+
+
+                                                    <!-- Notifikasi: Expired Service -->
+                                                    <div class=" border-bottom"
+                                                        style="display: flex; justify-content: space-around; outline: none; outline-color: transparent;">
+                                                        <h3 class="mb-0 fs-5">Expired Service</h3>
+                                                        <span class="badge bg-info ms-3"><?= count($expired_service) ?>
+                                                            new</span>
+
+                                                    </div>
+                                                    <div class="message-body" data-simplebar>
+                                                        <?php if (!empty($expired_service)) : ?>
+                                                        <?php foreach (array_slice($expired_service, 0, 3) as $item) : ?>
+                                                        <a href="javascript:void(0)"
+                                                            class="dropdown-item px-7 d-flex align-items-center py-6">
+                                                            <span class="flex-shrink-0">
+                                                                <img src="<?= base_url('template/assets/images/profile/user-4.jpg') ?>"
+                                                                    alt="user" width="45" class="rounded-circle" />
+                                                            </span>
+                                                            <div class="w-100 d-inline-block v-middle ps-3">
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between">
+                                                                    <h5 class="mb-0 fs-3 fw-normal">
+                                                                        <?= esc($item->nama_pelanggan ?? '-') ?></h5>
+                                                                </div>
+                                                                <span class="fs-2 d-block fw-normal mt-1 text-muted">
+                                                                    Nomor Service: <?= esc($item->no_service ?? '-') ?>
+                                                                </span>
+                                                                <span class="fs-2 d-block fw-normal mt-1 text-danger">
+                                                                    Status: Expired
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                        <?php endforeach; ?>
+                                                        <?php else : ?>
+                                                        <div class="px-7 py-6 text-muted">Tidak ada service expired
+                                                        </div>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                    <!-- Tombol Lihat Semua -->
+                                                    <div class="py-6 px-7 mb-1 border-top">
+                                                        <a href="<?php echo base_url('expired_service') ?>">
+                                                            <button class="btn btn-primary w-100">Lihat Semua
+                                                                Notifikasi</button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </li>
                                             <?php endif; ?>
                                             <!-- ------------------------------- -->
                                             <!-- end expired Service  Dropdow -->
@@ -809,14 +835,14 @@
 
                                             <!-- Minimal JS to prevent dropdown from closing -->
                                             <script>
-                                                document.querySelectorAll(
-                                                        '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
-                                                    )
-                                                    .forEach(el => {
-                                                        el.addEventListener('click', function(e) {
-                                                            e.stopPropagation();
-                                                        });
+                                            document.querySelectorAll(
+                                                    '.dropdown-menu input, .dropdown-menu form, .dropdown-menu button, .dropdown-menu label'
+                                                )
+                                                .forEach(el => {
+                                                    el.addEventListener('click', function(e) {
+                                                        e.stopPropagation();
                                                     });
+                                                });
                                             </script>
 
                                             </li>
@@ -1722,10 +1748,10 @@
                 </div>
             </div>
             <script>
-                function handleColorTheme(e) {
-                    $("html").attr("data-color-theme", e);
-                    $(e).prop("checked", !0);
-                }
+            function handleColorTheme(e) {
+                $("html").attr("data-color-theme", e);
+                $(e).prop("checked", !0);
+            }
             </script>
             <button
                 class="btn btn-primary p-3 rounded-circle d-flex align-items-center justify-content-center customizer-btn"
@@ -1918,11 +1944,11 @@
                     $uri = str_replace('/index.php/', '', $uri);
                     $manualbook = db_connect()->table('menu')->where(array("url" => $uri))->get()->getFirstRow();
                     if (!empty($manualbook) && $manualbook->manualbook != null): ?>
-                        <h4><?= $manualbook->nama_menu ?></h4>
-                        <embed type="application/pdf" src="<?= base_url() . "/manualbook/" . $manualbook->manualbook ?>" width="100%"
-                            height="800"></embed>
+                    <h4><?= $manualbook->nama_menu ?></h4>
+                    <embed type="application/pdf" src="<?= base_url() . "/manualbook/" . $manualbook->manualbook ?>"
+                        width="100%" height="800"></embed>
                     <?php else: ?>
-                        <h4>Manual Book Tidak Tersedia</h4>
+                    <h4>Manual Book Tidak Tersedia</h4>
                     <?php endif; ?>
                 </div>
                 <div class="modal-footer">
@@ -1939,20 +1965,20 @@
 
 
     <style>
-        .notif-count {
-            position: absolute;
-            top: 13px;
-            right: -1px;
-            background-color: #f00;
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 5px;
-            border-radius: 50%;
-            line-height: 1;
-            min-width: 16px;
-            text-align: center;
-        }
+    .notif-count {
+        position: absolute;
+        top: 13px;
+        right: -1px;
+        background-color: #f00;
+        color: #fff;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 50%;
+        line-height: 1;
+        min-width: 16px;
+        text-align: center;
+    }
     </style>
 
 
@@ -1979,35 +2005,35 @@
 
     <!-- js alert -->
     <?php if (session()->getFlashdata('sukses')) : ?>
-        <script>
-            $(document).ready(function() {
-                toastr.success(
-                    "<?= session()->getFlashdata('sukses'); ?>",
-                    "Berhasil!", {
-                        showMethod: "slideDown",
-                        hideMethod: "slideUp",
-                        progressBar: true,
-                        timeOut: 2000
-                    }
-                );
-            });
-        </script>
+    <script>
+    $(document).ready(function() {
+        toastr.success(
+            "<?= session()->getFlashdata('sukses'); ?>",
+            "Berhasil!", {
+                showMethod: "slideDown",
+                hideMethod: "slideUp",
+                progressBar: true,
+                timeOut: 2000
+            }
+        );
+    });
+    </script>
     <?php endif; ?>
     <!-- js alert Ends -->
     <?php if (session()->getFlashdata('gagal')) : ?>
-        <script>
-            $(document).ready(function() {
-                toastr.warning(
-                    <?= json_encode(session()->getFlashdata('gagal')) ?>,
-                    "Gagal!", {
-                        showMethod: "slideDown",
-                        hideMethod: "slideUp",
-                        progressBar: true,
-                        timeOut: 2000
-                    }
-                );
-            });
-        </script>
+    <script>
+    $(document).ready(function() {
+        toastr.warning(
+            <?= json_encode(session()->getFlashdata('gagal')) ?>,
+            "Gagal!", {
+                showMethod: "slideDown",
+                hideMethod: "slideUp",
+                progressBar: true,
+                timeOut: 2000
+            }
+        );
+    });
+    </script>
     <?php endif ?>
 
 
@@ -2016,8 +2042,8 @@
 </body>
 
 <script>
-    document.documentElement.setAttribute("data-boxed-layout", "full");
-    document.getElementById("full-layout").checked = true;
+document.documentElement.setAttribute("data-boxed-layout", "full");
+document.getElementById("full-layout").checked = true;
 </script>
 <script src="<?php echo base_url('template/assets/libs/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
 <script src="<?php echo base_url('template/assets/js/datatable/datatable-basic.init.js') ?>"></script>
