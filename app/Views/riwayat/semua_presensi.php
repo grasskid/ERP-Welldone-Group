@@ -309,8 +309,8 @@
 
 <?php foreach ($presensi as $p): ?>
     <script>
-        const latitudeKantor = <?= json_encode($p->LATITUDE ?? null) ?>;
-        const longitudeKantor = <?= json_encode($p->LONGTITUDE ?? null) ?>;
+        const latitudeKantor = <?= $p->LATITUDE ?? null ?>;
+        const longitudeKantor = <?= $p->LONGTITUDE ?? null ?>;
 
 
         let jarakPegawaiKantor = null;
