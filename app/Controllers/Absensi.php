@@ -82,11 +82,25 @@ class Absensi extends BaseController
         $jam_toleransi = $this->request->getPost('jam_toleransi');
         $foto_kehadiran = $this->request->getFile('foto_kehadiran');
         $akunId = session('ID_AKUN');
+        $tanggalHariIni = date("Y-m-d");
 
         $waktuMasuk = date('H:i:s');
         $tsMasuk = strtotime($waktuMasuk);
         $tsJadwalMasuk = strtotime($jam_jadwal_masuk);
         $tsToleransi = strtotime($jam_toleransi);
+
+        // Cek apakah sudah absen pada jadwal yang sama di tanggal yang sama
+        $cekDuplikat = $this->PresensiModel
+            ->where('akun_idakun', $akunId)
+            ->where('idjadwal_masuk', $idjadwalmasuk)
+            ->where('DATE(waktu_masuk)', $tanggalHariIni)
+            ->countAllResults();
+
+        if ($cekDuplikat > 0) {
+            session()->setFlashdata('gagal', 'Anda sudah melakukan absen masuk pada jadwal ini hari ini.');
+            return redirect()->to(base_url('absensi'));
+        }
+
 
         $selisihDetik = $tsMasuk - $tsJadwalMasuk;
 
