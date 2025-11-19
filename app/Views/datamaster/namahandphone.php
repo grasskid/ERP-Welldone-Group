@@ -13,13 +13,35 @@
 </div>
 
 <div class="card w-100 position-relative overflow-hidden">
-    <div class="px-4 py-3 border-bottom d-flex justify-content-end">
+
+    <div class="card-body px-4 pt-4 pb-2 d-flex justify-content-between align-items-start mb-1">
+        <div class="d-flex gap-2">
+            <a href="<?= base_url('nama_handphone/export') ?>" class="btn btn-danger"
+                style="display: inline-flex; align-items: center;">
+                <iconify-icon icon="solar:export-broken" width="24" height="24" style="margin-right: 8px;">
+                </iconify-icon>Export
+            </a>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#samedata-modal"
+                style="display: inline-flex; align-items: center;">
+                <iconify-icon icon="solar:import-broken" width="24" height="24" style="margin-right: 8px;">
+                </iconify-icon>
+                Import
+            </button>
+            <a href="<?php echo base_url('format_excell/format_nama_handphone.xlsx') ?>"><button type="button"
+                    class="btn btn-success" style="display: inline-flex; align-items: center;">
+                    <iconify-icon icon="solar:download-broken" width="24" height="24" style="margin-right: 8px;">
+                    </iconify-icon>
+                    Download Format Excell
+                </button></a>
+        </div>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-handphone-modal"
             style="display: inline-flex; align-items: center;">
             <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
                 style="margin-right: 8px;"></iconify-icon>Input
         </button>
     </div>
+
+
 
     <div class="card-body px-4 pt-4 pb-2">
         <div class="table-responsive mb-4">
@@ -170,6 +192,38 @@
                         data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Delete</button>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="samedata-modal" tabindex="-1" aria-labelledby="exampleModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center">
+                <h4 class="modal-title" id="exampleModalLabel1">
+                    Import File Excell
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<?php echo base_url('nama_handphone/import') ?>" enctype="multipart/form-data"
+                    method="post">
+                    <div class="mb-3">
+                        <label for="recipient-name" class="control-label">file:</label>
+                        <input type="File" class="form-control" name="file" id="recipient-name1" />
+                    </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-danger-subtle text-danger " data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="submit" class="btn btn-success">
+                    Submit
+                </button>
+            </div>
             </form>
         </div>
     </div>

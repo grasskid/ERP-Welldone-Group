@@ -23,15 +23,15 @@ class ModelNamaHandphone extends Model
 
     public function updateNamaHandphone($id, $data)
     {
-    return $this->db->table($this->table)
-        ->where('id', $id)
-        ->update($data);
+        return $this->db->table($this->table)
+            ->where('id', $id)
+            ->update($data);
     }
 
 
     public function deleteNamaHandphone($id)
     {
-    return $this->delete($id);
+        return $this->delete($id);
     }
 
     public function getNamaHandphoneById($id)
