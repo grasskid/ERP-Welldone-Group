@@ -135,6 +135,8 @@
                                     data-nama="<?= $row->NAMA_AKUN ?>"
                                     data-foto="<?= $row->foto ?>"
                                     data-long="<?= $row->long ?>"
+                                    data-latkantor="<?= $row->LATITUDE ?>"
+                                    data-longkantor="<?= $row->LONGTITUDE ?>"
                                     data-jarak="<?= $row->jarak ?>"
                                     data-fotopulang="<?= $row->foto_pulang ?>">
                                     Detail
@@ -583,9 +585,14 @@
 
 
 <?php foreach ($presensi as $p): ?>
+
     <script>
-        const latitudeKantor = <?= json_encode($p->LATITUDE ?? null) ?>;
-        const longitudeKantor = <?= json_encode($p->LONGTITUDE ?? null) ?>;
+        const latitudeKantor = <?= $p->LATITUDE ?? null ?>;
+        const longitudeKantor = <?= $p->LONGTITUDE ?? null ?>;
+
+
+        console.log("Latitude Kantor:", latitudeKantor);
+        console.log("Longitude Kantor:", longitudeKantor);
 
 
         let jarakPegawaiKantor = null;
@@ -595,6 +602,9 @@
             if (e.target.classList.contains('btn-detail-lokasi')) {
                 latitudePegawai = parseFloat(e.target.getAttribute('data-lat'));
                 longitudePegawai = parseFloat(e.target.getAttribute('data-long'));
+                console.log("Latitude Pegawai:", latitudePegawai);
+                console.log("Longitude Pegawai:", longitudePegawai);
+
                 const waktuMasuk = e.target.getAttribute('data-waktumasuk');
                 const waktuPulang = e.target.getAttribute('data-waktupulang');
                 const ip = e.target.getAttribute('data-ip') || '-';
@@ -682,6 +692,8 @@
 
         document.getElementById('modal-peta-lokasi').addEventListener('shown.bs.modal', function() {
 
+
+
             if (map) {
                 map.remove();
                 map = null;
@@ -732,6 +744,7 @@
         });
     </script>
 <?php endforeach; ?>
+
 
 
 
