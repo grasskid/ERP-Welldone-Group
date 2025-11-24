@@ -29,6 +29,16 @@ class TemplateKPI extends BaseController
         return view('template', $data);
     }
 
+    public function index2()
+    {
+        $data = array(
+            'jabatan' => $this->JabatanModel->getJabatan(),
+            'templatekpi' => $this->TemplateKpiModel->getTemplateGrading(),
+            'body' => 'penilaian/template_grading',
+        );
+        return view('template', $data);
+    }
+
     public function insert()
     {
         $data = [

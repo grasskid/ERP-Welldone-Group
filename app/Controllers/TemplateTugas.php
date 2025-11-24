@@ -30,6 +30,7 @@ class TemplateTugas extends BaseController
         $data = [
             'body' => 'HR/template_tugas',
             'tugas_template' => $this->TugasTemplateModel->getTugasTemplateByAkun($idakun),
+            'penilaian_template' => $this->PenilaianTemplateModel->getTemplatePenilaian(),
             'jabatan' => (new ModelJabatan())->getJabatan()
         ];
         return view('template', $data);

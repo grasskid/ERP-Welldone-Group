@@ -77,7 +77,12 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label>Nama Tugas</label>
-                        <input type="text" class="form-control" name="nama_tugas" required>
+                        <select name="nama_tugas" class="form-select select2" required>
+                            <option value="">-- Pilih Tugas --</option>
+                            <?php foreach ($penilaian_template as $p): ?>
+                            <option value="<?= $p->aspek_penilaian ?>"><?= esc($p->aspek_penilaian) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label>Deskripsi</label>
@@ -124,8 +129,17 @@
                     <input type="hidden" name="idtemplate_tugas" id="edit_idtemplate_tugas">
                     <div class="mb-3">
                         <label>Nama Tugas</label>
-                        <input type="text" class="form-control" name="nama_tugas" id="edit_nama_tugas" required>
+                        <select name="nama_tugas" id="edit_nama_tugas" class="form-select select2" required>
+                            <option value="">-- Pilih Tugas --</option>
+                            <?php foreach ($penilaian_template as $p): ?>
+                            <option value="<?= $p->aspek_penilaian ?>"><?= esc($p->aspek_penilaian) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
+                    <!-- <div class="mb-3">
+                        <label>Nama Tugas</label>
+                        <input type="text" class="form-control" name="nama_tugas" id="edit_nama_tugas" required>
+                    </div> -->
                     <div class="mb-3">
                         <label>Deskripsi</label>
                         <textarea class="form-control" name="deskripsi" id="edit_deskripsi" rows="2"

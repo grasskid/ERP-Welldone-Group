@@ -6,6 +6,7 @@ use Config\Database;
 use App\Models\ModelAuth;
 use App\Models\ModelTugas;
 use App\Models\ModelTugasTemplate;
+use App\Models\ModelTemplatePenilaian;
 
 class Tugas extends BaseController
 
@@ -14,12 +15,14 @@ class Tugas extends BaseController
     protected $AuthModel;
     protected $TugasModel;
     protected $TugasTemplateModel;
+    protected $PenilaianTemplateModel;
 
     public function __construct()
     {
         $this->AuthModel = new ModelAuth();
         $this->TugasModel = new ModelTugas();
         $this->TugasTemplateModel = new ModelTugasTemplate();
+        $this->PenilaianTemplateModel = new ModelTemplatePenilaian();
     }
 
     public function index()
@@ -71,6 +74,7 @@ class Tugas extends BaseController
             'tugastemplate' => $templates,
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
+            'penilaian_template' => $this->PenilaianTemplateModel->getTemplatePenilaian(),
             'body' => 'HR/tugas'
         ];
 

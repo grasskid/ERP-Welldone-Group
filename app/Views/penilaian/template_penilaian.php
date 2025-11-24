@@ -33,7 +33,7 @@
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
-                    <th>Aspek</th>
+                    <th>Indikator Checklist</th>
                     <th>Keterangan</th>
                     <th>Jabatan</th>
                     <th>Aspek KPI</th>
@@ -51,7 +51,7 @@
                     <td><?= esc($row->jabatan) ?></td>
                     <td><?= esc($row->aspek_kpi) ?></td>
                     <td><?= esc($row->target) ?></td>
-                    <td><?= esc($row->bobot) ?></td>
+                    <td><?= esc($row->bobot) ?>%</td>
                     <td>
                         <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
                             data-bs-target="#edit-penilaian-modal"

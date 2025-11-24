@@ -249,7 +249,7 @@ $(document).ready(function() {
             <div class="mb-3 border rounded p-2">
                 <label class="form-label">${row.aspek_penilaian}</label>
                 <p class="small text-muted">Target: ${row.target}</p>
-                <p class="small text-muted">Bobot: ${row.bobot}</p>
+                <p class="small text-muted">Bobot: ${row.bobot} %</p>
                 <input type="number" class="form-control" name="skor2[]" 
                     min="0" step="0.01" 
                     value="${jumlahMap[row.idtemplate_penilaian] || ''}" 

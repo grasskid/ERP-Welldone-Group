@@ -29,7 +29,7 @@
         <table class="table border text-nowrap mb-0 align-middle" id="zero_config">
             <thead class="text-dark fs-4">
                 <tr>
-                    <th>Template KPI</th>
+                    <th>Indikator KPI</th>
                     <th>Bobot</th>
                     <th>Formula</th>
                     <th>Jabatan</th>

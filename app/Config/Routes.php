@@ -372,6 +372,7 @@ $routes->post('delete_template_penilaian', 'TemplatePenilaian::delete', ['filter
 
 //template_kpi
 $routes->get('template_kpi', 'TemplateKPI::index', ['filter' => 'auth']);
+$routes->get('template_grading', 'TemplateKPI::index2', ['filter' => 'auth']);
 $routes->post('templatekpi/insert', 'TemplateKPI::insert', ['filter' => 'auth']);
 $routes->post('templatekpi/update', 'TemplateKPI::update', ['filter' => 'auth']);
 $routes->post('templatekpi/delete', 'TemplateKPI::delete', ['filter' => 'auth']);

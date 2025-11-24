@@ -45,7 +45,14 @@ class ModelTemplateKpi extends Model
 
     public function getTemplateKPI()
     {
-        return $this->findAll();
+        return $this->where('level', 1)
+                    ->findAll();
+    }
+
+    public function getTemplateGrading()
+    {
+        return $this->where('level', 2)
+                    ->findAll();
     }
 
     public function getById($id)

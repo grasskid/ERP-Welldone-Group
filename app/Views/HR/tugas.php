@@ -545,9 +545,19 @@
 
                     <div class="modal-body">
 
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="nama_tugas" class="form-label">Nama Tugas</label>
                             <input type="text" class="form-control" id="nama_tugas" name="nama_tugas" required>
+                        </div> -->
+
+                        <div class="mb-3">
+                            <label>Nama Tugas</label>
+                            <select name="nama_tugas" class="form-select select2" required>
+                                <option value="">-- Pilih Tugas --</option>
+                                <?php foreach ($penilaian_template as $p): ?>
+                                <option value="<?= $p->aspek_penilaian ?>"><?= esc($p->aspek_penilaian) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="mb-3">
@@ -765,6 +775,16 @@
 
 
     <!-- Your existing HTML code remains the same until the script section -->
+
+    <script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%',
+            dropdownParent: $('#add-task-modal')
+        });
+    });
+    </script>
+
 
     <script>
     // Wait for DOM to be fully loaded
