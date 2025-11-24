@@ -450,7 +450,8 @@ $routes->get('namahandphone', 'NamaHandphone::index', ['filter' => 'auth']);
 $routes->post('insert_namahandphone', 'NamaHandphone::insertNamaHandphone', ['filter' => 'auth']);
 $routes->post('update_namahandphone', 'NamaHandphone::udpateNamaHandphone', ['filter' => 'auth']);
 $routes->post('delete_namahandphone', 'NamaHandphone::deleteNamaHandphone', ['filter' => 'auth']);
-
+$routes->get('nama_handphone/export', 'NamaHandphone::export_handphone', ['filter' => 'auth']);
+$routes->post('nama_handphone/import', 'NamaHandphone::import_handphone', ['filter' => 'auth']);
 
 //Barang Rusak1
 $routes->get('barang_rusak', 'BarangRusak::index', ['filter' => 'auth']);

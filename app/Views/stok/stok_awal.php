@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <div class="card shadow-none position-relative overflow-hidden mb-4">
     <div class="card-body d-flex align-items-center justify-content-between p-4">
@@ -39,6 +38,18 @@
             }
             ?>
         </select>
+
+        <label class="me-2">Filter Unit:</label>
+        <select id="unitFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
+            onchange="filterKategori()">
+            <option value="">Semua Unit</option>
+            <?php foreach ($unit as $u): ?>
+                <option value="<?= esc($u->NAMA_UNIT) ?>">
+                    <?= esc($u->NAMA_UNIT) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
 
         <label class="me-2 ms-4">Filter PPN:</label>
         <select id="ppnFilter" class="form-select d-inline" style="width: auto;" onchange="filterKategori()">
@@ -130,24 +141,38 @@
         <div class="modal-content">
             <form action="<?= base_url('insert/stokawal') ?>" method="post">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="inputStokAwalModalLabel">Input Data Stok Awal</h4>
+                    <h4 class="modal-title" id="inputStokAwalModalLabel">Input Data Stok Awal </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row mb-3">
                         <label for="global_unit" class="col-sm-2 col-form-label">Unit</label>
                         <div class="col-sm-10">
-                            <select name="global_unit" id="global_unit" class="form-select" required readonly>
-                                <?php
-                                // Cari unit yang sesuai dengan session ID_UNIT
-                                foreach ($unit as $u):
-                                    if ($u && isset($u->idunit) && $u->idunit == session('ID_UNIT')): ?>
-                                        <option value="<?= $u->idunit ?>" selected><?= $u->NAMA_UNIT ?></option>
-                                <?php
-                                    endif;
-                                endforeach;
-                                ?>
+                            <select name="global_unit" id="global_unit" class="form-select" required <?= session('ID_UNIT') == 1 ? '' : 'readonly' ?>>
+
+                                <?php if (session('ID_UNIT') == 1): ?>
+                                    <!-- Admin / Superuser: tampilkan semua unit -->
+                                    <?php foreach ($unit as $u): ?>
+                                        <?php if ($u && isset($u->idunit)): ?>
+                                            <option value="<?= $u->idunit ?>">
+                                                <?= $u->NAMA_UNIT ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+
+                                <?php else: ?>
+                                    <!-- User biasa: hanya tampilkan unit sesuai session -->
+                                    <?php foreach ($unit as $u): ?>
+                                        <?php if ($u && isset($u->idunit) && $u->idunit == session('ID_UNIT')): ?>
+                                            <option value="<?= $u->idunit ?>" selected>
+                                                <?= $u->NAMA_UNIT ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+
                             </select>
+
                         </div>
 
                     </div>
@@ -264,28 +289,31 @@
     $(document).ready(function() {
         table = $('#zero_config').DataTable();
 
-
+        // Tambahkan filter custom
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+
             const kategoriFilter = $('#kategoriFilter').val().toLowerCase();
             const ppnFilter = $('#ppnFilter').val().toLowerCase();
+            const unitFilter = $('#unitFilter').val().toLowerCase(); // ⬅️ NEW
 
-            const kategori = data[3].toLowerCase();
-            const ppn = data[5].toLowerCase();
+            const kategori = data[3].toLowerCase(); // kolom kategori
+            const ppn = data[5].toLowerCase(); // kolom PPN
+            const unit = data[7].toLowerCase(); // kolom Unit (sesuai tabel Anda)
 
             const matchKategori = !kategoriFilter || kategori === kategoriFilter;
             const matchPPN = !ppnFilter || ppn === ppnFilter;
+            const matchUnit = !unitFilter || unit === unitFilter; // ⬅️ NEW
 
-            return matchKategori && matchPPN;
+            return matchKategori && matchPPN && matchUnit;
         });
 
-
+        // Auto-select default bila ada
         if ($('#ppnFilter option').length > 1) {
             $('#ppnFilter')[0].selectedIndex = 1;
         }
         if ($('#kategoriFilter option').length > 1) {
             $('#kategoriFilter')[0].selectedIndex = 1;
         }
-
 
         table.draw();
     });
@@ -297,9 +325,11 @@
     function resetKategoriFilter() {
         $('#kategoriFilter').val('');
         $('#ppnFilter').val('');
+        $('#unitFilter').val(''); // ⬅️ RESET filter unit
         table.draw();
     }
 </script>
+
 <script>
     let tablecc = $('#table_barang').DataTable();
     const suplierList = <?= json_encode($suplier) ?>;

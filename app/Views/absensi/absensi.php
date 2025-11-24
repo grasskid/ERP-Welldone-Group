@@ -766,7 +766,7 @@
 
         console.log("Lat Unit:", latitudeUnit, "Long Unit:", longitudeUnit);
 
-        let map = null;
+        let map112 = null;
         let latitudeUser = null;
         let longitudeUser = null;
 
@@ -845,27 +845,27 @@
         }
 
         function tampilkanMap() {
-            if (map) {
-                map.remove();
-                map = null;
+            if (map112) {
+                map112.remove();
+                map112 = null;
             }
 
-            map = L.map('map2').setView([latitudeUnit, longitudeUnit], 15);
+            map112 = L.map('map2').setView([latitudeUnit, longitudeUnit], 15);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
-            }).addTo(map);
+            }).addTo(map112);
 
             // Marker Unit
             L.marker([latitudeUnit, longitudeUnit])
-                .addTo(map)
+                .addTo(map112)
                 .bindPopup('Lokasi Unit')
                 .openPopup();
 
             // Marker User
             L.marker([latitudeUser, longitudeUser])
-                .addTo(map)
+                .addTo(map112)
                 .bindPopup('Lokasi Anda');
 
             // Polyline
@@ -875,7 +875,7 @@
             ];
             const polyline = L.polyline(latlngs, {
                 color: 'blue'
-            }).addTo(map);
+            }).addTo(map112);
 
             // Hitung jarak
             const jarakKM = hitungJarak(latitudeUnit, longitudeUnit, latitudeUser, longitudeUser);
@@ -892,7 +892,7 @@
                 })
                 .setContent(`${jarakMeter.toFixed(0)} meter`)
                 .setLatLng([midLat, midLng])
-                .addTo(map);
+                .addTo(map112);
 
             // Hapus pesan lama jika ada
             const modalBody = document.querySelector('#modal-lokasi-saya .modal-body');
@@ -917,6 +917,6 @@
             modalBody.appendChild(infoDiv);
 
             // Auto fit view
-            map.fitBounds(latlngs);
+            map112.fitBounds(latlngs);
         }
     </script>

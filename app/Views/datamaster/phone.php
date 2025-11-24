@@ -189,8 +189,11 @@
                                 style="width: 100%;">
                                 <option disabled selected>Select</option>
                                 <?php foreach ($nama_handphone as $p): ?>
-                                    <option value="<?= htmlspecialchars($p->id) ?>">
-                                        <?= htmlspecialchars($p->nama)  ?>
+                                    <option
+                                        data-type="<?= $p->type ?>"
+                                        data-size="<?= $p->size ?>"
+                                        value="<?= htmlspecialchars($p->id) ?>">
+                                        <?= htmlspecialchars($p->nama)  ?> : <?= htmlspecialchars($p->type)  ?> : <?= htmlspecialchars($p->size)  ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -224,19 +227,12 @@
 
                     <div class="mb-3">
                         <label>Jenis HP</label>
-                        <select class="form-control" name="jenis_hp" id="input-jenis_hp" required>
-                            <option disabled selected>Pilih Jenis HP</option>
-                            <option value="Android">Android</option>
-                            <option value="Iphone">Iphone</option>
-                        </select>
+                        <input type="text" class="form-control" name="jenis_hp" required>
                     </div>
-
-
-
 
                     <div class="mb-3">
                         <label>Internal</label>
-                        <input type="number" class="form-control" name="internal" required>
+                        <input type="text" class="form-control" name="internal" required>
                     </div>
                     <div class="mb-3">
                         <label>Warna</label>
@@ -291,14 +287,17 @@
                     <input name="id" hidden id="edit-id">
                     <div class="mb-3">
                         <div class="mb-3">
-                            <label>Nama Barang</label>
+                            <label>Nama Handphone</label>
                             <br>
                             <div style="display: flex; gap: 10px;">
                                 <select id="edit-nama_barang" name="nama_barang" class="form-control select2" style="width: 100%;" required>
                                     <option disabled selected>Select</option>
                                     <?php foreach ($nama_handphone as $p): ?>
-                                        <option value="<?= htmlspecialchars($p->id) ?>">
-                                            <?= htmlspecialchars($p->nama)  ?>
+                                        <option
+                                            data-type="<?= $p->type ?>"
+                                            data-size="<?= $p->size ?>"
+                                            value="<?= htmlspecialchars($p->id) ?>">
+                                            <?= htmlspecialchars($p->nama)  ?> : <?= htmlspecialchars($p->type)  ?> : <?= htmlspecialchars($p->size)  ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -338,7 +337,7 @@
                     </div>
                     <div class="mb-3">
                         <label>Internal</label>
-                        <input type="number" class="form-control" name="internal" id="edit-internal" required>
+                        <input type="text" class="form-control" name="internal" id="edit-internal" required>
                     </div>
                     <div class="mb-3">
                         <label>Warna</label>
@@ -601,110 +600,30 @@
 
 <script>
     $(document).ready(function() {
-        // Inisialisasi select2
         $('#namahandphone-select').select2({
             dropdownParent: $('#input-produk-modal'),
             placeholder: 'Pilih Nama Handphone',
             width: '100%'
         });
 
-        // Submit form tambah handphone dengan AJAX
-        $('#form-tambah-handphone').on('submit', function(e) {
-            e.preventDefault();
+        // EVENT SELECT2
+        $('#namahandphone-select').on('select2:select', function(e) {
+            let element = e.params.data.element;
 
-            const nama_handphone = $('#input-nama-handphone').val();
+            let typeHp = $(element).data('type');
+            let sizeHp = $(element).data('size');
 
-            const size_handphone = $('#input-size-handphone').val();
-            const type_handphone = $('#input-type-handphone').val();
+            $('input[name="jenis_hp"]').val(typeHp ?? 'tidak disetting');
+            $('input[name="internal"]').val(sizeHp ?? '0');
 
-            $.ajax({
-                url: '<?= base_url('insert-phone-ajax') ?>',
-                method: 'POST',
-                data: {
-                    nama_handphone: nama_handphone,
-                    type_handphone: type_handphone,
-                    size_handphone: size_handphone
-                },
-                dataType: 'json',
-                success: function(res) {
-                    if (res.status === 'success') {
-                        // Simpan nama baru
-                        const namaBaru = res.nama;
-
-                        // Buat option baru, tapi jangan langsung selected
-                        const newOption = new Option(namaBaru, namaBaru, false, false);
-
-                        // Tambah ke dropdown edit (langsung muncul karena tidak pakai destroy)
-                        $('#edit-nama_barang').append(new Option(namaBaru, namaBaru, true, true)).trigger('change');
-
-                        // Simpan info return source
-                        const returnSource = $('#nama-phone-modal').attr('data-return');
-
-                        $('#form-tambah-handphone')[0].reset();
-                        $('#nama-phone-modal').modal('hide');
-
-                        // Setelah modal tertutup, buka kembali modal asal
-                        $('#nama-phone-modal').on('hidden.bs.modal', function() {
-                            if (returnSource === 'edit') {
-                                $('#edit-produk-modal').modal('show');
-                            } else {
-                                $('#input-produk-modal').modal('show');
-
-                                // Tunggu modal terbuka agar select2 siap, lalu tambahkan & pilih
-                                setTimeout(() => {
-                                    const $selectInput = $('#namahandphone-select');
-
-                                    // Destroy dan init ulang select2
-                                    $selectInput.select2('destroy').empty();
-
-                                    // Tambahkan ulang semua opsi dari server (jika kamu mau safe)
-                                    <?php foreach ($nama_handphone as $p): ?>
-                                        $selectInput.append(new Option("<?= htmlspecialchars($p->nama) ?>", "<?= htmlspecialchars($p->nama) ?>"));
-                                    <?php endforeach; ?>
-
-                                    // Tambahkan nama baru
-                                    $selectInput.append(newOption);
-
-                                    // Reinit select2
-                                    $selectInput.select2({
-                                        dropdownParent: $('#input-produk-modal'),
-                                        placeholder: 'Pilih Nama Handphone',
-                                        width: '100%'
-                                    });
-
-                                    // Pilih nilai baru
-                                    $selectInput.val(namaBaru).trigger('change');
-                                }, 300);
-                            }
-
-                            // Cleanup
-                            $(this).removeAttr('data-return');
-                            $(this).off('hidden.bs.modal');
-                        });
-
-                    } else {
-                        alert(res.message || 'Gagal menambahkan.');
-                    }
-                },
-
-                error: function() {
-                    alert('Terjadi kesalahan.');
-                }
-            });
+            console.log("tipe hp:", typeHp);
+            console.log("internal:", sizeHp);
         });
-
     });
 </script>
 
-<script>
-    $('#btn-tambah-nama-edit').on('click', function() {
-        $('#edit-produk-modal').modal('hide');
-        $('#nama-phone-modal').modal('show');
 
-        // Tandai bahwa kita datang dari modal edit
-        $('#nama-phone-modal').attr('data-return', 'edit');
-    });
-</script>
+
 
 
 <style>
@@ -717,3 +636,33 @@
         z-index: 9999;
     }
 </style>
+
+<script>
+    $(document).ready(function() {
+
+        // Inisialisasi Select2 untuk modal edit
+        $('#edit-nama_barang').select2({
+            dropdownParent: $('#edit-produk-modal'),
+            placeholder: 'Pilih Nama Handphone',
+            width: '100%'
+        });
+
+        // Auto isi jenis_hp & internal ketika memilih handphone
+        $('#edit-nama_barang').on('select2:select', function(e) {
+
+            let element = e.params.data.element;
+
+            let typeHp = $(element).data('type');
+            let sizeHp = $(element).data('size');
+
+            // Auto isi input
+            $('#edit-jenis_hp').val(typeHp);
+            $('#edit-internal').val(sizeHp);
+
+            // Debug
+            console.log("Edit - Tipe HP:", typeHp);
+            console.log("Edit - Internal:", sizeHp);
+        });
+
+    });
+</script>
