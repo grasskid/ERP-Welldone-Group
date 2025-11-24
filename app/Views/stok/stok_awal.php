@@ -43,12 +43,28 @@
         <select id="unitFilter" class="form-select d-inline" style="width: auto; display: inline-block;"
             onchange="filterKategori()">
             <option value="">Semua Unit</option>
+
             <?php foreach ($unit as $u): ?>
-                <option value="<?= esc($u->NAMA_UNIT) ?>">
-                    <?= esc($u->NAMA_UNIT) ?>
-                </option>
+
+                <?php if (session('ID_UNIT') == 1): ?>
+                    <!-- Admin: tampilkan semua -->
+                    <option value="<?= esc($u->NAMA_UNIT) ?>">
+                        <?= esc($u->NAMA_UNIT) ?>
+                    </option>
+
+                <?php else: ?>
+                    <!-- User biasa: tampilkan hanya unit miliknya -->
+                    <?php if ($u->idunit == session('ID_UNIT')): ?>
+                        <option value="<?= esc($u->NAMA_UNIT) ?>" selected>
+                            <?= esc($u->NAMA_UNIT) ?>
+                        </option>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
             <?php endforeach; ?>
         </select>
+
 
 
         <label class="me-2 ms-4">Filter PPN:</label>
@@ -74,6 +90,9 @@
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nama Barang</h6>
+                    </th>
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Imei</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Nama kategori</h6>
@@ -106,6 +125,7 @@
 
                             <td><?= esc($row->jumlah) ?></td>
                             <td><?= esc($row->nama_barang) ?></td>
+                            <td><?= esc($row->imei ?? "Tidak ada imei") ?></td>
                             <td><?= esc($row->nama_kategori) ?></td>
                             <td>Rp <?= number_format($row->harga_beli, 0, ',', '.') ?></td>
                             <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
@@ -183,6 +203,7 @@
                                     <th>Pilih</th>
 
                                     <th style="text-align: center;">Nama Barang</th>
+                                    <th style="text-align: center;">Imei</th>
                                     <th>Jumlah</th>
                                     <!-- <th>Harga Beli</th> -->
                                     <th>Satuan Terkecil</th>
@@ -204,6 +225,10 @@
                                         <td style="min-width: 140px; text-align: center;">
                                             <p style="font-weight: bold;"><?= esc($b->kode_barang) ?></p>
                                             <p style="font-style: italic;"><?= esc($b->nama_barang) ?></p>
+
+                                        </td>
+                                        <td>
+                                            <p style="font-style: italic;"><?= esc($b->imei ?? "tidak ada imei") ?></p>
                                         </td>
                                         <td>
                                             <input type="number" name="jumlah[<?= $b->kode_barang ?>]" class="form-control"
@@ -296,9 +321,9 @@
             const ppnFilter = $('#ppnFilter').val().toLowerCase();
             const unitFilter = $('#unitFilter').val().toLowerCase(); // ⬅️ NEW
 
-            const kategori = data[3].toLowerCase(); // kolom kategori
-            const ppn = data[5].toLowerCase(); // kolom PPN
-            const unit = data[7].toLowerCase(); // kolom Unit (sesuai tabel Anda)
+            const kategori = data[4].toLowerCase(); // kolom kategori
+            const ppn = data[6].toLowerCase(); // kolom PPN
+            const unit = data[8].toLowerCase(); // kolom Unit (sesuai tabel Anda)
 
             const matchKategori = !kategoriFilter || kategori === kategoriFilter;
             const matchPPN = !ppnFilter || ppn === ppnFilter;
@@ -308,12 +333,17 @@
         });
 
         // Auto-select default bila ada
-        if ($('#ppnFilter option').length > 1) {
-            $('#ppnFilter')[0].selectedIndex = 1;
-        }
+
         if ($('#kategoriFilter option').length > 1) {
             $('#kategoriFilter')[0].selectedIndex = 1;
         }
+        if ($('#unitFilter option').length > 1) {
+            $('#unitFilter')[0].selectedIndex = 1;
+        }
+        if ($('#ppnFilter option').length > 1) {
+            $('#ppnFilter')[0].selectedIndex = 1;
+        }
+
 
         table.draw();
     });
