@@ -21,7 +21,7 @@
     <div class="px-4 py-3 border-bottom"></div>
 
     <div class="card-body px-4 pt-4 pb-2">
-        <form action="<?= base_url('insert_pembelian') ?>" method="post" enctype="multipart/form-data">
+        <form action="<?= base_url('insert_pembelian') ?>" method="post" id="form_pembelian" enctype="multipart/form-data">
             <div class="row g-3">
                 <!-- <div class="col-md-6">
                     <label for="no_nota" class="form-label">No Nota Supplier</label>
@@ -31,7 +31,7 @@
 
                 <div class="col-md-6">
                     <label for="nama_sumber" class="form-label">Sumber</label>
-                    <select id="tipe_pihak" class="form-select">
+                    <select id="tipe_pihak" class="form-select" required>
                         <option value="">Pilih Tipe</option>
                         <option value="suplier">Suplier</option>
                         <option value="pelanggan">Pelanggan</option>
@@ -43,7 +43,7 @@
 
 
                 <div class="col-md-6">
-                    <label for="nama_suplier" class="form-label">Nama Suplier</label>
+                    <label for="nama_suplier" class="form-label" id="suplier-label">Nama Suplier</label>
                     <select disabled class="form-select" id="suplier" name="suplier" required
                         onchange="tampilkanIdSuplier()">
                         <option value="" disabled selected>Pilih Unit</option>
@@ -53,7 +53,22 @@
                     </select>
                     <input name="id_suplier_text" type="hidden" id="id_suplier_text"
                         class="text-muted d-block mt-2"></input>
+
+                    <div id="pelanggan-container" style="display: none;">
+                        <label for="pelanggan" class="form-label">Pelanggan</label>
+                        <input type="text" class="form-control" id="pelanggan" name="pelanggan" readonly>
+                    </div>
+                    <div id="pelanggan-section" class="mt-3" style="display: none;">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#pelangganModal"
+                            style="display: inline-flex; align-items: center; margin-bottom: 4px;">
+                            <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;">
+                            </iconify-icon>
+                            Input Data Pelanggan
+                        </button>
+                    </div>
                 </div>
+
 
                 <div class="col-md-6">
                     <label class="form-label">Upload Gambar Nota : Max 10Mb</label>
@@ -61,8 +76,7 @@
                         <i class="bi bi-cloud-arrow-up fs-1 text-secondary"></i>
                         <p class="mb-0 text-muted">Drag and drop a file here or click</p>
                         <input type="file" name="nota_file" id="notaFileInput"
-                            class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/*"
-                            required>
+                            class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/*">
                     </div>
 
                     <!-- Preview Image -->
@@ -203,8 +217,8 @@
                             <th>Nama Barang</th>
                             <th>Kategori</th>
                             <th>IMEI</th>
-                            <th>Harga</th>
-                            <th>Harga Beli</th>
+                            <th>Hrg. Jual</th>
+                            <th>Hrg. Beli</th>
                             <th>Jumlah</th>
                             <th>Biaya tambahan</th>
                             <th>Keterangan</th>
@@ -275,25 +289,13 @@
                         <label for="kembalian" class="form-label">Kembalian</label>
                         <input type="text" class="form-control" id="kembalian" name="kembalian" value="Rp 0">
                     </div>
-                    <div class="col-md-6" id="pelanggan-container" style="display: none;">
-                        <label for="pelanggan" class="form-label">Pelanggan</label>
-                        <input type="text" class="form-control" id="pelanggan" name="pelanggan" readonly>
-                    </div>
                 </div>
 
                 <button style="height: fit-content;" class="btn btn-success mt-3" type="submit">Simpan</button>
 
                 <!-- Pelanggan Button -->
                 <!-- Pelanggan Button -->
-                <div id="pelanggan-section" class="mt-3" style="display: none;">
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                        data-bs-target="#pelangganModal"
-                        style="display: inline-flex; align-items: center; margin-bottom: 4px;">
-                        <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;">
-                        </iconify-icon>
-                        Input Data Pelanggan
-                    </button>
-                </div>
+
 
                 <div class="modal fade" id="pelangganModal" tabindex="-1">
                     <div class="modal-dialog">
@@ -450,12 +452,14 @@
                                 });
 
                                 // 🔹 Event listener untuk biaya tambahan
-                                const biayaTambahanInput = row.querySelector('.biaya-tambahan-input');
+                                const biayaTambahanInput = row.querySelector(
+                                    '.biaya-tambahan-input');
                                 biayaTambahanInput.addEventListener('input', function() {
                                     const id = this.getAttribute('data-id');
                                     const numeric = this.value.replace(/[^\d]/g, '');
                                     this.value = formatToRupiah(numeric);
-                                    document.getElementById(`biaya-tambahan-hidden-${id}`).value = numeric;
+                                    document.getElementById(`biaya-tambahan-hidden-${id}`)
+                                        .value = numeric;
                                     updateTotals();
                                 });
 
@@ -665,16 +669,14 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
 
-                const pelangganModalTrigger = new bootstrap.Modal(document.getElementById('pelangganModal'));
                 const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
                 const tipePihak = document.getElementById('tipe_pihak');
 
-
+                // FIXED select2 to avoid backdrop bug
                 $('.select2').select2({
-                    dropdownParent: $('#pelangganModal')
+                    dropdownParent: $('#pelangganModal .modal-content')
                 });
 
-                // Cek apakah ada produk kategori handphone dan tipe pihak adalah pelanggan
                 function checkForHandphone() {
                     const rows = document.querySelectorAll('#selected-produk-table tr');
                     let show = false;
@@ -686,20 +688,21 @@
                         }
                     });
 
-                    // Hapus tombol lama jika ada
                     document.getElementById('pelanggan-button')?.remove();
 
                     if (show) {
                         const btn = document.createElement('button');
                         btn.type = 'button';
                         btn.id = 'pelanggan-button';
-                        btn.className = 'btn btn-warning mt-2';
-                        btn.style = 'display: inline-flex; align-items: center; margin-bottom: 4px;';
-                        btn.innerHTML = `
-                    <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;"></iconify-icon>
-                    Input Data Pelanggan
-                `;
-                        btn.onclick = () => pelangganModalTrigger.show();
+
+                        btn.style = 'display: none; align-items: center; margin-bottom: 4px; width: 0px; height: 0px;';
+
+                        // FIXED: Use getOrCreateInstance
+                        btn.onclick = () => {
+                            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById(
+                                'pelangganModal'));
+                            modal.show();
+                        };
 
                         const container = document.querySelector('.table-responsive.mt-3.mb-4');
                         if (container) {
@@ -708,54 +711,65 @@
                     }
                 }
 
-                // Cek saat klik tombol konfirmasi produk
                 const confirmBtn = document.getElementById('confirm-produk-btn');
                 if (confirmBtn) {
                     confirmBtn.addEventListener('click', () => {
-                        setTimeout(checkForHandphone, 500); // beri jeda waktu agar DOM update
+                        setTimeout(checkForHandphone, 500);
                     });
                 }
 
-                // Juga cek saat tipe pihak berubah
                 tipePihak.addEventListener('change', function() {
                     checkForHandphone();
 
                     const suplierSelect = document.getElementById('suplier');
                     if (this.value === 'pelanggan') {
                         suplierSelect.disabled = true;
+                        suplierSelect.hidden = true;
                         suplierSelect.value = '';
+                        document.getElementById('suplier-label').style.display = 'none';
                         document.getElementById('id_suplier_text').value = '';
+                        document.getElementById('pelanggan-container').style.display = 'block';
+                        document.getElementById('pelanggan-section').style.display = 'block';
+
                     } else if (this.value === 'suplier') {
                         suplierSelect.disabled = false;
+                        suplierSelect.hidden = false;
+                        document.getElementById('suplier-label').style.display = 'block';
+                        document.getElementById('pelanggan-container').style.display = 'none';
+                        document.getElementById('pelanggan-section').style.display = 'none';
                     }
                 });
 
-                // Tombol "Tambah" di bawah dropdown
                 document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
                     modalTambah.show();
                 });
 
-                // Saat tombol "Pilih" ditekan
                 document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
                     const select = document.getElementById('pelanggan-select');
                     const selectedOption = select.options[select.selectedIndex];
 
-                    // Cek apakah belum memilih (masih di "Select")
                     if (!selectedOption || selectedOption.disabled) {
                         alert('Silakan pilih pelanggan terlebih dahulu.');
                         return;
                     }
 
-                    // Jika sudah memilih pelanggan
                     document.getElementById('pelanggan-container').style.display = 'block';
                     document.getElementById('pelanggan').value = selectedOption.text;
 
-                    // Tutup modal
-                    pelangganModalTrigger.hide();
+                    // FIXED modal closing (no backdrop stuck)
+                    const el = document.getElementById('pelangganModal');
+                    const pelangganModal = bootstrap.Modal.getOrCreateInstance(el);
+                    pelangganModal.hide();
+
+                    // CLEAN leftover backdrop
+                    setTimeout(() => {
+                        document.querySelectorAll('.modal-backdrop').forEach(e => e.remove());
+                        document.body.classList.remove('modal-open');
+                        document.body.style.removeProperty('overflow');
+                        document.body.style.removeProperty('padding-right');
+                    }, 300);
                 });
 
-
-                // Submit form tambah pelanggan
                 $('#formTambahPelanggan').on('submit', function(e) {
                     e.preventDefault();
 
@@ -771,9 +785,12 @@
                                 modalTambah.hide();
                                 $('#formTambahPelanggan')[0].reset();
 
-                                const newOption = new Option(response.data.nama + ' : ' +
-                                    response.data.no_hp, response.data.id_pelanggan, true,
-                                    true);
+                                const newOption = new Option(
+                                    response.data.nama + ' : ' + response.data.no_hp,
+                                    response.data.id_pelanggan,
+                                    true,
+                                    true
+                                );
                                 $('#pelanggan-select').append(newOption).trigger('change');
 
                                 alert('Pelanggan berhasil ditambahkan');
@@ -788,6 +805,7 @@
                 });
             });
         </script>
+
 
 
         <script>
@@ -923,15 +941,29 @@
                 <div class="modal-content">
                     <div class="modal-header d-flex align-items-center">
                         <h4 class="modal-title" id="inputProdukModalLabel">Input Data Barang</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="<?= base_url('insert_produk') ?>" method="post">
+                    <form action="<?= base_url('insert_produk') ?>" enctype="multipart/form-data" method="post">
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="nama_barang" class="form-label">Nama Barang</label>
-                                <input type="text" class="form-control" id="nama_barang" name="nama_barang"
-                                    required>
+                                <input type="text" class="form-control" id="nama_barang" name="nama_barang">
+                            </div>
+                            <div class="mb-3">
+                                <label for="">Nama Handphone</label>
+                                <select id="namahandphone-select" name="nama_hp" class="select2 form-control"
+                                    style="width: 100%;">
+                                    <option disabled selected>Select</option>
+                                    <?php foreach ($nama_handphone as $p): ?>
+                                        <option
+                                            data-type="<?= $p->type ?>"
+                                            data-size="<?= $p->size ?>"
+                                            value="<?= htmlspecialchars($p->id) ?>">
+                                            <?= htmlspecialchars($p->nama)  ?> : <?= htmlspecialchars($p->type)  ?> : <?= htmlspecialchars($p->size)  ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+
                             </div>
 
                             <div class="mb-3">
@@ -939,7 +971,22 @@
                                 <select class="form-control" id="id_kategori" name="kategori" required>
                                     <option value="">-- Pilih Kategori --</option>
                                     <?php foreach ($kategori as $k) : ?>
-                                        <option value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
+                                        <option data-idkategori="<?= $k->id ?>" value="<?= $k->nama_kategori; ?>"><?= $k->nama_kategori; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="subKategori"> Sub Kategori</label>
+                                <br>
+                                <select id="subKategori" name="subkategori" class="form-select d-inline" style="width: 100%; display: inline-block;">
+                                    <option value="">Semua Sub Kategori</option>
+                                    <?php foreach ($sub_kategori as $row): ?>
+                                        <?php if (!empty($row->nama_sub_kategori)): ?>
+                                            <option data-idparent_kategori="<?= $row->id_kategori_parent ?>" value="<?= esc($row->id) ?>">
+                                                <?= esc($row->nama_sub_kategori) ?>
+                                            </option>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -948,8 +995,7 @@
                                 <label for="harga" class="form-label">Harga</label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="text" class="form-control currency" id="harga" name="harga"
-                                        required>
+                                    <input type="text" class="form-control currency" id="harga" name="harga" required>
                                 </div>
                             </div>
 
@@ -957,10 +1003,27 @@
                                 <label for="harga_beli" class="form-label">Harga Beli</label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="text" class="form-control currency" id="harga_beli"
-                                        name="harga_beli" required>
+                                    <input type="text" class="form-control currency" id="harga_beli" name="harga_beli"
+                                        required>
                                 </div>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="imei" class="form-label">Imei</label>
+                                <input type="text" class="form-control" id="imei" name="imei">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="type" class="form-label">Tipe</label>
+                                <input type="text" class="form-control" id="type" name="type">
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="size" class="form-label">Spesifikasi</label>
+                                <input type="text" class="form-control" id="size" name="size">
+                            </div>
+
 
                             <div class="mb-3">
                                 <label for="warna" class="form-label">Warna</label>
@@ -969,8 +1032,7 @@
 
                             <div class="mb-3">
                                 <label for="stok_minimum" class="form-label">Stok Minim</label>
-                                <input type="text" class="form-control" id="stok_minim" name="stok_minimum"
-                                    required>
+                                <input type="text" class="form-control" id="stok_minim" value="0" name="stok_minimum" required>
                             </div>
 
                             <div class="mb-3">
@@ -985,8 +1047,8 @@
 
                             <div class="mb-3">
                                 <label for="input_by" class="form-label">Input By</label>
-                                <input type="text" class="form-control" value="<?= @$akun->NAMA_AKUN ?>"
-                                    id="input_by" name="input_by" required>
+                                <input type="text" class="form-control" value="<?= @$akun->NAMA_AKUN ?>" id="input_by"
+                                    name="input_by" required>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -998,3 +1060,147 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            document.getElementById('form_pembelian').addEventListener('submit', function(e) {
+                const pelanggan = document.getElementById('pelanggan').value.trim();
+
+                if (pelanggan === "") {
+                    e.preventDefault(); // stop submit
+                    alert("Pelanggan belum dipilih!");
+                    return false;
+                }
+            });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                // Inisialisasi Select2
+                $("#namahandphone-select").select2({
+                    dropdownParent: $("#input-produk-modal"),
+                    width: "100%"
+                });
+
+                const kategori = document.getElementById("id_kategori");
+                const namaBarangInput = document.getElementById("nama_barang");
+                const selectHandphone = document.getElementById("namahandphone-select");
+
+                const typeInput = document.getElementById("type");
+                const sizeInput = document.getElementById("size");
+                const imeiInput = document.getElementById("imei");
+
+                // Parent wrapper (supaya bisa hide 1 blok)
+                const typeWrapper = typeInput.parentElement;
+                const sizeWrapper = sizeInput.parentElement;
+                const imeiWrapper = imeiInput.parentElement;
+
+                // Default: sembunyikan select handphone
+                selectHandphone.parentElement.style.display = "none";
+
+                // Default: sembunyikan IMEI, tipe, spesifikasi
+                imeiWrapper.style.display = "none";
+                typeWrapper.style.display = "none";
+                sizeWrapper.style.display = "none";
+
+                // Ketika kategori berubah
+                kategori.addEventListener("change", function() {
+                    if (this.value === "Handphone") {
+
+                        // tampilkan select2
+                        selectHandphone.parentElement.style.display = "block";
+
+                        // sembunyikan input manual nama barang
+                        namaBarangInput.parentElement.style.display = "none";
+                        namaBarangInput.removeAttribute("required");
+
+                        // tampilkan IMEI, Tipe, Spesifikasi
+                        imeiWrapper.style.display = "block";
+                        typeWrapper.style.display = "block";
+                        sizeWrapper.style.display = "block";
+
+                        selectHandphone.setAttribute("required", "required");
+
+                    } else {
+                        // tampilkan input nama manual
+                        namaBarangInput.parentElement.style.display = "block";
+                        namaBarangInput.setAttribute("required", "required");
+
+                        // sembunyikan Select2 handphone
+                        selectHandphone.parentElement.style.display = "none";
+                        selectHandphone.removeAttribute("required");
+
+                        // sembunyikan IMEI, tipe, spesifikasi
+                        imeiWrapper.style.display = "none";
+                        typeWrapper.style.display = "none";
+                        sizeWrapper.style.display = "none";
+
+                        // kosongkan otomatis
+                        typeInput.value = "";
+                        sizeInput.value = "";
+                        imeiInput.value = "";
+
+                        // reset select2
+                        $("#namahandphone-select").val(null).trigger("change");
+                    }
+                });
+
+                // Ketika user memilih handphone
+                $("#namahandphone-select").on("change", function() {
+                    let selected = $(this).find(":selected");
+
+                    let type = selected.data("type");
+                    let size = selected.data("size");
+                    let nama = selected.text().trim();
+
+                    // Masukkan otomatis
+                    $("#type").val(type);
+                    $("#size").val(size);
+                    $("#nama_barang").val(nama);
+                });
+
+            });
+        </script>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                const kategoriSelect = document.getElementById("id_kategori");
+                const subKategoriSelect = document.getElementById("subKategori");
+
+                // Simpan semua sub kategori dulu
+                let allSubkategoriOptions = Array.from(subKategoriSelect.querySelectorAll("option"));
+
+                kategoriSelect.addEventListener("change", function() {
+                    const selectedIdKategori = this.options[this.selectedIndex].getAttribute("data-idkategori");
+
+                    // Reset isi subkategori
+                    subKategoriSelect.innerHTML = "";
+
+                    // Tambahkan opsi default
+                    let defaultOption = document.createElement("option");
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Semua Sub Kategori";
+                    subKategoriSelect.appendChild(defaultOption);
+
+                    if (!selectedIdKategori) {
+                        // Jika kategori kosong, tampilkan semua sub kategori
+                        allSubkategoriOptions.forEach(opt => {
+                            if (opt.value !== "") subKategoriSelect.appendChild(opt.cloneNode(true));
+                        });
+                        return;
+                    }
+
+                    // Filter sub kategori berdasarkan parent
+                    allSubkategoriOptions.forEach(opt => {
+                        let parentId = opt.getAttribute("data-idparent_kategori");
+
+                        if (parentId === selectedIdKategori) {
+                            subKategoriSelect.appendChild(opt.cloneNode(true));
+                        }
+                    });
+                });
+
+            });
+        </script>

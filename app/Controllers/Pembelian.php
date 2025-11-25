@@ -5,9 +5,11 @@ namespace App\Controllers;
 use App\Models\ModelBarang;
 
 use App\Models\ModelKategori;
+use App\Models\ModelNamaHandphone;
 use App\Models\ModelPembelian;
 use App\Models\ModelStokAwal;
 use App\Models\ModelDetailPembelian;
+use App\Models\ModelSubKategori;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -36,6 +38,8 @@ class Pembelian extends BaseController
     protected $JurnalModel;
     protected $BankModel;
     protected $PembayaranBankModel;
+    protected $NamaHandphoneModel;
+    protected $SubKategoriModel;
     public function __construct()
     {
         $this->BarangModel = new ModelBarang();
@@ -50,6 +54,8 @@ class Pembelian extends BaseController
         $this->JurnalModel = new ModelJurnal();
         $this->BankModel = new ModelBank();
         $this->PembayaranBankModel = new ModelPembayaranBank();
+        $this->NamaHandphoneModel = new ModelNamaHandphone();
+        $this->SubKategoriModel = new ModelSubKategori();
     }
 
     public function index()
@@ -63,7 +69,9 @@ class Pembelian extends BaseController
             'frontliner' => $this->AuthModel->getAkunFrontliner(),
             'bank' => $this->BankModel->getBank(),
             'pelanggan' => $this->PelangganModel->getPelanggan(),
-            'body'  => 'transaksi/pembelian'
+            'body'  => 'transaksi/pembelian',
+            'nama_handphone' => $this->NamaHandphoneModel->getNamaHandphone(),
+            'sub_kategori' => $this->SubKategoriModel->getSubKategori()
         );
         return view('template', $data);
     }
@@ -287,10 +295,10 @@ class Pembelian extends BaseController
                 $total_hp_non_ppn += $produktotalharga;
             } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 1) {
                 $total_hp_ppn += $produktotalharga;
-            } elseif ($databarang->idkategori == 2) {
-                $total_aksesoris += $produktotalharga;
             } elseif ($databarang->idkategori == 3) {
                 $total_sparepart += $produktotalharga;
+            } else {
+                $total_aksesoris += $produktotalharga;
             }
 
             $data2 = array(
@@ -311,7 +319,7 @@ class Pembelian extends BaseController
 
             );
 
-            // $result2 = $this->DetailPembelianModel->insert_detail($data2);
+            $result2 = $this->DetailPembelianModel->insert_detail($data2);
         }
         if ($total_aksesoris > 0) {
             $jurnal[] = [
@@ -380,14 +388,16 @@ class Pembelian extends BaseController
         }
     }
 
+
     public function insert_produk()
     {
 
-        $nama_barang = $this->request->getPost('nama_barang');
+
         $harga      = str_replace('.', '', $this->request->getPost('harga'));
         $harga_beli      = str_replace('.', '', $this->request->getPost('harga_beli'));
         $input = $this->request->getPost('input_by');
         $stok_minimum = $this->request->getPost('stok_minimum');
+
         $kategori = $this->request->getPost('kategori');
         $data_kategori = $this->KategoriModel->getByName($kategori);
 
@@ -409,6 +419,16 @@ class Pembelian extends BaseController
         $status_ppn = $this->request->getPost('status_ppn');
         $warna = $this->request->getPost('warna');
 
+        $nama_barang = "";
+        $id_nama_barang = 0;
+        if ($kategori == "Handphone") {
+            $id_nama_barang = $this->request->getPost('nama_hp');
+            $datanamahandphone =  $this->NamaHandphoneModel->getNamaHandphoneById($id_nama_barang);
+            $nama_barang = $datanamahandphone->nama;
+        } else {
+            $nama_barang = $this->request->getPost('nama_barang');
+        }
+
 
         $data = array(
             'kode_barang' => $kode_barang,
@@ -418,9 +438,14 @@ class Pembelian extends BaseController
             'input' => $input,
             'stok_minimum' => $stok_minimum,
             'idkategori' => $idkategori,
+            'id_sub_kategori' => $this->request->getPost('subkategori'),
+            'imei' => $this->request->getPost('imei'),
+            'jenis_hp' => $this->request->getPost('type'),
+            'internal' => $this->request->getPost('size'),
             'warna' => $warna,
             'status' => "1",
             'status_ppn' => $status_ppn,
+            'nama_barang_id' => $id_nama_barang,
             'deleted' => '0'
 
         );
