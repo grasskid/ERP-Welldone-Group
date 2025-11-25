@@ -947,11 +947,18 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="nama_barang" class="form-label">Nama Barang</label>
+<<<<<<< HEAD
                                 <input type="text" class="form-control" id="nama_barang" name="nama_barang">
                             </div>
                             <div class="mb-3">
                                 <label for="">Nama Handphone</label>
                                 <select id="namahandphone-select" name="nama_hp" class="select2 form-control"
+=======
+                                <input type="text" class="form-control" id="nama_barang" name="nama_barang" required>
+                            </div>
+                            <div class="mb-3">
+                                <select id="namahandphone-select" name="nama_barang" class="select2 form-control"
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
                                     style="width: 100%;">
                                     <option disabled selected>Select</option>
                                     <?php foreach ($nama_handphone as $p): ?>
@@ -1010,18 +1017,30 @@
 
                             <div class="mb-3">
                                 <label for="imei" class="form-label">Imei</label>
+<<<<<<< HEAD
                                 <input type="text" class="form-control" id="imei" name="imei">
+=======
+                                <input type="text" class="form-control" id="imei" name="imei" required>
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
                             </div>
 
                             <div class="mb-3">
                                 <label for="type" class="form-label">Tipe</label>
+<<<<<<< HEAD
                                 <input type="text" class="form-control" id="type" name="type">
+=======
+                                <input type="text" class="form-control" id="type" name="type" required>
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
                             </div>
 
 
                             <div class="mb-3">
                                 <label for="size" class="form-label">Spesifikasi</label>
+<<<<<<< HEAD
                                 <input type="text" class="form-control" id="size" name="size">
+=======
+                                <input type="text" class="form-control" id="size" name="size" required>
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
                             </div>
 
 
@@ -1032,7 +1051,11 @@
 
                             <div class="mb-3">
                                 <label for="stok_minimum" class="form-label">Stok Minim</label>
+<<<<<<< HEAD
                                 <input type="text" class="form-control" id="stok_minim" value="0" name="stok_minimum" required>
+=======
+                                <input type="text" class="form-control" id="stok_minim" name="stok_minimum" required>
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
                             </div>
 
                             <div class="mb-3">
@@ -1160,6 +1183,7 @@
                 });
 
             });
+<<<<<<< HEAD
         </script>
 
 
@@ -1203,4 +1227,6 @@
                 });
 
             });
+=======
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
         </script>

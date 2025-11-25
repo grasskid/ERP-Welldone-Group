@@ -54,7 +54,11 @@
                 </div>
                 <div class="col-md-4" id="pelanggan-container">
                     <label for="pelanggan" class="form-label">Pelanggan</label>
+<<<<<<< HEAD
                     <input type="text" class="form-control" id="pelanggan" name="pelanggan" required readonly>
+=======
+                    <input type="text" class="form-control" id="pelanggan" name="pelanggan" readonly>
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
                 </div>
                 <div class="col-md-2">
                     <br>
@@ -876,6 +880,7 @@
             <script>
                 window.open("<?= session()->getFlashdata('pdf_url') ?>", "_blank");
             </script>
+<<<<<<< HEAD
         <?php endif; ?>
 
 
@@ -890,3 +895,6 @@
                 }
             });
         </script>
+=======
+        <?php endif; ?>
+>>>>>>> bb9deb4b90cb2866c4c41a6c619df9ab28f3a502
