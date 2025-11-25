@@ -31,7 +31,7 @@
 
                 <div class="col-md-6">
                     <label for="nama_sumber" class="form-label">Sumber</label>
-                    <select id="tipe_pihak" class="form-select">
+                    <select id="tipe_pihak" class="form-select" required>
                         <option value="">Pilih Tipe</option>
                         <option value="suplier">Suplier</option>
                         <option value="pelanggan">Pelanggan</option>
@@ -43,7 +43,7 @@
 
 
                 <div class="col-md-6">
-                    <label for="nama_suplier" class="form-label">Nama Suplier</label>
+                    <label for="nama_suplier" class="form-label" id="suplier-label">Nama Suplier</label>
                     <select disabled class="form-select" id="suplier" name="suplier" required
                         onchange="tampilkanIdSuplier()">
                         <option value="" disabled selected>Pilih Unit</option>
@@ -53,7 +53,22 @@
                     </select>
                     <input name="id_suplier_text" type="hidden" id="id_suplier_text"
                         class="text-muted d-block mt-2"></input>
+
+                    <div id="pelanggan-container" style="display: none;">
+                        <label for="pelanggan" class="form-label">Pelanggan</label>
+                        <input type="text" class="form-control" id="pelanggan" name="pelanggan" readonly>
+                    </div>
+                    <div id="pelanggan-section" class="mt-3" style="display: none;">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#pelangganModal"
+                            style="display: inline-flex; align-items: center; margin-bottom: 4px;">
+                            <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;">
+                            </iconify-icon>
+                            Input Data Pelanggan
+                        </button>
+                    </div>
                 </div>
+
 
                 <div class="col-md-6">
                     <label class="form-label">Upload Gambar Nota : Max 10Mb</label>
@@ -61,8 +76,7 @@
                         <i class="bi bi-cloud-arrow-up fs-1 text-secondary"></i>
                         <p class="mb-0 text-muted">Drag and drop a file here or click</p>
                         <input type="file" name="nota_file" id="notaFileInput"
-                            class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/*"
-                            required>
+                            class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0" accept="image/*">
                     </div>
 
                     <!-- Preview Image -->
@@ -203,8 +217,8 @@
                             <th>Nama Barang</th>
                             <th>Kategori</th>
                             <th>IMEI</th>
-                            <th>Harga</th>
-                            <th>Harga Beli</th>
+                            <th>Hrg. Jual</th>
+                            <th>Hrg. Beli</th>
                             <th>Jumlah</th>
                             <th>Biaya tambahan</th>
                             <th>Keterangan</th>
@@ -275,25 +289,13 @@
                         <label for="kembalian" class="form-label">Kembalian</label>
                         <input type="text" class="form-control" id="kembalian" name="kembalian" value="Rp 0">
                     </div>
-                    <div class="col-md-6" id="pelanggan-container" style="display: none;">
-                        <label for="pelanggan" class="form-label">Pelanggan</label>
-                        <input type="text" class="form-control" id="pelanggan" name="pelanggan" readonly>
-                    </div>
                 </div>
 
                 <button style="height: fit-content;" class="btn btn-success mt-3" type="submit">Simpan</button>
 
                 <!-- Pelanggan Button -->
                 <!-- Pelanggan Button -->
-                <div id="pelanggan-section" class="mt-3" style="display: none;">
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                        data-bs-target="#pelangganModal"
-                        style="display: inline-flex; align-items: center; margin-bottom: 4px;">
-                        <iconify-icon icon="mdi:account" width="20" height="20" style="margin-right: 8px;">
-                        </iconify-icon>
-                        Input Data Pelanggan
-                    </button>
-                </div>
+
 
                 <div class="modal fade" id="pelangganModal" tabindex="-1">
                     <div class="modal-dialog">
@@ -723,10 +725,19 @@
                     const suplierSelect = document.getElementById('suplier');
                     if (this.value === 'pelanggan') {
                         suplierSelect.disabled = true;
+                        suplierSelect.hidden = true;
                         suplierSelect.value = '';
+                        document.getElementById('suplier-label').style.display = 'none';
                         document.getElementById('id_suplier_text').value = '';
+                        document.getElementById('pelanggan-container').style.display = 'block';
+                        document.getElementById('pelanggan-section').style.display = 'block';
+
                     } else if (this.value === 'suplier') {
                         suplierSelect.disabled = false;
+                        suplierSelect.hidden = false;
+                        document.getElementById('suplier-label').style.display = 'block';
+                        document.getElementById('pelanggan-container').style.display = 'none';
+                        document.getElementById('pelanggan-section').style.display = 'none';
                     }
                 });
 

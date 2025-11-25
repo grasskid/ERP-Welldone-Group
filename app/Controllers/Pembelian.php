@@ -287,10 +287,10 @@ class Pembelian extends BaseController
                 $total_hp_non_ppn += $produktotalharga;
             } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 1) {
                 $total_hp_ppn += $produktotalharga;
-            } elseif ($databarang->idkategori == 2) {
-                $total_aksesoris += $produktotalharga;
             } elseif ($databarang->idkategori == 3) {
                 $total_sparepart += $produktotalharga;
+            }else{
+                $total_aksesoris += $produktotalharga;
             }
 
             $data2 = array(
@@ -311,7 +311,7 @@ class Pembelian extends BaseController
 
             );
 
-            // $result2 = $this->DetailPembelianModel->insert_detail($data2);
+            $result2 = $this->DetailPembelianModel->insert_detail($data2);
         }
         if ($total_aksesoris > 0) {
             $jurnal[] = [
