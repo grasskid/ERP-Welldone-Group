@@ -666,29 +666,48 @@
         });
         </script>
 
-
         <script>
         document.addEventListener('DOMContentLoaded', function() {
 
+            const pelangganModalEl = document.getElementById('pelangganModal');
+            const pelangganModal = bootstrap.Modal.getOrCreateInstance(pelangganModalEl);
             const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
             const tipePihak = document.getElementById('tipe_pihak');
 
-            // FIXED select2 to avoid backdrop bug
-            $('.select2').select2({
-                dropdownParent: $('#pelangganModal .modal-content')
-            });
+            /* ===============================
+               FIX SELECT2 + MODAL SCROLL
+               =============================== */
+            let pelangganSelect2Inited = false;
 
-            // Auto-remove duplicate backdrops every time modal opens
             $('#pelangganModal').on('shown.bs.modal', function() {
-                setTimeout(() => {
-                    const backs = document.querySelectorAll('.modal-backdrop');
-                    if (backs.length > 1) {
-                        backs[0].remove(); // remove extra backdrop
-                    }
-                }, 10);
+
+                // Init select2 only once
+                if (!pelangganSelect2Inited) {
+                    $('#pelanggan-select').select2({
+                        dropdownParent: $('#pelangganModal .modal-content')
+                    });
+                    pelangganSelect2Inited = true;
+                }
+
+                // Fix scroll stuck (clean both html & body)
+                document.body.classList.add('modal-open');
+                document.documentElement.classList.add('modal-open');
             });
 
+            $('#pelangganModal').on('hidden.bs.modal', function() {
+                // remove leftover backdrop
+                $('.modal-backdrop').remove();
 
+                // cleanup scroll lock
+                document.body.classList.remove('modal-open');
+                document.documentElement.classList.remove('modal-open');
+                document.body.style.removeProperty('overflow');
+                document.documentElement.style.removeProperty('overflow');
+            });
+
+            /* ===============================
+               FUNCTION checkForHandphone()
+               =============================== */
             function checkForHandphone() {
                 const rows = document.querySelectorAll('#selected-produk-table tr');
                 let show = false;
@@ -708,19 +727,13 @@
                     btn.id = 'pelanggan-button';
 
                     btn.style =
-                        'display: none; align-items: center; margin-bottom: 4px; width: 0px; height: 0px;';
+                        'display:none;margin:0;padding:0;width:0;height:0;';
 
-                    // FIXED: Use getOrCreateInstance
-                    btn.onclick = () => {
-                        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById(
-                            'pelangganModal'));
-                        modal.show();
-                    };
+                    // FIX: always use same instance
+                    btn.onclick = () => pelangganModal.show();
 
                     const container = document.querySelector('.table-responsive.mt-3.mb-4');
-                    if (container) {
-                        container.appendChild(btn);
-                    }
+                    if (container) container.appendChild(btn);
                 }
             }
 
@@ -731,10 +744,15 @@
                 });
             }
 
+
+            /* ===============================
+               Tipe pihak change
+               =============================== */
             tipePihak.addEventListener('change', function() {
                 checkForHandphone();
 
                 const suplierSelect = document.getElementById('suplier');
+
                 if (this.value === 'pelanggan') {
                     suplierSelect.disabled = true;
                     suplierSelect.hidden = true;
@@ -753,10 +771,16 @@
                 }
             });
 
+            /* ===============================
+               Tambah pelanggan
+               =============================== */
             document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
                 modalTambah.show();
             });
 
+            /* ===============================
+               Pilih pelanggan
+               =============================== */
             document.getElementById('btnPilihPelanggan').addEventListener('click', function() {
                 const select = document.getElementById('pelanggan-select');
                 const selectedOption = select.options[select.selectedIndex];
@@ -769,28 +793,21 @@
                 document.getElementById('pelanggan-container').style.display = 'block';
                 document.getElementById('pelanggan').value = selectedOption.text;
 
-                // FIXED modal closing (no backdrop stuck)
-                const el = document.getElementById('pelangganModal');
-                const pelangganModal = bootstrap.Modal.getOrCreateInstance(el);
-                pelangganModal.hide();
+                pelangganModal.hide(); // use same modal instance
 
-
-
-                // CLEAN leftover backdrop + unlock scroll
+                // Cleanup leftover backdrop
                 setTimeout(() => {
-                    document.querySelectorAll('.modal-backdrop').forEach(e => e.remove());
+                    $('.modal-backdrop').remove();
                     document.body.classList.remove('modal-open');
-                    document.documentElement.classList.remove('modal-open'); // <-- NEW
-
+                    document.documentElement.classList.remove('modal-open');
                     document.body.style.removeProperty('overflow');
-                    document.documentElement.style.removeProperty('overflow'); // <-- NEW
-
-                    document.body.style.removeProperty('padding-right');
-                    document.documentElement.style.removeProperty('padding-right'); // <-- NEW
+                    document.documentElement.style.removeProperty('overflow');
                 }, 300);
-
             });
 
+            /* ===============================
+               AJAX tambah pelanggan
+               =============================== */
             $('#formTambahPelanggan').on('submit', function(e) {
                 e.preventDefault();
 
@@ -812,6 +829,7 @@
                                 true,
                                 true
                             );
+
                             $('#pelanggan-select').append(newOption).trigger('change');
 
                             alert('Pelanggan berhasil ditambahkan');
@@ -824,8 +842,11 @@
                     }
                 });
             });
+
         });
         </script>
+
+
 
 
 
@@ -1087,15 +1108,21 @@
 
         <script>
         document.getElementById('form_pembelian').addEventListener('submit', function(e) {
+
+            const tipe = document.getElementById('tipe_pihak').value;
             const pelanggan = document.getElementById('pelanggan').value.trim();
 
-            if (pelanggan === "") {
-                e.preventDefault(); // stop submit
+            // ❗ ONLY validate pelanggan if tipe pihak = pelanggan
+            if (tipe === "pelanggan" && pelanggan === "") {
+                e.preventDefault();
                 alert("Pelanggan belum dipilih!");
                 return false;
             }
+
+            // otherwise allow submit normally
         });
         </script>
+
 
         <script>
         document.addEventListener("DOMContentLoaded", function() {

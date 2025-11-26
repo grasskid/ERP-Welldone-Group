@@ -78,7 +78,7 @@ class ModelDetailPembelian extends Model
                 unit.NAMA_UNIT')
             ->join('pembelian', 'pembelian.idpembelian = detail_pembelian.pembelian_idpembelian')
             ->join('barang', 'barang.idbarang = detail_pembelian.barang_idbarang')
-            ->join('suplier', 'suplier.id_suplier =  pembelian.suplier_id_suplier')
+            ->join('suplier', 'suplier.id_suplier =  pembelian.suplier_id_suplier', 'left')
             ->join('unit', 'unit.idunit = detail_pembelian.unit_idunit')
             ->orderBy('detail_pembelian.tanggal', 'DESC')
             ->get()
