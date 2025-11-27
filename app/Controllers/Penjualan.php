@@ -360,6 +360,16 @@ class Penjualan extends BaseController
                 'tabel_referensi' => 'penjualan'
             ];
         }
+        if($diskon > 0){
+            $jurnal[] = [
+                'tanggal' => $tanggal_waktu,
+                'kode_template' => 'penjualan_diskon',
+                'ar_value' => [$diskon],
+                'keterangan' => 'Penjualan Diskon: No.Invoice ' . $no_invoice,
+                'id_referensi' => $idPenjualan,
+                'tabel_referensi' => 'penjualan'
+            ];
+        }
         if ($total_aksesoris > 0) {
             $jurnal[] = [
                 'tanggal' => $tanggal_waktu,
