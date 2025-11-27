@@ -16,6 +16,12 @@ class ModelSubKategori extends Model
         return $this->where('delete', 0)->findAll();
     }
 
+    public function getParentOne()
+    {
+        return $this->where('id_kategori_parent', 1)->findAll();
+    }
+
+
     public function getSubKategoriByParent($id_kategori_parent)
     {
         return $this->where('delete', 0)

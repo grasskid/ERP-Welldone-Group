@@ -9,7 +9,7 @@ class ModelPhone extends Model
     protected $table = 'barang';
     protected $primaryKey = 'idbarang';
     protected $returnType = 'object';
-    protected $allowedFields = ['kode_barang', 'stok_minimum', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'imei', 'jenis_hp', 'hpp', 'internal', 'warna', 'status_ppn', 'status', 'deleted', 'status_barang', 'nama_barang_id'];
+    protected $allowedFields = ['kode_barang', 'stok_minimum', 'id_sub_kategori', 'nama_barang', 'harga', 'harga_beli', 'input', 'idkategori', 'imei', 'jenis_hp', 'hpp', 'internal', 'warna', 'status_ppn', 'status', 'deleted', 'status_barang', 'nama_barang_id'];
 
     public function getPhoneActive()
     {

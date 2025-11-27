@@ -32,7 +32,7 @@
                 </iconify-icon>
                 Import
             </button>
-            <a href="<?php echo base_url('format_excell/format_product.xlsx') ?>"><button type="button"
+            <a href="<?php echo base_url('format_excell/format_product_terbaru.xlsx') ?>"><button type="button"
                     class="btn btn-success" style="display: inline-flex; align-items: center;">
                     <iconify-icon icon="solar:download-broken" width="24" height="24" style="margin-right: 8px;">
                     </iconify-icon>

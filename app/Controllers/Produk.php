@@ -247,27 +247,32 @@ class Produk extends BaseController
         $rows = $sheet->toArray();
         $db = Database::connect();
 
-        // Simpan lastNumber per kategori (by primary id)
         $lastNumbers = [];
 
         for ($i = 1; $i < count($rows); $i++) {
-            $nama_barang    = addslashes($rows[$i][0]);
-            $harga          = str_replace(',', '', $rows[$i][1]);
-            $harga_beli     = str_replace(',', '', $rows[$i][2]);
-            $warna          = addslashes($rows[$i][3]);
-            $idkategori_raw = addslashes($rows[$i][4]);
-            $status_ppn_raw = strtoupper(trim(addslashes($rows[$i][5])));
-            $status_ppn     = ($status_ppn_raw === 'PPN') ? 1 : 0;
-            $input          = addslashes($rows[$i][6]);
 
-            // Ambil data kategori berdasar kode kategori dari file
+            $nama_barang       = addslashes($rows[$i][0]);
+            $harga             = str_replace(',', '', $rows[$i][1]);
+            $harga_beli        = str_replace(',', '', $rows[$i][2]);
+            $warna             = addslashes($rows[$i][3]);
+            $idkategori_raw    = addslashes($rows[$i][4]);
+
+            $id_sub_kategori   = addslashes($rows[$i][5]); // SUB KATEGORI
+            $status_ppn_raw    = strtoupper(trim(addslashes($rows[$i][6])));
+            $stok_minimum      = addslashes($rows[$i][7]); // STOK MINIMUM
+            $input             = addslashes($rows[$i][8] ?? 'system'); // INPUT BY (jika tidak ada default "system")
+
+            $status_ppn        = ($status_ppn_raw === 'PPN') ? 1 : 0;
+
+            // Ambil data kategori berdasarkan ID kategori
             $dataKategori = $this->KategoriModel->getById($idkategori_raw);
             if (!$dataKategori) continue;
 
             $idnyakategori  = $dataKategori->id;
             $kode_kategori  = $dataKategori->idkategori;
 
-            if (! isset($lastNumbers[$idnyakategori])) {
+            // Ambil nomor terakhir berdasarkan kategori
+            if (!isset($lastNumbers[$idnyakategori])) {
                 $lastBarang = $this->BarangModel->getLastBarangByKategori($idnyakategori);
                 $lastNumbers[$idnyakategori] = $lastBarang
                     ? (int) substr($lastBarang->kode_barang, strlen($kode_kategori))
@@ -278,11 +283,11 @@ class Produk extends BaseController
             $formattedNumber = str_pad($lastNumbers[$idnyakategori], 2, '0', STR_PAD_LEFT);
             $kode_barang     = $kode_kategori . $formattedNumber;
 
-            // Sesuaikan query untuk menambahkan kolom `warna`
+            // QUERY INSERT SUDAH DISESUAIKAN
             $sql = "INSERT INTO barang 
-        (kode_barang, nama_barang, harga, harga_beli, warna, input, idkategori, status, status_ppn, deleted) 
-        VALUES 
-        (?, ?, ?, ?, ?, ?, ?, 1, ?, 0)";
+            (kode_barang, nama_barang, harga, harga_beli, warna, input, idkategori, id_sub_kategori, stok_minimum, status_ppn, status, deleted) 
+            VALUES 
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)";
 
             $db->query($sql, [
                 $kode_barang,
@@ -292,13 +297,16 @@ class Produk extends BaseController
                 $warna,
                 $input,
                 $idnyakategori,
-                $status_ppn
+                $id_sub_kategori,
+                $stok_minimum,
+                $status_ppn,
             ]);
         }
 
         session()->setFlashdata('sukses', 'Data Berhasil Disimpan');
         return redirect()->to(base_url('/produk'));
     }
+
 
 
 
