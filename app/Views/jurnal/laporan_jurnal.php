@@ -94,7 +94,7 @@
                         <h6 class="fs-4 fw-semibold mb-0">Nomor Akun</h6>
                     </th>
                     <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Nama Akun</h6>
+                        <h6 class="fs-4 fw-semibold mb-0">Akun & Keterangan</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Debet</h6>
@@ -102,8 +102,6 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Kredit</h6>
                     </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Keterangan</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Unit</h6>
@@ -112,15 +110,20 @@
             </thead>
             <tbody>
                 <?php foreach ($jurnal as $row): ?>
-                <tr>
-                    <td data-raw="<?= esc($row->tanggal) ?>"><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
-                    <td><?= esc($row->no_akun) ?></td>
-                    <td><?= esc($row->nama_akun) ?></td>
-                    <td class="debet-cell" data-value="<?= esc($row->debet) ?>"></td>
-                    <td class="kredit-cell" data-value="<?= esc($row->kredit) ?>"></td>
-                    <td><?= esc($row->keterangan) ?></td>
-                    <td><?= esc($row->NAMA_UNIT) ?></td>
-                </tr>
+                    <tr>
+                        <td data-raw="<?= esc($row->tanggal) ?>"><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
+                        <td><?= esc($row->no_akun) ?></td>
+                        <td>
+                            <i><?= esc($row->nama_akun) ?></i>
+                            <br>
+                            <b>
+                                <?= esc($row->keterangan) ?>
+                            </b>
+                        </td>
+                        <td class="debet-cell" data-value="<?= esc($row->debet) ?>"></td>
+                        <td class="kredit-cell" data-value="<?= esc($row->kredit) ?>"></td>
+                        <td><?= esc($row->NAMA_UNIT) ?></td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -129,145 +132,145 @@
 
 <!-- JavaScript -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const today = new Date();
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(today.getDate() - 15);
+    document.addEventListener("DOMContentLoaded", function() {
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
 
-    const toDateInputValue = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+        const toDateInputValue = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
 
-    document.getElementById('startDate').value = toDateInputValue(fifteenDaysAgo);
-    document.getElementById('endDate').value = toDateInputValue(today);
+        document.getElementById('startDate').value = toDateInputValue(fifteenDaysAgo);
+        document.getElementById('endDate').value = toDateInputValue(today);
 
-    sortTableByDateDesc();
-    formatTableCurrency();
-    filterData();
-});
-
-function sortTableByDateDesc() {
-    const table = document.getElementById("jurnal_table");
-    const tbody = table.querySelector("tbody");
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-
-    rows.sort((a, b) => {
-        const dateA = new Date(a.cells[0].getAttribute("data-raw"));
-        const dateB = new Date(b.cells[0].getAttribute("data-raw"));
-        return dateB - dateA;
+        sortTableByDateDesc();
+        formatTableCurrency();
+        filterData();
     });
 
-    rows.forEach(row => tbody.appendChild(row));
-}
+    function sortTableByDateDesc() {
+        const table = document.getElementById("jurnal_table");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
 
-function formatRupiah(angka) {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
-    }).format(angka);
-}
+        rows.sort((a, b) => {
+            const dateA = new Date(a.cells[0].getAttribute("data-raw"));
+            const dateB = new Date(b.cells[0].getAttribute("data-raw"));
+            return dateB - dateA;
+        });
 
-function formatTableCurrency() {
-    document.querySelectorAll('.debet-cell').forEach(cell => {
-        const val = parseFloat(cell.getAttribute('data-value')) || 0;
-        cell.textContent = formatRupiah(val);
-    });
+        rows.forEach(row => tbody.appendChild(row));
+    }
 
-    document.querySelectorAll('.kredit-cell').forEach(cell => {
-        const val = parseFloat(cell.getAttribute('data-value')) || 0;
-        cell.textContent = formatRupiah(val);
-    });
-}
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(angka);
+    }
 
-function filterData() {
-    const start = document.getElementById('startDate').value;
-    const end = document.getElementById('endDate').value;
-    const selectedUnit = document.getElementById('unitSelect').value.toLowerCase();
-    const rows = document.querySelectorAll('#jurnal_table tbody tr');
+    function formatTableCurrency() {
+        document.querySelectorAll('.debet-cell').forEach(cell => {
+            const val = parseFloat(cell.getAttribute('data-value')) || 0;
+            cell.textContent = formatRupiah(val);
+        });
 
-    let totalDebet = 0;
-    let totalKredit = 0;
+        document.querySelectorAll('.kredit-cell').forEach(cell => {
+            const val = parseFloat(cell.getAttribute('data-value')) || 0;
+            cell.textContent = formatRupiah(val);
+        });
+    }
 
-    rows.forEach(row => {
-        const dateCell = row.children[0];
-        const debetCell = row.children[3];
-        const kreditCell = row.children[4];
-        const unitCell = row.children[6];
+    function filterData() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const selectedUnit = document.getElementById('unitSelect').value.toLowerCase();
+        const rows = document.querySelectorAll('#jurnal_table tbody tr');
 
-        if (!dateCell || !unitCell) return;
+        let totalDebet = 0;
+        let totalKredit = 0;
 
-        const dateText = dateCell.getAttribute('data-raw');
-        const unitText = unitCell.textContent.trim().toLowerCase();
+        rows.forEach(row => {
+            const dateCell = row.children[0];
+            const debetCell = row.children[3];
+            const kreditCell = row.children[4];
+            const unitCell = row.children[6];
 
-        const rowDate = new Date(dateText);
-        const startDate = start ? new Date(start) : null;
-        const endDate = end ? new Date(end) : null;
+            if (!dateCell || !unitCell) return;
 
-        let visible = true;
-        if (startDate && rowDate < startDate) visible = false;
-        if (endDate && rowDate > endDate) visible = false;
-        if (selectedUnit && unitText !== selectedUnit) visible = false;
+            const dateText = dateCell.getAttribute('data-raw');
+            const unitText = unitCell.textContent.trim().toLowerCase();
 
-        row.style.display = visible ? '' : 'none';
+            const rowDate = new Date(dateText);
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
 
-        const debet = parseFloat(debetCell.getAttribute('data-value')) || 0;
-        const kredit = parseFloat(kreditCell.getAttribute('data-value')) || 0;
+            let visible = true;
+            if (startDate && rowDate < startDate) visible = false;
+            if (endDate && rowDate > endDate) visible = false;
+            if (selectedUnit && unitText !== selectedUnit) visible = false;
 
-        if (visible) {
-            totalDebet += debet;
-            totalKredit += kredit;
-        }
-    });
+            row.style.display = visible ? '' : 'none';
 
-    document.getElementById('totalDebet').textContent = formatRupiah(totalDebet);
-    document.getElementById('totalKredit').textContent = formatRupiah(totalKredit);
-    document.getElementById('hiddenNamaUnit').value = selectedUnit;
-}
+            const debet = parseFloat(debetCell.getAttribute('data-value')) || 0;
+            const kredit = parseFloat(kreditCell.getAttribute('data-value')) || 0;
 
-function resetFilter() {
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    document.getElementById('unitSelect').value = '';
-    document.getElementById('hiddenNamaUnit').value = '';
+            if (visible) {
+                totalDebet += debet;
+                totalKredit += kredit;
+            }
+        });
 
-    formatTableCurrency();
-    filterData();
-}
+        document.getElementById('totalDebet').textContent = formatRupiah(totalDebet);
+        document.getElementById('totalKredit').textContent = formatRupiah(totalKredit);
+        document.getElementById('hiddenNamaUnit').value = selectedUnit;
+    }
+
+    function resetFilter() {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        document.getElementById('unitSelect').value = '';
+        document.getElementById('hiddenNamaUnit').value = '';
+
+        formatTableCurrency();
+        filterData();
+    }
 </script>
 
 <!-- DataTable Script (NEW) -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
 
-    // Custom date sorting using data-raw
-    $.fn.dataTable.ext.order['tanggal-sort'] = function(settings, colIndex) {
-        return this.api()
-            .column(colIndex, {
-                order: 'index'
-            })
-            .nodes()
-            .map(function(td) {
-                return new Date(td.getAttribute('data-raw')).getTime();
-            });
-    };
+        // Custom date sorting using data-raw
+        $.fn.dataTable.ext.order['tanggal-sort'] = function(settings, colIndex) {
+            return this.api()
+                .column(colIndex, {
+                    order: 'index'
+                })
+                .nodes()
+                .map(function(td) {
+                    return new Date(td.getAttribute('data-raw')).getTime();
+                });
+        };
 
-    // Initialize DataTable
-    $('#jurnal_table').DataTable({
-        paging: true,
-        searching: true,
-        info: true,
-        order: [
-            [0, 'desc']
-        ],
-        columnDefs: [{
-            targets: 0,
-            orderDataType: "tanggal-sort"
-        }]
+        // Initialize DataTable
+        $('#jurnal_table').DataTable({
+            paging: true,
+            searching: true,
+            info: true,
+            order: [
+                [0, 'desc']
+            ],
+            columnDefs: [{
+                targets: 0,
+                orderDataType: "tanggal-sort"
+            }]
+        });
+
     });
-
-});
 </script>
