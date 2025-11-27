@@ -208,8 +208,11 @@
             </tr>
             <tr>
                 <td><strong>Total PPN</strong></td>
-                <td class="text-end"><?= number_format($total_ppn_semua, 0, ',', '.') ?></td>
+                <td class="text-end">
+                    <?= number_format((!empty($total_ppn) ? $total_ppn : $total_ppn_semua), 0, ',', '.') ?>
+                </td>
             </tr>
+
             <tr>
                 <td><strong>Total</strong></td>
                 <td class="text-end"><strong><?= number_format(@$total, 0, ',', '.') ?></strong></td>

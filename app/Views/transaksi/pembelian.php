@@ -220,7 +220,7 @@
                             <th>IMEI</th>
                             <th>Hrg. Jual</th>
                             <th>Hrg. Beli</th>
-                            <th>Jumlah</th>
+                            <th>Nominal</th>
                             <th>Biaya tambahan</th>
                             <th>Keterangan</th>
                             <th>Diskon (Rp)</th>
@@ -411,7 +411,7 @@
 
     
                          <td>
-                              <input type="text" name="produk[${id}][keterangan]" class="form-control keterangan-input" data-id="${id}" placeholder="Keterangan...">
+                              <input type="text" name="produk[${id}][keterangan]" class="form-control keterangan-input" data-id="${id}" placeholder="">
                         </td>
 
 

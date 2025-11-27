@@ -238,3 +238,36 @@ function resetFilter() {
     filterData();
 }
 </script>
+
+<!-- DataTable Script (NEW) -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Custom date sorting using data-raw
+    $.fn.dataTable.ext.order['tanggal-sort'] = function(settings, colIndex) {
+        return this.api()
+            .column(colIndex, {
+                order: 'index'
+            })
+            .nodes()
+            .map(function(td) {
+                return new Date(td.getAttribute('data-raw')).getTime();
+            });
+    };
+
+    // Initialize DataTable
+    $('#jurnal_table').DataTable({
+        paging: true,
+        searching: true,
+        info: true,
+        order: [
+            [0, 'desc']
+        ],
+        columnDefs: [{
+            targets: 0,
+            orderDataType: "tanggal-sort"
+        }]
+    });
+
+});
+</script>
