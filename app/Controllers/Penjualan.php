@@ -176,7 +176,7 @@ class Penjualan extends BaseController
                     $totalBayarBank += $jumlah;
                     $jurnal[] = [
                         'tanggal' => $tanggal_waktu,
-                        'kode_template' => 'penjualan_lunas_bank_bca' . $b['id'],
+                        'kode_template' => 'penjualan_lunas_bank_' . $b['id'],
                         'ar_value' => [$jumlah],
                         'keterangan' => 'Pembayaran Bank - Penjualan ' . $no_invoice,
                         'id_referensi' => $kodePembayaran,
@@ -188,13 +188,14 @@ class Penjualan extends BaseController
         if ($bayar_tunai > 0) {
             $jurnal[] = [
                 'tanggal' => $tanggal_waktu,
-                'kode_template' => 'penjualan_lunas_bank_tunai',
+                'kode_template' => 'penjualan_lunas_tunai',
                 'ar_value' => [$bayar_tunai],
                 'keterangan' => 'Pembayaran Tunai - Penjualan ' . $no_invoice,
                 'id_referensi' => $kodePembayaran,
                 'tabel_referensi' => 'pembayaran_bank'
             ];
         }
+        
         $total_bayar = $bayar_tunai + $totalBayarBank;
 
         $created_on = $tanggal_waktu;
@@ -307,15 +308,15 @@ class Penjualan extends BaseController
                     $this->DetailPenjualanModel->insert_detail($data2);
                 }
                 if ($datahpp->idkategori == 1 && $datahpp->status_barang == 1) {
-                    $total_hp_second += $produkharga;
+                    $total_hp_second += $subtotalAwal;
                 } elseif ($datahpp->idkategori == 1 && $datahpp->status_ppn == 0) {
-                    $total_hp_non_ppn += $produkharga;
+                    $total_hp_non_ppn += $subtotalAwal;
                 } elseif ($datahpp->idkategori == 1 && $datahpp->status_ppn == 1) {
-                    $total_hp_ppn += $produkharga;
+                    $total_hp_ppn += $subtotalAwal;
                 } elseif ($datahpp->idkategori == 3) {
-                    $total_sparepart += $produkharga;
+                    $total_sparepart += $subtotalAwal;
                 } else {
-                    $total_aksesoris += $produkharga;
+                    $total_aksesoris += $subtotalAwal;
                 }
             } else {
                 // barang biasa
@@ -336,15 +337,15 @@ class Penjualan extends BaseController
                 );
                 $this->DetailPenjualanModel->insert_detail($data2);
                 if ($datahpp->idkategori == 1 && $datahpp->status_barang == 1) {
-                    $total_hp_second += $produkharga;
+                    $total_hp_second += $subtotalAwal;
                 } elseif ($datahpp->idkategori == 1 && $datahpp->status_ppn == 0) {
-                    $total_hp_non_ppn += $produkharga;
+                    $total_hp_non_ppn += $subtotalAwal;
                 } elseif ($datahpp->idkategori == 1 && $datahpp->status_ppn == 1) {
-                    $total_hp_ppn += $produkharga;
+                    $total_hp_ppn += $subtotalAwal;
                 } elseif ($datahpp->idkategori == 3) {
-                    $total_sparepart += $produkharga;
+                    $total_sparepart += $subtotalAwal;
                 } else {
-                    $total_aksesoris += $produkharga;
+                    $total_aksesoris += $subtotalAwal;
                 }
             }
         }
@@ -420,7 +421,7 @@ class Penjualan extends BaseController
                 'tabel_referensi' => 'penjualan'
             ];
         }
-
+        // die(json_encode($jurnal));
         // insert jurnal penjualan
         foreach ($jurnal as $j) {
             $this->JurnalModel->insertJurnal(
