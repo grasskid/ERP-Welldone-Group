@@ -550,12 +550,17 @@
                 totalDiskonInput.min = totalDiskon;
 
                 let manualDiskon = unformatRupiah(totalDiskonInput.value);
-                if (isNaN(manualDiskon) || manualDiskon < totalDiskon) {
+
+
+                if (manualDiskon !== totalDiskon) {
                     manualDiskon = totalDiskon;
                 }
-                totalDiskonInput.value = formatToRupiah(manualDiskon.toString());
 
-                const totalHargaFinal = total - (manualDiskon - totalDiskon);
+                totalDiskonInput.value = formatToRupiah(totalDiskon.toString());
+
+
+                const totalHargaFinal = total;
+
                 document.getElementById('total-ppn').value = 'Rp ' + totalPPN.toLocaleString('id-ID');
                 document.getElementById('total-harga').value = 'Rp ' + totalHargaFinal.toLocaleString('id-ID');
 
