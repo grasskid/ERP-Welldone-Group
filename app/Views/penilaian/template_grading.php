@@ -17,12 +17,12 @@
 <div class="card w-100 position-relative overflow-hidden">
     <div class="px-4 py-3 border-bottom d-flex justify-content-between">
         <div class="d-flex gap-2"></div>
-        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-kpi-modal"
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-kpi-modal"
             style="display: inline-flex; align-items: center; height: 50px;">
             <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
                 style="margin-right: 8px;"></iconify-icon>
             Input
-        </button> -->
+        </button>
     </div>
 
     <div class="table-responsive mb-4 px-4">
@@ -33,7 +33,7 @@
                     <th>Bobot</th>
                     <th>Formula</th>
                     <th>Jabatan</th>
-                    <!-- <th>Action</th> -->
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,7 +53,7 @@
                                     }
                                 ?>
                     </td>
-                    <!-- <td>
+                    <td>
                         <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
                             data-bs-target="#edit-kpi-modal" data-id="<?= esc($row->idtemplate_kpi) ?>"
                             data-template_kpi="<?= esc($row->template_kpi) ?>" data-bobot="<?= esc($row->bobot) ?>"
@@ -67,7 +67,7 @@
                             <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
                             </iconify-icon>
                         </button>
-                    </td> -->
+                    </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php else: ?>
@@ -111,6 +111,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <input type="hidden" name="level" placeholder="2">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger"

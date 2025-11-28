@@ -150,7 +150,11 @@ foreach ($detail_penjualan as $row) {
                         <tbody>
                             <?php foreach ($items as $item): ?>
                             <tr>
-                                <td><?= esc($item->nama_barang) ?></td>
+                                <td>
+                                    <?= esc($item->nama_barang) ?><br>
+                                    <small class="text-muted"><?= esc($item->imei) ?></small>
+                                </td>
+
                                 <td><?= esc($item->jumlah) ?></td>
                                 <td><?= esc(number_format($item->harga_penjualan, 0, ',', '.')) ?></td>
                                 <td><?= esc(number_format($item->diskon_penjualan, 0, ',', '.')) ?></td>
@@ -160,6 +164,18 @@ foreach ($detail_penjualan as $row) {
                         </tbody>
                     </table>
                 </div>
+
+                <?php 
+                    $total_ppn = $items[0]->total_ppn;
+                ?>
+                <div class="text-end mt-3">
+                    <strong>Total PPN:</strong>
+                    <span class="badge bg-primary">
+                        <?= number_format($total_ppn, 0, ',', '.') ?>
+                    </span>
+                </div>
+
+
             </div>
         </div>
     </div>

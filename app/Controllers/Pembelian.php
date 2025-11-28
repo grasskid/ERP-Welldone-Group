@@ -247,19 +247,6 @@ class Pembelian extends BaseController
             'input_by' => $input_by
         );
 
-
-        // foreach ($produkData as $produk) {
-        //     $produkid = $produk['id'];
-        //     $namaproduk = $produk['nama'];
-        //     $datastokawal = $this->StokAwalModel->getByIdBarang($produkid);
-
-        //     if (!$datastokawal || $datastokawal->satuan_terkecil == null) {
-        //         session()->setFlashdata('gagal', 'Barang dengan ID ' . $namaproduk . ' belum memiliki data satuan di stok awal.');
-        //         return redirect()->back();
-        //     }
-        // }
-
-
         $result = $this->PembelianModel->insert_Pembelian($data);
         $idPembelian = $this->PembelianModel->insertID();
         $pelengkap_pembayaranbank = array(
@@ -271,6 +258,9 @@ class Pembelian extends BaseController
         $total_sparepart = 0;
         $total_hp_ppn = 0;
         $total_hp_non_ppn = 0;
+        $total_hp_second = 0;
+
+        //gor push ulang
 
         foreach ($produkData as $produk) {
             $datastokawal = $this->StokAwalModel->getByIdBarang($produk['id']);
@@ -291,14 +281,16 @@ class Pembelian extends BaseController
             //
             $datahpp = $this->HppBarangModel->getById($produk['id']);
             $hitung_hpp  = $datahpp->hpp ?? 0;
-            if ($databarang->idkategori == 1 && $databarang->status_ppn == 0) {
-                $total_hp_non_ppn += $produktotalharga;
+            if ($databarang->idkategori == 1 && $databarang->status_barang == 1) {
+                $total_hp_second += $subtotalSetelahDiskon;
+            } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 0) {
+                $total_hp_non_ppn += $subtotalSetelahDiskon;
             } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 1) {
-                $total_hp_ppn += $produktotalharga;
+                $total_hp_ppn += $subtotalSetelahDiskon;
             } elseif ($databarang->idkategori == 3) {
-                $total_sparepart += $produktotalharga;
+                $total_sparepart += $subtotalSetelahDiskon;
             } else {
-                $total_aksesoris += $produktotalharga;
+                $total_aksesoris += $subtotalSetelahDiskon;
             }
 
             $data2 = array(
@@ -321,12 +313,22 @@ class Pembelian extends BaseController
 
             $result2 = $this->DetailPembelianModel->insert_detail($data2);
         }
+        if ($total_ppn > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_ppn_lunas',
+                'ar_value' => [$total_ppn],
+                'keterangan' => 'Pembelian PPN: No.Nota ' . $no_nota,
+                'id_referensi' => $idPembelian,
+                'tabel_referensi' => 'pembelian'
+            ];
+        }
         if ($total_aksesoris > 0) {
             $jurnal[] = [
                 'tanggal' => $tanggal_masuk_full,
                 'kode_template' => 'pembelian_aksesoris',
                 'ar_value' => [$total_aksesoris],
-                'keterangan' => 'Pembelian Aksesoris',
+                'keterangan' => 'Pembelian Aksesoris: No.Nota ' . $no_nota,
                 'id_referensi' => $idPembelian,
                 'tabel_referensi' => 'pembelian'
             ];
@@ -336,7 +338,7 @@ class Pembelian extends BaseController
                 'tanggal' => $tanggal_masuk_full,
                 'kode_template' => 'pembelian_sparepart',
                 'ar_value' => [$total_sparepart],
-                'keterangan' => 'Pembelian Sparepart',
+                'keterangan' => 'Pembelian Sparepart: No.Nota ' . $no_nota,
                 'id_referensi' => $idPembelian,
                 'tabel_referensi' => 'pembelian'
             ];
@@ -346,7 +348,7 @@ class Pembelian extends BaseController
                 'tanggal' => $tanggal_masuk_full,
                 'kode_template' => 'pembelian_lunas_hp_baru_ppn',
                 'ar_value' => [$total_hp_ppn],
-                'keterangan' => 'Pembelian HP PPN',
+                'keterangan' => 'Pembelian HP PPN: No.Nota ' . $no_nota,
                 'id_referensi' => $idPembelian,
                 'tabel_referensi' => 'pembelian'
             ];
@@ -356,7 +358,17 @@ class Pembelian extends BaseController
                 'tanggal' => $tanggal_masuk_full,
                 'kode_template' => 'pembelian_lunas_hp_baru',
                 'ar_value' => [$total_hp_non_ppn],
-                'keterangan' => 'Pembelian HP NON PPN',
+                'keterangan' => 'Pembelian HP NON PPN: No.Nota ' . $no_nota,
+                'id_referensi' => $idPembelian,
+                'tabel_referensi' => 'pembelian'
+            ];
+        }
+        if ($total_hp_second > 0) {
+            $jurnal[] = [
+                'tanggal' => $tanggal_masuk_full,
+                'kode_template' => 'pembelian_lunas_hp_second',
+                'ar_value' => [$total_hp_second],
+                'keterangan' => 'Pembelian HP Second : No.Nota ' . $no_nota,
                 'id_referensi' => $idPembelian,
                 'tabel_referensi' => 'pembelian'
             ];
@@ -373,7 +385,7 @@ class Pembelian extends BaseController
                 $j['tabel_referensi']
             );
         }
-
+        // die(json_encode($jurnal));
         $db->transComplete(); // Commits if all queries succeeded, rolls back otherwise
 
         if ($db->transStatus() === FALSE) {

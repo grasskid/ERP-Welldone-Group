@@ -216,3 +216,28 @@ document.addEventListener('DOMContentLoaded', function() {
     updateExcelInputs();
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleSaldo = document.getElementById('toggleZeroSaldo');
+    const toggleChildren = document.getElementById('toggleChildren');
+
+    function applyFilters() {
+        const showZero = toggleSaldo.checked;
+        const showChildren = toggleChildren.checked;
+
+        document.querySelectorAll('.saldo-zero').forEach(row => {
+            row.style.display = showZero ? '' : 'none';
+        });
+
+        document.querySelectorAll('.child-row').forEach(row => {
+            row.style.display = showChildren ? '' : 'none';
+        });
+    }
+
+    toggleSaldo.addEventListener('change', applyFilters);
+    toggleChildren.addEventListener('change', applyFilters);
+
+    applyFilters();
+});
+</script>

@@ -324,9 +324,11 @@ class Produk extends BaseController
         }
     }
 
+
     public function get_sub_kategori($kategoriNama)
     {
         // Get category by name
+        //for push ulang
         $kategori = $this->KategoriModel->getByName($kategoriNama);
         if (!$kategori) {
             return $this->response->setJSON([]);

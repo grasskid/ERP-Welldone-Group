@@ -13,6 +13,7 @@ class ModelPhone extends Model
 
     public function getPhoneActive()
     {
+        //for push ulang
         return $this
             ->where('barang.idkategori', 1)
             ->where('barang.status', '1')

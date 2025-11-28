@@ -143,7 +143,7 @@
                             <td><?= esc($row->stok_minimum) ?></td>
                             <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
 
-
+                            <!-- for push ulang -->
 
                             <td><?= esc($row->input) ?></td>
                             <td><button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"

@@ -261,6 +261,7 @@ class Phone extends BaseController
         $db = Database::connect();
 
         // Skip header (baris pertama)
+        //for push ulang
         for ($i = 1; $i < count($rows); $i++) {
             $imei = addslashes($rows[$i][0]);
             $nama_handphone = addslashes($rows[$i][1]);

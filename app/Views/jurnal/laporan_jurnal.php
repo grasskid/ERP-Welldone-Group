@@ -94,7 +94,7 @@
                         <h6 class="fs-4 fw-semibold mb-0">Nomor Akun</h6>
                     </th>
                     <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Nama Akun</h6>
+                        <h6 class="fs-4 fw-semibold mb-0">Akun & Keterangan</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Debet</h6>
@@ -102,8 +102,6 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Kredit</h6>
                     </th>
-                    <th>
-                        <h6 class="fs-4 fw-semibold mb-0">Keterangan</h6>
                     </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Unit</h6>
@@ -115,10 +113,15 @@
                 <tr>
                     <td data-raw="<?= esc($row->tanggal) ?>"><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
                     <td><?= esc($row->no_akun) ?></td>
-                    <td><?= esc($row->nama_akun) ?></td>
+                    <td>
+                        <i><?= esc($row->nama_akun) ?></i>
+                        <br>
+                        <b>
+                            <?= esc($row->keterangan) ?>
+                        </b>
+                    </td>
                     <td class="debet-cell" data-value="<?= esc($row->debet) ?>"></td>
                     <td class="kredit-cell" data-value="<?= esc($row->kredit) ?>"></td>
-                    <td><?= esc($row->keterangan) ?></td>
                     <td><?= esc($row->NAMA_UNIT) ?></td>
                 </tr>
                 <?php endforeach; ?>
@@ -237,4 +240,37 @@ function resetFilter() {
     formatTableCurrency();
     filterData();
 }
+</script>
+
+<!-- DataTable Script (NEW) -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Custom date sorting using data-raw
+    $.fn.dataTable.ext.order['tanggal-sort'] = function(settings, colIndex) {
+        return this.api()
+            .column(colIndex, {
+                order: 'index'
+            })
+            .nodes()
+            .map(function(td) {
+                return new Date(td.getAttribute('data-raw')).getTime();
+            });
+    };
+
+    // Initialize DataTable
+    $('#jurnal_table').DataTable({
+        paging: true,
+        searching: true,
+        info: true,
+        order: [
+            [0, 'desc']
+        ],
+        columnDefs: [{
+            targets: 0,
+            orderDataType: "tanggal-sort"
+        }]
+    });
+
+});
 </script>

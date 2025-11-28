@@ -527,7 +527,8 @@ class Penjualan extends BaseController
 
     public function search_by_hp()
     {
-        //fot push
+
+        //for push ulang purpshose
         $no_hp = $this->request->getGet('no_hp');
         $pelanggan = $this->PelangganModel
             ->where('no_hp', $no_hp)
