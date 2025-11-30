@@ -36,8 +36,8 @@ class LabaRugi extends BaseController
         $akun = $this->AuthModel->getById(session('ID_AKUN'));
         $unit = $this->UnitModel->getUnit();
 
-        $tanggal_awal = $this->request->getGet('tanggal_awal') ?: null;
-        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?: null;
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?? date('Y-m-01');
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?? date('Y-m-t');
         $id_unit = $this->request->getGet('id_unit') ?: null;
         $jenis_laporan = $this->request->getGet('jenis_laporan') ?: 'jurnal'; // 'jurnal' atau 'transaksi'
 
@@ -258,5 +258,70 @@ class LabaRugi extends BaseController
             'laba_rugi' => $laba_rugi
         ];
     }
+
+    public function laporan_standar()
+    {
+        $akun = $this->AuthModel->getById(session('ID_AKUN'));
+        $unit = $this->UnitModel->getUnit();
+
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?: null;
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?: null;
+        $id_unit = $this->request->getGet('id_unit') ?: null;
+        $jenis_laporan = $this->request->getGet('jenis_laporan') ?: 'jurnal'; // 'jurnal' atau 'transaksi'
+
+        // Data untuk laporan berdasarkan jurnal
+        $data_jurnal = [];
+        if ($jenis_laporan == 'jurnal') {
+            $data_jurnal = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit);
+        }
+
+        // Data untuk laporan berdasarkan transaksi
+        $data_transaksi = [];
+        if ($jenis_laporan == 'transaksi') {
+            $data_transaksi = $this->getLabaRugiFromTransaksi($tanggal_awal, $tanggal_akhir, $id_unit);
+        }
+
+        $data = [
+            'akun' => $akun,
+            'unit' => $unit,
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'id_unit' => $id_unit,
+            'jenis_laporan' => $jenis_laporan,
+            'data_jurnal' => $data_jurnal,
+            'data_transaksi' => $data_transaksi,
+            'body' => 'laporan/laba_rugi_standar'
+        ];
+
+        return view('template', $data);
+    }
+
+    public function cetak_standar()
+    {
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?: null;
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?: null;
+        $id_unit = $this->request->getGet('id_unit') ?: null;
+
+        $data_laba_rugi = [];
+        
+        $data_laba_rugi = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit);
+        
+
+        $nama_unit = "Semua Cabang";
+        if ($id_unit) {
+            $unit = $this->UnitModel->find($id_unit);
+            $nama_unit = $unit ? $unit->NAMA_UNIT : "Semua Cabang";
+        }
+
+        $data = [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'nama_unit' => $nama_unit,
+            'data_laba_rugi' => $data_laba_rugi,
+        ];
+        // die(json_encode($data));
+        return view('laporan/cetak_laba_rugi_standar', $data);
+    }
 }
+
 

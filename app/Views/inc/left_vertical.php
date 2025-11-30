@@ -13,7 +13,7 @@
             <img src="<?= base_url('template/assets/images/' . $unitLogo->LOGO) ?>" alt="Logo"
                 class="dark-logo w-100 h-auto" style="max-width: 100px;" />
         </a>
-        <h5 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h5>
+        <h5 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?>asdasd</h5>
         <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
             <i class="ti ti-x"></i>
         </a>
@@ -90,7 +90,7 @@
                         <li class="sidebar-item">
                             <a href="<?= base_url() . $menu['url'] ?>" class="sidebar-link">
                                 <span
-                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
+                                    class="sidebar-icon"></span>
                                 <span class="hide-menu"> <?= $menu['nama'] ?></span>
                             </a>
                         </li>
@@ -98,7 +98,7 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
                                 <span
-                                    class="sidebar-icon"><?= $icon = ($menu['icon'] != null) ? $menu['icon'] : ''; ?></span>
+                                    class="sidebar-icon"></span>
                                 <span class="hide-menu"> <?= $menu['nama'] ?> </span>
                             </a>
                             <ul aria-expanded="false" class="collapse two-level">
@@ -107,7 +107,7 @@
                                 <li class="sidebar-item">
                                     <a href="<?= base_url() . $sub_menu['url'] ?>" class="sidebar-link">
                                         <span
-                                            class="sidebar-icon"><?= $icon = ($sub_menu['icon'] != null) ? $sub_menu['icon'] : ''; ?></span>
+                                            class="sidebar-icon"></span>
                                         <span class="hide-menu"><?= $sub_menu['nama'] ?></span>
                                     </a>
                                 </li>

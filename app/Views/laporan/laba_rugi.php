@@ -57,6 +57,10 @@
                         <iconify-icon icon="solar:restart-bold" width="20" height="20"></iconify-icon>
                         Reset
                     </button>
+                    <button type="button" class="btn btn-success" onclick="printLaporanStandar()">
+                        <iconify-icon icon="solar:print" width="20" height="20"></iconify-icon>
+                        Cetak Laporan (Standar)
+                    </button>
                 </div>
             </div>
         </form>
@@ -574,97 +578,97 @@
 <?php endif; ?>
 
 <?php if ($jenis_laporan == 'jurnal' && !empty($data_jurnal)): ?>
-<div class="modal fade" id="modalDetailJurnalPendapatan" tabindex="-1" aria-labelledby="modalDetailJurnalPendapatanLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalDetailJurnalPendapatanLabel">Detail Pendapatan (Jurnal)</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <?php $detailPendapatanJurnal = $data_jurnal['detail']['pendapatan'] ?? []; ?>
-                <?php if (!empty($detailPendapatanJurnal)): ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>No Akun</th>
-                                    <th>Nama Akun</th>
-                                    <th>Keterangan</th>
-                                    <th>Unit</th>
-                                    <th class="text-end">Debet</th>
-                                    <th class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($detailPendapatanJurnal as $row): ?>
+    <div class="modal fade" id="modalDetailJurnalPendapatan" tabindex="-1" aria-labelledby="modalDetailJurnalPendapatanLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetailJurnalPendapatanLabel">Detail Pendapatan (Jurnal)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?php $detailPendapatanJurnal = $data_jurnal['detail']['pendapatan'] ?? []; ?>
+                    <?php if (!empty($detailPendapatanJurnal)): ?>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-light">
                                     <tr>
-                                        <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
-                                        <td><?= esc($row->no_akun) ?></td>
-                                        <td><?= esc($row->nama_akun) ?></td>
-                                        <td><?= esc($row->keterangan ?? '-') ?></td>
-                                        <td><?= esc($row->nama_unit ?? '-') ?></td>
-                                        <td class="text-end"><?= 'Rp ' . number_format($row->debet ?? 0, 0, ',', '.') ?></td>
-                                        <td class="text-end"><?= 'Rp ' . number_format($row->kredit ?? 0, 0, ',', '.') ?></td>
+                                        <th>Tanggal</th>
+                                        <th>No Akun</th>
+                                        <th>Nama Akun</th>
+                                        <th>Keterangan</th>
+                                        <th>Unit</th>
+                                        <th class="text-end">Debet</th>
+                                        <th class="text-end">Kredit</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <p class="text-muted mb-0">Belum ada transaksi pendapatan untuk rentang ini.</p>
-                <?php endif; ?>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($detailPendapatanJurnal as $row): ?>
+                                        <tr>
+                                            <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
+                                            <td><?= esc($row->no_akun) ?></td>
+                                            <td><?= esc($row->nama_akun) ?></td>
+                                            <td><?= esc($row->keterangan ?? '-') ?></td>
+                                            <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                            <td class="text-end"><?= 'Rp ' . number_format($row->debet ?? 0, 0, ',', '.') ?></td>
+                                            <td class="text-end"><?= 'Rp ' . number_format($row->kredit ?? 0, 0, ',', '.') ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">Belum ada transaksi pendapatan untuk rentang ini.</p>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalDetailJurnalBiaya" tabindex="-1" aria-labelledby="modalDetailJurnalBiayaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalDetailJurnalBiayaLabel">Detail Biaya (Jurnal)</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <?php $detailBiayaJurnal = $data_jurnal['detail']['biaya'] ?? []; ?>
-                <?php if (!empty($detailBiayaJurnal)): ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>No Akun</th>
-                                    <th>Nama Akun</th>
-                                    <th>Keterangan</th>
-                                    <th>Unit</th>
-                                    <th class="text-end">Debet</th>
-                                    <th class="text-end">Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($detailBiayaJurnal as $row): ?>
+    <div class="modal fade" id="modalDetailJurnalBiaya" tabindex="-1" aria-labelledby="modalDetailJurnalBiayaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetailJurnalBiayaLabel">Detail Biaya (Jurnal)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?php $detailBiayaJurnal = $data_jurnal['detail']['biaya'] ?? []; ?>
+                    <?php if (!empty($detailBiayaJurnal)): ?>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-light">
                                     <tr>
-                                        <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
-                                        <td><?= esc($row->no_akun) ?></td>
-                                        <td><?= esc($row->nama_akun) ?></td>
-                                        <td><?= esc($row->keterangan ?? '-') ?></td>
-                                        <td><?= esc($row->nama_unit ?? '-') ?></td>
-                                        <td class="text-end"><?= 'Rp ' . number_format($row->debet ?? 0, 0, ',', '.') ?></td>
-                                        <td class="text-end"><?= 'Rp ' . number_format($row->kredit ?? 0, 0, ',', '.') ?></td>
+                                        <th>Tanggal</th>
+                                        <th>No Akun</th>
+                                        <th>Nama Akun</th>
+                                        <th>Keterangan</th>
+                                        <th>Unit</th>
+                                        <th class="text-end">Debet</th>
+                                        <th class="text-end">Kredit</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <p class="text-muted mb-0">Belum ada transaksi biaya untuk rentang ini.</p>
-                <?php endif; ?>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($detailBiayaJurnal as $row): ?>
+                                        <tr>
+                                            <td><?= esc(date('d/m/Y', strtotime($row->tanggal))) ?></td>
+                                            <td><?= esc($row->no_akun) ?></td>
+                                            <td><?= esc($row->nama_akun) ?></td>
+                                            <td><?= esc($row->keterangan ?? '-') ?></td>
+                                            <td><?= esc($row->nama_unit ?? '-') ?></td>
+                                            <td class="text-end"><?= 'Rp ' . number_format($row->debet ?? 0, 0, ',', '.') ?></td>
+                                            <td class="text-end"><?= 'Rp ' . number_format($row->kredit ?? 0, 0, ',', '.') ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">Belum ada transaksi biaya untuk rentang ini.</p>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
 <?php endif; ?>
 
 <script>
@@ -695,5 +699,14 @@
         document.getElementById('tanggalAkhir').value = '';
         document.getElementById('idUnit').value = '';
         document.getElementById('filterForm').submit();
+    }
+
+    function printLaporanStandar() {
+        var tanggalAwal = document.getElementById('tanggalAwal').value;
+        var tanggalAkhir = document.getElementById('tanggalAkhir').value;
+        var idunit = document.getElementById('idUnit').value;
+
+        var url = '<?= base_url('LaporanKeuangan/laba_rugi_standar/cetak') ?>?tanggal_awal=' + tanggalAwal + '&tanggal_akhir=' + tanggalAkhir + '&id_unit=' + idunit;
+        window.open(url, '_blank');
     }
 </script>
