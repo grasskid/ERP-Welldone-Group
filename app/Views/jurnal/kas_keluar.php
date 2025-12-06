@@ -85,19 +85,19 @@
             </thead>
             <tbody>
                 <?php if (!empty($kas_keluar)): ?>
-                <?php foreach ($kas_keluar as $row): ?>
-                <tr>
-                    <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
-                    <td><?= esc($row->NAMA_UNIT) ?></td>
-                    <td><?= esc($row->no_akun) ?></td>
-                    <td><?= esc($row->kategori) ?></td>
-                    <td><?= esc($row->deskripsi) ?></td>
-                    <td><?= esc($row->nama_bank) ?></td>
-                    <td><?= esc($row->penerima) ?></td>
-                    <td><?= esc($row->norek) ?></td>
-                    <td><?= number_format($row->jumlah, 0, ',', '.') ?></td>
-                    <td><?= esc($row->jenis) ?></td>
-                    <!-- <td>
+                    <?php foreach ($kas_keluar as $row): ?>
+                        <tr>
+                            <td><?= esc(date('d-m-Y', strtotime($row->tanggal))) ?></td>
+                            <td><?= esc($row->NAMA_UNIT) ?></td>
+                            <td><?= esc($row->no_akun) ?></td>
+                            <td><?= esc($row->kategori) ?></td>
+                            <td><?= esc($row->deskripsi) ?></td>
+                            <td><?= esc($row->nama_bank) ?></td>
+                            <td><?= esc($row->penerima) ?></td>
+                            <td><?= esc($row->norek) ?></td>
+                            <td>Rp.<?= number_format($row->jumlah, 0, ',', '.') ?></td>
+                            <td><?= esc($row->jenis) ?></td>
+                            <!-- <td>
                                 <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
                                     data-bs-target="#edit-kas-modal" data-id="<?= esc($row->idkas_keluar) ?>"
                                     data-tanggal="<?= esc($row->tanggal) ?>"
@@ -115,12 +115,12 @@
                                     </iconify-icon>
                                 </button>
                             </td> -->
-                </tr>
-                <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="6" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -131,7 +131,7 @@
 <div class="modal fade" id="input-kas-modal" tabindex="-1" aria-labelledby="inputKasModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-            <form action="<?= base_url('insert_kas_keluar') ?>" method="post">
+            <form action="<?= base_url('insert_kas_keluar') ?>" method="post" id="form_kas_keluar" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Input Kas Keluar</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -156,9 +156,9 @@
                         <select class="form-control select2" name="unit_idunit" id="unit_idunit" required>
                             <option value="">Pilih Unit</option>
                             <?php foreach ($unit as $b): ?>
-                            <option value="<?= esc($b->idunit) ?>">
-                                <?= esc($b->NAMA_UNIT) ?>
-                            </option>
+                                <option value="<?= esc($b->idunit) ?>">
+                                    <?= esc($b->NAMA_UNIT) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
 
@@ -226,19 +226,19 @@
                     </thead>
                     <tbody>
                         <?php foreach ($no_akun as $row): ?>
-                        <tr>
-                            <td><?= esc($row->no_akun) ?></td>
-                            <td><?= esc($row->nama_akun) ?></td>
-                            <td><?= esc($row->jenis_akun) ?></td>
-                            <td>
-                                <button type="button" class="btn btn-success btn-sm pilih-akun"
-                                    data-no="<?= esc($row->no_akun) ?>" data-jenis="<?= esc($row->jenis_akun) ?>"
-                                    data-bs-dismiss="modal">
-                                    Pilih
-                                </button>
+                            <tr>
+                                <td><?= esc($row->no_akun) ?></td>
+                                <td><?= esc($row->nama_akun) ?></td>
+                                <td><?= esc($row->jenis_akun) ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-success btn-sm pilih-akun"
+                                        data-no="<?= esc($row->no_akun) ?>" data-jenis="<?= esc($row->jenis_akun) ?>"
+                                        data-bs-dismiss="modal">
+                                        Pilih
+                                    </button>
 
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         <?php endforeach ?>
                     </tbody>
                 </table>
@@ -270,7 +270,7 @@
                         <select class="form-control" name="kategori_idkategori" id="edit_kategori" required>
                             <option value="">-- Pilih Kategori --</option>
                             <?php foreach ($kategori_kas as $kat): ?>
-                            <option value="<?= esc($kat->idkategori_kas) ?>"><?= esc($kat->kategori) ?></option>
+                                <option value="<?= esc($kat->idkategori_kas) ?>"><?= esc($kat->kategori) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -287,9 +287,9 @@
                         <select class="form-control select2" name="penerima" id="edit_penerima" required>
                             <option value="">Pilih Bank</option>
                             <?php foreach ($bank as $b): ?>
-                            <option value="<?= esc($b->idbank) ?>">
-                                <?= esc($b->nama_bank . ' : ' . $b->norek) ?>
-                            </option>
+                                <option value="<?= esc($b->idbank) ?>">
+                                    <?= esc($b->nama_bank . ' : ' . $b->norek) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
 
@@ -337,145 +337,144 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#zero_config').addEventListener('click', function(e) {
-        if (e.target.closest('.edit-button')) {
-            const btn = e.target.closest('.edit-button');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#zero_config').addEventListener('click', function(e) {
+            if (e.target.closest('.edit-button')) {
+                const btn = e.target.closest('.edit-button');
 
-            // Isi field biasa
-            document.getElementById('edit_id').value = btn.dataset.id;
-            document.getElementById('edit_tanggal').value = btn.dataset.tanggal;
-            document.getElementById('edit_kategori').value = btn.dataset.kategori;
-            document.getElementById('edit_deskripsi').value = btn.dataset.deskripsi;
-            document.getElementById('edit_jumlah').value = btn.dataset.jumlah;
-            document.getElementById('edit_posisi_drk').value = btn.dataset.jenis;
+                // Isi field biasa
+                document.getElementById('edit_id').value = btn.dataset.id;
+                document.getElementById('edit_tanggal').value = btn.dataset.tanggal;
+                document.getElementById('edit_kategori').value = btn.dataset.kategori;
+                document.getElementById('edit_deskripsi').value = btn.dataset.deskripsi;
+                document.getElementById('edit_jumlah').value = btn.dataset.jumlah;
+                document.getElementById('edit_posisi_drk').value = btn.dataset.jenis;
 
-            // Atur value select2 (penerima / idbank)
-            const selectPenerima = $('#edit_penerima');
-            const idbank = btn.dataset.idbank;
+                // Atur value select2 (penerima / idbank)
+                const selectPenerima = $('#edit_penerima');
+                const idbank = btn.dataset.idbank;
 
-            // Set value dan trigger select2
-            selectPenerima.val(idbank).trigger('change');
-        }
+                // Set value dan trigger select2
+                selectPenerima.val(idbank).trigger('change');
+            }
 
-        if (e.target.closest('.delete-button')) {
-            const btn = e.target.closest('.delete-button');
-            document.getElementById('delete_id').value = btn.dataset.id;
-        }
+            if (e.target.closest('.delete-button')) {
+                const btn = e.target.closest('.delete-button');
+                document.getElementById('delete_id').value = btn.dataset.id;
+            }
+        });
     });
-});
 </script>
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    let akunIndex = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        let akunIndex = 0;
 
-    // Inisialisasi DataTable
-    let table = $('#table_kaskeluar').DataTable();
+        // Inisialisasi DataTable
+        let table = $('#table_kaskeluar').DataTable();
 
-    // Event delegation: tombol pilih-akun tetap berfungsi walaupun pagination
-    $('#table_kaskeluar').on('click', '.pilih-akun', function() {
-        const noAkun = $(this).attr('data-no');
-        const jenisAkun = $(this).attr('data-jenis');
+        // Event delegation tombol pilih akun
+        $('#table_kaskeluar').on('click', '.pilih-akun', function() {
+            const noAkun = $(this).attr('data-no');
+            const jenisAkun = $(this).attr('data-jenis');
 
-        const container = document.getElementById('akun-terpilih-container');
+            const container = document.getElementById('akun-terpilih-container');
 
-        const row = document.createElement('tr');
-        row.className = 'akun-row';
-        row.innerHTML = `
+            const row = document.createElement('tr');
+            row.className = 'akun-row';
+            row.innerHTML = `
+            <td><input type="text" class="form-control" name="akun[${akunIndex}][no_akun]" value="${noAkun}" readonly></td>
+            <td><input type="text" class="form-control" name="akun[${akunIndex}][jenis_akun]" value="${jenisAkun}" readonly></td>
             <td>
-                <input type="text" class="form-control" name="akun[${akunIndex}][no_akun]" value="${noAkun}" readonly>
+                <select class="form-control" name="akun[${akunIndex}][kategori_idkategori]" required>
+                    <option value="">-- Pilih Kategori --</option>
+                    <?php foreach ($kategori_kas as $kat): ?>
+                        <option value="<?= esc($kat->idkategori_kas) ?>"><?= esc($kat->kategori) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </td>
             <td>
-                <input type="text" class="form-control" name="akun[${akunIndex}][jenis_akun]" value="${jenisAkun}" readonly>
-            </td>
-            <td>
-            <select style="width: 100px;" class="form-control" name="akun[${akunIndex}][kategori_idkategori]" required>
-                                <option value="">-- Pilih Kategori --</option>
-                                <?php foreach ($kategori_kas as $kat): ?>
-                                    <option value="<?= esc($kat->idkategori_kas) ?>"><?= esc($kat->kategori) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-            </td>
-            <td>
-                <select style="width: 100px;" class="form-control jenis-transaksi" name="akun[${akunIndex}][jenis_transaksi]">
+                <select class="form-control jenis-transaksi" name="akun[${akunIndex}][jenis_transaksi]">
                     <option value="">-- Pilih Jenis Transaksi --</option>
                     <option value="cash">Kas</option>
                     <option value="bank">Bank</option>
                 </select>
             </td>
-            <td >
-                <select style="width: 200px;" class="form-control select2-rekening" name="akun[${akunIndex}][no_rekening]" disabled>
+            <td>
+                <select class="form-control select2-rekening" name="akun[${akunIndex}][no_rekening]" disabled>
                     <?= esc('<option value="">-- Pilih No Rekening --</option>') ?>
                     <?php foreach ($bank as $b): ?>
-                        <option value="<?= esc($b->idbank) ?>">
-                            <?= esc($b->nama_bank) ?> : <?= esc($b->norek) ?>
-                        </option>
+                        <option value="<?= esc($b->idbank) ?>"><?= esc($b->nama_bank) ?> : <?= esc($b->norek) ?></option>
                     <?php endforeach; ?>
                 </select>
             </td>
+            <td><input type="text" class="form-control" name="akun[${akunIndex}][penerima]"></td>
+            
+            <!-- jumlah + formatter rupiah -->
+            <td><input type="text" class="form-control jumlah-input" name="akun[${akunIndex}][jumlah]" placeholder="Rp.0"></td>
+
             <td>
-                <input type="text" class="form-control" name="akun[${akunIndex}][penerima]" placeholder="">
-            </td>
-            <td>
-                <input type="number"  class="form-control" name="akun[${akunIndex}][jumlah]" placeholder="">
-            </td>
-            <td>
-                <select style="width: 100px;" class="form-control" name="akun[${akunIndex}][posisi_drk]">
+                <select class="form-control" name="akun[${akunIndex}][posisi_drk]">
                     <option value="">-- Pilih --</option>
                     <option value="debet">Debet</option>
                     <option value="kredit">Kredit</option>
                 </select>
             </td>
             <td class="text-center">
-                <button type="button" class="btn btn-danger btn-sm remove-akun">
-                    <i class="bi bi-trash"></i>
-                </button>
+                <button type="button" class="btn btn-danger btn-sm remove-akun"><i class="bi bi-trash"></i></button>
             </td>
         `;
 
-        container.appendChild(row);
-        akunIndex++;
+            container.appendChild(row);
+            akunIndex++;
 
-        // Select2
-        $(row).find('.select2-rekening').select2({
-            dropdownParent: $('#input-kas-modal'),
-            width: '100%'
+            // Aktifkan select2 rekening
+            $(row).find('.select2-rekening').select2({
+                dropdownParent: $('#input-kas-modal'),
+                width: '100%'
+            });
+
+            // Enable/disable rekening jika jenis bank/cash
+            row.querySelector('.jenis-transaksi').addEventListener('change', function() {
+                const rekeningSelect = row.querySelector('.select2-rekening');
+                if (this.value === 'bank') rekeningSelect.disabled = false;
+                else {
+                    rekeningSelect.disabled = true;
+                    $(rekeningSelect).val('').trigger('change');
+                }
+            });
+
+            // 🟡 Format Rupiah pada input jumlah
+            const jumlahInput = row.querySelector('.jumlah-input');
+            jumlahInput.addEventListener('input', function() {
+                let angka = this.value.replace(/[^0-9]/g, ""); // hanya angka
+                this.value = angka ? "Rp." + angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
+            });
+
+            // Tutup modal buku → buka kembali modal utama
+            bootstrap.Modal.getInstance(document.getElementById('modalCariBuku')).hide();
+            new bootstrap.Modal(document.getElementById('input-kas-modal')).show();
         });
 
-        // Event ganti jenis transaksi (enable/disable bank)
-        row.querySelector('.jenis-transaksi').addEventListener('change', function() {
-            const rekeningSelect = row.querySelector('.select2-rekening');
-            if (this.value === 'bank') {
-                rekeningSelect.disabled = false;
-            } else {
-                rekeningSelect.disabled = true;
-                rekeningSelect.value = '';
-                $(rekeningSelect).val('').trigger('change');
-            }
+        // Delete row akun
+        document.getElementById('akun-terpilih-container').addEventListener('click', function(e) {
+            if (e.target.closest('.remove-akun')) e.target.closest('tr').remove();
         });
 
-        // Tutup modal Cari Buku
-        const modalBuku = bootstrap.Modal.getInstance(document.getElementById('modalCariBuku'));
-        modalBuku.hide();
+        // 🟢 Bersihkan Rp dan titik saat submit form kas keluar
+        document.getElementById('form_kas_keluar').addEventListener('submit', function() {
+            document.querySelectorAll('.jumlah-input').forEach(function(el) {
+                el.value = el.value.replace(/[^0-9]/g, ""); // buat jadi angka murni sebelum ke database
+            });
+        });
 
-        // Buka kembali modal utama
-        const inputKasModal = new bootstrap.Modal(document.getElementById('input-kas-modal'));
-        inputKasModal.show();
     });
-
-    // Event delegation untuk tombol hapus
-    document.getElementById('akun-terpilih-container').addEventListener('click', function(e) {
-        if (e.target.closest('.remove-akun')) {
-            e.target.closest('tr').remove();
-        }
-    });
-});
 </script>
 
+
 <script>
-const bankOptions = `
+    const bankOptions = `
         <option value="">-- Pilih No Rekening --</option>
         <?php foreach ($bank as $b): ?>
             <option value="<?= esc($b->idbank) ?>">
@@ -486,84 +485,84 @@ const bankOptions = `
 </script>
 
 <script>
-$(document).ready(function() {
-    $('#edit_penerima').select2({
-        dropdownParent: $('#edit-kas-modal')
+    $(document).ready(function() {
+        $('#edit_penerima').select2({
+            dropdownParent: $('#edit-kas-modal')
+        });
     });
-});
 
-$(document).ready(function() {
-    $('#unit_idunit').select2({
-        dropdownParent: $('#input-kas-modal')
+    $(document).ready(function() {
+        $('#unit_idunit').select2({
+            dropdownParent: $('#input-kas-modal')
+        });
     });
-});
 </script>
 
 
 <script>
-window.onload = function() {
-    const endDateInput = document.getElementById('endDate');
-    const startDateInput = document.getElementById('startDate');
+    window.onload = function() {
+        const endDateInput = document.getElementById('endDate');
+        const startDateInput = document.getElementById('startDate');
 
-    const today = new Date();
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(today.getDate() - 15);
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
 
 
-    const toDateInputValue = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const toDateInputValue = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        startDateInput.value = toDateInputValue(fifteenDaysAgo);
+        endDateInput.value = toDateInputValue(today);
+
+        const unitSelect = document.getElementById('unitSelect');
+        if (unitSelect.options.length > 1) {
+            unitSelect.selectedIndex = 1;
+        }
+
+        filterData();
     };
 
-    startDateInput.value = toDateInputValue(fifteenDaysAgo);
-    endDateInput.value = toDateInputValue(today);
+    function filterData() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const selectedUnit = document.getElementById('unitSelect').value.toLowerCase();
 
-    const unitSelect = document.getElementById('unitSelect');
-    if (unitSelect.options.length > 1) {
-        unitSelect.selectedIndex = 1;
+        const rows = document.querySelectorAll('#zero_config tbody tr');
+        rows.forEach(row => {
+            const dateCell = row.children[0];
+            const unitCell = row.children[1];
+            if (!dateCell || !unitCell) return;
+
+            // Ambil dan parsing tanggal
+            const dateText = dateCell.textContent.trim();
+            const parts = dateText.split('-');
+            const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // ubah ke Y-m-d
+
+            const startDate = start ? new Date(start) : null;
+            const endDate = end ? new Date(end) : null;
+
+            // Ambil dan cocokan nama unit
+            const unitName = unitCell.textContent.trim().toLowerCase();
+            const unitMatch = selectedUnit === "" || unitName === selectedUnit;
+
+            let dateMatch = true;
+            if (startDate && rowDate < startDate) dateMatch = false;
+            if (endDate && rowDate > endDate) dateMatch = false;
+
+            // Tampilkan baris jika dua-duanya match
+            row.style.display = (unitMatch && dateMatch) ? '' : 'none';
+        });
     }
 
-    filterData();
-};
-
-function filterData() {
-    const start = document.getElementById('startDate').value;
-    const end = document.getElementById('endDate').value;
-    const selectedUnit = document.getElementById('unitSelect').value.toLowerCase();
-
-    const rows = document.querySelectorAll('#zero_config tbody tr');
-    rows.forEach(row => {
-        const dateCell = row.children[0];
-        const unitCell = row.children[1];
-        if (!dateCell || !unitCell) return;
-
-        // Ambil dan parsing tanggal
-        const dateText = dateCell.textContent.trim();
-        const parts = dateText.split('-');
-        const rowDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // ubah ke Y-m-d
-
-        const startDate = start ? new Date(start) : null;
-        const endDate = end ? new Date(end) : null;
-
-        // Ambil dan cocokan nama unit
-        const unitName = unitCell.textContent.trim().toLowerCase();
-        const unitMatch = selectedUnit === "" || unitName === selectedUnit;
-
-        let dateMatch = true;
-        if (startDate && rowDate < startDate) dateMatch = false;
-        if (endDate && rowDate > endDate) dateMatch = false;
-
-        // Tampilkan baris jika dua-duanya match
-        row.style.display = (unitMatch && dateMatch) ? '' : 'none';
-    });
-}
-
-function resetFilter() {
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    document.getElementById('unitSelect').value = '';
-    filterData();
-}
+    function resetFilter() {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        document.getElementById('unitSelect').value = '';
+        filterData();
+    }
 </script>
