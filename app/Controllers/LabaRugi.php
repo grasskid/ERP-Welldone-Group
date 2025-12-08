@@ -47,13 +47,15 @@ class LabaRugi extends BaseController
         
         // If single unit selected, use first one for backward compatibility
         $id_unit_single = (is_array($id_unit) && count($id_unit) == 1) ? $id_unit[0] : (is_array($id_unit) ? null : $id_unit);
-        
+        if ($id_unit_single == "") {
+            $id_unit_single = null;
+        }
         $jenis_laporan = $this->request->getGet('jenis_laporan') ?: 'jurnal';
 
         // Data untuk laporan berdasarkan jurnal
         $data_jurnal = [];
         if ($jenis_laporan == 'jurnal') {
-            $data_jurnal = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit_single);
+            $data_jurnal = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit_single, 9);
         }
 
         // Data untuk laporan berdasarkan transaksi
@@ -73,7 +75,7 @@ class LabaRugi extends BaseController
             'data_transaksi' => $data_transaksi,
             'body' => 'laporan/laba_rugi'
         ];
-
+        // die(json_encode($data));
         return view('template', $data);
     }
 
@@ -320,7 +322,7 @@ class LabaRugi extends BaseController
             $unit = $this->UnitModel->find($id_unit);
             $nama_unit = $unit ? $unit->NAMA_UNIT : "Semua Cabang";
         }
-        // die(json_encode($data_laba_rugi));
+
         $data = [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
@@ -534,6 +536,7 @@ class LabaRugi extends BaseController
         $builder_pendapatan->having('saldo !=', 0);
         $builder_pendapatan->orderBy('na.no_akun', 'asc');
         $pendapatan = $builder_pendapatan->get()->getResult();
+        
 
         // Biaya - PISAHKAN menjadi 2 kategori
         // Beban Pokok Penjualan (prefix 5)
@@ -722,7 +725,7 @@ class LabaRugi extends BaseController
             'total_biaya' => $total_biaya,
             'laba_rugi' => $laba_rugi,
             'detail' => [
-                'pendapatan' => $detail_pendapatan,
+                // 'pendapatan' => $detail_pendapatan,
                 'beban_pokok_penjualan' => $detail_beban_pokok,
                 'beban_operasional' => $detail_beban_operasional,
                 'pendapatan_non_operasional' => $detail_pendapatan_non_operasional,

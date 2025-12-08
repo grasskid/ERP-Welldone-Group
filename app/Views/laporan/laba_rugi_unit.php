@@ -26,7 +26,6 @@
                                 <div class="form-group">
                                     <label>Unit/Cabang</label>
                                     <select name="id_unit[]" id="idUnit" class="form-control" multiple size="4">
-                                        <option value="">Semua Cabang</option>
                                         <?php foreach ($unit as $u): ?>
                                             <option value="<?= $u->idunit ?>"
                                                 <?= $id_unit == $u->idunit ? 'selected' : '' ?>>
