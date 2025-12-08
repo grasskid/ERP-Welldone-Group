@@ -18,13 +18,7 @@
     <div class="card-body">
         <form method="get" action="<?= base_url('LaporanKeuangan/laba_rugi') ?>" id="filterForm">
             <div class="row mb-3">
-                <div class="col-md-3">
-                    <label class="form-label">Jenis Laporan:</label>
-                    <select name="jenis_laporan" id="jenisLaporan" class="form-control" onchange="document.getElementById('filterForm').submit();">
-                        <option value="jurnal" <?= ($jenis_laporan == 'jurnal') ? 'selected' : '' ?>>Berdasarkan Jurnal</option>
-                        <option value="transaksi" <?= ($jenis_laporan == 'transaksi') ? 'selected' : '' ?>>Berdasarkan Transaksi</option>
-                    </select>
-                </div>
+
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Awal:</label>
                     <input type="date" name="tanggal_awal" id="tanggalAwal" class="form-control"
@@ -35,15 +29,30 @@
                     <input type="date" name="tanggal_akhir" id="tanggalAkhir" class="form-control"
                         value="<?= $tanggal_akhir ?? '' ?>">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <label class="form-label">Tampil Saldo:</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="toggleZeroSaldo" value="1" checked="true">
+                        <label class="form-check-label" for="toggleZeroSaldo">Tampilkan Saldo 0</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
                     <label class="form-label">Unit:</label>
-                    <select name="id_unit" id="idUnit" class="form-control">
+                    <select name="id_unit[]" id="idUnit" class="form-control select2">
                         <option value="">Semua Unit</option>
                         <?php foreach ($unit as $u): ?>
-                            <option value="<?= $u->idunit ?>" <?= ($id_unit == $u->idunit) ? 'selected' : '' ?>>
+                            <option value="<?= $u->idunit ?>"
+                                <?= (is_array($id_unit) && in_array($u->idunit, $id_unit)) ? 'selected' : '' ?>>
                                 <?= esc($u->NAMA_UNIT) ?>
                             </option>
                         <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Jenis Laporan:</label>
+                    <select name="jenis_laporan" id="jenisLaporan" class="form-control" onchange="document.getElementById('filterForm').submit();">
+                        <option value="jurnal" <?= ($jenis_laporan == 'jurnal') ? 'selected' : '' ?>>Berdasarkan Jurnal</option>
+                        <option value="transaksi" <?= ($jenis_laporan == 'transaksi') ? 'selected' : '' ?>>Berdasarkan Transaksi</option>
                     </select>
                 </div>
             </div>
@@ -697,16 +706,26 @@
     function resetFilter() {
         document.getElementById('tanggalAwal').value = '';
         document.getElementById('tanggalAkhir').value = '';
-        document.getElementById('idUnit').value = '';
+        // Reset multiple select
+        var select = document.getElementById('idUnit');
+        for (var i = 0; i < select.options.length; i++) {
+            select.options[i].selected = false;
+        }
         document.getElementById('filterForm').submit();
     }
 
     function printLaporanStandar() {
         var tanggalAwal = document.getElementById('tanggalAwal').value;
         var tanggalAkhir = document.getElementById('tanggalAkhir').value;
-        var idunit = document.getElementById('idUnit').value;
+        var select = document.getElementById('idUnit');
+        var selectedUnits = Array.from(select.selectedOptions).map(option => option.value);
+        var idunit = selectedUnits.length > 0 ? selectedUnits.join(',') : '';
+        var show_saldo_0 = 9;
+        if (document.getElementById('toggleZeroSaldo').checked) {
+            show_saldo_0 = 1;
+        }
 
-        var url = '<?= base_url('LaporanKeuangan/laba_rugi_standar/cetak') ?>?tanggal_awal=' + tanggalAwal + '&tanggal_akhir=' + tanggalAkhir + '&id_unit=' + idunit;
+        var url = '<?= base_url('LaporanKeuangan/laba_rugi_standar/cetak') ?>?tanggal_awal=' + tanggalAwal + '&tanggal_akhir=' + tanggalAkhir + '&id_unit=' + idunit + '&show_saldo_0=' + show_saldo_0;
         window.open(url, '_blank');
     }
 </script>

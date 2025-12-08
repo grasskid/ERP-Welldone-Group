@@ -137,7 +137,7 @@
             <td class="amount"></td>
         </tr>
 
-        <?php foreach ($data_laba_rugi['biaya'] as $biaya): ?>
+        <?php foreach ($data_laba_rugi['beban_pokok_penjualan'] as $biaya): ?>
             <tr class="sub-item">
                 <td class="description"><?= $biaya->nama_akun ?></td>
                 <td class="amount"><?= number_format($biaya->saldo, 2, ',', '.') ?></td>
@@ -146,7 +146,7 @@
 
         <tr class="section-header">
             <td class="description">Jumlah Beban Pokok Penjualan</td>
-            <td class="amount"><?= number_format($data_laba_rugi['total_biaya'], 2, ',', '.') ?></td>
+            <td class="amount"><?= number_format($data_laba_rugi['total_beban_pokok_penjualan'], 2, ',', '.') ?></td>
         </tr>
 
         <tr>
@@ -172,27 +172,15 @@
             <td class="amount"></td>
         </tr>
 
-        <!-- Default beban operasional (bisa disesuaikan dengan data aktual) -->
-        <tr class="sub-item">
-            <td class="description">Beban Operasional</td>
-            <td class="amount">0,00</td>
-        </tr>
-        <tr class="sub-item">
-            <td class="description">Beban Listrik</td>
-            <td class="amount">0,00</td>
-        </tr>
-        <tr class="sub-item">
-            <td class="description">Beban Gaji dll</td>
-            <td class="amount">0,00</td>
-        </tr>
-        <tr class="sub-item">
-            <td class="description">Beban Operasional Lainnya</td>
-            <td class="amount">0,00</td>
-        </tr>
-
+        <?php foreach ($data_laba_rugi['beban_operasional'] as $biaya): ?>
+            <tr class="sub-item">
+                <td class="description"><?= $biaya->nama_akun ?></td>
+                <td class="amount"><?= number_format($biaya->saldo, 2, ',', '.') ?></td>
+            </tr>
+        <?php endforeach; ?>
         <tr class="section-header">
             <td class="description">Jumlah Beban Operasional</td>
-            <td class="amount">0,00</td>
+            <td class="amount"><?= number_format($data_laba_rugi['total_beban_operasional'], 2, ',', '.') ?></td>
         </tr>
 
         <tr>
@@ -200,10 +188,9 @@
         </tr>
 
         <!-- LABA OPERASIONAL -->
-        <?php $laba_operasional = $laba_kotor - 0; // 0 adalah total beban operasional 
-        ?>
+        <?php $laba_operasional = $laba_kotor - $data_laba_rugi['total_beban_operasional']; ?>
         <tr class="section-header">
-            <td class="description">PENDAPATAN OPERASIONAL</td>
+            <td class="description">LABA OPERASIONAL</td>
             <td class="amount <?= $laba_operasional < 0 ? 'negative' : '' ?>">
                 <?= number_format($laba_operasional, 2, ',', '.') ?>
             </td>
@@ -218,17 +205,52 @@
             <td class="description">PENDAPATAN DAN BEBAN NON OPERASIONAL</td>
             <td class="amount"></td>
         </tr>
-        <tr class="sub-item">
-            <td class="description">Pendapatan Non Operasional</td>
-            <td class="amount">0,00</td>
-        </tr>
-        <tr class="sub-item">
-            <td class="description">Beban Non Operasional</td>
-            <td class="amount">0,00</td>
-        </tr>
+        
+        <!-- Pendapatan Non Operasional -->
+        <?php if (!empty($data_laba_rugi['pendapatan_non_operasional'])): ?>
+            <?php foreach ($data_laba_rugi['pendapatan_non_operasional'] as $pendapatan_non): ?>
+                <tr class="sub-item">
+                    <td class="description"><?= $pendapatan_non->nama_akun ?></td>
+                    <td class="amount <?= $pendapatan_non->saldo < 0 ? 'negative' : '' ?>">
+                        <?= number_format($pendapatan_non->saldo, 2, ',', '.') ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <tr class="section-header">
+                <td class="description">Jumlah Pendapatan Non Operasional</td>
+                <td class="amount"><?= number_format($data_laba_rugi['total_pendapatan_non_operasional'], 2, ',', '.') ?></td>
+            </tr>
+        <?php else: ?>
+            <tr class="sub-item">
+                <td class="description">Pendapatan Non Operasional</td>
+                <td class="amount">0,00</td>
+            </tr>
+        <?php endif; ?>
+        
+        <!-- Beban Non Operasional -->
+        <?php if (!empty($data_laba_rugi['beban_non_operasional'])): ?>
+            <?php foreach ($data_laba_rugi['beban_non_operasional'] as $beban_non): ?>
+                <tr class="sub-item">
+                    <td class="description"><?= $beban_non->nama_akun ?></td>
+                    <td class="amount"><?= number_format($beban_non->saldo, 2, ',', '.') ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <tr class="section-header">
+                <td class="description">Jumlah Beban Non Operasional</td>
+                <td class="amount"><?= number_format($data_laba_rugi['total_beban_non_operasional'], 2, ',', '.') ?></td>
+            </tr>
+        <?php else: ?>
+            <tr class="sub-item">
+                <td class="description">Beban Non Operasional</td>
+                <td class="amount">0,00</td>
+            </tr>
+        <?php endif; ?>
+        
         <tr class="section-header">
             <td class="description">Jumlah Pendapatan dan Beban Non Operasional</td>
-            <td class="amount">0,00</td>
+            <td class="amount">
+                <?= number_format($data_laba_rugi['total_pendapatan_non_operasional'] - $data_laba_rugi['total_beban_non_operasional'], 2, ',', '.') ?>
+            </td>
         </tr>
 
         <tr>

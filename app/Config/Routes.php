@@ -335,8 +335,11 @@ $routes->get('sisi_keuangan/export_excel', 'SisiKeuangan::export_excel', ['filte
 //laba rugi
 $routes->group('LaporanKeuangan', ['filter' => 'auth'], function ($routes) {
     $routes->get('laba_rugi', 'LabaRugi::index', ['filter' => 'auth']);
-    $routes->get('laba_rugi_standar', 'LabaRugi::laporan_standar', ['filter' => 'auth']);
+    $routes->get('laba_rugi_unit', 'LabaRugi::laporan_unit', ['filter' => 'auth']);
+    $routes->get('laba_rugi_perbandingan_periode', 'LabaRugi::laporan_perbandingan_periode', ['filter' => 'auth']);
     $routes->get('laba_rugi_standar/cetak', 'LabaRugi::cetak_standar', ['filter' => 'auth']);
+    $routes->get('laba_rugi_perbandingan/cetak', 'LabaRugi::cetak_perbandingan', ['filter' => 'auth']);
+    $routes->get('laba_rugi_perbandingan_periode/cetak', 'LabaRugi::cetak_perbandingan_periode', ['filter' => 'auth']);
 });
 //kategorikas
 $routes->get('/kategori_kas', 'Kategori_Kas::index');
