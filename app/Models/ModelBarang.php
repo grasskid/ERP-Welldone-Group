@@ -40,7 +40,7 @@ class ModelBarang extends Model
             ->findAll();
     }
 
-
+    //gor push ulang
 
     public function getAllBarang2()
     {

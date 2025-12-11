@@ -260,6 +260,8 @@ class Pembelian extends BaseController
         $total_hp_non_ppn = 0;
         $total_hp_second = 0;
 
+        //gor push ulang
+
         foreach ($produkData as $produk) {
             $datastokawal = $this->StokAwalModel->getByIdBarang($produk['id']);
             $databarang = $this->BarangModel->getById($produk['id']);
@@ -279,9 +281,9 @@ class Pembelian extends BaseController
             //
             $datahpp = $this->HppBarangModel->getById($produk['id']);
             $hitung_hpp  = $datahpp->hpp ?? 0;
-            if($databarang->idkategori == 1 && $databarang->status_barang == 1) {
+            if ($databarang->idkategori == 1 && $databarang->status_barang == 1) {
                 $total_hp_second += $subtotalSetelahDiskon;
-            }elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 0) {
+            } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 0) {
                 $total_hp_non_ppn += $subtotalSetelahDiskon;
             } elseif ($databarang->idkategori == 1 && $databarang->status_ppn == 1) {
                 $total_hp_ppn += $subtotalSetelahDiskon;
@@ -311,7 +313,7 @@ class Pembelian extends BaseController
 
             $result2 = $this->DetailPembelianModel->insert_detail($data2);
         }
-        if($total_ppn > 0) {
+        if ($total_ppn > 0) {
             $jurnal[] = [
                 'tanggal' => $tanggal_masuk_full,
                 'kode_template' => 'pembelian_ppn_lunas',

@@ -234,7 +234,7 @@ class ModelJurnal extends Model
      * Mendapatkan data laba rugi dari jurnal
      * Akun pendapatan biasanya prefix 4, akun biaya prefix 5 atau 6
      */
-    public function getLabaRugiFromJurnal($tanggal_awal = null, $tanggal_akhir = null, $unit = null)
+    public function getLabaRugiFromJurnal($tanggal_awal = null, $tanggal_akhir = null, $unit = null, $show_saldo_0 = 9)
     {
         $db = \Config\Database::connect();
 
@@ -280,44 +280,148 @@ class ModelJurnal extends Model
         }
 
         $builder_pendapatan->groupBy('na.no_akun, na.nama_akun');
-        $builder_pendapatan->having('saldo !=', 0);
+        if ($show_saldo_0 != 1) {
+            $builder_pendapatan->having('saldo !=', 0);
+        }
         $builder_pendapatan->orderBy('na.no_akun', 'asc');
         $pendapatan = $builder_pendapatan->get()->getResult();
 
-        // 2. Ambil akun biaya/beban (prefix 5 atau 6)
-        $builder_biaya = $db->table('no_akun na');
-        $builder_biaya->select("
+        // 2. Ambil akun biaya/beban - PISAHKAN menjadi 2 kategori
+        // 2a. Beban Pokok Penjualan (prefix 5)
+        $builder_beban_pokok = $db->table('no_akun na');
+        $builder_beban_pokok->select("
             na.no_akun,
             na.nama_akun,
             COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
         ");
-        $builder_biaya->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
-        $builder_biaya->groupStart();
-        $builder_biaya->like('na.no_akun', '5', 'after'); // prefix 5 = biaya
-        $builder_biaya->orLike('na.no_akun', '6', 'after'); // prefix 6 = biaya
-        $builder_biaya->groupEnd();
-        $builder_biaya->where('CHAR_LENGTH(na.no_akun)', 10);
-        $builder_biaya->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+        $builder_beban_pokok->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_beban_pokok->like('na.no_akun', '5', 'after'); // prefix 5 = BEBAN POKOK PENJUALAN
+        $builder_beban_pokok->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_beban_pokok->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
 
         if ($unit !== null) {
-            $builder_biaya->groupStart();
-            $builder_biaya->where('j.id_unit', $unit);
-            $builder_biaya->orWhere('j.id_unit IS NULL');
-            $builder_biaya->groupEnd();
+            $builder_beban_pokok->groupStart();
+            $builder_beban_pokok->where('j.id_unit', $unit);
+            $builder_beban_pokok->orWhere('j.id_unit IS NULL');
+            $builder_beban_pokok->groupEnd();
         }
 
         if ($tanggal_awal !== null && $tanggal_akhir !== null) {
-            $builder_biaya->groupStart();
-            $builder_biaya->where('j.tanggal >=', $tanggal_awal);
-            $builder_biaya->where('j.tanggal <=', $tanggal_akhir);
-            $builder_biaya->orWhere('j.tanggal IS NULL');
-            $builder_biaya->groupEnd();
+            $builder_beban_pokok->groupStart();
+            $builder_beban_pokok->where('j.tanggal >=', $tanggal_awal);
+            $builder_beban_pokok->where('j.tanggal <=', $tanggal_akhir);
+            $builder_beban_pokok->orWhere('j.tanggal IS NULL');
+            $builder_beban_pokok->groupEnd();
         }
 
-        $builder_biaya->groupBy('na.no_akun, na.nama_akun');
-        $builder_biaya->having('saldo !=', 0);
-        $builder_biaya->orderBy('na.no_akun', 'asc');
-        $biaya = $builder_biaya->get()->getResult();
+        $builder_beban_pokok->groupBy('na.no_akun, na.nama_akun');
+        if ($show_saldo_0 != 1) {
+            $builder_beban_pokok->having('saldo !=', 0);
+        }
+        $builder_beban_pokok->orderBy('na.no_akun', 'asc');
+        $beban_pokok_penjualan = $builder_beban_pokok->get()->getResult();
+
+        // 2b. Beban Operasional (prefix 6 dan 7)
+        $builder_beban_operasional = $db->table('no_akun na');
+        $builder_beban_operasional->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
+        ");
+        $builder_beban_operasional->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_beban_operasional->groupStart();
+        $builder_beban_operasional->like('na.no_akun', '6', 'after'); // prefix 6 = BEBAN OPERASIONAL
+        $builder_beban_operasional->groupEnd();
+        $builder_beban_operasional->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_beban_operasional->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if ($unit !== null) {
+            $builder_beban_operasional->groupStart();
+            $builder_beban_operasional->where('j.id_unit', $unit);
+            $builder_beban_operasional->orWhere('j.id_unit IS NULL');
+            $builder_beban_operasional->groupEnd();
+        }
+
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_beban_operasional->groupStart();
+            $builder_beban_operasional->where('j.tanggal >=', $tanggal_awal);
+            $builder_beban_operasional->where('j.tanggal <=', $tanggal_akhir);
+            $builder_beban_operasional->orWhere('j.tanggal IS NULL');
+            $builder_beban_operasional->groupEnd();
+        }
+
+        $builder_beban_operasional->groupBy('na.no_akun, na.nama_akun');
+        if ($show_saldo_0 != 1) {
+            $builder_beban_operasional->having('saldo !=', 0);
+        }
+        $builder_beban_operasional->orderBy('na.no_akun', 'asc');
+        $beban_operasional = $builder_beban_operasional->get()->getResult();
+
+        // 3. Pendapatan Non Operasional (prefix 701)
+        $builder_pendapatan_non_operasional = $db->table('no_akun na');
+        $builder_pendapatan_non_operasional->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.kredit), 0) - COALESCE(SUM(j.debet), 0) as saldo
+        ");
+        $builder_pendapatan_non_operasional->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_pendapatan_non_operasional->like('na.no_akun', '701', 'after'); // prefix 701 = PENDAPATAN NON OPERASIONAL
+        $builder_pendapatan_non_operasional->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_pendapatan_non_operasional->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if ($unit !== null) {
+            $builder_pendapatan_non_operasional->groupStart();
+            $builder_pendapatan_non_operasional->where('j.id_unit', $unit);
+            $builder_pendapatan_non_operasional->orWhere('j.id_unit IS NULL');
+            $builder_pendapatan_non_operasional->groupEnd();
+        }
+
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_pendapatan_non_operasional->groupStart();
+            $builder_pendapatan_non_operasional->where('j.tanggal >=', $tanggal_awal);
+            $builder_pendapatan_non_operasional->where('j.tanggal <=', $tanggal_akhir);
+            $builder_pendapatan_non_operasional->orWhere('j.tanggal IS NULL');
+            $builder_pendapatan_non_operasional->groupEnd();
+        }
+
+        $builder_pendapatan_non_operasional->groupBy('na.no_akun, na.nama_akun');
+        // $builder_pendapatan_non_operasional->having('saldo !=', 0);
+        $builder_pendapatan_non_operasional->orderBy('na.no_akun', 'asc');
+        $pendapatan_non_operasional = $builder_pendapatan_non_operasional->get()->getResult();
+
+        // 4. Beban Non Operasional (prefix 702)
+        $builder_beban_non_operasional = $db->table('no_akun na');
+        $builder_beban_non_operasional->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
+        ");
+        $builder_beban_non_operasional->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_beban_non_operasional->like('na.no_akun', '702', 'after'); // prefix 702 = BEBAN NON OPERASIONAL
+        $builder_beban_non_operasional->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_beban_non_operasional->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if ($unit !== null) {
+            $builder_beban_non_operasional->groupStart();
+            $builder_beban_non_operasional->where('j.id_unit', $unit);
+            $builder_beban_non_operasional->orWhere('j.id_unit IS NULL');
+            $builder_beban_non_operasional->groupEnd();
+        }
+
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_beban_non_operasional->groupStart();
+            $builder_beban_non_operasional->where('j.tanggal >=', $tanggal_awal);
+            $builder_beban_non_operasional->where('j.tanggal <=', $tanggal_akhir);
+            $builder_beban_non_operasional->orWhere('j.tanggal IS NULL');
+            $builder_beban_non_operasional->groupEnd();
+        }
+
+        $builder_beban_non_operasional->groupBy('na.no_akun, na.nama_akun');
+        if ($show_saldo_0 != 1) {
+            $builder_beban_non_operasional->having('saldo !=', 0);
+        }
+        $builder_beban_non_operasional->orderBy('na.no_akun', 'asc');
+        $beban_non_operasional = $builder_beban_non_operasional->get()->getResult();
 
         // Detail pendapatan
         $builder_detail_pendapatan = $db->table('jurnal j')
@@ -328,38 +432,90 @@ class ModelJurnal extends Model
         $applyFilters($builder_detail_pendapatan);
         $detail_pendapatan = $builder_detail_pendapatan->get()->getResult();
 
-        // Detail biaya
-        $builder_detail_biaya = $db->table('jurnal j')
+        // Detail biaya - juga perlu dipisah
+        // Detail beban pokok penjualan (kode 5)
+        $builder_detail_beban_pokok = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '5', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_beban_pokok);
+        $detail_beban_pokok = $builder_detail_beban_pokok->get()->getResult();
+
+        // Detail beban operasional (kode 6 dan 7)
+        $builder_detail_beban_operasional = $db->table('jurnal j')
             ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
             ->join('unit', 'unit.idunit = j.id_unit', 'left')
             ->groupStart()
-            ->like('j.no_akun', '5', 'after')
-            ->orLike('j.no_akun', '6', 'after')
+            ->like('j.no_akun', '6', 'after')
             ->groupEnd()
             ->orderBy('j.tanggal', 'DESC');
-        $applyFilters($builder_detail_biaya);
-        $detail_biaya = $builder_detail_biaya->get()->getResult();
+        $applyFilters($builder_detail_beban_operasional);
+        $detail_beban_operasional = $builder_detail_beban_operasional->get()->getResult();
+
+        // Detail pendapatan non operasional (kode 701)
+        $builder_detail_pendapatan_non_operasional = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '701', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_pendapatan_non_operasional);
+        $detail_pendapatan_non_operasional = $builder_detail_pendapatan_non_operasional->get()->getResult();
+
+        // Detail beban non operasional (kode 702)
+        $builder_detail_beban_non_operasional = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '702', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_beban_non_operasional);
+        $detail_beban_non_operasional = $builder_detail_beban_non_operasional->get()->getResult();
 
         // Hitung total
         $total_pendapatan = array_sum(array_map(function($item) {
             return $item->saldo ?? 0;
         }, $pendapatan));
 
-        $total_biaya = array_sum(array_map(function($item) {
+        $total_beban_pokok_penjualan = array_sum(array_map(function($item) {
             return $item->saldo ?? 0;
-        }, $biaya));
+        }, $beban_pokok_penjualan));
 
-        $laba_rugi = $total_pendapatan - $total_biaya;
+        $total_beban_operasional = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $beban_operasional));
+
+        $total_pendapatan_non_operasional = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $pendapatan_non_operasional));
+
+        $total_beban_non_operasional = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $beban_non_operasional));
+
+        $total_biaya = $total_beban_pokok_penjualan + $total_beban_operasional;
+        $laba_rugi = $total_pendapatan - $total_biaya + $total_pendapatan_non_operasional - $total_beban_non_operasional;
 
         return [
             'pendapatan' => $pendapatan,
             'total_pendapatan' => $total_pendapatan,
-            'biaya' => $biaya,
+            'beban_pokok_penjualan' => $beban_pokok_penjualan,
+            'total_beban_pokok_penjualan' => $total_beban_pokok_penjualan,
+            'beban_operasional' => $beban_operasional,
+            'total_beban_operasional' => $total_beban_operasional,
+            'pendapatan_non_operasional' => $pendapatan_non_operasional,
+            'total_pendapatan_non_operasional' => $total_pendapatan_non_operasional,
+            'beban_non_operasional' => $beban_non_operasional,
+            'total_beban_non_operasional' => $total_beban_non_operasional,
+            'biaya' => array_merge($beban_pokok_penjualan, $beban_operasional), // untuk backward compatibility
             'total_biaya' => $total_biaya,
             'laba_rugi' => $laba_rugi,
             'detail' => [
                 'pendapatan' => $detail_pendapatan,
-                'biaya' => $detail_biaya,
+                'beban_pokok_penjualan' => $detail_beban_pokok,
+                'beban_operasional' => $detail_beban_operasional,
+                'pendapatan_non_operasional' => $detail_pendapatan_non_operasional,
+                'beban_non_operasional' => $detail_beban_non_operasional,
+                'biaya' => array_merge($detail_beban_pokok, $detail_beban_operasional), // untuk backward compatibility
             ],
         ];
     }

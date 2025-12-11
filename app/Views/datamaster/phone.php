@@ -35,7 +35,7 @@
                 </iconify-icon>
                 Import
             </button>
-            <a href="<?php echo base_url('format_excell/format_phone.xlsx') ?>"><button type="button"
+            <a href="<?php echo base_url('format_excell/format_phone_terbaru201.xlsx') ?>"><button type="button"
                     class="btn btn-success" style="display: inline-flex; align-items: center;">
                     <iconify-icon icon="solar:download-broken" width="24" height="24" style="margin-right: 8px;">
                     </iconify-icon>
@@ -50,6 +50,7 @@
         </button>
     </div>
 
+    <!-- for push ulang -->
     <br>
     <div class="mb-3 px-4">
         <label class="me-2">Filter Handphone:</label>
@@ -205,6 +206,20 @@
                     </div>
 
                     <div class="mb-3">
+                        <label>Sub Kategori</label>
+                        <select name="sub_kategori" class="form-control">
+                            <option value="">Semua Sub Kategori</option>
+                            <?php foreach ($sub_kategori as $row): ?>
+                                <?php if (!empty($row->nama_sub_kategori)): ?>
+                                    <option data-idparent_kategori="<?= $row->id_kategori_parent ?>" value="<?= esc($row->id) ?>">
+                                        <?= esc($row->nama_sub_kategori) ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="harga" class="form-label">Harga</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
@@ -306,10 +321,28 @@
                         </div>
 
                     </div>
+
+
+                    <div class="mb-3">
+                        <label>Sub Kategori</label>
+                        <select name="sub_kategori" class="form-control">
+                            <option value="">Semua Sub Kategori</option>
+                            <?php foreach ($sub_kategori as $row): ?>
+                                <?php if (!empty($row->nama_sub_kategori)): ?>
+                                    <option data-idparent_kategori="<?= $row->id_kategori_parent ?>" value="<?= esc($row->id) ?>">
+                                        <?= esc($row->nama_sub_kategori) ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label>IMEI</label>
                         <input type="text" class="form-control" name="imei" id="edit-imei" required>
                     </div>
+
+
+
                     <div class="mb-3">
                         <label>Jenis HP</label>
                         <select class="form-control" name="jenis_hp" id="edit-jenis_hp" required>

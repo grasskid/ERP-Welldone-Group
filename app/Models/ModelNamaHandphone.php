@@ -13,6 +13,7 @@ class ModelNamaHandphone extends Model
 
     public function getNamaHandphone()
     {
+        //for push ulang
         return $this->findAll();
     }
 

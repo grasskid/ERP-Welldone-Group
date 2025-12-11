@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Models\ModelNamaHandphone;
+use App\Models\ModelSubKategori;
 
 class Phone extends BaseController
 
@@ -24,6 +25,7 @@ class Phone extends BaseController
     protected $AuthModel;
     protected $NamaHandphoneModel;
     protected $UnitModel;
+    protected $SubKategoriModel;
 
     public function __construct()
     {
@@ -32,6 +34,7 @@ class Phone extends BaseController
         $this->AuthModel = new ModelAuth();
         $this->NamaHandphoneModel = new ModelNamaHandphone();
         $this->UnitModel = new ModelUnit();
+        $this->SubKategoriModel = new ModelSubKategori();
     }
 
     public function index()
@@ -42,6 +45,7 @@ class Phone extends BaseController
             'phone' => $this->PhoneModel->getPhoneActive(),
             'nama_handphone' => $this->NamaHandphoneModel->getNamaHandphone(),
             'body'  => 'datamaster/phone',
+            'sub_kategori' => $this->SubKategoriModel->getParentOne(),
             'unit' => $this->UnitModel->getUnit()
         );
 
@@ -92,14 +96,15 @@ class Phone extends BaseController
             'imei'       => $imei,
             'jenis_hp'   => $jenis_hp,
             'harga'      => $harga,
+            'id_sub_kategori' => $this->request->getPost('sub_kategori'),
             'harga_beli'      => $harga_beli,
             'internal'   => $internal,
             'warna'      => $warna,
             'status_barang' => $this->request->getPost('kondisi'),
             'status'     => '0',
             'input'      => $namaakun,
-
             'idkategori' => '1',
+            'stok_minimum' => 0,
             'status_ppn' => $status_ppn,
             'deleted'    => '0',
             'nama_barang_id' => $id_nama_handphone
@@ -151,6 +156,7 @@ class Phone extends BaseController
             'harga_beli'      => $harga_beli,
             'internal'   => $internal,
             'warna'      => $warna,
+            'id_sub_kategori' => $this->request->getPost('sub_kategori'),
             'status_barang' => $this->request->getPost('kondisi'),
             'idkategori' => '1',
             'status_ppn' => $status_ppn,
@@ -255,24 +261,27 @@ class Phone extends BaseController
         $db = Database::connect();
 
         // Skip header (baris pertama)
+        //for push ulang
         for ($i = 1; $i < count($rows); $i++) {
             $imei = addslashes($rows[$i][0]);
             $nama_handphone = addslashes($rows[$i][1]);
-            $harga = addslashes($rows[$i][2]);
-            $harga_beli = addslashes($rows[$i][3]);
-            $jenis_handphone = addslashes($rows[$i][4]);
-            $internal = addslashes($rows[$i][5]);
-            $warna = addslashes($rows[$i][6]);
+            $nama_barang_id = addslashes($rows[$i][2]);
+            $harga = addslashes($rows[$i][3]);
+            $harga_beli = addslashes($rows[$i][4]);
+            $id_sub_kategori =  addslashes($rows[$i][5]);
+            $jenis_handphone = addslashes($rows[$i][6]);
+            $internal = addslashes($rows[$i][7]);
+            $warna = addslashes($rows[$i][8]);
 
             // Ambil nilai status_barang dari Excel (Baru/Bekas)
-            $status_barang_text = strtolower(trim($rows[$i][7]));
+            $status_barang_text = strtolower(trim($rows[$i][9]));
             $status_barang = ($status_barang_text === 'bekas') ? 1 : 0; // default ke 0 jika bukan 'bekas'
 
             // Ambil dan konversi status_ppn
-            $status_ppn_text = strtoupper(trim($rows[$i][8]));
+            $status_ppn_text = strtoupper(trim($rows[$i][10]));
             $status_ppn = ($status_ppn_text === 'PPN') ? 1 : 0;
 
-            $input = addslashes($rows[$i][9]);
+            $input = addslashes($rows[$i][11]);
 
             // Generate kode_barang otomatis
             $lastBarang = $this->BarangModel->getLastBarangByKategori(1);
@@ -287,9 +296,9 @@ class Phone extends BaseController
 
             // Insert ke DB
             $sql = "INSERT INTO barang 
-        (kode_barang, imei, nama_barang, harga, harga_beli, idkategori, jenis_hp, internal, warna, status, status_ppn, stok_minimum, deleted, input, status_barang) 
-        VALUES 
-        ('$kode_barang', '$imei', '$nama_handphone', '$harga', '$harga_beli', '1', '$jenis_handphone', '$internal', '$warna', '1', '$status_ppn', '0', '0', '$input', '$status_barang')";
+(kode_barang, imei, nama_barang, nama_barang_id, harga, harga_beli, id_sub_kategori, idkategori, jenis_hp, internal, warna, status, status_ppn, stok_minimum, deleted, input, status_barang) 
+VALUES 
+('$kode_barang', '$imei', '$nama_handphone', '$nama_barang_id', '$harga', '$harga_beli', '$id_sub_kategori', '1', '$jenis_handphone', '$internal', '$warna', '1', '$status_ppn', '0', '0', '$input', '$status_barang')";
 
             $db->query($sql);
         }

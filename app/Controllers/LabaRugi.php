@@ -36,21 +36,32 @@ class LabaRugi extends BaseController
         $akun = $this->AuthModel->getById(session('ID_AKUN'));
         $unit = $this->UnitModel->getUnit();
 
-        $tanggal_awal = $this->request->getGet('tanggal_awal') ?: null;
-        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?: null;
-        $id_unit = $this->request->getGet('id_unit') ?: null;
-        $jenis_laporan = $this->request->getGet('jenis_laporan') ?: 'jurnal'; // 'jurnal' atau 'transaksi'
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?? date('Y-m-01');
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?? date('Y-m-t');
+        $id_unit = $this->request->getGet('id_unit');
+        
+        // Handle multiple units - convert to array
+        if ($id_unit && !is_array($id_unit)) {
+            $id_unit = [$id_unit];
+        }
+        
+        // If single unit selected, use first one for backward compatibility
+        $id_unit_single = (is_array($id_unit) && count($id_unit) == 1) ? $id_unit[0] : (is_array($id_unit) ? null : $id_unit);
+        if ($id_unit_single == "") {
+            $id_unit_single = null;
+        }
+        $jenis_laporan = $this->request->getGet('jenis_laporan') ?: 'jurnal';
 
         // Data untuk laporan berdasarkan jurnal
         $data_jurnal = [];
         if ($jenis_laporan == 'jurnal') {
-            $data_jurnal = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit);
+            $data_jurnal = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit_single, 9);
         }
 
         // Data untuk laporan berdasarkan transaksi
         $data_transaksi = [];
         if ($jenis_laporan == 'transaksi') {
-            $data_transaksi = $this->getLabaRugiFromTransaksi($tanggal_awal, $tanggal_akhir, $id_unit);
+            $data_transaksi = $this->getLabaRugiFromTransaksi($tanggal_awal, $tanggal_akhir, $id_unit_single);
         }
 
         $data = [
@@ -58,13 +69,13 @@ class LabaRugi extends BaseController
             'unit' => $unit,
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
-            'id_unit' => $id_unit,
+            'id_unit' => $id_unit, // Keep as array
             'jenis_laporan' => $jenis_laporan,
             'data_jurnal' => $data_jurnal,
             'data_transaksi' => $data_transaksi,
             'body' => 'laporan/laba_rugi'
         ];
-
+        // die(json_encode($data));
         return view('template', $data);
     }
 
@@ -258,5 +269,471 @@ class LabaRugi extends BaseController
             'laba_rugi' => $laba_rugi
         ];
     }
+
+    public function laporan_unit()
+    {
+        $akun = $this->AuthModel->getById(session('ID_AKUN'));
+        $unit = $this->UnitModel->getUnit();
+
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?? date('Y-m-01');
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?? date('Y-m-t');
+        $id_unit = $this->request->getGet('id_unit') ?: null;
+        $jenis_laporan = $this->request->getGet('jenis_laporan') ?: 'jurnal'; // 'jurnal' atau 'transaksi'
+
+        // Data untuk laporan berdasarkan jurnal
+        $data_jurnal = [];
+        if ($jenis_laporan == 'jurnal') {
+            $data_jurnal = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit);
+        }
+
+        // Data untuk laporan berdasarkan transaksi
+        $data_transaksi = [];
+        if ($jenis_laporan == 'transaksi') {
+            $data_transaksi = $this->getLabaRugiFromTransaksi($tanggal_awal, $tanggal_akhir, $id_unit);
+        }
+
+        $data = [
+            'akun' => $akun,
+            'unit' => $unit,
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'id_unit' => $id_unit,
+            'jenis_laporan' => $jenis_laporan,
+            'data_jurnal' => $data_jurnal,
+            'data_transaksi' => $data_transaksi,
+            'body' => 'laporan/laba_rugi_unit'
+        ];
+
+        return view('template', $data);
+    }
+
+    public function cetak_standar()
+    {
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?: null;
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?: null;
+        $id_unit = $this->request->getGet('id_unit') ?: null;
+        $show_saldo_0 = $this->request->getGet('show_saldo_0') ?: 1;
+
+        $id_unit = !empty($id_units) ? $id_units[0] : null;
+        $data_laba_rugi = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit, $show_saldo_0);
+
+        $nama_unit = "Semua Cabang";
+        if ($id_unit) {
+            $unit = $this->UnitModel->find($id_unit);
+            $nama_unit = $unit ? $unit->NAMA_UNIT : "Semua Cabang";
+        }
+
+        $data = [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'nama_unit' => $nama_unit,
+            'data_laba_rugi' => $data_laba_rugi,
+        ];
+        return view('laporan/cetak_laba_rugi_standar', $data);
+    }
+
+    /**
+     * Cetak laporan perbandingan antar unit
+     */
+    public function cetak_perbandingan()
+    {
+        $tanggal_awal = $this->request->getGet('tanggal_awal') ?: null;
+        $tanggal_akhir = $this->request->getGet('tanggal_akhir') ?: null;
+        $id_unit_param = $this->request->getGet('id_unit') ?: null;
+
+        if (!$id_unit_param) {
+            return redirect()->to(base_url('LaporanKeuangan/laba_rugi'))->with('error', 'Pilih minimal 2 unit untuk perbandingan');
+        }
+
+        // Handle multiple units from comma-separated string
+        $id_units = explode(',', $id_unit_param);
+        $id_units = array_filter(array_map('trim', $id_units));
+
+        if (count($id_units) < 2) {
+            return redirect()->to(base_url('LaporanKeuangan/laba_rugi'))->with('error', 'Pilih minimal 2 unit untuk perbandingan');
+        }
+
+        // Get data for each unit
+        $data_per_unit = [];
+        $units_info = [];
+        
+        foreach ($id_units as $id_unit) {
+            $unit = $this->UnitModel->find($id_unit);
+            if ($unit) {
+                $units_info[$id_unit] = $unit->NAMA_UNIT;
+                $data_per_unit[$id_unit] = $this->JurnalModel->getLabaRugiFromJurnal($tanggal_awal, $tanggal_akhir, $id_unit);
+            }
+        }
+
+        // Calculate totals
+        $total_pendapatan_all = 0;
+        $total_biaya_all = 0;
+        foreach ($data_per_unit as $data) {
+            $total_pendapatan_all += $data['total_pendapatan'];
+            $total_biaya_all += $data['total_biaya'];
+        }
+        $total_laba_rugi_all = $total_pendapatan_all - $total_biaya_all;
+
+        $data = [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'units_info' => $units_info,
+            'data_per_unit' => $data_per_unit,
+            'total_pendapatan_all' => $total_pendapatan_all,
+            'total_biaya_all' => $total_biaya_all,
+            'total_laba_rugi_all' => $total_laba_rugi_all,
+        ];
+
+        return view('laporan/cetak_laba_rugi_perbandingan', $data);
+    }
+
+    /**
+     * Form laporan perbandingan periode
+     */
+    public function laporan_perbandingan_periode()
+    {
+        $akun = $this->AuthModel->getById(session('ID_AKUN'));
+        $unit = $this->UnitModel->getUnit();
+
+        $tanggal_awal_1 = $this->request->getGet('tanggal_awal_1') ?: date('Y-m-01', strtotime('-1 month'));
+        $tanggal_akhir_1 = $this->request->getGet('tanggal_akhir_1') ?: date('Y-m-t', strtotime('-1 month'));
+        $tanggal_awal_2 = $this->request->getGet('tanggal_awal_2') ?: date('Y-m-01');
+        $tanggal_akhir_2 = $this->request->getGet('tanggal_akhir_2') ?: date('Y-m-t');
+        $id_unit_param = $this->request->getGet('id_unit') ?: null;
+
+        // Handle multiple units from comma-separated string
+        $id_units = [];
+        if ($id_unit_param) {
+            $id_units = explode(',', $id_unit_param);
+            $id_units = array_filter(array_map('trim', $id_units));
+        }
+
+        $data = [
+            'akun' => $akun,
+            'unit' => $unit,
+            'tanggal_awal_1' => $tanggal_awal_1,
+            'tanggal_akhir_1' => $tanggal_akhir_1,
+            'tanggal_awal_2' => $tanggal_awal_2,
+            'tanggal_akhir_2' => $tanggal_akhir_2,
+            'id_unit' => $id_units,
+            'body' => 'laporan/laba_rugi_perbandingan_periode'
+        ];
+
+        return view('template', $data);
+    }
+
+    /**
+     * Cetak laporan perbandingan periode
+     */
+    public function cetak_perbandingan_periode()
+    {
+        $tanggal_awal_1 = $this->request->getGet('tanggal_awal_1') ?: null;
+        $tanggal_akhir_1 = $this->request->getGet('tanggal_akhir_1') ?: null;
+        $tanggal_awal_2 = $this->request->getGet('tanggal_awal_2') ?: null;
+        $tanggal_akhir_2 = $this->request->getGet('tanggal_akhir_2') ?: null;
+        $id_unit_param = $this->request->getGet('id_unit') ?: null;
+
+        if (!$tanggal_awal_1 || !$tanggal_akhir_1 || !$tanggal_awal_2 || !$tanggal_akhir_2) {
+            return redirect()->to(base_url('LaporanKeuangan/laba_rugi'))->with('error', 'Semua tanggal periode harus diisi');
+        }
+
+        // Handle unit selection
+        $id_units = [];
+        if ($id_unit_param) {
+            $id_units = explode(',', $id_unit_param);
+            $id_units = array_filter(array_map('trim', $id_units));
+        }
+
+        // Get data for periode 1
+        $data_periode_1 = [];
+        if (!empty($id_units)) {
+            // Multiple units - aggregate
+            $data_periode_1 = $this->getLabaRugiMultipleUnits($tanggal_awal_1, $tanggal_akhir_1, $id_units);
+        } else {
+            // All units
+            $data_periode_1 = $this->getLabaRugiMultipleUnits($tanggal_awal_1, $tanggal_akhir_1, []);
+        }
+
+        // Get data for periode 2
+        $data_periode_2 = [];
+        if (!empty($id_units)) {
+            // Multiple units - aggregate
+            $data_periode_2 = $this->getLabaRugiMultipleUnits($tanggal_awal_2, $tanggal_akhir_2, $id_units);
+        } else {
+            // All units
+            $data_periode_2 = $this->getLabaRugiMultipleUnits($tanggal_awal_2, $tanggal_akhir_2, []);
+        }
+
+        // Get unit names if specific units selected
+        $nama_unit = "Semua Cabang";
+        if (!empty($id_units)) {
+            $unit_names = [];
+            foreach ($id_units as $id_unit) {
+                $unit = $this->UnitModel->find($id_unit);
+                if ($unit) {
+                    $unit_names[] = $unit->NAMA_UNIT;
+                }
+            }
+            $nama_unit = implode(', ', $unit_names);
+        }
+
+        $data = [
+            'tanggal_awal_1' => $tanggal_awal_1,
+            'tanggal_akhir_1' => $tanggal_akhir_1,
+            'tanggal_awal_2' => $tanggal_awal_2,
+            'tanggal_akhir_2' => $tanggal_akhir_2,
+            'nama_unit' => $nama_unit,
+            'data_periode_1' => $data_periode_1,
+            'data_periode_2' => $data_periode_2,
+        ];
+
+        return view('laporan/cetak_laba_rugi_perbandingan_periode', $data);
+    }
+
+    /**
+     * Get laba rugi for multiple units (aggregated)
+     */
+    private function getLabaRugiMultipleUnits($tanggal_awal = null, $tanggal_akhir = null, $id_units = [])
+    {
+        $db = \Config\Database::connect();
+        
+        $applyFilters = function ($builder) use ($tanggal_awal, $tanggal_akhir, $id_units) {
+            if (!empty($id_units)) {
+                $builder->whereIn('j.id_unit', $id_units);
+            }
+            if (!empty($tanggal_awal) && !empty($tanggal_akhir)) {
+                $builder->where('DATE(j.tanggal) >=', $tanggal_awal)
+                    ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+            } elseif (!empty($tanggal_awal)) {
+                $builder->where('DATE(j.tanggal) >=', $tanggal_awal);
+            } elseif (!empty($tanggal_akhir)) {
+                $builder->where('DATE(j.tanggal) <=', $tanggal_akhir);
+            }
+        };
+
+        // Pendapatan
+        $builder_pendapatan = $db->table('no_akun na');
+        $builder_pendapatan->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.kredit), 0) - COALESCE(SUM(j.debet), 0) as saldo
+        ");
+        $builder_pendapatan->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_pendapatan->like('na.no_akun', '4', 'after');
+        $builder_pendapatan->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_pendapatan->where('RIGHT(na.no_akun, 7) !=', '0000000');
+        
+        if (!empty($id_units)) {
+            $builder_pendapatan->whereIn('j.id_unit', $id_units);
+        }
+        
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_pendapatan->where('DATE(j.tanggal) >=', $tanggal_awal)
+                ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+        }
+        
+        $builder_pendapatan->groupBy('na.no_akun, na.nama_akun');
+        $builder_pendapatan->having('saldo !=', 0);
+        $builder_pendapatan->orderBy('na.no_akun', 'asc');
+        $pendapatan = $builder_pendapatan->get()->getResult();
+        
+
+        // Biaya - PISAHKAN menjadi 2 kategori
+        // Beban Pokok Penjualan (prefix 5)
+        $builder_beban_pokok = $db->table('no_akun na');
+        $builder_beban_pokok->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
+        ");
+        $builder_beban_pokok->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_beban_pokok->like('na.no_akun', '5', 'after');
+        $builder_beban_pokok->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_beban_pokok->where('RIGHT(na.no_akun, 7) !=', '0000000');
+
+        if (!empty($id_units)) {
+            $builder_beban_pokok->whereIn('j.id_unit', $id_units);
+        }
+
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_beban_pokok->where('DATE(j.tanggal) >=', $tanggal_awal)
+                ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+        }
+
+        $builder_beban_pokok->groupBy('na.no_akun, na.nama_akun');
+        $builder_beban_pokok->having('saldo !=', 0);
+        $builder_beban_pokok->orderBy('na.no_akun', 'asc');
+        $beban_pokok_penjualan = $builder_beban_pokok->get()->getResult();
+
+        // Beban Operasional (prefix 6 dan 7)
+        $builder_beban_operasional = $db->table('no_akun na');
+        $builder_beban_operasional->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
+        ");
+        $builder_beban_operasional->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_beban_operasional->groupStart()
+            ->like('na.no_akun', '6', 'after')
+            ->orLike('na.no_akun', '7', 'after')
+            ->groupEnd();
+        $builder_beban_operasional->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_beban_operasional->where('RIGHT(na.no_akun, 7) !=', '0000000');
+        
+        if (!empty($id_units)) {
+            $builder_beban_operasional->whereIn('j.id_unit', $id_units);
+        }
+        
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_beban_operasional->where('DATE(j.tanggal) >=', $tanggal_awal)
+                ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+        }
+        
+        $builder_beban_operasional->groupBy('na.no_akun, na.nama_akun');
+        $builder_beban_operasional->having('saldo !=', 0);
+        $builder_beban_operasional->orderBy('na.no_akun', 'asc');
+        $beban_operasional = $builder_beban_operasional->get()->getResult();
+
+        // 3. Pendapatan Non Operasional (prefix 701)
+        $builder_pendapatan_non_operasional = $db->table('no_akun na');
+        $builder_pendapatan_non_operasional->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.kredit), 0) - COALESCE(SUM(j.debet), 0) as saldo
+        ");
+        $builder_pendapatan_non_operasional->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_pendapatan_non_operasional->like('na.no_akun', '701', 'after'); // prefix 701 = PENDAPATAN NON OPERASIONAL
+        $builder_pendapatan_non_operasional->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_pendapatan_non_operasional->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if (!empty($id_units)) {
+            $builder_pendapatan_non_operasional->whereIn('j.id_unit', $id_units);
+        }
+        
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_pendapatan_non_operasional->where('DATE(j.tanggal) >=', $tanggal_awal)
+                ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+        }
+        
+        $builder_pendapatan_non_operasional->groupBy('na.no_akun, na.nama_akun');
+        $builder_pendapatan_non_operasional->having('saldo !=', 0);
+        $builder_pendapatan_non_operasional->orderBy('na.no_akun', 'asc');
+        $pendapatan_non_operasional = $builder_pendapatan_non_operasional->get()->getResult();
+
+        // 4. Beban Non Operasional (prefix 702)
+        $builder_beban_non_operasional = $db->table('no_akun na');
+        $builder_beban_non_operasional->select("
+            na.no_akun,
+            na.nama_akun,
+            COALESCE(SUM(j.debet), 0) - COALESCE(SUM(j.kredit), 0) as saldo
+        ");
+        $builder_beban_non_operasional->join('jurnal j', 'na.no_akun = j.no_akun', 'left');
+        $builder_beban_non_operasional->like('na.no_akun', '702', 'after'); // prefix 702 = BEBAN NON OPERASIONAL
+        $builder_beban_non_operasional->where('CHAR_LENGTH(na.no_akun)', 10);
+        $builder_beban_non_operasional->where('RIGHT(na.no_akun, 7) !=', '0000000'); // bukan parent
+
+        if (!empty($id_units)) {
+            $builder_beban_non_operasional->whereIn('j.id_unit', $id_units);
+        }
+        
+        if ($tanggal_awal !== null && $tanggal_akhir !== null) {
+            $builder_beban_non_operasional->where('DATE(j.tanggal) >=', $tanggal_awal)
+                ->where('DATE(j.tanggal) <=', $tanggal_akhir);
+        }
+        
+        $builder_beban_non_operasional->groupBy('na.no_akun, na.nama_akun');
+        $builder_beban_non_operasional->having('saldo !=', 0);
+        $builder_beban_non_operasional->orderBy('na.no_akun', 'asc');
+        $beban_non_operasional = $builder_beban_non_operasional->get()->getResult();
+
+        // Detail biaya - juga perlu dipisah
+        // Detail beban pokok penjualan (kode 5)
+        $builder_detail_beban_pokok = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '5', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_beban_pokok);
+        $detail_beban_pokok = $builder_detail_beban_pokok->get()->getResult();
+
+        // Detail beban operasional (kode 6 dan 7)
+        $builder_detail_beban_operasional = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->groupStart()
+            ->like('j.no_akun', '6', 'after')
+            ->orLike('j.no_akun', '7', 'after')
+            ->groupEnd()
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_beban_operasional);
+        $detail_beban_operasional = $builder_detail_beban_operasional->get()->getResult();
+
+        // Detail pendapatan non operasional (kode 701)
+        $builder_detail_pendapatan_non_operasional = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '701', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_pendapatan_non_operasional);
+        $detail_pendapatan_non_operasional = $builder_detail_pendapatan_non_operasional->get()->getResult();
+
+        // Detail beban non operasional (kode 702)
+        $builder_detail_beban_non_operasional = $db->table('jurnal j')
+            ->select('j.tanggal, j.no_akun, j.nama_akun, j.keterangan, j.debet, j.kredit, j.id_referensi, j.tabel_referensi, unit.NAMA_UNIT AS nama_unit')
+            ->join('unit', 'unit.idunit = j.id_unit', 'left')
+            ->like('j.no_akun', '702', 'after')
+            ->orderBy('j.tanggal', 'DESC');
+        $applyFilters($builder_detail_beban_non_operasional);
+        $detail_beban_non_operasional = $builder_detail_beban_non_operasional->get()->getResult();
+
+        // Hitung total
+        $total_pendapatan = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $pendapatan));
+
+        $total_beban_pokok_penjualan = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $beban_pokok_penjualan));
+
+        $total_beban_operasional = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $beban_operasional));
+
+        $total_pendapatan_non_operasional = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $pendapatan_non_operasional));
+
+        $total_beban_non_operasional = array_sum(array_map(function($item) {
+            return $item->saldo ?? 0;
+        }, $beban_non_operasional));
+
+        $total_biaya = $total_beban_pokok_penjualan + $total_beban_operasional;
+        $laba_rugi = $total_pendapatan - $total_biaya + $total_pendapatan_non_operasional - $total_beban_non_operasional;
+
+        return [
+            'pendapatan' => $pendapatan,
+            'total_pendapatan' => $total_pendapatan,
+            'beban_pokok_penjualan' => $beban_pokok_penjualan,
+            'total_beban_pokok_penjualan' => $total_beban_pokok_penjualan,
+            'beban_operasional' => $beban_operasional,
+            'total_beban_operasional' => $total_beban_operasional,
+            'pendapatan_non_operasional' => $pendapatan_non_operasional,
+            'total_pendapatan_non_operasional' => $total_pendapatan_non_operasional,
+            'beban_non_operasional' => $beban_non_operasional,
+            'total_beban_non_operasional' => $total_beban_non_operasional,
+            'biaya' => array_merge($beban_pokok_penjualan, $beban_operasional), // untuk backward compatibility
+            'total_biaya' => $total_biaya,
+            'laba_rugi' => $laba_rugi,
+            'detail' => [
+                // 'pendapatan' => $detail_pendapatan,
+                'beban_pokok_penjualan' => $detail_beban_pokok,
+                'beban_operasional' => $detail_beban_operasional,
+                'pendapatan_non_operasional' => $detail_pendapatan_non_operasional,
+                'beban_non_operasional' => $detail_beban_non_operasional,
+                'biaya' => array_merge($detail_beban_pokok, $detail_beban_operasional), // untuk backward compatibility
+            ],
+        ];
+    }
 }
+
 

@@ -195,7 +195,7 @@ class Penjualan extends BaseController
                 'tabel_referensi' => 'pembayaran_bank'
             ];
         }
-        
+
         $total_bayar = $bayar_tunai + $totalBayarBank;
 
         $created_on = $tanggal_waktu;
@@ -361,7 +361,7 @@ class Penjualan extends BaseController
                 'tabel_referensi' => 'penjualan'
             ];
         }
-        if($diskon > 0){
+        if ($diskon > 0) {
             $jurnal[] = [
                 'tanggal' => $tanggal_waktu,
                 'kode_template' => 'penjualan_diskon',
@@ -447,7 +447,7 @@ class Penjualan extends BaseController
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
 
             session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-    
+
             $sub_total_cetak = $this->sanitizeCurrency($total_penjualan) - $this->sanitizeCurrency($nilaidiskon) + $total_ppn;
             $kembalian_cetak = max(0, $this->sanitizeCurrency($total_bayar) - $this->sanitizeCurrency($total_penjualan));
             $dataCustomer = $this->PelangganModel->getById($id_pelanggan);
@@ -462,7 +462,7 @@ class Penjualan extends BaseController
                 if ($barang) {
                     // Ambil idkategori dari tabel barang
                     $p['id_kategori'] = $barang->idkategori ?? null;
-    
+
                     // Gunakan IMEI dari input user, jika kosong ambil dari DB
                     if (empty($p['imei']) || $p['imei'] === 'null') {
                         $p['imei'] = $barang->imei ?? '-';
@@ -474,7 +474,7 @@ class Penjualan extends BaseController
                 }
             }
             unset($p);
-    
+
             $data3 = array(
                 'produk' => $produkData,
                 'tanggal' => $tanggal_waktu,
@@ -489,9 +489,9 @@ class Penjualan extends BaseController
                 'kembalian' => $kembalian_cetak,
                 'dataunit' => $this->UnitModel->getById(session('ID_UNIT'))
             );
-    
+
             $action = $this->request->getPost('action');
-    
+
             if ($action == 'simpan_thermal') {
                 // cetak thermal
                 $html = view('cetak/cetak_penjualan_thermal', $data3);
@@ -499,17 +499,17 @@ class Penjualan extends BaseController
                 // cetak default
                 $html = view('cetak/cetak_penjualan', $data3);
             }
-    
+
             error_reporting(0);
-    
+
             $mpdf = new \Mpdf\Mpdf();
             $mpdf->WriteHTML($html);
-    
+
             $uploadPath = FCPATH . 'uploads/';
             if (!is_dir($uploadPath)) {
                 mkdir($uploadPath, 0777, true);
             }
-    
+
             $filename = 'Struk-' . $no_invoice . '.pdf';
             $pdfPath = $uploadPath . $filename;
             $mpdf->Output($pdfPath, 'F');
@@ -527,6 +527,8 @@ class Penjualan extends BaseController
 
     public function search_by_hp()
     {
+
+        //for push ulang purpshose
         $no_hp = $this->request->getGet('no_hp');
         $pelanggan = $this->PelangganModel
             ->where('no_hp', $no_hp)
