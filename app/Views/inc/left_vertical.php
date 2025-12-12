@@ -4,16 +4,18 @@
     <!-- ---------------------------------- -->
     <div class="brand-logo d-flex flex-column justify-content-center align-items-center py-3">
         <?php
-            $id_unit = session()->get('ID_UNIT');
-            use App\Models\ModelUnit;
-            $ModelUnit = new ModelUnit();
-            $unitLogo = $ModelUnit->getById($id_unit);
+        $id_unit = session()->get('ID_UNIT');
+
+        use App\Models\ModelUnit;
+
+        $ModelUnit = new ModelUnit();
+        $unitLogo = $ModelUnit->getById($id_unit);
         ?>
         <a href="<?= base_url() ?>" class="text-nowrap logo-img mb-2">
             <img src="<?= base_url('template/assets/images/' . $unitLogo->LOGO) ?>" alt="Logo"
                 class="dark-logo w-100 h-auto" style="max-width: 100px;" />
         </a>
-        <h5 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?>asdasd</h5>
+        <h5 class="mt-2 text-center"><?= session()->get('NAMA_UNIT'); ?></h5>
         <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
             <i class="ti ti-x"></i>
         </a>
@@ -37,27 +39,27 @@
             <ul id="sidebarnav" class="mb-0">
                 <?php foreach ($menu_utama as $mymenu) :
                     $menu_aktif = false; ?>
-                <?php if (in_array($mymenu['id'], $role)) : ?>
-                <?php if (sizeof($mymenu['menu']) <= 0) : ?>
-                <?php if (base_url() . $mymenu['url'] == service('uri')) $menu_aktif = true; ?>
-                <?php if ($mymenu['utama'] == 0) : ?>
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
-                </li>
-                <?php else: ?>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link primary-hover-bg" href="<?= base_url() . $mymenu['url'] ?>"
-                        aria-expanded="false">
-                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-                            <?= $mymenu['icon'] ?>
-                            <!-- <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon> -->
-                        </span>
-                        <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
-                    </a>
-                </li>
-                <?php endif; ?>
-                <?php else :
+                    <?php if (in_array($mymenu['id'], $role)) : ?>
+                        <?php if (sizeof($mymenu['menu']) <= 0) : ?>
+                            <?php if (base_url() . $mymenu['url'] == service('uri')) $menu_aktif = true; ?>
+                            <?php if ($mymenu['utama'] == 0) : ?>
+                                <li class="nav-small-cap">
+                                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
+                                </li>
+                            <?php else: ?>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link sidebar-link primary-hover-bg" href="<?= base_url() . $mymenu['url'] ?>"
+                                        aria-expanded="false">
+                                        <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+                                            <?= $mymenu['icon'] ?>
+                                            <!-- <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon> -->
+                                        </span>
+                                        <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        <?php else :
                             $uri = service('uri');
                             foreach ($mymenu['menu'] as $menu) :
                                 if (in_array($menu['id'], $role)) :
@@ -70,58 +72,58 @@
                                 endforeach;
                             endforeach;
                         ?>
-                <?php if ($mymenu['utama'] == 0) : ?>
-                <li class="nav-small-cap">
-                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
-                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
-                </li>
-                <?php endif; ?>
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow success-hover-bg" href="#" aria-expanded="false">
-                        <span class="aside-icon p-2 bg-success-subtle rounded-1">
-                            <?= $icon = ($mymenu['icon'] != null) ? $mymenu['icon'] : '<iconify-icon icon="solar:smart-speaker-minimalistic-line-duotone" class="fs-6"></iconify-icon>'; ?>
-                        </span>
-                        <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <?php foreach ($mymenu['menu'] as $menu) : ?>
-                        <?php if (in_array($menu['id'], $role)) : ?>
-                        <?php if (sizeof($menu['sub']) <= 0) : ?>
-                        <li class="sidebar-item">
-                            <a href="<?= base_url() . $menu['url'] ?>" class="sidebar-link">
-                                <span
-                                    class="sidebar-icon"></span>
-                                <span class="hide-menu"> <?= $menu['nama'] ?></span>
-                            </a>
-                        </li>
-                        <?php else : ?>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
-                                <span
-                                    class="sidebar-icon"></span>
-                                <span class="hide-menu"> <?= $menu['nama'] ?> </span>
-                            </a>
-                            <ul aria-expanded="false" class="collapse two-level">
-                                <?php foreach ($menu['sub'] as $sub_menu) : ?>
-                                <?php if (in_array($sub_menu['id'], $role)) : ?>
-                                <li class="sidebar-item">
-                                    <a href="<?= base_url() . $sub_menu['url'] ?>" class="sidebar-link">
-                                        <span
-                                            class="sidebar-icon"></span>
-                                        <span class="hide-menu"><?= $sub_menu['nama'] ?></span>
-                                    </a>
+                            <?php if ($mymenu['utama'] == 0) : ?>
+                                <li class="nav-small-cap">
+                                    <iconify-icon icon="solar:menu-dots-bold-duotone" class="nav-small-cap-icon fs-5"></iconify-icon>
+                                    <span class="hide-menu"><?= $mymenu['nama'] ?></span>
                                 </li>
-                                <?php endif; ?>
-                                <?php endforeach; ?>
-                            </ul>
-                        </li>
+                            <?php endif; ?>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link has-arrow success-hover-bg" href="#" aria-expanded="false">
+                                    <span class="aside-icon p-2 bg-success-subtle rounded-1">
+                                        <?= $icon = ($mymenu['icon'] != null) ? $mymenu['icon'] : '<iconify-icon icon="solar:smart-speaker-minimalistic-line-duotone" class="fs-6"></iconify-icon>'; ?>
+                                    </span>
+                                    <span class="hide-menu ps-1"><?= $mymenu['nama'] ?></span>
+                                </a>
+                                <ul aria-expanded="false" class="collapse first-level">
+                                    <?php foreach ($mymenu['menu'] as $menu) : ?>
+                                        <?php if (in_array($menu['id'], $role)) : ?>
+                                            <?php if (sizeof($menu['sub']) <= 0) : ?>
+                                                <li class="sidebar-item">
+                                                    <a href="<?= base_url() . $menu['url'] ?>" class="sidebar-link">
+                                                        <span
+                                                            class="sidebar-icon"></span>
+                                                        <span class="hide-menu"> <?= $menu['nama'] ?></span>
+                                                    </a>
+                                                </li>
+                                            <?php else : ?>
+                                                <li class="sidebar-item">
+                                                    <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                                                        <span
+                                                            class="sidebar-icon"></span>
+                                                        <span class="hide-menu"> <?= $menu['nama'] ?> </span>
+                                                    </a>
+                                                    <ul aria-expanded="false" class="collapse two-level">
+                                                        <?php foreach ($menu['sub'] as $sub_menu) : ?>
+                                                            <?php if (in_array($sub_menu['id'], $role)) : ?>
+                                                                <li class="sidebar-item">
+                                                                    <a href="<?= base_url() . $sub_menu['url'] ?>" class="sidebar-link">
+                                                                        <span
+                                                                            class="sidebar-icon"></span>
+                                                                        <span class="hide-menu"><?= $sub_menu['nama'] ?></span>
+                                                                    </a>
+                                                                </li>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                </li>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
                         <?php endif; ?>
-                        <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
-                <?php endif; ?>
-                <?php endif; ?>
+                    <?php endif; ?>
                 <?php endforeach; ?>
 
             </ul>
