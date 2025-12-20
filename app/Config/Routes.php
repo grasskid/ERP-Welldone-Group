@@ -185,6 +185,7 @@ $routes->get('expired_proses', 'Expired_service::expired_proses', ['filter' => '
 
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
+$routes->get('input_stokawal', 'StokAwal::input_stokawal', ['filter' => 'auth']);
 $routes->post('insert/stokawal', 'StokAwal::insert', ['filter' => 'auth']);
 $routes->get('/stok/getBarang', 'StokAwal::getBarang');
 
