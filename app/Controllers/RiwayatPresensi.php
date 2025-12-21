@@ -108,7 +108,14 @@ class RiwayatPresensi extends BaseController
             $sheet->setCellValue('F' . $row, $item->nama_jadwal ?? '-');
             $sheet->setCellValue(
                 'G' . $row,
-                $item->status_kehadiran == 2 ? 'Telat' : ($item->status_kehadiran == 0 ? 'Tepat Waktu' : '-')
+                $item->status_kehadiran == 0
+                    ? 'Tepat Waktu'
+                    : ($item->status_kehadiran == 1
+                        ? 'Toleransi'
+                        : ($item->status_kehadiran == 2
+                            ? 'Telat'
+                            : '-'))
+
             );
             $sheet->setCellValue('H' . $row, $item->jarak ?? '0');
             $sheet->setCellValue('I' . $row, $item->ip);

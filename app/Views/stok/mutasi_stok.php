@@ -51,16 +51,35 @@
                 </div>
 
 
+                <?php
+                $isAdmin = session('ID_UNIT') == 1;
+                $today   = date('Y-m-d');
+                ?>
+
                 <div class="col-md-3">
                     <label for="tanggal_kirim" class="form-label">Tanggal Kirim</label>
-                    <input type="date" class="form-control" id="tanggal_kirim" name="tanggal_kirim"
-                        value="<?= date('Y-m-d') ?>" required>
+                    <input
+                        type="date"
+                        class="form-control"
+                        id="tanggal_kirim"
+                        name="tanggal_kirim"
+                        value="<?= $today ?>"
+                        <?= $isAdmin ? '' : 'readonly' ?>
+                        required>
                 </div>
+
                 <div class="col-md-3">
                     <label for="tanggal_terima" class="form-label">Tanggal Terima</label>
-                    <input type="date" class="form-control" id="tanggal_terima" name="tanggal_terima"
-                        value="<?= date('Y-m-d') ?>" required>
+                    <input
+                        type="date"
+                        class="form-control"
+                        id="tanggal_terima"
+                        name="tanggal_terima"
+                        value="<?= $today ?>"
+                        <?= $isAdmin ? '' : 'readonly' ?>
+                        required>
                 </div>
+
             </div>
 
             <!-- Button Trigger Modal -->
