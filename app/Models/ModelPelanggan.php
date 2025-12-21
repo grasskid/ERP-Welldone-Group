@@ -9,7 +9,7 @@ class ModelPelanggan extends Model
     protected $table = 'pelanggan';
     protected $primaryKey = 'id_pelanggan';
     protected $returnType = 'object';
-    protected $allowedFields = ['id_pelanggan', 'nik', 'nama', 'alamat', 'kategori', 'no_hp', 'deleted', 'create_on'];
+    protected $allowedFields = ['id_pelanggan', 'nik', 'nama', 'alamat','kecamatan','kabupaten','provinsi', 'kategori', 'no_hp', 'deleted', 'create_on'];
 
     public function getPelanggan()
     {

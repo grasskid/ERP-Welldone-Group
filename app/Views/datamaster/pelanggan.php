@@ -53,7 +53,9 @@
                 <tr>
                     <th>Nama</th>
                     <th>Alamat</th>
-                    <th>NIK</th>
+                    <th>Kecamatan</th>
+                    <th>Kabupaten</th>
+                    <th>Provinsi</th>
                     <th>Nomer HP</th>
                     <th>Jenis Pelanggan</th>
                     <th>Riwayat Transaksi</th>
@@ -62,34 +64,37 @@
             </thead>
             <tbody>
                 <?php if (!empty($pelanggan)): ?>
-                    <?php foreach ($pelanggan as $row): ?>
-                        <tr>
-                            <td><?= esc($row->nama) ?></td>
-                            <td><?= esc($row->alamat) ?></td>
-                            <td><?= esc($row->nik) ?></td>
-                            <td><?= esc($row->no_hp) ?></td>
-                            <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
-                            <td><a href="<?php echo base_url('riwayat_transaksi_pelanggan/' . $row->id_pelanggan) ?>"><button class="btn btn-success">Check</button></a></td>
-                            <td>
-                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                    data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
-                                    data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
-                                    data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
-                                    data-kategori="<?= esc($row->kategori) ?>">
-                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                                </button>
-                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                                    data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                                    </iconify-icon>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                <?php foreach ($pelanggan as $row): ?>
+                <tr>
+                    <td><?= esc($row->nama) ?></td>
+                    <td><?= esc($row->alamat) ?></td>
+                    <td><?= esc($row->kecamatan) ?></td>
+                    <td><?= esc($row->kabupaten) ?></td>
+                    <td><?= esc($row->provinsi) ?></td>
+                    <td><?= esc($row->no_hp) ?></td>
+                    <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
+                    <td><a href="<?php echo base_url('riwayat_transaksi_pelanggan/' . $row->id_pelanggan) ?>"><button
+                                class="btn btn-success">Check</button></a></td>
+                    <td>
+                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                            data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
+                            data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
+                            data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
+                            data-kategori="<?= esc($row->kategori) ?>">
+                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                        </button>
+                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                            data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
+                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                            </iconify-icon>
+                        </button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="6" class="text-center">Tidak ada data</td>
-                    </tr>
+                <tr>
+                    <td colspan="6" class="text-center">Tidak ada data</td>
+                </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -103,18 +108,52 @@
         <div class="modal-content">
             <form action="<?= base_url('insert_pelanggan') ?>" method="post">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="inputPelangganModalLabel">Input Data Pelanggan</h4>
+                    <h4 class="modal-title" id="inputPelangganModalLabel">
+                        Input Data Pelanggan
+                    </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3"><label>NIK</label><input type="text" class="form-control" name="nik" required>
+                    <div class="mb-3">
+                        <label>Nama</label>
+                        <input type="text" class="form-control" name="nama" required>
                     </div>
-                    <div class="mb-3"><label>Nama</label><input type="text" class="form-control" name="nama" required>
+                    <div class="mb-3">
+                        <label>Alamat</label>
+                        <input type="text" class="form-control" name="alamat" required>
                     </div>
-                    <div class="mb-3"><label>Alamat</label><input type="text" class="form-control" name="alamat"
-                            required></div>
-                    <div class="mb-3"><label>Nomor HP</label><input type="text" class="form-control" name="no_hp"
-                            required></div>
+                    <div class="mb-3">
+                        <label>Kecamatan</label>
+                        <select class="form-control select2" name="kecamatan" id="kecamatan" required>
+                            <option value="">-- Pilih Kecamatan --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kabupaten</label>
+                        <select class="form-control select2" name="kabupaten" id="kabupaten" required>
+                            <option value="">-- Pilih Kabupaten --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Provinsi</label>
+                        <select class="form-control select2" name="provinsi" id="provinsi" required>
+                            <option value="">-- Pilih Provinsi --</option>
+                            <?php foreach ($provinsi as $p): ?>
+                            <!-- VALUE = NAME -->
+                            <option value="<?= esc($p->name) ?>">
+                                <?= esc($p->name) ?>
+                            </option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label>Nomor HP</label>
+                        <input type="text" class="form-control" name="no_hp" required>
+                    </div>
                     <div class="mb-3">
                         <label>Jenis Pelanggan</label>
                         <select class="form-control" name="kategori" required>
@@ -125,14 +164,18 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn bg-danger-subtle text-danger"
-                        data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Submit
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 <!-- Modal Edit Pelanggan -->
 <div class="modal fade" id="edit-pelanggan-modal" tabindex="-1" aria-labelledby="editPelangganModalLabel"
@@ -150,8 +193,12 @@
                             id="edit-nama" required></div>
                     <div class="mb-3"><label>Alamat</label><input type="text" class="form-control" name="alamat"
                             id="edit-alamat" required></div>
-                    <div class="mb-3"><label>NIK</label><input type="text" class="form-control" name="nik" id="edit-nik"
-                            required></div>
+                    <div class="mb-3"><label>Kecamatan</label><input type="text" class="form-control" name="kecamatan"
+                            id="edit-kecamatan" required></div>
+                    <div class="mb-3"><label>Kabupaten</label><input type="text" class="form-control" name="kabupaten"
+                            id="edit-kabupaten" required></div>
+                    <div class="mb-3"><label>Provinsi</label><input type="text" class="form-control" name="provinsi"
+                            id="edit-provinsi" required></div>
                     <div class="mb-3"><label>Nomor HP</label><input type="text" class="form-control" name="no_hp"
                             id="edit-no_hp" required></div>
                     <div class="mb-3">
@@ -224,23 +271,84 @@
 
 <!-- JavaScript for Edit/Delete Modal -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('#zero_config').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const button = e.target.closest('.edit-button');
-                document.getElementById('edit-id_pelanggan').value = button.getAttribute(
-                    'data-id_pelanggan');
-                document.getElementById('edit-nama').value = button.getAttribute('data-nama');
-                document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
-                document.getElementById('edit-nik').value = button.getAttribute('data-nik');
-                document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
-                document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
-            }
-            if (e.target.closest('.delete-button')) {
-                const button = e.target.closest('.delete-button');
-                document.getElementById('delete-id_pelanggan').value = button.getAttribute(
-                    'data-id_pelanggan');
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#zero_config').addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const button = e.target.closest('.edit-button');
+            document.getElementById('edit-id_pelanggan').value = button.getAttribute(
+                'data-id_pelanggan');
+            document.getElementById('edit-nama').value = button.getAttribute('data-nama');
+            document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
+            document.getElementById('edit-nik').value = button.getAttribute('data-nik');
+            document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
+            document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
+        }
+        if (e.target.closest('.delete-button')) {
+            const button = e.target.closest('.delete-button');
+            document.getElementById('delete-id_pelanggan').value = button.getAttribute(
+                'data-id_pelanggan');
+        }
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+
+    $('#input-pelanggan-modal').on('shown.bs.modal', function() {
+
+        $(this).find('.select2').select2({
+            width: '100%',
+            dropdownParent: $('#input-pelanggan-modal')
+        });
+
+    });
+
+});
+</script>
+
+<script>
+$(document).ready(function() {
+
+    $('#provinsi').on('change', function() {
+        let provinsi = encodeURIComponent($(this).val());
+
+        $('#kabupaten').html('<option value="">Loading...</option>').trigger('change');
+        $('#kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
+
+        $.getJSON("<?= base_url('region/kabupaten') ?>/" + provinsi)
+            .done(function(res) {
+                let html = '<option value="">-- Pilih Kabupaten --</option>';
+                $.each(res, function(_, v) {
+                    html += `<option value="${v.name}">${v.name}</option>`;
+                });
+                $('#kabupaten').html(html).trigger('change');
+            })
+            .fail(function(xhr) {
+                console.error(xhr.responseText);
+                alert('Failed loading Kabupaten — check console');
+            });
+
+    });
+
+    $('#kabupaten').on('change', function() {
+        let kabupaten = encodeURIComponent($(this).val());
+
+        $('#kecamatan').html('<option value="">Loading...</option>').trigger('change');
+
+        $.getJSON("<?= base_url('region/kecamatan') ?>/" + kabupaten, function(res) {
+            let html = '<option value="">-- Pilih Kecamatan --</option>';
+            $.each(res, function(_, v) {
+                html += `<option value="${v.name}">${v.name}</option>`;
+            });
+            $('#kecamatan').html(html).trigger('change');
         });
     });
+
+});
 </script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

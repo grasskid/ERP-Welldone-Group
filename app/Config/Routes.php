@@ -97,6 +97,10 @@ $routes->post('import/pelanggan', 'Pelanggan::import_pelanggan', ['filter' => 'a
 $routes->post('simpan/pelanggan', 'Pelanggan::simpanPelanggan', ['filter' => 'auth']);
 $routes->get('riwayat_transaksi_pelanggan/(:num)', 'Pelanggan::riwayat_transaksi_pelanggan/$1', ['filter' => 'auth']);
 
+$routes->get('region/kabupaten/(:any)', 'Pelanggan::getKabupaten/$1');
+$routes->get('region/kecamatan/(:any)', 'Pelanggan::getKecamatan/$1');
+
+
 //kerusakan
 $routes->get('kerusakan', 'Kerusakan::index', ['filter' => 'auth']);
 $routes->post('insert_kerusakan', 'Kerusakan::insert_kerusakan', ['filter' => 'auth']);
@@ -185,6 +189,7 @@ $routes->get('expired_proses', 'Expired_service::expired_proses', ['filter' => '
 
 //stokawal
 $routes->get('stok_awal', 'StokAwal::index', ['filter' => 'auth']);
+$routes->get('input_stokawal', 'StokAwal::input_stokawal', ['filter' => 'auth']);
 $routes->post('insert/stokawal', 'StokAwal::insert', ['filter' => 'auth']);
 $routes->get('/stok/getBarang', 'StokAwal::getBarang');
 
