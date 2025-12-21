@@ -115,11 +115,34 @@ foreach ($detail_pembelian as $row) {
                 <div class="modal-content">
                     <form action="<?= base_url('insert_retur_suplier') ?>" method="post">
                         <input type="hidden" name="no_batch" value="<?= esc($no_batch) ?>">
+
                         <div class="modal-header">
                             <h5 class="modal-title">Detail pembelian - No. Batch <?= esc($no_batch) ?></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                         </div>
                         <div class="modal-body">
+                            <?php
+                            $idUnit = session('ID_UNIT');
+                            $tanggalSekarang = date('Y-m-d');
+                            ?>
+
+
+
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label style="font-weight: bold;" for="tanggal_pengembalian">
+                                    Tanggal Pengembalian :
+                                </label>
+
+                                <input
+                                    id="tanggal_pengembalian"
+                                    style="width: 80%;"
+                                    type="date"
+                                    name="tanggal_pengembalian"
+                                    class="form-control"
+                                    value="<?= $idUnit == 1 ? '' : $tanggalSekarang ?>"
+                                    <?= $idUnit == 1 ? '' : 'readonly' ?>>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered detail-table" id="detailTable<?= esc($no_batch) ?>">
                                     <thead>

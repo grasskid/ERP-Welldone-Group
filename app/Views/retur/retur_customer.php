@@ -105,7 +105,31 @@ foreach ($detail_penjualan as $row) {
                 </div>
                 <div class="modal-body">
                     <form action="<?= base_url('insert_retur_customer') ?>" method="post">
+
                         <input type="hidden" name="kode_invoice" value="<?= esc($kode_invoice) ?>">
+                        <?php
+                        $idUnit = session('ID_UNIT');
+                        $tanggalSekarang = date('Y-m-d');
+                        ?>
+
+
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label style="font-weight: bold;" for="tanggal_pengembalian">
+                                Tanggal Pengembalian :
+                            </label>
+
+                            <input
+                                id="tanggal_pengembalian"
+                                style="width: 80%;"
+                                type="date"
+                                name="tanggal_pengembalian"
+                                class="form-control"
+                                value="<?= $idUnit == 1 ? '' : $tanggalSekarang ?>"
+                                <?= $idUnit == 1 ? '' : 'readonly' ?>>
+                        </div>
+
+
                         <div class="table-responsive">
                             <table class="table table-bordered detail-table" id="detailTable<?= esc($kode_invoice) ?>">
                                 <thead>

@@ -86,7 +86,7 @@ class Retur_Suplier extends BaseController
 
                 $data = array(
                     'no_retur_suplier' => $no_retur_suplier,
-                    'tanggal' => $datetime,
+                    'tanggal' => $this->request->getPost('tanggal_pengembalian'),
                     'jumlah' => $jumlah_retur,
                     'satuan' => $satuan,
                     'barang_idbarang' => $barang_idbarang,

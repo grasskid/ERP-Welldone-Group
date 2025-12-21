@@ -15,13 +15,17 @@
 
 <div class="card w-100 position-relative overflow-hidden">
     <div class="px-4 py-3 border-bottom d-flex justify-content-end">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-stokawal-modal"
-            style="display: inline-flex; align-items: center;">
-            <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
-                style="margin-right: 8px;"></iconify-icon>
-            Pilih Barang
-        </button>
+        <a href="<?php echo base_url('input_stokawal') ?>">
+            <button type="button" class="btn btn-primary"
+                style="display: inline-flex; align-items: center;">
+                <iconify-icon icon="solar:password-minimalistic-input-broken" width="24" height="24"
+                    style="margin-right: 8px;"></iconify-icon>
+                Input Barang
+            </button>
     </div>
+    </a>
+
+    <!-- data-bs-toggle="modal" data-bs-target="#input-stokawal-modal" -->
 
     <br>
     <div class="mb-3 px-4">

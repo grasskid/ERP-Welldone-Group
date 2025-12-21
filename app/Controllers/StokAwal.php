@@ -53,7 +53,7 @@ class StokAwal extends BaseController
         $barangTersedia = $allBarang;
 
         $unitData = $this->UnitModel->getUnit();
-        
+
 
         $data = array(
             'akun' => $akun,
@@ -63,6 +63,38 @@ class StokAwal extends BaseController
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'suplier' => $this->SuplierModel->getSuplier(),
             'body' => 'stok/stok_awal'
+        );
+        return view('template', $data);
+    }
+
+    public function input_stokawal()
+    {
+        $akun = $this->AuthModel->getById(session('ID_AKUN'));
+
+
+        $allBarang = $this->BarangModel->getAllBarang();
+        $stok = $this->StokAwalModel->getAllStok();
+
+
+        $barangSudahAda = [];
+        foreach ($stok as $stockItem) {
+            $barangSudahAda[$stockItem->unit_idunit][] = $stockItem->barang_idbarang;
+        }
+
+
+        $barangTersedia = $allBarang;
+
+        $unitData = $this->UnitModel->getUnit();
+
+
+        $data = array(
+            'akun' => $akun,
+            'stok' => $stok,
+            'barang' => $barangTersedia,
+            'unit' => $unitData,
+            'pelanggan' => $this->PelangganModel->getPelanggan(),
+            'suplier' => $this->SuplierModel->getSuplier(),
+            'body' => 'stok/input_stokawal'
         );
         return view('template', $data);
     }
