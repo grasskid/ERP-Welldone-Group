@@ -305,7 +305,7 @@
 
 
     /* =====================================================
-       6. EVENT DELEGATION (ANTI EVENT NUMPUK)
+       6. EVENT DELEGATION (ANTI EVENT NUMPUK )
     ===================================================== */
     document.addEventListener('change', function(e) {
 
