@@ -77,8 +77,9 @@
             <option value="PPN">PPN</option>
             <option value="Non PPN">Non PPN</option>
         </select>
-
-        <button onclick="resetKategoriFilter()" class="btn btn-sm btn-secondary ms-2">Reset</button>
+        <?php if (session('ID_UNIT') == 1) : ?>
+            <button onclick="resetKategoriFilter()" class="btn btn-sm btn-secondary ms-2">Reset</button>
+        <?php endif; ?>
     </div>
 
 

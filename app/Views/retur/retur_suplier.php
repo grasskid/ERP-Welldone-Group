@@ -161,7 +161,11 @@ foreach ($detail_pembelian as $row) {
                                         <?php foreach ($items as $index => $item): ?>
                                             <tr>
                                                 <td>
-                                                    <input type="checkbox" name="items[<?= $index ?>][selected]" value="1">
+                                                    <input type="checkbox"
+                                                        class="form-check-input pilih-retur"
+                                                        name="items[<?= $index ?>][selected]"
+                                                        value="1">
+
                                                     <input type="hidden" name="items[<?= $index ?>][iddetail_pembelian]"
                                                         value="<?= esc($item->iddetail_pembelian) ?>">
                                                 </td>
@@ -171,9 +175,14 @@ foreach ($detail_pembelian as $row) {
                                                 <td><?= esc(number_format($item->diskon, 0, ',', '.')) ?></td>
                                                 <td><?= esc(number_format($item->total_harga, 0, ',', '.')) ?></td>
                                                 <td>
-                                                    <input type="number" name="items[<?= $index ?>][jumlah_retur]"
-                                                        class="form-control" min="1" max="<?= esc($item->jumlah) ?>">
+                                                    <input type="number"
+                                                        class="form-control jumlah-retur"
+                                                        name="items[<?= $index ?>][jumlah_retur]"
+                                                        min="1"
+                                                        max="<?= esc($item->jumlah) ?>"
+                                                        disabled>
                                                 </td>
+
                                                 <td>
                                                     <input readonly type="text" name="items[<?= $index ?>][satuan]" value="<?= esc($item->satuan_beli) ?>" class="form-control">
                                                     <input hidden type="text" name="items[<?= $index ?>][jumlah]" value="<?= esc($item->jumlah) ?>" class="form-control">
@@ -278,4 +287,21 @@ foreach ($detail_pembelian as $row) {
         document.getElementById('unitFilter').value = '';
         filterData();
     }
+</script>
+
+<script>
+    $(document).on('change', '.pilih-retur', function() {
+        const row = $(this).closest('tr');
+        const inputJumlah = row.find('.jumlah-retur');
+
+        if ($(this).is(':checked')) {
+            inputJumlah.prop('disabled', false);
+            inputJumlah.prop('required', true);
+            inputJumlah.focus();
+        } else {
+            inputJumlah.prop('disabled', true);
+            inputJumlah.prop('required', false);
+            inputJumlah.val('');
+        }
+    });
 </script>
