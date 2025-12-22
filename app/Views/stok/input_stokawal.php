@@ -166,150 +166,203 @@
 
 
 <script>
-    let tablecc = $('#table_barang').DataTable();
+    /* =====================================================
+   1. INIT DATATABLE SEKALI SAJA
+===================================================== */
+    let tablecc = $('#table_barang').DataTable({
+        responsive: true,
+        autoWidth: false,
+        pageLength: 10
+    });
+
     const suplierList = <?= json_encode($suplier) ?>;
     const pelangganList = <?= json_encode($pelanggan) ?>;
     const allBarang = <?= json_encode($barang) ?>;
     const stok = <?= json_encode($stok) ?>;
 
-    // Toggle enable/disable fields when checkbox is clicked
-    function toggleProductFields(kodeBarang) {
-        const isChecked = document.getElementById('product_' + kodeBarang)?.checked;
+    /* =====================================================
+       2. PREPARE STOK SET (ANTI LOOP BERAT)
+    ===================================================== */
+    const stokSet = new Set(
+        stok.map(s => `${s.unit_idunit}_${s.barang_idbarang}`)
+    );
 
-        const fields = [
-            'jumlah_',
-            'harga_beli_',
-            'satuan_terkecil_',
-            'tipe_relasi_',
-            'id_suplier_text_',
-            'id_pelanggan_text_'
-        ];
-
-        fields.forEach(id => {
-            const el = document.getElementById(id + kodeBarang);
-            if (el) el.disabled = !isChecked;
-        });
-    }
-
-    // Toggle supplier/pelanggan fields based on selected relation type
-    function toggleRelasiFields(kodeBarang) {
-        const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang)?.value;
-        const suplierSelect = document.getElementById('id_suplier_text_' + kodeBarang);
-        const pelangganSelect = document.getElementById('id_pelanggan_text_' + kodeBarang);
-
-        if (!suplierSelect || !pelangganSelect) return;
-
-        if (tipeRelasi === 'suplier') {
-            suplierSelect.disabled = false;
-            pelangganSelect.disabled = true;
-            pelangganSelect.value = '';
-        } else if (tipeRelasi === 'pelanggan') {
-            pelangganSelect.disabled = false;
-            suplierSelect.disabled = true;
-            suplierSelect.value = '';
-        } else {
-            suplierSelect.disabled = true;
-            pelangganSelect.disabled = true;
-            suplierSelect.value = '';
-            pelangganSelect.value = '';
-        }
-    }
-
-    // Global unit change handler
+    /* =====================================================
+       3. GLOBAL UNIT CHANGE
+    ===================================================== */
     document.getElementById('global_unit').addEventListener('change', function() {
-        const selectedUnitId = this.value;
-
-        // Update hidden unit fields (if used)
-        allBarang.forEach(barang => {
-            const el = document.getElementById('id_unit_text_' + barang.kode_barang);
-            if (el) el.value = selectedUnitId;
-        });
-
-        // Filter and update barang table
-        filterBarangByUnit(selectedUnitId);
+        filterBarangByUnit(this.value);
     });
 
+    /* =====================================================
+       4. FILTER BARANG (CEPAT)
+    ===================================================== */
     function filterBarangByUnit(unitId) {
-        const filteredBarang = allBarang.filter(barang => {
-            return !stok.some(s => s.unit_idunit == unitId && s.barang_idbarang == barang.idbarang);
-        });
-        updateBarangTable(filteredBarang);
+        const filteredBarang = allBarang.filter(barang =>
+            !stokSet.has(`${unitId}_${barang.idbarang}`)
+        );
+
+        renderBarangTable(filteredBarang);
     }
 
-    function updateBarangTable(filteredBarang) {
-        const tableBody = document.querySelector('#table_barang tbody');
-        tableBody.innerHTML = '';
+    /* =====================================================
+       5. RENDER TABLE (PAKAI DATATABLES API)
+    ===================================================== */
+    function renderBarangTable(barangList) {
 
-        filteredBarang.forEach((barang) => {
-            const kodeBarang = barang.kode_barang;
+        tablecc.clear();
 
-            const suplierOptions = suplierList.map(s =>
-                `<option value="${s.id_suplier}">${s.nama_suplier}</option>`
-            ).join('');
+        const suplierOptions = suplierList.map(s =>
+            `<option value="${s.id_suplier}">${s.nama_suplier}</option>`
+        ).join('');
 
-            const pelangganOptions = pelangganList.map(p =>
-                `<option value="${p.id_pelanggan}">${p.nama}</option>`
-            ).join('');
+        const pelangganOptions = pelangganList.map(p =>
+            `<option value="${p.id_pelanggan}">${p.nama}</option>`
+        ).join('');
 
-            tableBody.innerHTML += `
-            <tr>
-                <td>
-                    <input type="checkbox" name="selected_products[]" value="${kodeBarang}" id="product_${kodeBarang}">
-                </td>
-                <td style="min-width: 140px; text-align: center;">
-                    <p style="font-weight: bold;">${kodeBarang}</p>
-                    <p style="font-style: italic;">${barang.nama_barang}</p>
-                </td>
-                <td><input type="number" name="jumlah[${kodeBarang}]" class="form-control" id="jumlah_${kodeBarang}" disabled style="min-width: 120px;"></td>
-                <td>
-                    <select name="satuan_terkecil[${kodeBarang}]" class="form-select" id="satuan_terkecil_${kodeBarang}" disabled style="min-width: 190px;">
-                        <option value="">-- Pilih Satuan --</option>
-                        <option value="pcs">pcs</option>
-                        <option value="pack">pack</option>
-                    </select>
-                </td>
-                <td>
-                    <select name="tipe_relasi[${kodeBarang}]" class="form-select" id="tipe_relasi_${kodeBarang}" disabled>
-                        <option value="">-- Pilih Tipe --</option>
-                        <option value="suplier">Suplier</option>
-                        <option value="pelanggan">Pelanggan</option>
-                    </select>
-                </td>
-                <td>
-                    <select name="id_suplier_text[${kodeBarang}]" class="form-select" id="id_suplier_text_${kodeBarang}" disabled style="min-width: 190px;">
-                        <option value="">-- Pilih Suplier --</option>
-                        ${suplierOptions}
-                    </select>
-                </td>
-                <td>
-                    <select name="id_pelanggan_text[${kodeBarang}]" class="form-select" id="id_pelanggan_text_${kodeBarang}" disabled style="min-width: 190px;">
-                        <option value="">-- Pilih Pelanggan --</option>
-                        ${pelangganOptions}
-                    </select>
-                </td>
-            </tr>
-        `;
+        barangList.forEach(barang => {
+
+            const kode = barang.kode_barang;
+            const imei = barang.imei ? barang.imei : 'tidak ada imei';
+            const isImeiEmpty = !barang.imei;
+
+            tablecc.row.add([
+
+                /* Pilih */
+                `<input type="checkbox"
+            name="selected_products[]"
+            value="${kode}"
+            id="product_${kode}">`,
+
+                /* Nama Barang */
+                `<b>${kode}</b><br><i>${barang.nama_barang}</i>`,
+
+                /* IMEI */
+                `<i>${imei}</i>`,
+
+                /* Jumlah */
+                `<input type="number"
+            name="jumlah[${kode}]"
+            id="jumlah_${kode}"
+            class="form-control"
+            disabled>`,
+
+                /* Satuan */
+                `<select name="satuan_terkecil[${kode}]"
+            id="satuan_terkecil_${kode}"
+            class="form-select"
+            disabled>
+            <option value="">-- Pilih Satuan --</option>
+            <option value="pcs">pcs</option>
+            <option value="pack">pack</option>
+        </select>`,
+
+                /* SUMBER */
+                `<select name="tipe_relasi[${kode}]"
+            id="tipe_relasi_${kode}"
+            class="form-select tipe_relasi"
+            data-kode="${kode}"
+            ${isImeiEmpty ? 'disabled' : ''}>
+            <option value="">-- Pilih Tipe --</option>
+            <option value="suplier" ${isImeiEmpty ? 'selected' : ''}>
+                Suplier
+            </option>
+            <option value="pelanggan" ${isImeiEmpty ? 'hidden' : ''}>
+                Pelanggan
+            </option>
+        </select>`,
+
+                /* Suplier */
+                `<select name="id_suplier_text[${kode}]"
+            id="id_suplier_text_${kode}"
+            class="form-select"
+            disabled>
+            <option value="">-- Pilih Suplier --</option>
+            ${suplierOptions}
+        </select>`,
+
+                /* Pelanggan */
+                `<select name="id_pelanggan_text[${kode}]"
+            id="id_pelanggan_text_${kode}"
+            class="form-select"
+            disabled>
+            <option value="">-- Pilih Pelanggan --</option>
+            ${pelangganOptions}
+        </select>`,
+
+                /* UNIT (HIDDEN) */
+                `<input type="hidden"
+            name="id_unit_text[${kode}]"
+            id="id_unit_text_${kode}">`,
+
+                /* Kode barang hidden */
+                `<span hidden>${kode}</span>`
+            ]);
         });
 
-        // Rebind event listeners after rendering
-        filteredBarang.forEach((barang) => {
-            const kodeBarang = barang.kode_barang;
-            const checkbox = document.getElementById('product_' + kodeBarang);
-            const tipeRelasi = document.getElementById('tipe_relasi_' + kodeBarang);
+        tablecc.draw(false);
+    }
 
-            if (checkbox) {
-                checkbox.addEventListener('change', function() {
-                    toggleProductFields(kodeBarang);
-                });
-            }
 
-            if (tipeRelasi) {
-                tipeRelasi.addEventListener('change', function() {
-                    toggleRelasiFields(kodeBarang);
-                });
-            }
+    /* =====================================================
+       6. EVENT DELEGATION (ANTI EVENT NUMPUK)
+    ===================================================== */
+    document.addEventListener('change', function(e) {
+
+        // Checkbox produk
+        if (e.target.id.startsWith('product_')) {
+            const kode = e.target.id.replace('product_', '');
+            toggleProductFields(kode, e.target.checked);
+        }
+
+        // Tipe relasi
+        if (e.target.classList.contains('tipe_relasi')) {
+            toggleRelasiFields(
+                e.target.dataset.kode,
+                e.target.value
+            );
+        }
+    });
+
+    /* =====================================================
+       7. TOGGLE FIELD PRODUK
+    ===================================================== */
+    function toggleProductFields(kode, status) {
+        [
+            `jumlah_${kode}`,
+            `satuan_terkecil_${kode}`,
+            `tipe_relasi_${kode}`,
+            `id_suplier_text_${kode}`,
+            `id_pelanggan_text_${kode}`
+        ].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = !status;
         });
     }
 
-    // Optional: Initialize DataTable
+    /* =====================================================
+       8. TOGGLE RELASI
+    ===================================================== */
+    function toggleRelasiFields(kode, tipe) {
+
+        const suplier = document.getElementById(`id_suplier_text_${kode}`);
+        const pelanggan = document.getElementById(`id_pelanggan_text_${kode}`);
+
+        if (!suplier || !pelanggan) return;
+
+        if (tipe === 'suplier') {
+            suplier.disabled = false;
+            pelanggan.disabled = true;
+            pelanggan.value = '';
+        } else if (tipe === 'pelanggan') {
+            pelanggan.disabled = false;
+            suplier.disabled = true;
+            suplier.value = '';
+        } else {
+            suplier.disabled = true;
+            pelanggan.disabled = true;
+            suplier.value = '';
+            pelanggan.value = '';
+        }
+    }
 </script>

@@ -42,17 +42,18 @@ class Retur_Suplier extends BaseController
     {
         $datauser = $this->AuthModel->getById(session('ID_AKUN'));
         $useridunit = $datauser->ID_UNIT;
+        $tanggal_retur = $this->request->getPost('tanggal_pengembalian');
         date_default_timezone_set('Asia/Jakarta');
 
         $tanggal = date('Y-m-d');
         $waktu = date('H:i:s');
-        $datetime = $tanggal . ' ' . $waktu;
+        $datetime = $tanggal_retur . ' ' . $waktu;
         $input_by = session('ID_AKUN');
 
         //noretur
         $lastRetur = $this->ReturSuplierModel
             ->where('unit_idunit', $useridunit)
-            ->like('DATE(tanggal)', $tanggal)
+            ->like('DATE(tanggal)', $tanggal_retur)
             ->orderBy('no_retur_suplier', 'DESC')
             ->first();
 
@@ -86,7 +87,7 @@ class Retur_Suplier extends BaseController
 
                 $data = array(
                     'no_retur_suplier' => $no_retur_suplier,
-                    'tanggal' => $this->request->getPost('tanggal_pengembalian'),
+                    'tanggal' => $tanggal_retur,
                     'jumlah' => $jumlah_retur,
                     'satuan' => $satuan,
                     'barang_idbarang' => $barang_idbarang,

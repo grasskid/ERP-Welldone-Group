@@ -43,15 +43,16 @@ class Retur_Customer extends BaseController
     public function insert()
     {
         $tanggal = date('Y-m-d');
+        $tanggal_retur =  $this->request->getPost('tanggal_pengembalian');
         $waktu = date('H:i:s');
-        $datetime = $tanggal . ' ' . $waktu;
+        $datetime = $tanggal_retur . ' ' . $waktu;
         $datauser = $this->AuthModel->getById(session('ID_AKUN'));
         $useridunit = $datauser->ID_UNIT;
 
         // Generate no_retur_pelanggan
         $lastRetur = $this->ReturCustomerModel
             ->where('unit_idunit', $useridunit)
-            ->like('DATE(tanggal)', $tanggal)
+            ->like('DATE(tanggal)', $tanggal_retur)
             ->orderBy('no_retur_pelanggan', 'DESC')
             ->first();
 
@@ -97,7 +98,7 @@ class Retur_Customer extends BaseController
 
                 $data = [
                     'no_retur_pelanggan' => $no_retur_pelanggan,
-                    'tanggal' => $this->request->getPost('tanggal_pengembalian'),
+                    'tanggal' => $tanggal_retur,
                     'jumlah' => $jumlah_retur,
                     'satuan' => $satuan,
                     'barang_idbarang' => $barang_idbarang,
@@ -112,7 +113,7 @@ class Retur_Customer extends BaseController
         // Insert Jurnal (similar to Penjualan)
         $ar_nilai = [$total_harga, $total_ppn];
         $this->JurnalModel->insertJurnal(
-            $tanggal,
+            $tanggal_retur,
             'retur_penjualan',
             $ar_nilai,
             "Retur Penjualan",
