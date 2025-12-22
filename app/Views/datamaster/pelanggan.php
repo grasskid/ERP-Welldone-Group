@@ -58,6 +58,7 @@
                     <th>Provinsi</th>
                     <th>Nomer HP</th>
                     <th>Jenis Pelanggan</th>
+                    <th>Mengetahui Dari</th>
                     <th>Riwayat Transaksi</th>
                     <th>Action</th>
                 </tr>
@@ -73,6 +74,7 @@
                     <td><?= esc($row->provinsi) ?></td>
                     <td><?= esc($row->no_hp) ?></td>
                     <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
+                    <td><?= esc($row->mengetahui_dari) ?></td>
                     <td><a href="<?php echo base_url('riwayat_transaksi_pelanggan/' . $row->id_pelanggan) ?>"><button
                                 class="btn btn-success">Check</button></a></td>
                     <td>
@@ -122,19 +124,6 @@
                         <label>Alamat</label>
                         <input type="text" class="form-control" name="alamat" required>
                     </div>
-                    <div class="mb-3">
-                        <label>Kecamatan</label>
-                        <select class="form-control select2" name="kecamatan" id="kecamatan" required>
-                            <option value="">-- Pilih Kecamatan --</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label>Kabupaten</label>
-                        <select class="form-control select2" name="kabupaten" id="kabupaten" required>
-                            <option value="">-- Pilih Kabupaten --</option>
-                        </select>
-                    </div>
 
                     <div class="mb-3">
                         <label>Provinsi</label>
@@ -146,6 +135,20 @@
                                 <?= esc($p->name) ?>
                             </option>
                             <?php endforeach ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kabupaten</label>
+                        <select class="form-control select2" name="kabupaten" id="kabupaten" required>
+                            <option value="">-- Pilih Kabupaten --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kecamatan</label>
+                        <select class="form-control select2" name="kecamatan" id="kecamatan" required>
+                            <option value="">-- Pilih Kecamatan --</option>
                         </select>
                     </div>
 
@@ -162,6 +165,22 @@
                             <option value="1">Toko</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label>Mengetahui Dari</label>
+                        <select class="form-control" name="mengetahui_dari" id="mengetahui_dari" required>
+                            <option value="">-- Mengetahui Dari --</option>
+                            <option value="Iklan di Facebook">Iklan di Facebook</option>
+                            <option value="Iklan di Instagram">Iklan di Instagram</option>
+                            <option value="Iklan di Tiktok">Iklan di Tiktok</option>
+                            <option value="Iklan di Google">Iklan di Google</option>
+                            <option value="Teman/Kerabat/Saudara">Teman/Kerabat/Saudara</option>
+                            <option value="Store Offline">Store Offline</option>
+                            <option value="Pelanggan Lama">Pelanggan lama</option>
+                            <option value="Sosial Media Store">Sosial Media Store</option>
+                            <option value="Informasi dari Store">Informasi dari Store Lain</option>
+                            <option value="Informasi dari Store">Informasi dari Karyawan Store</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">
@@ -175,7 +194,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal Edit Pelanggan -->
 <div class="modal fade" id="edit-pelanggan-modal" tabindex="-1" aria-labelledby="editPelangganModalLabel"
@@ -193,12 +211,32 @@
                             id="edit-nama" required></div>
                     <div class="mb-3"><label>Alamat</label><input type="text" class="form-control" name="alamat"
                             id="edit-alamat" required></div>
-                    <div class="mb-3"><label>Kecamatan</label><input type="text" class="form-control" name="kecamatan"
-                            id="edit-kecamatan" required></div>
-                    <div class="mb-3"><label>Kabupaten</label><input type="text" class="form-control" name="kabupaten"
-                            id="edit-kabupaten" required></div>
-                    <div class="mb-3"><label>Provinsi</label><input type="text" class="form-control" name="provinsi"
-                            id="edit-provinsi" required></div>
+                    <div class="mb-3">
+                        <label>Provinsi</label>
+                        <select class="form-control select2" name="provinsi" id="edit-provinsi" required>
+                            <option value="">-- Pilih Provinsi --</option>
+                            <?php foreach ($provinsi as $p): ?>
+                            <option value="<?= esc($p->name) ?>">
+                                <?= esc($p->name) ?>
+                            </option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kabupaten</label>
+                        <select class="form-control select2" name="kabupaten" id="edit-kabupaten" required>
+                            <option value="">-- Pilih Kabupaten --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kecamatan</label>
+                        <select class="form-control select2" name="kecamatan" id="edit-kecamatan" required>
+                            <option value="">-- Pilih Kecamatan --</option>
+                        </select>
+                    </div>
+
                     <div class="mb-3"><label>Nomor HP</label><input type="text" class="form-control" name="no_hp"
                             id="edit-no_hp" required></div>
                     <div class="mb-3">
@@ -310,43 +348,146 @@ $(document).ready(function() {
 <script>
 $(document).ready(function() {
 
+    /* ===============================
+     * SELECT2 INIT (MODAL SAFE)
+     * =============================== */
+    $('#input-pelanggan-modal .select2').select2({
+        dropdownParent: $('#input-pelanggan-modal'),
+        width: '100%'
+    });
+
+    $('#edit-pelanggan-modal .select2').select2({
+        dropdownParent: $('#edit-pelanggan-modal'),
+        width: '100%'
+    });
+
+    /* ===============================
+     * ADD MODAL CASCADE
+     * =============================== */
     $('#provinsi').on('change', function() {
-        let provinsi = encodeURIComponent($(this).val());
+        let provinsi = $(this).val();
 
         $('#kabupaten').html('<option value="">Loading...</option>').trigger('change');
         $('#kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
 
-        $.getJSON("<?= base_url('region/kabupaten') ?>/" + provinsi)
-            .done(function(res) {
-                let html = '<option value="">-- Pilih Kabupaten --</option>';
-                $.each(res, function(_, v) {
-                    html += `<option value="${v.name}">${v.name}</option>`;
+        if (provinsi !== '') {
+            $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
+                data) {
+                let opt = '<option value="">-- Pilih Kabupaten --</option>';
+                $.each(data, function(i, v) {
+                    opt += `<option value="${v.name}">${v.name}</option>`;
                 });
-                $('#kabupaten').html(html).trigger('change');
-            })
-            .fail(function(xhr) {
-                console.error(xhr.responseText);
-                alert('Failed loading Kabupaten — check console');
+                $('#kabupaten').html(opt);
             });
-
+        }
     });
 
     $('#kabupaten').on('change', function() {
-        let kabupaten = encodeURIComponent($(this).val());
+        let kabupaten = $(this).val();
 
         $('#kecamatan').html('<option value="">Loading...</option>').trigger('change');
 
-        $.getJSON("<?= base_url('region/kecamatan') ?>/" + kabupaten, function(res) {
-            let html = '<option value="">-- Pilih Kecamatan --</option>';
-            $.each(res, function(_, v) {
-                html += `<option value="${v.name}">${v.name}</option>`;
+        if (kabupaten !== '') {
+            $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
+                data) {
+                let opt = '<option value="">-- Pilih Kecamatan --</option>';
+                $.each(data, function(i, v) {
+                    opt += `<option value="${v.name}">${v.name}</option>`;
+                });
+                $('#kecamatan').html(opt);
             });
-            $('#kecamatan').html(html).trigger('change');
-        });
+        }
+    });
+
+    /* ===============================
+     * EDIT MODAL CASCADE
+     * =============================== */
+    $('#edit-provinsi').on('change', function() {
+        let provinsi = $(this).val();
+
+        $('#edit-kabupaten').html('<option value="">Loading...</option>').trigger('change');
+        $('#edit-kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
+
+        if (provinsi !== '') {
+            $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
+                data) {
+                let opt = '<option value="">-- Pilih Kabupaten --</option>';
+                $.each(data, function(i, v) {
+                    opt += `<option value="${v.name}">${v.name}</option>`;
+                });
+                $('#edit-kabupaten').html(opt);
+            });
+        }
+    });
+
+    $('#edit-kabupaten').on('change', function() {
+        let kabupaten = $(this).val();
+
+        $('#edit-kecamatan').html('<option value="">Loading...</option>').trigger('change');
+
+        if (kabupaten !== '') {
+            $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
+                data) {
+                let opt = '<option value="">-- Pilih Kecamatan --</option>';
+                $.each(data, function(i, v) {
+                    opt += `<option value="${v.name}">${v.name}</option>`;
+                });
+                $('#edit-kecamatan').html(opt);
+            });
+        }
+    });
+
+    /* ===============================
+     * RESET MODALS
+     * =============================== */
+    $('#input-pelanggan-modal, #edit-pelanggan-modal').on('hidden.bs.modal', function() {
+        $(this).find('select').val('').trigger('change');
     });
 
 });
+
+/* ===============================
+ * OPEN EDIT MODAL (CALL THIS)
+ * =============================== */
+function openEditModal(row) {
+
+    $('#edit-id_pelanggan').val(row.id_pelanggan);
+    $('#edit-nama').val(row.nama);
+    $('#edit-alamat').val(row.alamat);
+    $('#edit-no_hp').val(row.no_hp);
+    $('#edit-kategori').val(row.kategori);
+
+    // set provinsi
+    $('#edit-provinsi').val(row.provinsi).trigger('change');
+
+    // load kabupaten
+    $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(row.provinsi), function(kab) {
+
+        let opt = '<option value="">-- Pilih Kabupaten --</option>';
+        $.each(kab, function(i, v) {
+            opt += `<option value="${v.name}">${v.name}</option>`;
+        });
+
+        $('#edit-kabupaten').html(opt);
+        $('#edit-kabupaten').val(row.kabupaten).trigger('change');
+
+        // load kecamatan
+        $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(row.kabupaten), function(kec) {
+
+            let opt2 = '<option value="">-- Pilih Kecamatan --</option>';
+            $.each(kec, function(i, v) {
+                opt2 += `<option value="${v.name}">${v.name}</option>`;
+            });
+
+            $('#edit-kecamatan').html(opt2);
+            $('#edit-kecamatan').val(row.kecamatan);
+        });
+    });
+
+    $('#edit-pelanggan-modal').modal('show');
+}
 </script>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

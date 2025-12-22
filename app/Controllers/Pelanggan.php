@@ -80,6 +80,7 @@ public function insert_pelanggan()
     $kecamatan = $this->request->getPost('kecamatan');
     $no_hp     = $this->request->getPost('no_hp');
     $kategori  = $this->request->getPost('kategori');
+    $mengetahui_dari     = $this->request->getPost('mengetahui_dari');
 
     $data = array(
         'nik'       => $nik,
@@ -90,6 +91,7 @@ public function insert_pelanggan()
         'kecamatan' => $kecamatan,  
         'no_hp'     => $no_hp,
         'kategori'  => $kategori,
+        'mengetahui_dari'  => $mengetahui_dari,
         'deleted'   => '0'
     );
 
@@ -112,6 +114,7 @@ public function insert_pelanggan()
     $kecamatan    = $this->request->getPost('kecamatan');
     $no_hp        = $this->request->getPost('no_hp');
     $kategori     = $this->request->getPost('kategori');
+    $mengetahui_dari     = $this->request->getPost('mengetahui_dari');
 
     $data = array(
         'nik'       => $nik,
@@ -122,6 +125,7 @@ public function insert_pelanggan()
         'kecamatan' => $kecamatan,  
         'no_hp'     => $no_hp,
         'kategori'  => $kategori,
+        'mengetahui_dari'  => $mengetahui_dari,
         'deleted'   => '0'
     );
 
