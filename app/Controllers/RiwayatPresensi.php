@@ -169,11 +169,35 @@ class RiwayatPresensi extends BaseController
         $data = array(
             'status_absensi' => 1,
             'keterangan' => $this->request->getPost('keterangan')
-
         );
-        $this->PresensiModel->update($idpresensi, $data);
-        session()->setFlashdata('sukses', 'Data berhasil diupdate');
-        return redirect()->to(base_url('approval_presensi'));
+
+        try {
+            $this->PresensiModel->update($idpresensi, $data);
+
+            // Jika request AJAX, return JSON response
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Data berhasil diupdate'
+                ]);
+            }
+
+            // Jika bukan AJAX, redirect seperti biasa
+            session()->setFlashdata('sukses', 'Data berhasil diupdate');
+            return redirect()->to(base_url('approval_presensi'));
+        } catch (\Exception $e) {
+            // Jika request AJAX, return error JSON
+            if ($this->request->isAJAX()) {
+                return $this->response->setStatusCode(500)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Gagal mengupdate data: ' . $e->getMessage()
+                ]);
+            }
+
+            // Jika bukan AJAX, redirect dengan error
+            session()->setFlashdata('gagal', 'Gagal mengupdate data');
+            return redirect()->to(base_url('approval_presensi'));
+        }
     }
 
 
