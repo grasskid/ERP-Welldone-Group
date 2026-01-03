@@ -203,7 +203,7 @@
 
                     <div class="mb-3">
                         <label>Sub Kategori</label>
-                        <select name="sub_kategori" class="form-control">
+                        <select name="sub_kategori" class="form-control" required>
                             <option value="">Semua Sub Kategori</option>
                             <?php foreach ($sub_kategori as $row): ?>
                             <?php if (!empty($row->nama_sub_kategori)): ?>
@@ -213,7 +213,7 @@
                             </option>
                             <?php endif; ?>
                             <?php endforeach; ?>
-                        </select required>
+                        </select>
                     </div>
 
                     <div class="mb-3">

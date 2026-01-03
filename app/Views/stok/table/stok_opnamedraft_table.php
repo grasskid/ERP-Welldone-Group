@@ -1,6 +1,6 @@
-<div hidden class="mb-3" style="margin-left: 20px;">
-    <label hidden for="filterUnit"> Unit:</label>
-    <select hidden style="margin-right: 10px;" id="filterUnit" class="form-control d-inline-block w-auto">
+<div class="mb-3" style="margin-left: 20px;">
+    <label for="filterUnit"> Unit:</label>
+    <select style="margin-right: 10px;" id="filterUnit" class="form-control d-inline-block w-auto">
         <option value="">Semua Unit</option>
         <?php foreach ($unit as $u): ?>
         <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
@@ -8,23 +8,10 @@
         </option>
         <?php endforeach; ?>
     </select>
-    <button hidden id="resetFilter" class="btn btn-secondary">Reset</button>
+    <button id="resetFilter" class="btn btn-secondary">Reset</button>
 
 
 </div>
-
-<div class="mb-3" style="margin-left: 20px; display: flex; justify-content: right; gap: 20px;">
-
-    <select disabled style="margin-right: 10px;" id="filterUnitxyz" class="form-control d-inline-block w-auto">
-        <option value="">Semua Unit</option>
-        <?php foreach ($unit as $u): ?>
-        <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
-            <?= esc($u->NAMA_UNIT) ?>
-        </option>
-        <?php endforeach; ?>
-    </select>
-</div>
-
 
 <form action="<?= base_url('insert/stokopname') ?>" method="post">
     <div class="table-responsive mb-4 px-4">
@@ -35,7 +22,6 @@
                     <th>Kode Barang</th>
                     <th>Nama Barang</th>
                     <th>Nama Unit</th>
-                    <th>Stok Dasar</th>
                     <th>Jumlah Komputer</th>
                     <th>Jumlah Real</th>
                     <th>Jumlah Selisih</th>
@@ -54,7 +40,6 @@
                     </td>
                     <td><?= esc($row->nama_barang) ?></td>
                     <td><?= esc($row->nama_unit) ?></td>
-                    <td><?= esc($row->stok_awal) ?></td>
                     <td><input class="form-control jumlah-komp" name="data[<?= $index ?>][jumlah_komp]"
                             value="<?= $row->stok_akhir ?>"></td>
                     <td><input type="number" class="form-control jumlah-real" name="data[<?= $index ?>][jumlah_real]">

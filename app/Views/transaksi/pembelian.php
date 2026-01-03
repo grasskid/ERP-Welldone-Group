@@ -1042,8 +1042,8 @@
                                 <label for="subKategori"> Sub Kategori</label>
                                 <br>
                                 <select id="subKategori" name="subkategori" class="form-select d-inline"
-                                    style="width: 100%; display: inline-block;">
-                                    <option value="">Semua Sub Kategori</option>
+                                    style="width: 100%; display: inline-block;" required>
+                                    <option value="">-- Pilih Kategori --</option>
                                     <?php foreach ($sub_kategori as $row): ?>
                                     <?php if (!empty($row->nama_sub_kategori)): ?>
                                     <option data-idparent_kategori="<?= $row->id_kategori_parent ?>"
@@ -1052,7 +1052,7 @@
                                     </option>
                                     <?php endif; ?>
                                     <?php endforeach; ?>
-                                </select required>
+                                </select>
                             </div>
 
                             <div class="mb-3">

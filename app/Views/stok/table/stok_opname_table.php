@@ -1,6 +1,6 @@
-<div hidden class="mb-3" style="margin-left: 20px;">
-    <label hidden for="filterUnit2"> Unit:</label>
-    <select hidden style="margin-right: 10px;" id="filterUnit2" class="form-control d-inline-block w-auto">
+<div class="mb-3" style="margin-left: 20px;">
+    <label for="filterUnit2"> Unit:</label>
+    <select style="margin-right: 10px;" id="filterUnit2" class="form-control d-inline-block w-auto">
         <option value="">Semua Unit</option>
         <?php foreach ($unit as $u): ?>
         <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
@@ -8,7 +8,7 @@
         </option>
         <?php endforeach; ?>
     </select>
-    <button hidden id="resetFilter2" class="btn btn-secondary">Reset</button>
+    <button id="resetFilter2" class="btn btn-secondary">Reset</button>
 </div>
 
 <div class="mb-3" style="margin-left: 20px; display: flex; justify-content: right; gap: 20px;">
@@ -114,7 +114,7 @@ window.addEventListener('DOMContentLoaded', function() {
             } else {
                 alert(
                     "Silakan centang kotak ceklis terlebih dahulu sebelum mengisi jumlah real."
-                    );
+                );
                 realInput.value = '';
                 realInput.blur();
             }
