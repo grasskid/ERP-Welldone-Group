@@ -1052,7 +1052,7 @@
                                     </option>
                                     <?php endif; ?>
                                     <?php endforeach; ?>
-                                </select>
+                                </select required>
                             </div>
 
                             <div class="mb-3">
