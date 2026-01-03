@@ -81,40 +81,40 @@
             </thead>
             <tbody>
                 <?php if (!empty($presensi)): ?>
-                <?php foreach ($presensi as $row): ?>
-                <tr>
-                    <td><?= esc($row->NAMA_AKUN) ?></td>
-                    <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
-                    <td><?= esc(date('H:i:s', strtotime($row->waktu_masuk))) ?></td>
-                    <?php if ($row->waktu_pulang) : ?>
-                    <td>
-                        <?= esc(date('H:i:s', strtotime($row->waktu_pulang))) ?>
-                    </td>
-                    <?php else : ?>
-                    <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#modal-konfirmasi-absen-pulang_manual"
-                            data-idabsenpulang="<?= $row->idpresensi ?>">
-                            Submit
-                        </button>
-                    </td>
-                    <?php endif; ?>
+                    <?php foreach ($presensi as $row): ?>
+                        <tr>
+                            <td><?= esc($row->NAMA_AKUN) ?></td>
+                            <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
+                            <td><?= esc(date('H:i:s', strtotime($row->waktu_masuk))) ?></td>
+                            <?php if ($row->waktu_pulang) : ?>
+                                <td>
+                                    <?= esc(date('H:i:s', strtotime($row->waktu_pulang))) ?>
+                                </td>
+                            <?php else : ?>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#modal-konfirmasi-absen-pulang_manual"
+                                        data-idabsenpulang="<?= $row->idpresensi ?>">
+                                        Submit
+                                    </button>
+                                </td>
+                            <?php endif; ?>
 
 
 
 
-                    <?php if ($row->status_kehadiran == 0) : ?>
-                    <td><span class="btn btn-success btn-sm" style="width: 100px;">Tepat Waktu</span></td>
-                    <?php elseif ($row->status_kehadiran == 1) : ?>
-                    <td><span class="btn btn-warning btn-sm text-dark" style="width: 100px;">Toleransi</span></td>
-                    <?php elseif ($row->status_kehadiran == 2) : ?>
-                    <td><span class="btn btn-danger btn-sm" style="width: 100px;">Telat</span></td>
-                    <?php endif ?>
+                            <?php if ($row->status_kehadiran == 0) : ?>
+                                <td><span class="btn btn-success btn-sm" style="width: 100px;">Tepat Waktu</span></td>
+                            <?php elseif ($row->status_kehadiran == 1) : ?>
+                                <td><span class="btn btn-warning btn-sm text-dark" style="width: 100px;">Toleransi</span></td>
+                            <?php elseif ($row->status_kehadiran == 2) : ?>
+                                <td><span class="btn btn-danger btn-sm" style="width: 100px;">Telat</span></td>
+                            <?php endif ?>
 
 
 
-                    <td>
-                        <!-- <button type="button" class="btn btn-success"
+                            <td>
+                                <!-- <button type="button" class="btn btn-success"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-detail-absen"
                                     data-waktumasuk="<?= $row->waktu_masuk ?>"
@@ -127,41 +127,41 @@
                                     Detail
                                 </button> -->
 
-                        <button type="button" class="btn-detail-lokasi  btn btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#modal-peta-lokasi" data-lat="<?= $row->lat ?>"
-                            data-waktumasuk="<?= $row->waktu_masuk ?>" data-waktupulang="<?= $row->waktu_pulang ?>"
-                            data-jadwalmasuk="<?= $row->jam_jadwal_masuk ?>"
-                            data-jadwalpulang="<?= $row->jam_jadwal_pulang ?>" data-ip="<?= $row->ip ?>"
-                            data-nama="<?= $row->NAMA_AKUN ?>" data-foto="<?= $row->foto ?>"
-                            data-long="<?= $row->long ?>" data-latkantor="<?= $row->LATITUDE ?>"
-                            data-longkantor="<?= $row->LONGTITUDE ?>" data-jarak="<?= $row->jarak ?>"
-                            data-fotopulang="<?= $row->foto_pulang ?>">
-                            Detail
-                        </button>
+                                <button type="button" class="btn-detail-lokasi  btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#modal-peta-lokasi" data-lat="<?= $row->lat ?>"
+                                    data-waktumasuk="<?= $row->waktu_masuk ?>" data-waktupulang="<?= $row->waktu_pulang ?>"
+                                    data-jadwalmasuk="<?= $row->jam_jadwal_masuk ?>"
+                                    data-jadwalpulang="<?= $row->jam_jadwal_pulang ?>" data-ip="<?= $row->ip ?>"
+                                    data-nama="<?= $row->NAMA_AKUN ?>" data-foto="<?= $row->foto ?>"
+                                    data-long="<?= $row->long ?>" data-latkantor="<?= $row->LATITUDE ?>"
+                                    data-longkantor="<?= $row->LONGTITUDE ?>" data-jarak="<?= $row->jarak ?>"
+                                    data-fotopulang="<?= $row->foto_pulang ?>">
+                                    Detail
+                                </button>
 
-                    </td>
+                            </td>
 
 
-                    <td>
-                        <?php if ($row->status_absensi == 0): ?>
-                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#modalStatusKehadiran" data-idpresensi="<?= $row->idpresensi ?>">
-                            Approval
-                        </button>
+                            <td>
+                                <?php if ($row->status_absensi == 0): ?>
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modalStatusKehadiran" data-idpresensi="<?= $row->idpresensi ?>">
+                                        Approval
+                                    </button>
 
-                        <?php elseif ($row->status_absensi == 1): ?>
-                        <button class="btn btn-success btn-sm">Terkonfirmasi</button>
-                        <?php else: ?>
-                        <span class="badge bg-secondary">Tidak diketahui</span>
-                        <?php endif; ?>
-                    </td>
+                                <?php elseif ($row->status_absensi == 1): ?>
+                                    <button class="btn btn-success btn-sm">Terkonfirmasi</button>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Tidak diketahui</span>
+                                <?php endif; ?>
+                            </td>
 
-                </tr>
-                <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="3" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -173,7 +173,7 @@
 <div class="modal fade" id="modalStatusKehadiran" tabindex="-1" aria-labelledby="modalStatusKehadiranLabel"
     aria-hidden="true">
     <div class="modal-dialog">
-        <form action="<?= base_url('presensi/update_status_kehadiran') ?>" enctype="multipart/form-data" method="post">
+        <form id="form-approval" action="<?= base_url('presensi/update_status_kehadiran') ?>" method="post">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalStatusKehadiranLabel">Update Status Kehadiran</h5>
@@ -181,11 +181,9 @@
                 </div>
                 <div class="modal-body">
                     <p style="font-style: italic;">Apakah anda yakin ingin approve presensi ini?</p>
-                    <input hidden name="idpresensi" id="input-idpresensi">
-                    <label for="">keterangan</label>
-                    <textarea name="keterangan" id="" cols="30" rows="10" style="width: 100%;"></textarea>
-
-
+                    <input type="hidden" name="idpresensi" id="input-idpresensi">
+                    <label for="keterangan-approval">Keterangan</label>
+                    <textarea name="keterangan" id="keterangan-approval" cols="30" rows="10" style="width: 100%;"></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -334,7 +332,7 @@
                         <select id="pegawai-select" class="select2 form-control" name="id_akun" required>
                             <option value="" disabled selected>-- Pilih Pegawai --</option>
                             <?php foreach ($namapegawai as $pegawai): ?>
-                            <option value="<?= $pegawai->ID_AKUN ?>"><?= $pegawai->NAMA_AKUN ?></option>
+                                <option value="<?= $pegawai->ID_AKUN ?>"><?= $pegawai->NAMA_AKUN ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -352,11 +350,11 @@
                         <select id="jadwal-select" class="form-select">
                             <option value="" disabled selected>-- Pilih Jadwal --</option>
                             <?php foreach ($jadwalmasuk as $jadwal): ?>
-                            <option value="<?= $jadwal->idjadwal_masuk ?>" data-jammasuk="<?= $jadwal->jam_masuk ?>"
-                                data-jampulang="<?= $jadwal->jam_pulang ?>"
-                                data-jamtoleransi="<?= $jadwal->toleransi ?>">
-                                <?= $jadwal->nama_jadwal ?>
-                            </option>
+                                <option value="<?= $jadwal->idjadwal_masuk ?>" data-jammasuk="<?= $jadwal->jam_masuk ?>"
+                                    data-jampulang="<?= $jadwal->jam_pulang ?>"
+                                    data-jamtoleransi="<?= $jadwal->toleransi ?>">
+                                    <?= $jadwal->nama_jadwal ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -452,103 +450,103 @@
 
 
 <script>
-let table;
+    let table;
 
-window.onload = function() {
-    const endDateInput = document.getElementById('endDate');
-    const startDateInput = document.getElementById('startDate');
+    window.onload = function() {
+        const endDateInput = document.getElementById('endDate');
+        const startDateInput = document.getElementById('startDate');
 
-    const today = new Date();
-    const fifteenDaysAgo = new Date();
-    fifteenDaysAgo.setDate(today.getDate() - 15);
+        const today = new Date();
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
 
-    const toDateInputValue = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const toDateInputValue = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        // Set default date range (15 hari ke belakang sampai hari ini)
+        startDateInput.value = toDateInputValue(fifteenDaysAgo);
+        endDateInput.value = toDateInputValue(today);
+
+        // ✅ Inisialisasi DataTable
+        table = $('#zero_config').DataTable();
+
+        // ✅ Tambahkan custom filter untuk date range
+        $.fn.dataTable.ext.search.push(function(settings, data) {
+            const start = startDateInput.value ? new Date(startDateInput.value) : null;
+            const end = endDateInput.value ? new Date(endDateInput.value) : null;
+
+            // Ambil tanggal dari kolom ke-2 (index 1), format dd-mm-yyyy
+            const dateParts = data[1].trim().split('-');
+            if (dateParts.length !== 3) return true; // jika tidak ada tanggal, jangan filter row
+
+            const rowDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+
+            if (start && rowDate < start) return false;
+            if (end && rowDate > end) return false;
+
+            return true;
+        });
+
+        // ✅ Jalankan filter pertama kali
+        table.draw();
+
+        // ✅ Auto update saat user mengubah tanggal
+        startDateInput.addEventListener('change', () => table.draw());
+        endDateInput.addEventListener('change', () => table.draw());
     };
 
-    // Set default date range (15 hari ke belakang sampai hari ini)
-    startDateInput.value = toDateInputValue(fifteenDaysAgo);
-    endDateInput.value = toDateInputValue(today);
+    function filterData() {
+        table.draw(); // Refresh DataTable
+    }
 
-    // ✅ Inisialisasi DataTable
-    table = $('#zero_config').DataTable();
-
-    // ✅ Tambahkan custom filter untuk date range
-    $.fn.dataTable.ext.search.push(function(settings, data) {
-        const start = startDateInput.value ? new Date(startDateInput.value) : null;
-        const end = endDateInput.value ? new Date(endDateInput.value) : null;
-
-        // Ambil tanggal dari kolom ke-2 (index 1), format dd-mm-yyyy
-        const dateParts = data[1].trim().split('-');
-        if (dateParts.length !== 3) return true; // jika tidak ada tanggal, jangan filter row
-
-        const rowDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
-
-        if (start && rowDate < start) return false;
-        if (end && rowDate > end) return false;
-
-        return true;
-    });
-
-    // ✅ Jalankan filter pertama kali
-    table.draw();
-
-    // ✅ Auto update saat user mengubah tanggal
-    startDateInput.addEventListener('change', () => table.draw());
-    endDateInput.addEventListener('change', () => table.draw());
-};
-
-function filterData() {
-    table.draw(); // Refresh DataTable
-}
-
-function resetFilter() {
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    table.draw(); // Refresh table setelah reset
-}
+    function resetFilter() {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        table.draw(); // Refresh table setelah reset
+    }
 </script>
 
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('modalStatusKehadiran');
-    modal.addEventListener('show.bs.modal', function(event) {
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('modalStatusKehadiran');
+        modal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const idpresensi = button.getAttribute('data-idpresensi');
+            const inputId = modal.querySelector('#input-idpresensi');
+            inputId.value = idpresensi;
+        });
+    });
+</script>
+
+
+<script>
+    const modalDetailAbsenMasuk = document.getElementById('modal-detail-absen');
+
+    modalDetailAbsenMasuk.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
-        const idpresensi = button.getAttribute('data-idpresensi');
-        const inputId = modal.querySelector('#input-idpresensi');
-        inputId.value = idpresensi;
-    });
-});
-</script>
 
-
-<script>
-const modalDetailAbsenMasuk = document.getElementById('modal-detail-absen');
-
-modalDetailAbsenMasuk.addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-
-    const waktuMasuk = button.getAttribute('data-waktumasuk');
-    const waktuPulang = button.getAttribute('data-waktupulang');
-    const ip = button.getAttribute('data-ip') || '-';
-    const lat = button.getAttribute('data-lat') || '-';
-    const long = button.getAttribute('data-long') || '-';
-    const foto = button.getAttribute('data-foto');
-    const jarak = button.getAttribute('data-jarak');
+        const waktuMasuk = button.getAttribute('data-waktumasuk');
+        const waktuPulang = button.getAttribute('data-waktupulang');
+        const ip = button.getAttribute('data-ip') || '-';
+        const lat = button.getAttribute('data-lat') || '-';
+        const long = button.getAttribute('data-long') || '-';
+        const foto = button.getAttribute('data-foto');
+        const jarak = button.getAttribute('data-jarak');
 
 
 
-    const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
+        const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
 
-    let konten = '';
+        let konten = '';
 
-    if (waktuMasukDate) {
-        konten += `
+        if (waktuMasukDate) {
+            konten += `
                 <ul class="list-group">
                     <li class="list-group-item"><strong>Nama:</strong> ${nama}</li>
                     <li class="list-group-item"><strong>Tanggal:</strong> ${waktuMasukDate.toLocaleDateString('id-ID')}</li>
@@ -558,9 +556,9 @@ modalDetailAbsenMasuk.addEventListener('show.bs.modal', function(event) {
                    
                     </li>
                     <li class="list-group-item"><strong>Foto:</strong><br>`;
-        if (foto) {
-            const imgSrc = "<?= base_url('foto_presensi/') ?>" + foto;
-            konten += ` <center>
+            if (foto) {
+                const imgSrc = "<?= base_url('foto_presensi/') ?>" + foto;
+                konten += ` <center>
                 
                 <img src="${imgSrc}" alt="Foto Absen"
                     style="max-width: 200px; max-height: 150px; cursor: pointer;"
@@ -568,65 +566,65 @@ modalDetailAbsenMasuk.addEventListener('show.bs.modal', function(event) {
 
 
                 </center>`;
+            } else {
+                konten += `<em>Tidak ada foto</em>`;
+            }
+            konten += `</li></ul>`;
         } else {
-            konten += `<em>Tidak ada foto</em>`;
+            konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
         }
-        konten += `</li></ul>`;
-    } else {
-        konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
-    }
 
-    document.getElementById('body-detail-absen-masuk').innerHTML = konten;
-});
+        document.getElementById('body-detail-absen-masuk').innerHTML = konten;
+    });
 </script>
 
 
 <?php foreach ($presensi as $p): ?>
 
-<script>
-const latitudeKantor = <?= $p->LATITUDE ?? null ?>;
-const longitudeKantor = <?= $p->LONGTITUDE ?? null ?>;
+    <script>
+        const latitudeKantor = <?= $p->LATITUDE ?? null ?>;
+        const longitudeKantor = <?= $p->LONGTITUDE ?? null ?>;
 
 
-console.log("Latitude Kantor:", latitudeKantor);
-console.log("Longitude Kantor:", longitudeKantor);
+        console.log("Latitude Kantor:", latitudeKantor);
+        console.log("Longitude Kantor:", longitudeKantor);
 
 
-let jarakPegawaiKantor = null;
-let map = null;
+        let jarakPegawaiKantor = null;
+        let map = null;
 
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('btn-detail-lokasi')) {
-        latitudePegawai = parseFloat(e.target.getAttribute('data-lat'));
-        longitudePegawai = parseFloat(e.target.getAttribute('data-long'));
-        console.log("Latitude Pegawai:", latitudePegawai);
-        console.log("Longitude Pegawai:", longitudePegawai);
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-detail-lokasi')) {
+                latitudePegawai = parseFloat(e.target.getAttribute('data-lat'));
+                longitudePegawai = parseFloat(e.target.getAttribute('data-long'));
+                console.log("Latitude Pegawai:", latitudePegawai);
+                console.log("Longitude Pegawai:", longitudePegawai);
 
-        const waktuMasuk = e.target.getAttribute('data-waktumasuk');
-        const waktuPulang = e.target.getAttribute('data-waktupulang');
-        const ip = e.target.getAttribute('data-ip') || '-';
-        const lat = e.target.getAttribute('data-lat') || '-';
-        const long = e.target.getAttribute('data-long') || '-';
-        const foto = e.target.getAttribute('data-foto');
-        const jarak = e.target.getAttribute('data-jarak') || '-';
-        const nama = e.target.getAttribute('data-nama') || '-';
-        const jadwalmasuk = e.target.getAttribute('data-jadwalmasuk') || '-';
-        const jadwalpulang = e.target.getAttribute('data-jadwalpulang') || '-';
-        const fotopulang = e.target.getAttribute('data-fotopulang');
+                const waktuMasuk = e.target.getAttribute('data-waktumasuk');
+                const waktuPulang = e.target.getAttribute('data-waktupulang');
+                const ip = e.target.getAttribute('data-ip') || '-';
+                const lat = e.target.getAttribute('data-lat') || '-';
+                const long = e.target.getAttribute('data-long') || '-';
+                const foto = e.target.getAttribute('data-foto');
+                const jarak = e.target.getAttribute('data-jarak') || '-';
+                const nama = e.target.getAttribute('data-nama') || '-';
+                const jadwalmasuk = e.target.getAttribute('data-jadwalmasuk') || '-';
+                const jadwalpulang = e.target.getAttribute('data-jadwalpulang') || '-';
+                const fotopulang = e.target.getAttribute('data-fotopulang');
 
-        const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
-        const waktuPulangDate = waktuPulang ? new Date(waktuPulang) : null;
+                const waktuMasukDate = waktuMasuk ? new Date(waktuMasuk) : null;
+                const waktuPulangDate = waktuPulang ? new Date(waktuPulang) : null;
 
 
-        document.getElementById('detail_nama_map').textContent = nama;
-        document.getElementById('detail_jarak_map').textContent = jarak + ' meter';
-        document.getElementById('detail-jamjadwal-pulang').textContent = jadwalpulang;
-        document.getElementById('detail-jamjadwal-masuk').textContent = jadwalmasuk;
+                document.getElementById('detail_nama_map').textContent = nama;
+                document.getElementById('detail_jarak_map').textContent = jarak + ' meter';
+                document.getElementById('detail-jamjadwal-pulang').textContent = jadwalpulang;
+                document.getElementById('detail-jamjadwal-masuk').textContent = jadwalmasuk;
 
-        let konten = '';
+                let konten = '';
 
-        if (waktuMasukDate) {
-            konten += `
+                if (waktuMasukDate) {
+                    konten += `
                 <div class="card">
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
@@ -637,255 +635,295 @@ document.addEventListener('click', function(e) {
                             <li class="list-group-item"><strong>Lokasi:</strong> ${lat}, ${long}</li>
                             <li class="list-group-item"><strong>Foto Kehadiran:</strong><br>`;
 
-            if (foto) {
-                const imgSrc = "<?= base_url('foto_presensi/') ?>" + foto;
-                konten += `
+                    if (foto) {
+                        const imgSrc = "<?= base_url('foto_presensi/') ?>" + foto;
+                        konten += `
                     <center>
                     
                         <img src="${imgSrc}" alt="Foto Absen"
                              style="max-width: 200px; max-height: 150px; cursor: pointer;"
                              onclick="tampilkanModalGambar('${imgSrc}')">
                     </center>`;
-            } else {
-                konten += `<em>Tidak ada foto</em>`;
-            }
-            konten += `</li>
+                    } else {
+                        konten += `<em>Tidak ada foto</em>`;
+                    }
+                    konten += `</li>
 
                     <li class="list-group-item"><strong>Foto Kepulangan:</strong><br>`;
-            if (fotopulang) {
-                const imgSrc = "<?= base_url('foto_presensi/') ?>" + fotopulang;
-                konten += `
+                    if (fotopulang) {
+                        const imgSrc = "<?= base_url('foto_presensi/') ?>" + fotopulang;
+                        konten += `
                     <center>
                         <img src="${imgSrc}" alt="Foto Absen"
                              style="max-width: 200px; max-height: 150px; cursor: pointer;"
                              onclick="tampilkanModalGambar('${imgSrc}')">
                     </center>`;
-            } else {
-                konten += `<em>Tidak ada foto</em>`;
-            }
-            konten += `</li>
+                    } else {
+                        konten += `<em>Tidak ada foto</em>`;
+                    }
+                    konten += `</li>
 
                     
                     </ul></div></div>`;
-        } else {
-            konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
+                } else {
+                    konten = `<p class="text-danger">Data presensi tidak ditemukan.</p>`;
+                }
+
+                document.getElementById('detail-absen-map').innerHTML = konten;
+            }
+        });
+
+
+        function hitungJarak(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
         }
 
-        document.getElementById('detail-absen-map').innerHTML = konten;
-    }
-});
-
-
-function hitungJarak(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) ** 2 +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-}
-
-document.getElementById('modal-peta-lokasi').addEventListener('shown.bs.modal', function() {
+        document.getElementById('modal-peta-lokasi').addEventListener('shown.bs.modal', function() {
 
 
 
-    if (map) {
-        map.remove();
-        map = null;
-    }
+            if (map) {
+                map.remove();
+                map = null;
+            }
 
 
-    map = L.map('map').setView([latitudeKantor, longitudeKantor], 15);
+            map = L.map('map').setView([latitudeKantor, longitudeKantor], 15);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-
-    L.marker([latitudeKantor, longitudeKantor])
-        .addTo(map)
-        .bindPopup('Lokasi Kantor')
-        .openPopup();
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
 
 
-    L.marker([latitudePegawai, longitudePegawai])
-        .addTo(map)
-        .bindPopup('Lokasi Pegawai');
+            L.marker([latitudeKantor, longitudeKantor])
+                .addTo(map)
+                .bindPopup('Lokasi Kantor')
+                .openPopup();
 
 
-    const latlngs = [
-        [latitudeKantor, longitudeKantor],
-        [latitudePegawai, longitudePegawai]
-    ];
+            L.marker([latitudePegawai, longitudePegawai])
+                .addTo(map)
+                .bindPopup('Lokasi Pegawai');
 
-    const polyline = L.polyline(latlngs, {
-        color: 'blue'
-    }).addTo(map);
 
-    // Tooltip Jarak
-    const jarak = hitungJarak(latitudeKantor, longitudeKantor, latitudePegawai, longitudePegawai);
-    const midLat = (latitudeKantor + latitudePegawai) / 2;
-    const midLng = (longitudeKantor + longitudePegawai) / 2;
+            const latlngs = [
+                [latitudeKantor, longitudeKantor],
+                [latitudePegawai, longitudePegawai]
+            ];
 
-    L.tooltip({
-            permanent: true,
-            direction: 'top',
-            className: 'leaflet-distance-label'
-        })
-        .setContent(`${jarak.toFixed(2)} km`)
-        .setLatLng([midLat, midLng])
-        .addTo(map);
-});
-</script>
+            const polyline = L.polyline(latlngs, {
+                color: 'blue'
+            }).addTo(map);
+
+            // Tooltip Jarak
+            const jarak = hitungJarak(latitudeKantor, longitudeKantor, latitudePegawai, longitudePegawai);
+            const midLat = (latitudeKantor + latitudePegawai) / 2;
+            const midLng = (longitudeKantor + longitudePegawai) / 2;
+
+            L.tooltip({
+                    permanent: true,
+                    direction: 'top',
+                    className: 'leaflet-distance-label'
+                })
+                .setContent(`${jarak.toFixed(2)} km`)
+                .setLatLng([midLat, midLng])
+                .addTo(map);
+        });
+    </script>
 <?php endforeach; ?>
 
 
 
 
 <style>
-.leaflet-distance-label {
-    background-color: white;
-    border: 1px solid #999;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 13px;
-    font-weight: bold;
-    color: #333;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-}
+    .leaflet-distance-label {
+        background-color: white;
+        border: 1px solid #999;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #333;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    }
 </style>
 
 <script>
-let zoomLevel = 1;
-let translateX = 0;
-let translateY = 0;
-const zoomImage = document.getElementById('zoom-image');
+    let zoomLevel = 1;
+    let translateX = 0;
+    let translateY = 0;
+    const zoomImage = document.getElementById('zoom-image');
 
-function updateTransform() {
-    zoomImage.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
-}
-
-function tampilkanModalGambar(src) {
-    zoomLevel = 1;
-    translateX = 0;
-    translateY = 0;
-    zoomImage.src = src;
-    updateTransform();
-    const modal = new bootstrap.Modal(document.getElementById('fotoModal'));
-    modal.show();
-}
-
-function zoomIn() {
-    zoomLevel += 0.1;
-    updateTransform();
-}
-
-function zoomOut() {
-    zoomLevel = Math.max(0.1, zoomLevel - 0.1);
-    updateTransform();
-}
-
-function panImage(x, y) {
-    translateX += x;
-    translateY += y;
-    updateTransform();
-}
-</script>
-
-<script>
-$(document).ready(function() {
-    $('#pegawai-select').select2({
-        dropdownParent: $('#modal-konfirmasi-absen-masuk')
-    });
-});
-</script>
-
-<script>
-document.getElementById('jadwal-select').addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-
-    const id = selectedOption.value;
-    const jamMasuk = selectedOption.getAttribute('data-jammasuk');
-    const jamPulang = selectedOption.getAttribute('data-jampulang');
-    const jamToleransi = selectedOption.getAttribute('data-jamtoleransi');
-
-    document.getElementById('idjadwal_masuk').value = id;
-    document.getElementById('jam_masuk').value = jamMasuk;
-    document.getElementById('jam_pulang').value = jamPulang;
-    document.getElementById('jam_toleransi').value = jamToleransi;
-});
-
-document.getElementById('konfirmasi-absen-masuk').addEventListener('click', function() {
-
-    const jadwalId = document.getElementById('idjadwal_masuk').value;
-    if (!jadwalId) {
-        alert('Silakan pilih jadwal terlebih dahulu.');
-        return;
+    function updateTransform() {
+        zoomImage.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
     }
 
-    // Submit form
-    document.getElementById('form-masuk').submit();
-});
+    function tampilkanModalGambar(src) {
+        zoomLevel = 1;
+        translateX = 0;
+        translateY = 0;
+        zoomImage.src = src;
+        updateTransform();
+        const modal = new bootstrap.Modal(document.getElementById('fotoModal'));
+        modal.show();
+    }
+
+    function zoomIn() {
+        zoomLevel += 0.1;
+        updateTransform();
+    }
+
+    function zoomOut() {
+        zoomLevel = Math.max(0.1, zoomLevel - 0.1);
+        updateTransform();
+    }
+
+    function panImage(x, y) {
+        translateX += x;
+        translateY += y;
+        updateTransform();
+    }
 </script>
 
 <script>
-document.getElementById("formPresensi").addEventListener("submit", function(e) {
-    const input = document.getElementById("jam_prensensi");
-    const dateValue = new Date(input.value);
-
-    // Format ke yyyy-mm-dd hh:mm:ss
-    const formatted =
-        dateValue.getFullYear() + "-" +
-        String(dateValue.getMonth() + 1).padStart(2, '0') + "-" +
-        String(dateValue.getDate()).padStart(2, '0') + " " +
-        String(dateValue.getHours()).padStart(2, '0') + ":" +
-        String(dateValue.getMinutes()).padStart(2, '0') + ":" +
-        String(dateValue.getSeconds()).padStart(2, '0');
-
-
-    input.value = formatted;
-});
+    $(document).ready(function() {
+        $('#pegawai-select').select2({
+            dropdownParent: $('#modal-konfirmasi-absen-masuk')
+        });
+    });
 </script>
 
 <script>
-const modalAbsenPulang = document.getElementById('modal-konfirmasi-absen-pulang_manual');
-modalAbsenPulang.addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-    const idpresensi = button.getAttribute('data-idabsenpulang');
-    const input = modalAbsenPulang.querySelector('#input-idpresensi-pulang');
-    input.value = idpresensi;
-});
-</script>
+    document.getElementById('jadwal-select').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
 
-<script>
-let currentPage = 0;
+        const id = selectedOption.value;
+        const jamMasuk = selectedOption.getAttribute('data-jammasuk');
+        const jamPulang = selectedOption.getAttribute('data-jampulang');
+        const jamToleransi = selectedOption.getAttribute('data-jamtoleransi');
 
-$(document).ready(function() {
-
-    $('#modalStatusKehadiran').on('show.bs.modal', function() {
-        currentPage = table.page();
+        document.getElementById('idjadwal_masuk').value = id;
+        document.getElementById('jam_masuk').value = jamMasuk;
+        document.getElementById('jam_pulang').value = jamPulang;
+        document.getElementById('jam_toleransi').value = jamToleransi;
     });
 
-    $('#modalStatusKehadiran form').on('submit', function(e) {
-        e.preventDefault();
+    document.getElementById('konfirmasi-absen-masuk').addEventListener('click', function() {
 
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function() {
-                $('#modalStatusKehadiran').modal('hide');
+        const jadwalId = document.getElementById('idjadwal_masuk').value;
+        if (!jadwalId) {
+            alert('Silakan pilih jadwal terlebih dahulu.');
+            return;
+        }
 
-                table.page(currentPage).draw(false);
-            },
-            error: function() {
-                alert('Gagal menyimpan approval');
-            }
+        // Submit form
+        document.getElementById('form-masuk').submit();
+    });
+</script>
+
+<script>
+    document.getElementById("formPresensi").addEventListener("submit", function(e) {
+        const input = document.getElementById("jam_prensensi");
+        const dateValue = new Date(input.value);
+
+        // Format ke yyyy-mm-dd hh:mm:ss
+        const formatted =
+            dateValue.getFullYear() + "-" +
+            String(dateValue.getMonth() + 1).padStart(2, '0') + "-" +
+            String(dateValue.getDate()).padStart(2, '0') + " " +
+            String(dateValue.getHours()).padStart(2, '0') + ":" +
+            String(dateValue.getMinutes()).padStart(2, '0') + ":" +
+            String(dateValue.getSeconds()).padStart(2, '0');
+
+
+        input.value = formatted;
+    });
+</script>
+
+<script>
+    const modalAbsenPulang = document.getElementById('modal-konfirmasi-absen-pulang_manual');
+    modalAbsenPulang.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const idpresensi = button.getAttribute('data-idabsenpulang');
+        const input = modalAbsenPulang.querySelector('#input-idpresensi-pulang');
+        input.value = idpresensi;
+    });
+</script>
+
+<script>
+    let currentPage = 0;
+
+    $(document).ready(function() {
+        // Simpan halaman saat ini ketika modal dibuka
+        $('#modalStatusKehadiran').on('show.bs.modal', function() {
+            currentPage = table.page();
+        });
+
+        // Handle form submission dengan AJAX
+        $('#modalStatusKehadiran form').on('submit', function(e) {
+            e.preventDefault();
+
+            const formData = $(this).serialize();
+            const idpresensi = $('#input-idpresensi').val();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Tutup modal
+                    $('#modalStatusKehadiran').modal('hide');
+
+                    // Update status di tabel tanpa refresh
+                    updateStatusInTable(idpresensi);
+
+                    // Tampilkan pesan sukses
+                    showNotification('success', 'Approval berhasil disimpan!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    showNotification('error', 'Gagal menyimpan approval. Silakan coba lagi.');
+                }
+            });
         });
     });
 
-});
+    // Fungsi untuk update status di tabel
+    function updateStatusInTable(idpresensi) {
+        // Cari baris dengan idpresensi yang sesuai dan update status
+        $('button[data-idpresensi="' + idpresensi + '"]').closest('tr').find('td:last-child').html(
+            '<button class="btn btn-success btn-sm">Terkonfirmasi</button>'
+        );
+    }
+
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(type, message) {
+        // Buat elemen notifikasi
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const notification = `
+            <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        // Tambahkan ke body
+        $('body').append(notification);
+
+        // Auto hide setelah 3 detik
+        setTimeout(function() {
+            $('.alert').fadeOut('slow', function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
 </script>
