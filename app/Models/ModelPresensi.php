@@ -35,7 +35,9 @@ class ModelPresensi extends Model
     public function getAll()
     {
         return $this->select('presensi.*, 
-                          jadwal_masuk.nama_jadwal, 
+                          jadwal_masuk.nama_jadwal,
+                          jadwal_masuk.toleransi,
+                          jadwal_masuk.jam_masuk as jmmasuk, 
                           akun.NAMA_AKUN, 
                           akun.ID_UNIT, 
                           unit.NAMA_UNIT,
@@ -73,7 +75,7 @@ class ModelPresensi extends Model
     public function filterexport($tanggalAwal, $tanggalAkhir)
     {
         $tanggalAkhir .= ' 23:59:59';
-
+        //tambahan
         return $this->select('presensi.*, 
                               jadwal_masuk.nama_jadwal, 
                               akun.NAMA_AKUN, 
@@ -101,6 +103,8 @@ class ModelPresensi extends Model
     {
         return $this->select('presensi.*, 
                               jadwal_masuk.nama_jadwal, 
+                              jadwal_masuk.toleransi,
+                          jadwal_masuk.jam_masuk as jmmasuk, 
                               akun.NAMA_AKUN, 
                               akun.ID_UNIT, 
                               unit.NAMA_UNIT,

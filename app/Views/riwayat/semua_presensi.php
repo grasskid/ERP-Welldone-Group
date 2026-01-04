@@ -49,6 +49,14 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Tanggal</h6>
                     </th>
+
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Jam Jadwal Masuk</h6>
+                    </th>
+
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Toleransi</h6>
+                    </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Jam Masuk</h6>
                     </th>
@@ -76,6 +84,11 @@
                         <tr>
                             <td><?= esc($row->NAMA_AKUN) ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
+
+
+                            <td><?= esc(date('H:i:s', strtotime($row->jmmasuk))) ?></td>
+                            <td><?= esc(date('H:i:s', strtotime($row->toleransi))) ?></td>
+
                             <td><?= esc(date('H:i:s', strtotime($row->waktu_masuk))) ?></td>
                             <td><?= esc(date('H:i:s', strtotime($row->waktu_pulang))) ?></td>
                             <?php if ($row->status_kehadiran == 0) : ?>
@@ -155,7 +168,7 @@
 
 
 
-<!-- Modal 2 Kolom Lokasi Pegawai -->
+<!-- Modal 2 Kolom Lokasi Pegawai tambahan -->
 <div class="modal fade" id="modal-peta-lokasi" tabindex="-1" aria-labelledby="modalPetaLokasiLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">

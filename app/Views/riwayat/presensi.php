@@ -49,6 +49,14 @@
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Tanggal</h6>
                     </th>
+
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Jam Jadwal Masuk</h6>
+                    </th>
+
+                    <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Toleransi</h6>
+                    </th>
                     <th>
                         <h6 class="fs-4 fw-semibold mb-0">Jam Masuk</h6>
                     </th>
@@ -75,6 +83,8 @@
                         <tr>
                             <td><?= esc($row->NAMA_AKUN) ?></td>
                             <td><?= esc(date('d-m-Y', strtotime($row->created_at))) ?></td>
+                            <td><?= esc(date('H:i:s', strtotime($row->jmmasuk))) ?></td>
+                            <td><?= esc(date('H:i:s', strtotime($row->toleransi))) ?></td>
                             <td><?= esc(date('H:i:s', strtotime($row->waktu_masuk))) ?></td>
                             <td><?= esc(date('H:i:s', strtotime($row->waktu_pulang))) ?></td>
                             <?php if ($row->status_kehadiran == 0) : ?>
@@ -168,7 +178,7 @@
                     <div class="col-md-8">
                         <div id="map" style="height: 500px; width: 100%; border-radius: 10px;"></div>
 
-                        <!-- Baris 2 card di bawah map -->
+                        <!-- Baris 2 card di bawah map tambahan -->
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <div class="card text-bg-success">
