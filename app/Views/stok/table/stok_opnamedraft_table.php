@@ -3,8 +3,7 @@
     <select style="margin-right: 10px;" id="filterUnit" class="form-control d-inline-block w-auto">
         <option value="">Semua Unit</option>
         <?php foreach ($unit as $u): ?>
-        <option value="<?= esc($u->nama_unit ?? $u->NAMA_UNIT) ?>"
-            <?= ($u->idunit ?? $u->IDUNIT) == session('ID_UNIT') ? 'selected' : '' ?>>
+        <option value="<?= esc($u->nama_unit ?? $u->NAMA_UNIT) ?>">
             <?= esc($u->nama_unit ?? $u->NAMA_UNIT) ?>
         </option>
         <?php endforeach; ?>

@@ -3,7 +3,7 @@
     <select style="margin-right: 10px;" id="filterUnit2" class="form-control d-inline-block w-auto">
         <option value="">Semua Unit</option>
         <?php foreach ($unit as $u): ?>
-        <option value="<?= $u->idunit ?>" <?= $u->idunit == session('ID_UNIT') ? 'selected' : '' ?>>
+        <option value="<?= esc($u->NAMA_UNIT) ?>">
             <?= esc($u->NAMA_UNIT) ?>
         </option>
         <?php endforeach; ?>
@@ -59,226 +59,148 @@
 </form>
 
 <script>
-// Gabungkan kedua script menjadi satu untuk menghindari konflik
-document.addEventListener('DOMContentLoaded', function() {
-    // ===== BAGIAN 1: Fungsi untuk checkbox dan perhitungan =====
-    const selectAllCheckbox = document.getElementById('select_all2');
-    const rows = document.querySelectorAll('#zero_config2 tbody tr');
+// ==================== SOLUSI SINGKAT DAN PASTI BERHASIL ====================
+$(document).ready(function() {
+    // 1. INISIALISASI DATATABLE
+    var table;
 
-    // Fungsi untuk mengupdate status input berdasarkan checkbox
-    function updateInputStatus(checkbox, row) {
-        const kompInput = row.querySelector('.jumlah-komp');
-        const realInput = row.querySelector('.jumlah-real');
-
-        if (checkbox.checked) {
-            kompInput.disabled = false;
-            realInput.disabled = false;
-        } else {
-            kompInput.disabled = true;
-            realInput.disabled = true;
-        }
-    }
-
-    // Fungsi untuk menghitung selisih
-    function calculateSelisih(row) {
-        const kompInput = row.querySelector('.jumlah-komp');
-        const realInput = row.querySelector('.jumlah-real');
-        const selisihInput = row.querySelector('.jumlah-selisih');
-
-        const komp = parseFloat(kompInput.value) || 0;
-        const real = parseFloat(realInput.value) || 0;
-
-        selisihInput.value = real - komp;
-    }
-
-    // Inisialisasi setiap baris
-    rows.forEach(function(row) {
-        const checkbox = row.querySelector('.row-check');
-        const kompInput = row.querySelector('.jumlah-komp');
-        const realInput = row.querySelector('.jumlah-real');
-        const selisihInput = row.querySelector('.jumlah-selisih');
-
-        // Disable inputs awal
-        kompInput.disabled = true;
-        realInput.disabled = true;
-
-        // Hitung selisih awal jika ada nilai
-        const komp = parseFloat(kompInput.value) || 0;
-        const real = parseFloat(realInput.value) || 0;
-        if (real !== 0 || komp !== 0) {
-            selisihInput.value = real - komp;
-        }
-
-        // Event untuk checkbox
-        checkbox.addEventListener('change', function() {
-            updateInputStatus(checkbox, row);
+    if ($.fn.dataTable.isDataTable('#zero_config2')) {
+        table = $('#zero_config2').DataTable();
+        console.log('Menggunakan DataTable yang sudah ada');
+    } else {
+        table = $('#zero_config2').DataTable({
+            "columnDefs": [{
+                "orderable": false,
+                "targets": [0, 4, 5, 6]
+            }],
+            "language": {
+                "search": "Cari:",
+                "lengthMenu": "Tampilkan _MENU_ data",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                "paginate": {
+                    "first": "Pertama",
+                    "last": "Terakhir",
+                    "next": "Berikutnya",
+                    "previous": "Sebelumnya"
+                }
+            },
+            "pageLength": 25
         });
+        console.log('DataTable diinisialisasi baru');
+    }
 
-        // Event untuk input jumlah real
-        realInput.addEventListener('input', function() {
-            if (checkbox.checked) {
-                calculateSelisih(row);
+    // Debug: tampilkan data yang ada di kolom unit
+    console.log('=== DEBUG: DATA UNIT DI TABEL ===');
+    table.rows().every(function(rowIdx, tableLoop, rowLoop) {
+        if (rowIdx < 3) { // Hanya 3 baris pertama
+            var data = this.data();
+            console.log('Baris ' + rowIdx + ': Unit = "' + data[3] + '"');
+        }
+    });
+
+    // 2. FUNGSI FILTER YANG PASTI BEKERJA
+    function applyFilter2() {
+        var selectedUnit = $('#filterUnit2').val();
+        console.log('Filter dipilih:', selectedUnit);
+
+        // Reset semua filter terlebih dahulu
+        $.fn.dataTable.ext.search = [];
+
+        if (selectedUnit && selectedUnit.trim() !== '') {
+            // Tambahkan filter baru
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var unitName = data[3]; // Kolom ke-4 (Nama Unit)
+                var isMatch = unitName === selectedUnit;
+
+                // Debug per baris
+                if (dataIndex < 3) {
+                    console.log('Baris ' + dataIndex + ': ' + unitName + ' == ' + selectedUnit + ' ? ' +
+                        isMatch);
+                }
+
+                return isMatch;
+            });
+        }
+
+        // Redraw tabel
+        table.draw();
+
+        // Tampilkan jumlah baris setelah filter
+        console.log('Baris yang ditampilkan:', table.rows({
+            filter: 'applied'
+        }).count());
+    }
+
+    // 3. EVENT HANDLERS
+    $('#filterUnit2').on('change', function() {
+        applyFilter2();
+    });
+
+    $('#resetFilter2').on('click', function(e) {
+        e.preventDefault();
+        $('#filterUnit2').val('');
+        applyFilter2();
+    });
+
+    // 4. TERAPKAN FILTER AWAL JIKA ADA
+    var initialFilter = $('#filterUnit2').val();
+    if (initialFilter) {
+        applyFilter2();
+    }
+
+    // ==================== FUNGSI CHECKBOX DAN PERHITUNGAN ====================
+    // Select all checkbox
+    $('#select_all2').on('change', function() {
+        var isChecked = $(this).is(':checked');
+        $('.row-check').prop('checked', isChecked);
+
+        // Update status input
+        $('.row-check').each(function() {
+            var $row = $(this).closest('tr');
+            var $kompInput = $row.find('.jumlah-komp');
+            var $realInput = $row.find('.jumlah-real');
+
+            if (isChecked) {
+                $kompInput.prop('disabled', false);
+                $realInput.prop('disabled', false);
             } else {
-                alert(
-                    "Silakan centang kotak ceklis terlebih dahulu sebelum mengisi jumlah real."
-                    );
-                realInput.value = '';
-                realInput.focus();
-            }
-        });
-
-        // Event untuk input jumlah komputer
-        kompInput.addEventListener('input', function() {
-            if (checkbox.checked) {
-                calculateSelisih(row);
+                $kompInput.prop('disabled', true);
+                $realInput.prop('disabled', true);
             }
         });
     });
 
-    // Event untuk select all
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('#zero_config2 .row-check');
-            checkboxes.forEach(cb => {
-                cb.checked = this.checked;
-                // Trigger change event pada setiap checkbox
-                const event = new Event('change');
-                cb.dispatchEvent(event);
-            });
-        });
-    }
+    // Individual checkbox
+    $(document).on('change', '.row-check', function() {
+        var $row = $(this).closest('tr');
+        var $kompInput = $row.find('.jumlah-komp');
+        var $realInput = $row.find('.jumlah-real');
 
-    // ===== BAGIAN 2: Inisialisasi DataTable dengan Filter =====
-    // Cek apakah jQuery sudah siap
-    if (typeof jQuery !== 'undefined') {
-        $(function() {
-            // Hapus DataTable yang sudah ada jika ada
-            if ($.fn.dataTable.isDataTable('#zero_config2')) {
-                $('#zero_config2').DataTable().destroy();
-                console.log('DataTable lama di-destroy');
-            }
+        if ($(this).is(':checked')) {
+            $kompInput.prop('disabled', false);
+            $realInput.prop('disabled', false);
+        } else {
+            $kompInput.prop('disabled', true);
+            $realInput.prop('disabled', true);
+        }
+    });
 
-            // Inisialisasi DataTable baru dengan opsi yang benar
-            var table = $('#zero_config2').DataTable({
-                "destroy": true, // Izinkan destroy
-                "retrieve": true, // Ambil instance jika sudah ada
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "language": {
-                    "emptyTable": "Tidak ada data tersedia",
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
-                    "infoFiltered": "(disaring dari _MAX_ total data)",
-                    "lengthMenu": "Tampilkan _MENU_ data",
-                    "search": "Cari:",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "paginate": {
-                        "first": "Pertama",
-                        "last": "Terakhir",
-                        "next": "Berikutnya",
-                        "previous": "Sebelumnya"
-                    }
-                },
-                "columnDefs": [{
-                        "orderable": false,
-                        "targets": [0, 4, 5,
-                            6
-                        ] // Nonaktifkan sorting untuk kolom checkbox dan input
-                    },
-                    {
-                        "searchable": true,
-                        "targets": [1, 2, 3] // Kolom yang bisa dicari
-                    }
-                ],
-                "drawCallback": function(settings) {
-                    // Setelah tabel di-draw, update status checkbox
-                    const checkboxes = document.querySelectorAll(
-                        '#zero_config2 .row-check');
-                    checkboxes.forEach(cb => {
-                        const row = cb.closest('tr');
-                        const kompInput = row.querySelector('.jumlah-komp');
-                        const realInput = row.querySelector('.jumlah-real');
+    // Hitung selisih
+    $(document).on('input', '.jumlah-real, .jumlah-komp', function() {
+        var $row = $(this).closest('tr');
+        var $checkbox = $row.find('.row-check');
 
-                        if (cb.checked) {
-                            kompInput.disabled = false;
-                            realInput.disabled = false;
-                        } else {
-                            kompInput.disabled = true;
-                            realInput.disabled = true;
-                        }
-                    });
-                }
-            });
+        if (!$checkbox.is(':checked') && $(this).hasClass('jumlah-real')) {
+            alert("Silakan centang baris terlebih dahulu sebelum mengisi jumlah real.");
+            $(this).val('');
+            return;
+        }
 
-            console.log('DataTable diinisialisasi dengan', table.rows().count(), 'baris');
+        var komp = parseFloat($row.find('.jumlah-komp').val()) || 0;
+        var real = parseFloat($row.find('.jumlah-real').val()) || 0;
+        var selisih = real - komp;
 
-            // ===== BAGIAN 3: Fungsi Filter =====
-            var currentFilter = null;
-
-            function applyFilter() {
-                var selectedId = $('#filterUnit2').val();
-
-                // Hapus filter sebelumnya jika ada
-                if (currentFilter !== null) {
-                    var index = $.fn.dataTable.ext.search.indexOf(currentFilter);
-                    if (index !== -1) {
-                        $.fn.dataTable.ext.search.splice(index, 1);
-                    }
-                    currentFilter = null;
-                }
-
-                if (selectedId) {
-                    // Dapatkan teks dari option yang dipilih
-                    var selectedText = $('#filterUnit2 option:selected').text();
-
-                    // Buat filter baru
-                    currentFilter = function(settings, data, dataIndex) {
-                        // data[3] adalah kolom Nama Unit (index ke-3)
-                        var unitName = data[3];
-                        return unitName === selectedText;
-                    };
-
-                    // Terapkan filter
-                    $.fn.dataTable.ext.search.push(currentFilter);
-                }
-
-                // Redraw tabel
-                table.draw();
-            }
-
-            // Terapkan filter awal jika ada nilai yang dipilih
-            var initialValue = $('#filterUnit2').val();
-            if (initialValue) {
-                applyFilter();
-            }
-
-            // Event untuk dropdown filter
-            $('#filterUnit2').on('change', function() {
-                applyFilter();
-            });
-
-            // Event untuk tombol reset
-            $('#resetFilter2').on('click', function(e) {
-                e.preventDefault();
-                $('#filterUnit2').val('');
-                applyFilter();
-            });
-
-            // Debug: tampilkan semua unit yang ada di tabel
-            console.log('Unit yang tersedia di tabel:');
-            var uniqueUnits = table.column(3).data().unique().sort().toArray();
-            uniqueUnits.forEach(function(unit, index) {
-                console.log((index + 1) + '. ' + unit);
-            });
-        });
-    } else {
-        console.error('jQuery tidak ditemukan!');
-    }
+        $row.find('.jumlah-selisih').val(selisih);
+    });
 });
 </script>
