@@ -24,7 +24,7 @@ class Pelanggan extends BaseController
     protected $PelangganModel;
     protected $AuthModel;
     protected $PenjualanModel;
-    protected $ReginonModel;
+    protected $RegionModel;
 
     public function __construct()
     {
@@ -49,92 +49,92 @@ class Pelanggan extends BaseController
     }
 
     public function getKabupaten($provinsi)
-{
-    $provinsi = urldecode($provinsi);
+    {
+        $provinsi = urldecode($provinsi);
 
-    $data = $this->RegionModel->getRegenciesByProvinceName($provinsi);
+        $data = $this->RegionModel->getRegenciesByProvinceName($provinsi);
 
-    return $this->response->setJSON($data);
-}
-
-
-public function getKecamatan($kabupaten)
-{
-    $kabupaten = urldecode($kabupaten);
-
-    $data = $this->RegionModel->getDistrictsByRegencyName($kabupaten);
-
-    return $this->response->setJSON($data);
-}
-
-
-
-
-public function insert_pelanggan()
-{
-    $nik       = $this->request->getPost('nik');
-    $nama      = $this->request->getPost('nama');
-    $alamat    = $this->request->getPost('alamat');
-    $provinsi  = $this->request->getPost('provinsi');
-    $kabupaten = $this->request->getPost('kabupaten');
-    $kecamatan = $this->request->getPost('kecamatan');
-    $no_hp     = $this->request->getPost('no_hp');
-    $kategori  = $this->request->getPost('kategori');
-    $mengetahui_dari     = $this->request->getPost('mengetahui_dari');
-
-    $data = array(
-        'nik'       => $nik,
-        'nama'      => $nama,
-        'alamat'    => $alamat,
-        'provinsi'  => $provinsi,   
-        'kabupaten' => $kabupaten,  
-        'kecamatan' => $kecamatan,  
-        'no_hp'     => $no_hp,
-        'kategori'  => $kategori,
-        'mengetahui_dari'  => $mengetahui_dari,
-        'deleted'   => '0'
-    );
-
-    $result = $this->PelangganModel->insert_Pelanggan($data);
-    if ($result) {
-        session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
-        return redirect()->to(base_url('/pelanggan'));
+        return $this->response->setJSON($data);
     }
-}
+
+
+    public function getKecamatan($kabupaten)
+    {
+        $kabupaten = urldecode($kabupaten);
+
+        $data = $this->RegionModel->getDistrictsByRegencyName($kabupaten);
+
+        return $this->response->setJSON($data);
+    }
+
+
+
+
+    public function insert_pelanggan()
+    {
+        $nik       = $this->request->getPost('nik');
+        $nama      = $this->request->getPost('nama');
+        $alamat    = $this->request->getPost('alamat');
+        $provinsi  = $this->request->getPost('provinsi');
+        $kabupaten = $this->request->getPost('kabupaten');
+        $kecamatan = $this->request->getPost('kecamatan');
+        $no_hp     = $this->request->getPost('no_hp');
+        $kategori  = $this->request->getPost('kategori');
+        $mengetahui_dari     = $this->request->getPost('mengetahui_dari');
+
+        $data = array(
+            'nik'       => $nik,
+            'nama'      => $nama,
+            'alamat'    => $alamat,
+            'provinsi'  => $provinsi,
+            'kabupaten' => $kabupaten,
+            'kecamatan' => $kecamatan,
+            'no_hp'     => $no_hp,
+            'kategori'  => $kategori,
+            'mengetahui_dari'  => $mengetahui_dari,
+            'deleted'   => '0'
+        );
+
+        $result = $this->PelangganModel->insert_Pelanggan($data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Data Berhasil Di Simpan');
+            return redirect()->to(base_url('/pelanggan'));
+        }
+    }
 
 
     public function update_pelanggan()
-{
-    $id_pelanggan = $this->request->getPost('id_pelanggan');
-    $nik          = $this->request->getPost('nik');
-    $nama         = $this->request->getPost('nama');
-    $alamat       = $this->request->getPost('alamat');
-    $provinsi     = $this->request->getPost('provinsi');
-    $kabupaten    = $this->request->getPost('kabupaten');
-    $kecamatan    = $this->request->getPost('kecamatan');
-    $no_hp        = $this->request->getPost('no_hp');
-    $kategori     = $this->request->getPost('kategori');
-    $mengetahui_dari     = $this->request->getPost('mengetahui_dari');
+    {
+        $id_pelanggan = $this->request->getPost('id_pelanggan');
+        $nik          = $this->request->getPost('nik');
+        $nama         = $this->request->getPost('nama');
+        $alamat       = $this->request->getPost('alamat');
+        $provinsi     = $this->request->getPost('provinsi');
+        $kabupaten    = $this->request->getPost('kabupaten');
+        $kecamatan    = $this->request->getPost('kecamatan');
+        $no_hp        = $this->request->getPost('no_hp');
+        $kategori     = $this->request->getPost('kategori');
+        $mengetahui_dari     = $this->request->getPost('mengetahui_dari');
 
-    $data = array(
-        'nik'       => $nik,
-        'nama'      => $nama,
-        'alamat'    => $alamat,
-        'provinsi'  => $provinsi,   
-        'kabupaten' => $kabupaten,  
-        'kecamatan' => $kecamatan,  
-        'no_hp'     => $no_hp,
-        'kategori'  => $kategori,
-        'mengetahui_dari'  => $mengetahui_dari,
-        'deleted'   => '0'
-    );
+        $data = array(
+            'nik'       => $nik,
+            'nama'      => $nama,
+            'alamat'    => $alamat,
+            'provinsi'  => $provinsi,
+            'kabupaten' => $kabupaten,
+            'kecamatan' => $kecamatan,
+            'no_hp'     => $no_hp,
+            'kategori'  => $kategori,
+            'mengetahui_dari'  => $mengetahui_dari,
+            'deleted'   => '0'
+        );
 
-    $result = $this->PelangganModel->update($id_pelanggan, $data);
-    if ($result) {
-        session()->setFlashdata('sukses', 'Data Berhasil Di Update');
-        return redirect()->to(base_url('/pelanggan'));
+        $result = $this->PelangganModel->update($id_pelanggan, $data);
+        if ($result) {
+            session()->setFlashdata('sukses', 'Data Berhasil Di Update');
+            return redirect()->to(base_url('/pelanggan'));
+        }
     }
-}
 
 
     public function delete_pelanggan()
@@ -241,32 +241,39 @@ public function insert_pelanggan()
         $data = $this->request->getPost();
 
         $insertData = [
-            'nik' => $data['nik'],
-            'nama' => $data['nama'],
-            'no_hp' => $data['no_hp'],
-            'alamat' => $data['alamat'],
+            'nik'             => "", // sesuai permintaan
+            'nama'            => $data['nama'],
+            'alamat'          => $data['alamat'],
+            'provinsi'        => $data['provinsi'],
+            'kabupaten'       => $data['kabupaten'],
+            'kecamatan'       => $data['kecamatan'],
+            'no_hp'           => $data['no_hp'],
+            'kategori'        => $data['kategori'],
+            'mengetahui_dari' => $data['mengetahui_dari'],
         ];
 
         $insertId = $this->PelangganModel->insert_Pelanggan($insertData);
 
         if ($insertId) {
-            // Kirim response json
             return $this->response->setJSON([
                 'success' => true,
                 'data' => [
                     'id_pelanggan' => $insertId,
-                    'nama' => $data['nama'],
-                    'no_hp' => $data['no_hp'],
-                    'deleted' => 0,
+                    'nama'         => $data['nama'],
+                    'no_hp'        => $data['no_hp'],
+                    'alamat'       => $data['alamat'],
+                    'kategori'     => $data['kategori'],
+                    'deleted'      => 0,
                 ]
             ]);
-        } else {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Gagal menyimpan data pelanggan'
-            ]);
         }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Gagal menyimpan data pelanggan'
+        ]);
     }
+
     public function riwayat_transaksi_pelanggan($id)
     {
         $data = array(
