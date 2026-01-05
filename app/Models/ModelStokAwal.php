@@ -40,6 +40,7 @@ class ModelStokAwal extends Model
                 stok_awal.*,
                 barang.nama_barang,
                 barang.status_ppn,
+                barang.imei,
                 kategori.nama_kategori,
                 unit.NAMA_UNIT,
                 suplier.nama_suplier,
