@@ -85,6 +85,9 @@
                         <h6 class="fs-4 fw-semibold mb-0">Status PPN</h6>
                     </th>
                     <th>
+                        <h6 class="fs-4 fw-semibold mb-0">Stok Awal</h6>
+                    </th>
+                    <th>
                         <h6 class="fs-4 fw-semibold mb-0">Total Pembelian</h6>
                     </th>
                     <th>
@@ -119,6 +122,7 @@
                     <td><?= esc($row->nama_unit) ?></td>
                     <td><?= esc($row->nama_kategori) ?></td>
                     <td><?= $row->status_ppn == 1 ? 'PPN' : 'Non PPN' ?></td>
+                    <td><?= esc($row->stok_awal) ?></td>
                     <td><?= esc($row->total_pembelian) ?></td>
                     <td><?= esc($row->total_penjualan) ?></td>
                     <td><?= esc($row->total_retur_pelanggan) ?></td>
