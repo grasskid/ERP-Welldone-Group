@@ -31,7 +31,7 @@ use App\Models\ModelBank;
 use App\Models\ModelBundle;
 use App\Models\ModelDetailBundle;
 use App\Models\ModelPembayaranBank;
-
+use App\Models\ModelRegion;
 
 class Penjualan extends BaseController
 {
@@ -59,6 +59,8 @@ class Penjualan extends BaseController
     protected $DetailBundelModel;
     protected $PembayaranBankModel;
 
+    protected $RegionModel;
+
     //ini perubahan baru
     public function __construct()
     {
@@ -81,6 +83,7 @@ class Penjualan extends BaseController
         $this->BundleModel = new ModelBundle();
         $this->DetailBundelModel = new ModelDetailBundle();
         $this->PembayaranBankModel = new ModelPembayaranBank();
+        $this->RegionModel = new ModelRegion();
     }
 
     public function index()
@@ -96,9 +99,29 @@ class Penjualan extends BaseController
             'pelanggan' => $this->PelangganModel->getPelanggan(),
             'bundle' => $this->BundleModel->getBundleWithDetail(),
             'body' => 'transaksi/penjualan',
+            'provinsi' => $this->RegionModel->getProvinces()
         );
 
         return view('template', $data);
+    }
+
+    public function getKabupaten($provinsi)
+    {
+        $provinsi = urldecode($provinsi);
+
+        $data = $this->RegionModel->getRegenciesByProvinceName($provinsi);
+
+        return $this->response->setJSON($data);
+    }
+
+
+    public function getKecamatan($kabupaten)
+    {
+        $kabupaten = urldecode($kabupaten);
+
+        $data = $this->RegionModel->getDistrictsByRegencyName($kabupaten);
+
+        return $this->response->setJSON($data);
     }
 
     public function insert_penjualan()

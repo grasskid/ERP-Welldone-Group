@@ -664,25 +664,74 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="nik" class="form-label">NIK</label>
-                                <input type="text" id="nik" name="nik" class="form-control" required />
+                                <label>Nama</label>
+                                <input type="text" class="form-control" name="nama" required>
                             </div>
                             <div class="mb-3">
-                                <label for="nama" class="form-label">Nama</label>
-                                <input type="text" id="nama" name="nama" class="form-control" required />
+                                <label>Alamat</label>
+                                <input type="text" class="form-control" name="alamat" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Provinsi</label>
+                                <select class="form-control select2" name="provinsi" id="provinsi" required>
+                                    <option value="">-- Pilih Provinsi --</option>
+                                    <?php foreach ($provinsi as $p): ?>
+                                        <!-- VALUE = NAME -->
+                                        <option value="<?= esc($p->name) ?>">
+                                            <?= esc($p->name) ?>
+                                        </option>
+                                    <?php endforeach ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Kabupaten</label>
+                                <select class="form-control select2" name="kabupaten" id="kabupaten" required>
+                                    <option value="">-- Pilih Kabupaten --</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Kecamatan</label>
+                                <select class="form-control select2" name="kecamatan" id="kecamatan" required>
+                                    <option value="">-- Pilih Kecamatan --</option>
+                                </select>
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label>Nomor HP</label>
+                                <input type="text" class="form-control" name="no_hp" required>
                             </div>
                             <div class="mb-3">
-                                <label for="no_hp" class="form-label">No HP</label>
-                                <input type="text" id="no_hp" name="no_hp" class="form-control" required />
+                                <label>Jenis Pelanggan</label>
+                                <select class="form-control" name="kategori" required>
+                                    <option value="">-- Pilih Jenis Pelanggan --</option>
+                                    <option value="0">Umum</option>
+                                    <option value="1">Toko</option>
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label for="alamat" class="form-label">Alamat</label>
-                                <textarea id="alamat" name="alamat" class="form-control" rows="3"></textarea>
+                                <label>Mengetahui Dari</label>
+                                <select class="form-control" name="mengetahui_dari" id="mengetahui_dari" required>
+                                    <option value="">-- Mengetahui Dari --</option>
+                                    <option value="Iklan di Facebook">Iklan di Facebook</option>
+                                    <option value="Iklan di Instagram">Iklan di Instagram</option>
+                                    <option value="Iklan di Tiktok">Iklan di Tiktok</option>
+                                    <option value="Iklan di Google">Iklan di Google</option>
+                                    <option value="Teman/Kerabat/Saudara">Teman/Kerabat/Saudara</option>
+                                    <option value="Store Offline">Store Offline</option>
+                                    <option value="Pelanggan Lama">Pelanggan lama</option>
+                                    <option value="Sosial Media Store">Sosial Media Store</option>
+                                    <option value="Informasi dari Store">Informasi dari Store Lain</option>
+                                    <option value="Informasi dari Store">Informasi dari Karyawan Store</option>
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Simpan Pelanggan</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" id="btnbataltambah" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         </div>
                     </form>
                 </div>
@@ -692,15 +741,65 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const pelangganModal = new bootstrap.Modal(document.getElementById('pelangganModal'));
+                const pelangganModalEl = document.getElementById('pelangganModal');
                 const modalTambah = new bootstrap.Modal(document.getElementById('modalTambahPelanggan'));
+                const modalTambahEl = document.getElementById('modalTambahPelanggan');
+
+                modalTambahEl.addEventListener('hidden.bs.modal', function() {
+                    setTimeout(() => {
+                        pelangganModal.show();
+                    }, 300);
+                });
 
                 $('.select2').select2({
                     dropdownParent: $('#pelangganModal')
                 });
 
+                $('#modalTambahPelanggan .select2').select2({
+                    dropdownParent: $('#modalTambahPelanggan'),
+                    width: '100%'
+                });
+
+
+                $('#provinsi').on('change', function() {
+                    let provinsi = $(this).val();
+
+                    $('#kabupaten').html('<option value="">Loading...</option>').trigger('change');
+                    $('#kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
+
+                    if (provinsi !== '') {
+                        $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
+                            data) {
+                            let opt = '<option value="">-- Pilih Kabupaten --</option>';
+                            $.each(data, function(i, v) {
+                                opt += `<option value="${v.name}">${v.name}</option>`;
+                            });
+                            $('#kabupaten').html(opt);
+                        });
+                    }
+                });
+
+                $('#kabupaten').on('change', function() {
+                    let kabupaten = $(this).val();
+
+                    $('#kecamatan').html('<option value="">Loading...</option>').trigger('change');
+
+                    if (kabupaten !== '') {
+                        $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
+                            data) {
+                            let opt = '<option value="">-- Pilih Kecamatan --</option>';
+                            $.each(data, function(i, v) {
+                                opt += `<option value="${v.name}">${v.name}</option>`;
+                            });
+                            $('#kecamatan').html(opt);
+                        });
+                    }
+                });
+
+
                 // ✅ Fix: close pelangganModal before opening modalTambah
                 document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
-                    const pelangganModalEl = document.getElementById('pelangganModal');
+
                     const pelangganModalInstance = bootstrap.Modal.getInstance(pelangganModalEl);
                     pelangganModalInstance.hide();
 
@@ -762,6 +861,9 @@
                         }
                     });
                 });
+
+
+
             });
         </script>
 

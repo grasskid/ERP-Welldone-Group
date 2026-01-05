@@ -65,38 +65,38 @@
             </thead>
             <tbody>
                 <?php if (!empty($pelanggan)): ?>
-                <?php foreach ($pelanggan as $row): ?>
-                <tr>
-                    <td><?= esc($row->nama) ?></td>
-                    <td><?= esc($row->alamat) ?></td>
-                    <td><?= esc($row->kecamatan) ?></td>
-                    <td><?= esc($row->kabupaten) ?></td>
-                    <td><?= esc($row->provinsi) ?></td>
-                    <td><?= esc($row->no_hp) ?></td>
-                    <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
-                    <td><?= esc($row->mengetahui_dari) ?></td>
-                    <td><a href="<?php echo base_url('riwayat_transaksi_pelanggan/' . $row->id_pelanggan) ?>"><button
-                                class="btn btn-success">Check</button></a></td>
-                    <td>
-                        <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
-                            data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
-                            data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
-                            data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
-                            data-kategori="<?= esc($row->kategori) ?>">
-                            <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
-                        </button>
-                        <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
-                            data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
-                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
-                            </iconify-icon>
-                        </button>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($pelanggan as $row): ?>
+                        <tr>
+                            <td><?= esc($row->nama) ?></td>
+                            <td><?= esc($row->alamat) ?></td>
+                            <td><?= esc($row->kecamatan) ?></td>
+                            <td><?= esc($row->kabupaten) ?></td>
+                            <td><?= esc($row->provinsi) ?></td>
+                            <td><?= esc($row->no_hp) ?></td>
+                            <td><?= $row->kategori == 0 ? 'Umum' : 'Toko' ?></td>
+                            <td><?= esc($row->mengetahui_dari) ?></td>
+                            <td><a href="<?php echo base_url('riwayat_transaksi_pelanggan/' . $row->id_pelanggan) ?>"><button
+                                        class="btn btn-success">Check</button></a></td>
+                            <td>
+                                <button type="button" class="btn btn-warning edit-button" data-bs-toggle="modal"
+                                    data-bs-target="#edit-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>"
+                                    data-nama="<?= esc($row->nama) ?>" data-alamat="<?= esc($row->alamat) ?>"
+                                    data-nik="<?= esc($row->nik) ?>" data-no_hp="<?= esc($row->no_hp) ?>"
+                                    data-kategori="<?= esc($row->kategori) ?>">
+                                    <iconify-icon icon="solar:clapperboard-edit-broken" width="24" height="24"></iconify-icon>
+                                </button>
+                                <button type="button" class="btn btn-danger delete-button" data-bs-toggle="modal"
+                                    data-bs-target="#delete-pelanggan-modal" data-id_pelanggan="<?= esc($row->id_pelanggan) ?>">
+                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="24" height="24">
+                                    </iconify-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada data</td>
-                </tr>
+                    <tr>
+                        <td colspan="6" class="text-center">Tidak ada data</td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -130,10 +130,10 @@
                         <select class="form-control select2" name="provinsi" id="provinsi" required>
                             <option value="">-- Pilih Provinsi --</option>
                             <?php foreach ($provinsi as $p): ?>
-                            <!-- VALUE = NAME -->
-                            <option value="<?= esc($p->name) ?>">
-                                <?= esc($p->name) ?>
-                            </option>
+                                <!-- VALUE = NAME -->
+                                <option value="<?= esc($p->name) ?>">
+                                    <?= esc($p->name) ?>
+                                </option>
                             <?php endforeach ?>
                         </select>
                     </div>
@@ -216,9 +216,9 @@
                         <select class="form-control select2" name="provinsi" id="edit-provinsi" required>
                             <option value="">-- Pilih Provinsi --</option>
                             <?php foreach ($provinsi as $p): ?>
-                            <option value="<?= esc($p->name) ?>">
-                                <?= esc($p->name) ?>
-                            </option>
+                                <option value="<?= esc($p->name) ?>">
+                                    <?= esc($p->name) ?>
+                                </option>
                             <?php endforeach ?>
                         </select>
                     </div>
@@ -309,183 +309,183 @@
 
 <!-- JavaScript for Edit/Delete Modal -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#zero_config').addEventListener('click', function(e) {
-        if (e.target.closest('.edit-button')) {
-            const button = e.target.closest('.edit-button');
-            document.getElementById('edit-id_pelanggan').value = button.getAttribute(
-                'data-id_pelanggan');
-            document.getElementById('edit-nama').value = button.getAttribute('data-nama');
-            document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
-            document.getElementById('edit-nik').value = button.getAttribute('data-nik');
-            document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
-            document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
-        }
-        if (e.target.closest('.delete-button')) {
-            const button = e.target.closest('.delete-button');
-            document.getElementById('delete-id_pelanggan').value = button.getAttribute(
-                'data-id_pelanggan');
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#zero_config').addEventListener('click', function(e) {
+            if (e.target.closest('.edit-button')) {
+                const button = e.target.closest('.edit-button');
+                document.getElementById('edit-id_pelanggan').value = button.getAttribute(
+                    'data-id_pelanggan');
+                document.getElementById('edit-nama').value = button.getAttribute('data-nama');
+                document.getElementById('edit-alamat').value = button.getAttribute('data-alamat');
+                document.getElementById('edit-nik').value = button.getAttribute('data-nik');
+                document.getElementById('edit-no_hp').value = button.getAttribute('data-no_hp');
+                document.getElementById('edit-kategori').value = button.getAttribute('data-kategori');
+            }
+            if (e.target.closest('.delete-button')) {
+                const button = e.target.closest('.delete-button');
+                document.getElementById('delete-id_pelanggan').value = button.getAttribute(
+                    'data-id_pelanggan');
+            }
+        });
     });
-});
 </script>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    $('#input-pelanggan-modal').on('shown.bs.modal', function() {
+        $('#input-pelanggan-modal').on('shown.bs.modal', function() {
 
-        $(this).find('.select2').select2({
-            width: '100%',
-            dropdownParent: $('#input-pelanggan-modal')
+            $(this).find('.select2').select2({
+                width: '100%',
+                dropdownParent: $('#input-pelanggan-modal')
+            });
+
         });
 
     });
-
-});
 </script>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    /* ===============================
-     * SELECT2 INIT (MODAL SAFE)
-     * =============================== */
-    $('#input-pelanggan-modal .select2').select2({
-        dropdownParent: $('#input-pelanggan-modal'),
-        width: '100%'
-    });
-
-    $('#edit-pelanggan-modal .select2').select2({
-        dropdownParent: $('#edit-pelanggan-modal'),
-        width: '100%'
-    });
-
-    /* ===============================
-     * ADD MODAL CASCADE
-     * =============================== */
-    $('#provinsi').on('change', function() {
-        let provinsi = $(this).val();
-
-        $('#kabupaten').html('<option value="">Loading...</option>').trigger('change');
-        $('#kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
-
-        if (provinsi !== '') {
-            $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
-                data) {
-                let opt = '<option value="">-- Pilih Kabupaten --</option>';
-                $.each(data, function(i, v) {
-                    opt += `<option value="${v.name}">${v.name}</option>`;
-                });
-                $('#kabupaten').html(opt);
-            });
-        }
-    });
-
-    $('#kabupaten').on('change', function() {
-        let kabupaten = $(this).val();
-
-        $('#kecamatan').html('<option value="">Loading...</option>').trigger('change');
-
-        if (kabupaten !== '') {
-            $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
-                data) {
-                let opt = '<option value="">-- Pilih Kecamatan --</option>';
-                $.each(data, function(i, v) {
-                    opt += `<option value="${v.name}">${v.name}</option>`;
-                });
-                $('#kecamatan').html(opt);
-            });
-        }
-    });
-
-    /* ===============================
-     * EDIT MODAL CASCADE
-     * =============================== */
-    $('#edit-provinsi').on('change', function() {
-        let provinsi = $(this).val();
-
-        $('#edit-kabupaten').html('<option value="">Loading...</option>').trigger('change');
-        $('#edit-kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
-
-        if (provinsi !== '') {
-            $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
-                data) {
-                let opt = '<option value="">-- Pilih Kabupaten --</option>';
-                $.each(data, function(i, v) {
-                    opt += `<option value="${v.name}">${v.name}</option>`;
-                });
-                $('#edit-kabupaten').html(opt);
-            });
-        }
-    });
-
-    $('#edit-kabupaten').on('change', function() {
-        let kabupaten = $(this).val();
-
-        $('#edit-kecamatan').html('<option value="">Loading...</option>').trigger('change');
-
-        if (kabupaten !== '') {
-            $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
-                data) {
-                let opt = '<option value="">-- Pilih Kecamatan --</option>';
-                $.each(data, function(i, v) {
-                    opt += `<option value="${v.name}">${v.name}</option>`;
-                });
-                $('#edit-kecamatan').html(opt);
-            });
-        }
-    });
-
-    /* ===============================
-     * RESET MODALS
-     * =============================== */
-    $('#input-pelanggan-modal, #edit-pelanggan-modal').on('hidden.bs.modal', function() {
-        $(this).find('select').val('').trigger('change');
-    });
-
-});
-
-/* ===============================
- * OPEN EDIT MODAL (CALL THIS)
- * =============================== */
-function openEditModal(row) {
-
-    $('#edit-id_pelanggan').val(row.id_pelanggan);
-    $('#edit-nama').val(row.nama);
-    $('#edit-alamat').val(row.alamat);
-    $('#edit-no_hp').val(row.no_hp);
-    $('#edit-kategori').val(row.kategori);
-
-    // set provinsi
-    $('#edit-provinsi').val(row.provinsi).trigger('change');
-
-    // load kabupaten
-    $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(row.provinsi), function(kab) {
-
-        let opt = '<option value="">-- Pilih Kabupaten --</option>';
-        $.each(kab, function(i, v) {
-            opt += `<option value="${v.name}">${v.name}</option>`;
+        /* ===============================
+         * SELECT2 INIT (MODAL SAFE)
+         * =============================== */
+        $('#input-pelanggan-modal .select2').select2({
+            dropdownParent: $('#input-pelanggan-modal'),
+            width: '100%'
         });
 
-        $('#edit-kabupaten').html(opt);
-        $('#edit-kabupaten').val(row.kabupaten).trigger('change');
-
-        // load kecamatan
-        $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(row.kabupaten), function(kec) {
-
-            let opt2 = '<option value="">-- Pilih Kecamatan --</option>';
-            $.each(kec, function(i, v) {
-                opt2 += `<option value="${v.name}">${v.name}</option>`;
-            });
-
-            $('#edit-kecamatan').html(opt2);
-            $('#edit-kecamatan').val(row.kecamatan);
+        $('#edit-pelanggan-modal .select2').select2({
+            dropdownParent: $('#edit-pelanggan-modal'),
+            width: '100%'
         });
+
+        /* ===============================
+         * ADD MODAL CASCADE
+         * =============================== */
+        $('#provinsi').on('change', function() {
+            let provinsi = $(this).val();
+
+            $('#kabupaten').html('<option value="">Loading...</option>').trigger('change');
+            $('#kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
+
+            if (provinsi !== '') {
+                $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
+                    data) {
+                    let opt = '<option value="">-- Pilih Kabupaten --</option>';
+                    $.each(data, function(i, v) {
+                        opt += `<option value="${v.name}">${v.name}</option>`;
+                    });
+                    $('#kabupaten').html(opt);
+                });
+            }
+        });
+
+        $('#kabupaten').on('change', function() {
+            let kabupaten = $(this).val();
+
+            $('#kecamatan').html('<option value="">Loading...</option>').trigger('change');
+
+            if (kabupaten !== '') {
+                $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
+                    data) {
+                    let opt = '<option value="">-- Pilih Kecamatan --</option>';
+                    $.each(data, function(i, v) {
+                        opt += `<option value="${v.name}">${v.name}</option>`;
+                    });
+                    $('#kecamatan').html(opt);
+                });
+            }
+        });
+
+        /* ===============================
+         * EDIT MODAL CASCADE
+         * =============================== */
+        $('#edit-provinsi').on('change', function() {
+            let provinsi = $(this).val();
+
+            $('#edit-kabupaten').html('<option value="">Loading...</option>').trigger('change');
+            $('#edit-kecamatan').html('<option value="">-- Pilih Kecamatan --</option>').trigger('change');
+
+            if (provinsi !== '') {
+                $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(provinsi), function(
+                    data) {
+                    let opt = '<option value="">-- Pilih Kabupaten --</option>';
+                    $.each(data, function(i, v) {
+                        opt += `<option value="${v.name}">${v.name}</option>`;
+                    });
+                    $('#edit-kabupaten').html(opt);
+                });
+            }
+        });
+
+        $('#edit-kabupaten').on('change', function() {
+            let kabupaten = $(this).val();
+
+            $('#edit-kecamatan').html('<option value="">Loading...</option>').trigger('change');
+
+            if (kabupaten !== '') {
+                $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(kabupaten), function(
+                    data) {
+                    let opt = '<option value="">-- Pilih Kecamatan --</option>';
+                    $.each(data, function(i, v) {
+                        opt += `<option value="${v.name}">${v.name}</option>`;
+                    });
+                    $('#edit-kecamatan').html(opt);
+                });
+            }
+        });
+
+        /* ===============================
+         * RESET MODALS
+         * =============================== */
+        $('#input-pelanggan-modal, #edit-pelanggan-modal').on('hidden.bs.modal', function() {
+            $(this).find('select').val('').trigger('change');
+        });
+
     });
 
-    $('#edit-pelanggan-modal').modal('show');
-}
+    /* ===============================
+     * OPEN EDIT MODAL (CALL THIS)
+     * =============================== */
+    function openEditModal(row) {
+
+        $('#edit-id_pelanggan').val(row.id_pelanggan);
+        $('#edit-nama').val(row.nama);
+        $('#edit-alamat').val(row.alamat);
+        $('#edit-no_hp').val(row.no_hp);
+        $('#edit-kategori').val(row.kategori);
+
+        // set provinsi
+        $('#edit-provinsi').val(row.provinsi).trigger('change');
+
+        // load kabupaten
+        $.getJSON("<?= base_url('region/kabupaten') ?>/" + encodeURIComponent(row.provinsi), function(kab) {
+
+            let opt = '<option value="">-- Pilih Kabupaten --</option>';
+            $.each(kab, function(i, v) {
+                opt += `<option value="${v.name}">${v.name}</option>`;
+            });
+
+            $('#edit-kabupaten').html(opt);
+            $('#edit-kabupaten').val(row.kabupaten).trigger('change');
+
+            // load kecamatan
+            $.getJSON("<?= base_url('region/kecamatan') ?>/" + encodeURIComponent(row.kabupaten), function(kec) {
+
+                let opt2 = '<option value="">-- Pilih Kecamatan --</option>';
+                $.each(kec, function(i, v) {
+                    opt2 += `<option value="${v.name}">${v.name}</option>`;
+                });
+
+                $('#edit-kecamatan').html(opt2);
+                $('#edit-kecamatan').val(row.kecamatan);
+            });
+        });
+
+        $('#edit-pelanggan-modal').modal('show');
+    }
 </script>
 
 
